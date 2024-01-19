@@ -1,5 +1,7 @@
 import { Select } from '@openfun/cunningham-react';
 import Image from 'next/image';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
@@ -31,49 +33,42 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   }
 `;
 
-const optionsPicker = [
-  {
-    value: 'FR',
-    label: 'FR',
-    render: () => (
-      <Box
-        className="c_select__render"
-        $direction="row"
-        $gap="0.7rem"
-        $align="center"
-      >
-        <Image priority src={IconLanguage} alt="Language Icon" />
-        <Text>FR</Text>
-      </Box>
-    ),
-  },
-  {
-    value: 'EN',
-    label: 'EN',
-    render: () => (
-      <Box
-        className="c_select__render"
-        $direction="row"
-        $gap="0.7rem"
-        $align="center"
-      >
-        <Image priority src={IconLanguage} alt="Language Icon" />
-        <Text>EN</Text>
-      </Box>
-    ),
-  },
-];
-
 export const LanguagePicker = () => {
+  const { t, i18n } = useTranslation();
+  const { preload: languages } = i18n.options;
+
+  const optionsPicker = useMemo(() => {
+    return (languages || []).map((lang) => ({
+      value: lang,
+      label: lang,
+      render: () => (
+        <Box
+          className="c_select__render"
+          $direction="row"
+          $gap="0.7rem"
+          $align="center"
+        >
+          <Image priority src={IconLanguage} alt={t('Language Icon')} />
+          <Text>{lang.toUpperCase()}</Text>
+        </Box>
+      ),
+    }));
+  }, [languages, t]);
+
   return (
     <SelectStyled
-      label="Langue"
+      label={t('Language')}
       showLabelWhenSelected={false}
       clearable={false}
       hideLabel
-      defaultValue="FR"
+      defaultValue={i18n.language}
       className="c_select__no_bg"
       options={optionsPicker}
+      onChange={(e) => {
+        i18n.changeLanguage(e.target.value as string).catch((err) => {
+          console.error('Error changing language', err);
+        });
+      }}
     />
   );
 };

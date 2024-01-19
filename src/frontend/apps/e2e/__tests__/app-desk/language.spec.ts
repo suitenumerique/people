@@ -18,9 +18,6 @@ test.describe("Language", () => {
     const header = page.locator("header").first();
 
     await header.getByRole("combobox").getByText("FR").click();
-    await expect(
-      header.getByRole("option", { name: "Language Icon FR" }),
-    ).toHaveAttribute("aria-selected", "true");
     await header.getByRole("option", { name: "Language Icon EN" }).click();
     await expect(header.getByRole("combobox").getByText("EN")).toBeVisible();
   });

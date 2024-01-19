@@ -1,12 +1,14 @@
 {
   "en": {
     "translation": {
-      "Hello Desk !": "Hello Desk !"
+      "Hello Desk !": "Hello Desk !",
+      "Freedom Equality Fraternity Logo": "Freedom Equality Fraternity Logo"
     }
   },
   "fr": {
     "translation": {
-      "Hello Desk !": "Bienvenue sur Desk !"
+      "Hello Desk !": "Bienvenue sur Desk !",
+      "Freedom Equality Fraternity Logo": "Logo Liberté Egalité Fraternité"
     }
   }
 }

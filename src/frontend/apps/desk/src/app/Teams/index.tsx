@@ -1,5 +1,6 @@
 import { Button, Field, Input, Loader } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useCreateTeam } from './api/useCreateTeam';
 import { useTeams } from './api/useTeams';
@@ -8,6 +9,7 @@ export const Teams = () => {
   const { data, isPending } = useTeams();
   const { mutate: createTeam } = useCreateTeam();
   const [teamName, setTeamName] = useState('');
+  const { t } = useTranslation();
 
   if (isPending) {
     return (
@@ -22,11 +24,11 @@ export const Teams = () => {
       <Field>
         <Input
           type="text"
-          label="Team name"
+          label={t('Team name')}
           onChange={(e) => setTeamName(e.target.value)}
         />
         <Button fullWidth onClick={() => createTeam(teamName)} className="mt-s">
-          Create Team
+          {t('Create Team')}
         </Button>
       </Field>
       <section>

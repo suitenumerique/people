@@ -1,6 +1,7 @@
 import { Button } from '@openfun/cunningham-react';
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
@@ -22,6 +23,8 @@ const RedStripe = styled.div`
 `;
 
 const Header = () => {
+  const { t } = useTranslation();
+
   return (
     <Box
       className="mb-l"
@@ -35,17 +38,17 @@ const Header = () => {
       <RedStripe />
       <Box className="ml-l mr-l" $align="center" $justify="space-between">
         <Box $direction="column">
-          <Image priority src={IconMarianne} alt="Marianne Logo" />
+          <Image priority src={IconMarianne} alt={t('Marianne Logo')} />
           <Box $align="center" $gap="6rem">
             <Image
               priority
               src={IconGouv}
-              alt="Freedom Equality Fraternity Logo"
+              alt={t('Freedom Equality Fraternity Logo')}
             />
             <Box $align="center" $gap="1rem">
-              <Image priority src={IconDesk} alt="Desk Logo" />
+              <Image priority src={IconDesk} alt={t('Desk Logo')} />
               <Text className="m-0" as="h2">
-                Desk
+                {t('Desk')}
               </Text>
             </Box>
           </Box>
@@ -62,17 +65,17 @@ const Header = () => {
         >
           <Box $align="center">
             <Button
-              aria-label="Access to FAQ"
-              icon={<Image priority src={IconFAQ} alt="FAQ Icon" />}
+              aria-label={t('Access to FAQ')}
+              icon={<Image priority src={IconFAQ} alt={t('FAQ Icon')} />}
               className="m-s c__button-no-bg p-0"
             >
-              FAQ
+              {t('FAQ')}
             </Button>
             <LanguagePicker />
           </Box>
           <Button
-            aria-label="Access to the cells menu"
-            icon={<Image priority src={IconCells} alt="Cells icon" />}
+            aria-label={t('Access to the cells menu')}
+            icon={<Image priority src={IconCells} alt={t('Cells icon')} />}
             color="tertiary"
             className="c__button-no-bg p-0 m-0"
           />
