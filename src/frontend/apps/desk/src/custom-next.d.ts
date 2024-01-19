@@ -6,10 +6,10 @@ declare module '*.svg' {
 
 namespace NodeJS {
   interface ProcessEnv {
-    NEXT_PUBLIC_API_URL: string;
-    NEXT_PUBLIC_KEYCLOAK_URL: string;
-    NEXT_PUBLIC_KEYCLOAK_REALM: string;
-    NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: string;
-    NEXT_PUBLIC_KEYCLOAK_LOGIN: string;
+    NEXT_PUBLIC_API_URL?: string;
+    NEXT_PUBLIC_KEYCLOAK_URL?: string;
+    NEXT_PUBLIC_KEYCLOAK_REALM?: string;
+    NEXT_PUBLIC_KEYCLOAK_CLIENT_ID?: string;
+    NEXT_PUBLIC_KEYCLOAK_LOGIN?: string;
   }
 }

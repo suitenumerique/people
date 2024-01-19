@@ -8,6 +8,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Language", () => {
+  test("checks translation library works", async ({ page }) => {
+    await expect(
+      page.locator("h1").first().getByText("Bienvenue sur Desk !"),
+    ).toBeVisible();
+  });
+
   test("checks the language picker", async ({ page }) => {
     const header = page.locator("header").first();
 

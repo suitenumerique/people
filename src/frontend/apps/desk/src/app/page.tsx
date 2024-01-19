@@ -2,6 +2,7 @@
 
 import { Loader } from '@openfun/cunningham-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import useAuthStore from '@/auth/useAuthStore';
 
@@ -10,6 +11,7 @@ import { Teams } from './Teams';
 
 export default function Home() {
   const { initAuth, authenticated, initialized } = useAuthStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (initialized) {
@@ -26,6 +28,7 @@ export default function Home() {
   return (
     <main>
       <Header />
+      <h1>{t('Hello Desk !')}</h1>
       <Teams />
     </main>
   );

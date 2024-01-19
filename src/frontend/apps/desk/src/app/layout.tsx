@@ -5,7 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import './globals.css';
+
 import { useCunninghamTheme } from '@/cunningham';
+import '@/i18n/initI18n';
 
 const queryClient = new QueryClient();
 
