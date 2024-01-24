@@ -1,7 +1,7 @@
 const config = {
   customValueTemplate: {
-    message: "${key}",
-    description: "${description}",
+    message: '${key}',
+    description: '${description}',
   },
   keepRemoved: true,
 };
