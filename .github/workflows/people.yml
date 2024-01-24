@@ -58,24 +58,30 @@ jobs:
             exit 1
           fi
 
-  test-front-desk:
+  test-front:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/frontend/apps/desk
+        working-directory: src/frontend/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
           cache: 'yarn'
           cache-dependency-path: src/frontend/yarn.lock
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Test Desk App
-        run: yarn test
+
+      - name: Test App
+        run: yarn app:test
+
+      - name: Test Translations
+        run: yarn i18n:test
 
   lint-front:
     runs-on: ubuntu-latest

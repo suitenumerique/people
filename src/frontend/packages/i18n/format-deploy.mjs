@@ -28,7 +28,7 @@ fs.readdirSync(folderPath).map((language) => {
   const pathTranslateFile = path.join(languagePath, path.sep, namefile);
 
   if (!fs.existsSync(pathTranslateFile)) {
-    return;
+    throw new Error(`File ${pathTranslateFile} not found!`);
   }
 
   const json = JSON.parse(fs.readFileSync(pathTranslateFile, "utf8"));
@@ -42,6 +42,10 @@ fs.readdirSync(folderPath).map((language) => {
     translation: jsonKeyMessage,
   };
 });
+
+if (!Object.keys(jsonI18n).length) {
+  throw new Error(`No translation to deploy`);
+}
 
 // Write the file to the output
 fs.writeFileSync(output, JSON.stringify(jsonI18n), "utf8");
