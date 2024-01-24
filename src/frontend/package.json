@@ -11,13 +11,16 @@
   "scripts": {
     "APP_DESK": "yarn workspace app-desk",
     "APP_E2E": "yarn workspace app-e2e",
+    "I18N": "yarn workspace packages-i18n",
     "app:dev": "yarn APP_DESK run dev",
     "app:start": "yarn APP_DESK run start",
     "app:build": "yarn APP_DESK run build",
     "app:test": "yarn APP_DESK run test",
     "ci:build": "yarn APP_DESK run build:ci",
     "e2e:test": "yarn APP_E2E run test",
-    "lint": "yarn APP_DESK run lint && yarn APP_E2E run lint"
+    "lint": "yarn APP_DESK run lint && yarn APP_E2E run lint",
+    "i18n:extract": "yarn I18N run extract-translation",
+    "i18n:deploy": "yarn I18N run format-deploy"
   },
   "resolutions": {
     "@types/node": "20.11.16",

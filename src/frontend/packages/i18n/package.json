@@ -1,0 +1,15 @@
+{
+  "name": "packages-i18n",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "extract-translation": "yarn extract-translation:desk",
+    "extract-translation:desk": "yarn i18next ../../apps/desk/**/*.{ts,tsx} -c ./i18next-parser.config.mjs -o ./locales/desk/translations-crowdin.json",
+    "format-deploy": "yarn format-deploy:desk",
+    "format-deploy:desk": "node ./format-deploy.mjs --app=desk --output=../../apps/desk/src/i18n/translations.json"
+  },
+  "dependencies": {
+    "i18next-parser": "8.8.0",
+    "yargs": "17.7.2"
+  }
+}

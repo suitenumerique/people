@@ -14,10 +14,17 @@ preserve_hierarchy: true
 #
 # Files configuration
 #
-files: [
- {
-  source : "/backend/locale/django.pot",
-  dest: "/backend.pot",
-  translation : "/backend/locale/%locale_with_underscore%/LC_MESSAGES/django.po"
- },
-]
+files:
+  [
+    {
+      source: "/backend/locale/django.pot",
+      dest: "/backend.pot",
+      translation: "/backend/locale/%locale_with_underscore%/LC_MESSAGES/django.po",
+    },
+    {
+      source: "/frontend/packages/i18n/locales/desk/translations-crowdin.json",
+      dest: "/desk.json",
+      translation: "/frontend/packages/i18n/locales/desk/%two_letters_code%/translations.json",
+      skip_untranslated_strings: true,
+    },
+  ]
