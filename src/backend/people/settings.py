@@ -522,3 +522,22 @@ class PreProduction(Production):
 
     nota bene: it should inherit from the Production environment.
     """
+
+
+class Demo(Production):
+    """
+    Demonstration environment settings
+
+    nota bene: it should inherit from the Production environment.
+    """
+
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:8082"]
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
