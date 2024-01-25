@@ -71,7 +71,7 @@ RUN mkdir /install && \
 
 
 # ---- mails ----
-FROM node:18 as mail-builder
+FROM node:20 as mail-builder
 
 COPY ./src/mail /mail/app
 
