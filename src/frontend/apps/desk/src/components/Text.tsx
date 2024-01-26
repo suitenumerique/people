@@ -1,7 +1,12 @@
 import { CSSProperties, ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
 
+import { tokens } from '@/cunningham';
+
 import { Box, BoxProps } from './Box';
+
+const { sizes } = tokens.themes.default.theme.font;
+type TextSizes = keyof typeof sizes;
 
 export interface TextProps extends BoxProps {
   as?: keyof Pick<
@@ -9,7 +14,8 @@ export interface TextProps extends BoxProps {
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
   $weight?: CSSProperties['fontWeight'];
-  $size?: CSSProperties['fontSize'];
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  $size?: TextSizes | (string & {});
   $theme?:
     | 'primary'
     | 'secondary'
@@ -33,10 +39,12 @@ export interface TextProps extends BoxProps {
 
 export const TextStyled = styled(Box)<TextProps>`
   ${({ $weight }) => $weight && `font-weight: ${$weight};`}
-  ${({ $size }) => $size && `font-size: ${$size};`}
-  ${({ $color }) => $color && `color: ${$color};`}
+  ${({ $size }) =>
+    $size &&
+    `font-size: ${$size in sizes ? sizes[$size as TextSizes] : $size};`}
   ${({ $theme, $variation }) =>
     `color: var(--c--theme--colors--${$theme}-${$variation});`}
+  ${({ $color }) => $color && `color: ${$color};`}
 `;
 
 export const Text = ({

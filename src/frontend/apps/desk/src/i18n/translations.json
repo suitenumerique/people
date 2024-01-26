@@ -2,6 +2,7 @@
   "en": { "translation": {} },
   "fr": {
     "translation": {
+      "Hello Desk !": "Bonjour Desk !",
       "Marianne Logo": "Logo Marianne",
       "Freedom Equality Fraternity Logo": "Logo Liberté Égalité Fraternité",
       "Desk Logo": "Logo Desk",
@@ -13,7 +14,15 @@
       "Cells icon": "Icône Cellules",
       "Language Icon": "Icône de langue",
       "Language": "Langue",
-      "Hello Desk !": "Bonjour Desk !",
+      "Search": "Rechercher",
+      "Favorite": "Favorite",
+      "Recent": "Récent",
+      "Contacts": "Contacts",
+      "Groups": "Groupes",
+      "Help": "Aide",
+      "Profile picture": "Photo de l'utilisateur",
+      "{{label}} button": "Bouton {{label}}",
+      "{{label}} icon": "Icône {{label}}",
       "Team name": "Nom de l’équipe",
       "Create Team": "Créer une équipe"
     }

@@ -13,6 +13,9 @@ import { default as IconDesk } from './assets/icon-desk.svg?url';
 import { default as IconFAQ } from './assets/icon-faq.svg?url';
 import { default as IconGouv } from './assets/icon-gouv.svg?url';
 import { default as IconMarianne } from './assets/icon-marianne.svg?url';
+import IconMyAccount from './assets/icon-my-account.png';
+
+export const HEADER_HEIGHT = '100px';
 
 const RedStripe = styled.div`
   position: absolute;
@@ -22,19 +25,22 @@ const RedStripe = styled.div`
   top: 0;
 `;
 
+const StyledHeader = styled.header`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: ${HEADER_HEIGHT};
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 4px #00000040;
+  z-index: 100;
+`;
+
 const Header = () => {
   const { t } = useTranslation();
 
   return (
-    <Box
-      className="mb-l"
-      as="header"
-      $height="100px"
-      $width="100%"
-      $direction="column"
-      $justify="center"
-      $css="box-shadow: 0 1px 4px #00000040;"
-    >
+    <StyledHeader>
       <RedStripe />
       <Box className="ml-l mr-l" $align="center" $justify="space-between">
         <Box $direction="column">
@@ -73,15 +79,28 @@ const Header = () => {
             </Button>
             <LanguagePicker />
           </Box>
-          <Button
-            aria-label={t('Access to the cells menu')}
-            icon={<Image priority src={IconCells} alt={t('Cells icon')} />}
-            color="tertiary"
-            className="c__button-no-bg p-0 m-0"
-          />
+          <Box>
+            <Box $direction="row" $align="center" $gap="1rem">
+              <Text $weight="bold">John Doe</Text>
+              <Image
+                width={58}
+                height={58}
+                priority
+                src={IconMyAccount}
+                alt={t(`Profile picture`)}
+                unoptimized
+              />
+            </Box>
+            <Button
+              aria-label={t('Access to the cells menu')}
+              icon={<Image priority src={IconCells} alt={t('Cells icon')} />}
+              color="tertiary"
+              className="c__button-no-bg p-0 m-0"
+            />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </StyledHeader>
   );
 };
 

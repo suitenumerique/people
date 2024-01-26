@@ -9,11 +9,13 @@ export interface BoxProps {
   $color?: CSSProperties['color'];
   $css?: string;
   $direction?: CSSProperties['flexDirection'];
+  $display?: CSSProperties['display'];
   $flex?: boolean;
   $gap?: CSSProperties['gap'];
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
   $position?: CSSProperties['position'];
+  $radius?: CSSProperties['borderRadius'];
   $width?: CSSProperties['width'];
 }
 
@@ -23,11 +25,13 @@ export const Box = styled('div')<BoxProps>`
   ${({ $background }) => $background && `background: ${$background};`}
   ${({ $color }) => $color && `color: ${$color};`}
   ${({ $direction }) => $direction && `flex-direction: ${$direction};`}
+  ${({ $display }) => $display && `display: ${$display};`}
   ${({ $flex }) => $flex === false && `display: block;`}
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
   ${({ $position }) => $position && `position: ${$position};`}
+  ${({ $radius }) => $radius && `border-radius: ${$radius};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $css }) => $css && `${$css};`}
 `;

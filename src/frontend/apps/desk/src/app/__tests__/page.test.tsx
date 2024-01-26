@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
-import { act, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
-import useAuthStore from '@/auth/useAuthStore';
 import { AppWrapper } from '@/tests/utils';
 
 import Page from '../page';
@@ -12,10 +11,8 @@ describe('Page', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    act(() => {
-      useAuthStore.setState({ authenticated: true });
-    });
-
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Desk');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Hello Desk!',
+    );
   });
 });

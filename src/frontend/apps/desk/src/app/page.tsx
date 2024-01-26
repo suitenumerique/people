@@ -5,9 +5,11 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useAuthStore from '@/auth/useAuthStore';
+import { Box } from '@/components';
 
-import Header from './Header/Header';
+import Header, { HEADER_HEIGHT } from './Header/Header';
 import { Teams } from './Teams';
+import { MENU_WIDTH, Menu } from './menu';
 
 export default function Home() {
   const { initAuth, authenticated, initialized } = useAuthStore();
@@ -28,8 +30,18 @@ export default function Home() {
   return (
     <main>
       <Header />
-      <h1>{t('Hello Desk !')}</h1>
-      <Teams />
+      <Box $css={`margin-top:${HEADER_HEIGHT}`}>
+        <Menu />
+        <Box
+          $css={`margin-left:${MENU_WIDTH}`}
+          $direction="column"
+          $height="300vh"
+          className="p-b"
+        >
+          <h1>{t('Hello Desk !')}</h1>
+          <Teams />
+        </Box>
+      </Box>
     </main>
   );
 }
