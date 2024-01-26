@@ -1,26 +1,72 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from "./common";
+import { keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto('/');
   await keyCloakSignIn(page);
 });
 
-test.describe("Menu", () => {
-  test("checks all the elements are visible", async ({ page }) => {
-    const menu = page.locator("menu").first();
+test.describe('Menu', () => {
+  const menuItems = [
+    { name: 'Search', isDefault: true },
+    { name: 'Favorite', isDefault: false },
+    { name: 'Recent', isDefault: false },
+    { name: 'Contacts', isDefault: false },
+    { name: 'Groups', isDefault: false },
+  ];
+  for (const { name, isDefault } of menuItems) {
+    test(`checks that ${name} menu item is displaying correctly`, async ({
+      page,
+    }) => {
+      const menu = page.locator('menu').first();
 
-    await expect(menu.getByLabel("Search button")).toBeVisible();
-    await expect(menu.getByLabel("Favoris button")).toBeVisible();
-    await expect(menu.getByLabel("Recent button")).toBeVisible();
-    await expect(menu.getByLabel("Contacts button")).toBeVisible();
-    await expect(menu.getByLabel("Groups button")).toBeVisible();
+      const buttonMenu = menu.getByLabel(`${name} button`);
+      await expect(buttonMenu).toBeVisible();
+      await buttonMenu.hover();
+      await expect(menu.getByLabel('tooltip')).toHaveText(name);
 
-    await menu.getByLabel("Search button").hover();
-    await expect(menu.getByLabel("tooltip")).toHaveText("Search");
+      // Checks the tooltip is with inactive color
+      await expect(menu.getByLabel('tooltip')).toHaveCSS(
+        'background-color',
+        isDefault ? 'rgb(255, 255, 255)' : 'rgb(22, 22, 22)',
+      );
 
-    await menu.getByLabel("Contacts button").hover();
-    await expect(menu.getByLabel("tooltip")).toHaveText("Contacts");
-  });
+      await buttonMenu.click();
+
+      // Checks the tooltip has active color
+      await buttonMenu.hover();
+      await expect(menu.getByLabel('tooltip')).toHaveCSS(
+        'background-color',
+        'rgb(255, 255, 255)',
+      );
+    });
+
+    test(`checks that ${name} menu item is routing correctly`, async ({
+      page,
+    }) => {
+      await expect(
+        page.locator('h1').first().getByText('Hello Desk !'),
+      ).toBeVisible();
+
+      const menu = page.locator('menu').first();
+
+      const buttonMenu = menu.getByLabel(`${name} button`);
+      await buttonMenu.click();
+
+      // eslint-disable-next-line playwright/no-conditional-in-test
+      if (isDefault) {
+        await expect(
+          page.locator('h1').first().getByText('Hello Desk !'),
+        ).toBeVisible();
+      } else {
+        await expect(
+          page.locator('h1').first().getByText('Hello Desk !'),
+        ).toBeHidden();
+
+        const reg = new RegExp(name.toLowerCase());
+        await expect(page).toHaveURL(reg);
+      }
+    });
+  }
 });

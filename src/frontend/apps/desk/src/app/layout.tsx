@@ -5,7 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { useCunninghamTheme } from '@/cunningham';
+
 import '@/i18n/initI18n';
+import InnerLayout from './InnerLayout';
 
 import './globals.css';
 
@@ -23,7 +25,9 @@ export default function RootLayout({
       <body suppressHydrationWarning={process.env.NODE_ENV === 'development'}>
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools />
-          <CunninghamProvider theme={theme}>{children}</CunninghamProvider>
+          <CunninghamProvider theme={theme}>
+            <InnerLayout>{children}</InnerLayout>
+          </CunninghamProvider>
         </QueryClientProvider>
       </body>
     </html>

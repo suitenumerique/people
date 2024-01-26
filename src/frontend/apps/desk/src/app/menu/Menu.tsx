@@ -25,12 +25,12 @@ export const Menu = () => {
       $justify="space-between"
       $direction="column"
     >
-      <Box $direction="column">
-        <MenuItem Icon={IconSearch} label={t('Search')} />
-        <MenuItem Icon={IconFavorite} label={t('Favorite')} />
-        <MenuItem Icon={IconRecent} label={t('Recent')} />
-        <MenuItem Icon={IconContacts} label={t('Contacts')} />
-        <MenuItem Icon={IconGroup} label={t('Groups')} />
+      <Box className="pt-b" $direction="column" $gap="0.8rem">
+        <MenuItem Icon={IconSearch} label={t('Search')} href="/" />
+        <MenuItem Icon={IconFavorite} label={t('Favorite')} href="/favorite" />
+        <MenuItem Icon={IconRecent} label={t('Recent')} href="/recent" />
+        <MenuItem Icon={IconContacts} label={t('Contacts')} href="/contacts" />
+        <MenuItem Icon={IconGroup} label={t('Groups')} href="/groups" />
       </Box>
     </Box>
   );
