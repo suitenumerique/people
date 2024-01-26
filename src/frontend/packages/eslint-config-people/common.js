@@ -48,6 +48,7 @@ const globalRules = {
       ],
       pathGroupsExcludedImportTypes: ['builtin'],
       'newlines-between': 'always',
+      warnOnUnassignedImports: true,
     },
   ],
   'no-alert': 'error',

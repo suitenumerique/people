@@ -21,4 +21,5 @@ module.exports = {
       plugins: ['playwright'],
     },
   ],
+  ignorePatterns: ['node_modules'],
 };

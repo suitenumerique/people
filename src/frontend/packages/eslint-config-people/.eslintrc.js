@@ -17,4 +17,5 @@ module.exports = {
     sourceType: 'module',
     ecmaVersion: 'latest',
   },
+  ignorePatterns: ['node_modules'],
 };

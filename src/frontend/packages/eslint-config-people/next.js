@@ -8,6 +8,11 @@ module.exports = {
     'plugin:@tanstack/eslint-plugin-query/recommended',
     'plugin:jsx-a11y/recommended',
   ],
+  parserOptions: {
+    babelOptions: {
+      presets: [require.resolve('next/babel')],
+    },
+  },
   settings: {
     'jsx-a11y': {
       polymorphicPropName: 'as',
@@ -26,4 +31,5 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'error',
   },
   overrides: common.eslintTS,
+  ignorePatterns: ['node_modules'],
 };

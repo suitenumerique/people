@@ -4,10 +4,10 @@ import { CunninghamProvider } from '@openfun/cunningham-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import './globals.css';
-
 import { useCunninghamTheme } from '@/cunningham';
 import '@/i18n/initI18n';
+
+import './globals.css';
 
 const queryClient = new QueryClient();
 
