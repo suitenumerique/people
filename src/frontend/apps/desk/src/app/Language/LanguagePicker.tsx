@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
 
-import { default as IconLanguage } from './assets/icon-language.svg';
+import IconLanguage from './assets/icon-language.svg?url';
 
 const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   flex-shrink: 0;

@@ -8,11 +8,11 @@ import { Box, Text } from '@/components/';
 
 import { LanguagePicker } from '../Language/';
 
-import { default as IconCells } from './assets/icon-cells.svg';
-import { default as IconDesk } from './assets/icon-desk.svg';
-import { default as IconFAQ } from './assets/icon-faq.svg';
-import { default as IconGouv } from './assets/icon-gouv.svg';
-import { default as IconMarianne } from './assets/icon-marianne.svg';
+import { default as IconCells } from './assets/icon-cells.svg?url';
+import { default as IconDesk } from './assets/icon-desk.svg?url';
+import { default as IconFAQ } from './assets/icon-faq.svg?url';
+import { default as IconGouv } from './assets/icon-gouv.svg?url';
+import { default as IconMarianne } from './assets/icon-marianne.svg?url';
 
 const RedStripe = styled.div`
   position: absolute;

@@ -8,9 +8,23 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const config: Config = {
   coverageProvider: 'v8',
-  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testEnvironment: 'jsdom',
 };
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(config);
+const jestConfig = async () => {
+  const nextJestConfig = await createJestConfig(config)();
+  return {
+    ...nextJestConfig,
+    moduleNameMapper: {
+      '\\.svg$': '<rootDir>/jest/mocks/svg.js',
+      '^.+\\.svg\\?url$': `<rootDir>/jest/mocks/fileMock.js`,
+      ...nextJestConfig.moduleNameMapper,
+    },
+  };
+};
+
+export default jestConfig;
