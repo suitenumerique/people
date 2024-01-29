@@ -2,6 +2,7 @@
   "extends": [
     "github>numerique-gouv/renovate-configuration"
   ],
+  "dependencyDashboard": true,
   "packageRules": [
     {
       "enabled": false,
