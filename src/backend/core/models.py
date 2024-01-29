@@ -289,6 +289,12 @@ class Identity(BaseModel):
         main_str = "[main]" if self.is_main else ""
         return f"{self.email:s}{main_str:s}"
 
+    def save(self, *args, **kwargs):
+        """Ensure users always have one and only one main identity."""
+        super().save(*args, **kwargs)
+        if self.is_main is True:
+            self.user.identities.exclude(id=self.id).update(is_main=False)
+
     def clean(self):
         """Normalize the email field and clean the 'is_main' field."""
         if self.email:
@@ -301,12 +307,6 @@ class Identity(BaseModel):
                     {"is_main": "A user should have one and only one main identity."}
                 )
         super().clean()
-
-    def save(self, *args, **kwargs):
-        """Ensure users always have one and only one main identity."""
-        super().save(*args, **kwargs)
-        if self.is_main is True:
-            self.user.identities.exclude(id=self.id).update(is_main=False)
 
 
 class Team(BaseModel):

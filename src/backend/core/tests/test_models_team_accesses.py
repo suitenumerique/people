@@ -227,7 +227,7 @@ def test_models_team_access_get_abilities_for_member_of_administrator():
 
 
 def test_models_team_access_get_abilities_for_member_of_member_user(
-    django_assert_num_queries
+    django_assert_num_queries,
 ):
     """Check abilities of member access for the member of a team."""
     access = factories.TeamAccessFactory(role="member")
