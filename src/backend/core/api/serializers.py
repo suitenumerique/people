@@ -36,13 +36,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = [
             "id",
+            "email",
             "data",
             "language",
             "timezone",
             "is_device",
             "is_staff",
         ]
-        read_only_fields = ["id", "data", "is_device", "is_staff"]
+        read_only_fields = ["id", "email", "data", "is_device", "is_staff"]
 
     def get_data(self, user) -> dict:
         """Return contact data for the user."""

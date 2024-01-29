@@ -217,11 +217,13 @@ class Base(Configuration):
             "rest_framework.parsers.JSONParser",
             "nested_multipart_parser.drf.DrfNestedParser",
         ],
+        "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
         "EXCEPTION_HANDLER": "core.api.exception_handler",
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
         "PAGE_SIZE": 20,
         "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
         "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+        "DEFAULT_THROTTLE_RATES": {"sustained": "150/hour", "burst": "20/minute"},
     }
 
     SPECTACULAR_SETTINGS = {

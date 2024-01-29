@@ -1,11 +1,15 @@
 """
 Test users API endpoints in the People core app.
 """
+from unittest import mock
+
 import pytest
+from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories, models
 from core.api import serializers
+from core.api.viewsets import Pagination
 
 from .utils import OIDCToken
 
@@ -17,13 +21,15 @@ def test_api_users_list_anonymous():
     factories.UserFactory()
     client = APIClient()
     response = client.get("/api/v1.0/users/")
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 401
+    assert "Authentication credentials were not provided." in response.content.decode(
+        "utf-8"
+    )
 
 
 def test_api_users_list_authenticated():
     """
-    Authenticated users should not be able to list users.
+    Authenticated users should be able to list all users.
     """
     identity = factories.IdentityFactory()
     jwt_token = OIDCToken.for_user(identity.user)
@@ -32,8 +38,184 @@ def test_api_users_list_authenticated():
     response = APIClient().get(
         "/api/v1.0/users/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 200
+    assert len(response.json()["results"]) == 3
+
+
+def test_api_users_authenticated_list_by_email():
+    """
+    Authenticated users should be able to search users with a case-insensitive and
+    partial query on the email.
+    """
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    dave = factories.UserFactory(email="david.bowman@work.com")
+    nicole = factories.UserFactory(email="nicole_foole@work.com")
+    frank = factories.UserFactory(email="frank_poole@work.com")
+    factories.UserFactory(email="heywood_floyd@work.com")
+
+    # Full query should work
+    response = APIClient().get(
+        "/api/v1.0/users/?q=david.bowman@work.com",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids[0] == str(dave.id)
+
+    # Partial query should work
+    response = APIClient().get(
+        "/api/v1.0/users/?q=fran", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids[0] == str(frank.id)
+
+    # Result that matches a trigram twice ranks better than result that matches once
+    response = APIClient().get(
+        "/api/v1.0/users/?q=ole", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    # "Nicole Foole" matches twice on "ole"
+    assert user_ids == [str(nicole.id), str(frank.id)]
+
+    # Even with a low similarity threshold, query should match expected emails
+    response = APIClient().get(
+        "/api/v1.0/users/?q=ool", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(nicole.id), str(frank.id)]
+
+
+def test_api_users_authenticated_list_uppercase_content():
+    """Upper case content should be found by lower case query."""
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    dave = factories.UserFactory(email="DAVID.BOWMAN@INTENSEWORK.COM")
+
+    # Unaccented full address
+    response = APIClient().get(
+        "/api/v1.0/users/?q=david.bowman@intensework.com",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(dave.id)]
+
+    # Partial query
+    response = APIClient().get(
+        "/api/v1.0/users/?q=david", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(dave.id)]
+
+
+def test_api_users_list_authenticated_capital_query():
+    """Upper case query should find lower case content."""
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    dave = factories.UserFactory(email="david.bowman@work.com")
+
+    # Full uppercase query
+    response = APIClient().get(
+        "/api/v1.0/users/?q=DAVID.BOWMAN@WORK.COM",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(dave.id)]
+
+    # Partial uppercase email
+    response = APIClient().get(
+        "/api/v1.0/users/?q=DAVID", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(dave.id)]
+
+
+def test_api_contacts_list_authenticated_accented_query():
+    """Accented content should be found by unaccented query."""
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    helene = factories.UserFactory(email="helene.bowman@work.com")
+
+    # Accented full query
+    response = APIClient().get(
+        "/api/v1.0/users/?q=hélène.bowman@work.com",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(helene.id)]
+
+    # Unaccented partial email
+    response = APIClient().get(
+        "/api/v1.0/users/?q=hélène", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(helene.id)]
+
+
+@mock.patch.object(Pagination, "get_page_size", return_value=3)
+def test_api_users_list_pagination(
+    _mock_page_size,
+):
+    """Pagination should work as expected."""
+    identity = factories.IdentityFactory()
+    user = identity.user
+    jwt_token = OIDCToken.for_user(user)
+
+    factories.UserFactory.create_batch(4)
+
+    # Get page 1
+    response = APIClient().get(
+        "/api/v1.0/users/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == HTTP_200_OK
+    content = response.json()
+
+    assert content["count"] == 5
+    assert len(content["results"]) == 3
+    assert content["next"] == "http://testserver/api/v1.0/users/?page=2"
+    assert content["previous"] is None
+
+    # Get page 2
+    response = APIClient().get(
+        "/api/v1.0/users/?page=2", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    )
+
+    assert response.status_code == HTTP_200_OK
+    content = response.json()
+
+    assert content["count"] == 5
+    assert content["next"] is None
+    assert content["previous"] == "http://testserver/api/v1.0/users/"
+
+    assert len(content["results"]) == 2
 
 
 def test_api_users_retrieve_me_anonymous():
@@ -66,6 +248,7 @@ def test_api_users_retrieve_me_authenticated():
     assert response.status_code == 200
     assert response.json() == {
         "id": str(user.id),
+        "email": str(user.email),
         "language": user.language,
         "timezone": str(user.timezone),
         "is_device": False,
@@ -128,8 +311,10 @@ def test_api_users_create_anonymous():
             "password": "mypassword",
         },
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 401
+    assert "Authentication credentials were not provided." in response.content.decode(
+        "utf-8"
+    )
     assert models.User.objects.exists() is False
 
 
@@ -148,8 +333,8 @@ def test_api_users_create_authenticated():
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 405
+    assert response.json() == {"detail": 'Method "POST" not allowed.'}
     assert models.User.objects.exclude(id=user.id).exists() is False
 
 
@@ -322,7 +507,7 @@ def test_api_users_delete_list_anonymous():
     client = APIClient()
     response = client.delete("/api/v1.0/users/")
 
-    assert response.status_code == 404
+    assert response.status_code == 401
     assert models.User.objects.count() == 2
 
 
@@ -337,7 +522,7 @@ def test_api_users_delete_list_authenticated():
         "/api/v1.0/users/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 404
+    assert response.status_code == 405
     assert models.User.objects.count() == 3
 
 
