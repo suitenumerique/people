@@ -20,7 +20,7 @@
     "lint": "yarn APP_DESK run lint && yarn APP_E2E run lint"
   },
   "resolutions": {
-    "@types/node": "20.10.8",
+    "@types/node": "20.11.10",
     "typescript": "5.3.3"
   }
 }
