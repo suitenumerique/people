@@ -180,8 +180,8 @@ class UserViewSet(
 
     GET /api/users/&q=query
         Return a list of users whose email matches the query. Similarity is
-        calculated using trigram similarity, allowing for partial, case
-        insensitive matches and accentuated queries.
+        calculated using trigram similarity, allowing for partial,
+        case-insensitive matches and accented queries.
     """
 
     permission_classes = [permissions.IsSelf]
@@ -203,7 +203,7 @@ class UserViewSet(
             # Search by case-insensitive and accent-insensitive trigram similarity
             if query := self.request.GET.get("q", ""):
                 similarity = TrigramSimilarity(
-                    Func("email", function="unaccent"),
+                    Func("identities__email", function="unaccent"),
                     Func(Value(query), function="unaccent"),
                 )
                 queryset = (

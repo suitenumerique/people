@@ -4,7 +4,12 @@ Test users API endpoints in the People core app.
 from unittest import mock
 
 import pytest
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_405_METHOD_NOT_ALLOWED,
+)
 from rest_framework.test import APIClient
 
 from core import factories, models
@@ -21,7 +26,7 @@ def test_api_users_list_anonymous():
     factories.UserFactory()
     client = APIClient()
     response = client.get("/api/v1.0/users/")
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert "Authentication credentials were not provided." in response.content.decode(
         "utf-8"
     )
@@ -38,7 +43,7 @@ def test_api_users_list_authenticated():
     response = APIClient().get(
         "/api/v1.0/users/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     assert len(response.json()["results"]) == 3
 
 
@@ -51,10 +56,10 @@ def test_api_users_authenticated_list_by_email():
     factories.IdentityFactory(user=user, email=user.email)
     jwt_token = OIDCToken.for_user(user)
 
-    dave = factories.UserFactory(email="david.bowman@work.com")
-    nicole = factories.UserFactory(email="nicole_foole@work.com")
-    frank = factories.UserFactory(email="frank_poole@work.com")
-    factories.UserFactory(email="heywood_floyd@work.com")
+    dave = factories.IdentityFactory(email="david.bowman@work.com")
+    nicole = factories.IdentityFactory(email="nicole_foole@work.com")
+    frank = factories.IdentityFactory(email="frank_poole@work.com")
+    factories.IdentityFactory(email="heywood_floyd@work.com")
 
     # Full query should work
     response = APIClient().get(
@@ -64,35 +69,61 @@ def test_api_users_authenticated_list_by_email():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(dave.id)
+    assert user_ids[0] == str(dave.user.id)
 
     # Partial query should work
     response = APIClient().get(
         "/api/v1.0/users/?q=fran", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(frank.id)
+    assert user_ids[0] == str(frank.user.id)
 
     # Result that matches a trigram twice ranks better than result that matches once
     response = APIClient().get(
         "/api/v1.0/users/?q=ole", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
     # "Nicole Foole" matches twice on "ole"
-    assert user_ids == [str(nicole.id), str(frank.id)]
+    assert user_ids == [str(nicole.user.id), str(frank.user.id)]
 
     # Even with a low similarity threshold, query should match expected emails
     response = APIClient().get(
         "/api/v1.0/users/?q=ool", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(nicole.id), str(frank.id)]
+    assert user_ids == [str(nicole.user.id), str(frank.user.id)]
+
+
+def test_api_users_authenticated_list_multiplie_identities_user():
+    """
+    Authenticated users should be able to search users with a case-insensitive and
+    partial query on the email.
+    """
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    dave = factories.UserFactory()
+    factories.IdentityFactory(user=dave, email="david.bowman@work.com")
+    factories.IdentityFactory(user=dave, email="david.bowman@fun.fr")
+
+    # Full query should work
+    response = APIClient().get(
+        "/api/v1.0/users/?q=david.bowman@work.com",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    # A single user is returned, despite similarity matching both emails
+    assert response.json()["count"] == 1
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids[0] == str(dave.id)
 
 
 def test_api_users_authenticated_list_uppercase_content():
@@ -101,7 +132,7 @@ def test_api_users_authenticated_list_uppercase_content():
     factories.IdentityFactory(user=user, email=user.email)
     jwt_token = OIDCToken.for_user(user)
 
-    dave = factories.UserFactory(email="DAVID.BOWMAN@INTENSEWORK.COM")
+    dave = factories.IdentityFactory(email="DAVID.BOWMAN@INTENSEWORK.COM")
 
     # Unaccented full address
     response = APIClient().get(
@@ -109,18 +140,18 @@ def test_api_users_authenticated_list_uppercase_content():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.id)]
+    assert user_ids == [str(dave.user.id)]
 
     # Partial query
     response = APIClient().get(
         "/api/v1.0/users/?q=david", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.id)]
+    assert user_ids == [str(dave.user.id)]
 
 
 def test_api_users_list_authenticated_capital_query():
@@ -129,7 +160,7 @@ def test_api_users_list_authenticated_capital_query():
     factories.IdentityFactory(user=user, email=user.email)
     jwt_token = OIDCToken.for_user(user)
 
-    dave = factories.UserFactory(email="david.bowman@work.com")
+    dave = factories.IdentityFactory(email="david.bowman@work.com")
 
     # Full uppercase query
     response = APIClient().get(
@@ -137,18 +168,18 @@ def test_api_users_list_authenticated_capital_query():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.id)]
+    assert user_ids == [str(dave.user.id)]
 
     # Partial uppercase email
     response = APIClient().get(
         "/api/v1.0/users/?q=DAVID", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.id)]
+    assert user_ids == [str(dave.user.id)]
 
 
 def test_api_contacts_list_authenticated_accented_query():
@@ -157,7 +188,7 @@ def test_api_contacts_list_authenticated_accented_query():
     factories.IdentityFactory(user=user, email=user.email)
     jwt_token = OIDCToken.for_user(user)
 
-    helene = factories.UserFactory(email="helene.bowman@work.com")
+    helene = factories.IdentityFactory(email="helene.bowman@work.com")
 
     # Accented full query
     response = APIClient().get(
@@ -165,18 +196,18 @@ def test_api_contacts_list_authenticated_accented_query():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(helene.id)]
+    assert user_ids == [str(helene.user.id)]
 
     # Unaccented partial email
     response = APIClient().get(
         "/api/v1.0/users/?q=hélène", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(helene.id)]
+    assert user_ids == [str(helene.user.id)]
 
 
 @mock.patch.object(Pagination, "get_page_size", return_value=3)
@@ -223,7 +254,7 @@ def test_api_users_retrieve_me_anonymous():
     factories.UserFactory.create_batch(2)
     client = APIClient()
     response = client.get("/api/v1.0/users/me/")
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
@@ -245,7 +276,7 @@ def test_api_users_retrieve_me_authenticated():
         "/api/v1.0/users/me/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "id": str(user.id),
         "email": str(user.email),
@@ -263,7 +294,7 @@ def test_api_users_retrieve_anonymous():
     user = factories.UserFactory()
     response = client.get(f"/api/v1.0/users/{user.id!s}/")
 
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
@@ -281,7 +312,7 @@ def test_api_users_retrieve_authenticated_self():
     response = APIClient().get(
         f"/api/v1.0/users/{user.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert response.json() == {"detail": 'Method "GET" not allowed.'}
 
 
@@ -298,7 +329,7 @@ def test_api_users_retrieve_authenticated_other():
     response = APIClient().get(
         f"/api/v1.0/users/{other_user.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert response.json() == {"detail": 'Method "GET" not allowed.'}
 
 
@@ -311,7 +342,7 @@ def test_api_users_create_anonymous():
             "password": "mypassword",
         },
     )
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert "Authentication credentials were not provided." in response.content.decode(
         "utf-8"
     )
@@ -333,7 +364,7 @@ def test_api_users_create_authenticated():
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert response.json() == {"detail": 'Method "POST" not allowed.'}
     assert models.User.objects.exclude(id=user.id).exists() is False
 
@@ -351,7 +382,7 @@ def test_api_users_update_anonymous():
         format="json",
     )
 
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
@@ -383,7 +414,7 @@ def test_api_users_update_authenticated_self():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     user.refresh_from_db()
     user_values = dict(serializers.UserSerializer(instance=user).data)
     for key, value in user_values.items():
@@ -409,7 +440,7 @@ def test_api_users_update_authenticated_other():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 403
+    assert response.status_code == HTTP_403_FORBIDDEN
     user.refresh_from_db()
     user_values = dict(serializers.UserSerializer(instance=user).data)
     for key, value in user_values.items():
@@ -431,7 +462,7 @@ def test_api_users_patch_anonymous():
             {key: new_value},
             format="json",
         )
-        assert response.status_code == 401
+        assert response.status_code == HTTP_401_UNAUTHORIZED
         assert response.json() == {
             "detail": "Authentication credentials were not provided."
         }
@@ -463,7 +494,7 @@ def test_api_users_patch_authenticated_self():
             format="json",
             HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTP_200_OK
 
     user.refresh_from_db()
     user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -492,7 +523,7 @@ def test_api_users_patch_authenticated_other():
             format="json",
             HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
-        assert response.status_code == 403
+        assert response.status_code == HTTP_403_FORBIDDEN
 
     user.refresh_from_db()
     user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -507,7 +538,7 @@ def test_api_users_delete_list_anonymous():
     client = APIClient()
     response = client.delete("/api/v1.0/users/")
 
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert models.User.objects.count() == 2
 
 
@@ -522,7 +553,7 @@ def test_api_users_delete_list_authenticated():
         "/api/v1.0/users/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert models.User.objects.count() == 3
 
 
@@ -532,7 +563,7 @@ def test_api_users_delete_anonymous():
 
     response = APIClient().delete(f"/api/v1.0/users/{user.id!s}/")
 
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert models.User.objects.count() == 1
 
 
@@ -548,7 +579,7 @@ def test_api_users_delete_authenticated():
         f"/api/v1.0/users/{other_user.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
 
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert models.User.objects.count() == 2
 
 
@@ -562,5 +593,5 @@ def test_api_users_delete_self():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 405
+    assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert models.User.objects.count() == 1
