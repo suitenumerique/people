@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
 
-import { LanguagePicker } from '../Language/';
+import { LanguagePicker } from '../language/';
 
 import { default as IconCells } from './assets/icon-cells.svg?url';
 import { default as IconDesk } from './assets/icon-desk.svg?url';
@@ -36,13 +36,13 @@ const StyledHeader = styled.header`
   z-index: 100;
 `;
 
-const Header = () => {
+export const Header = () => {
   const { t } = useTranslation();
 
   return (
     <StyledHeader>
       <RedStripe />
-      <Box className="ml-l mr-l" $align="center" $justify="space-between">
+      <Box className="ml-bx mr-bx" $align="center" $justify="space-between">
         <Box $direction="column">
           <Image priority src={IconMarianne} alt={t('Marianne Logo')} />
           <Box $align="center" $gap="6rem">
@@ -103,5 +103,3 @@ const Header = () => {
     </StyledHeader>
   );
 };
-
-export default Header;

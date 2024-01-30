@@ -3,8 +3,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@/components';
-
-import { Teams } from './Teams';
+import { Teams } from '@/features';
 
 export default function Home() {
   const { t } = useTranslation();

@@ -3,9 +3,8 @@ import { useEffect } from 'react';
 
 import useAuthStore from '@/auth/useAuthStore';
 import { Box } from '@/components';
-
-import { HEADER_HEIGHT, Header } from './header';
-import { Menu } from './menu';
+import { HEADER_HEIGHT, Header } from '@/features/header';
+import { Menu } from '@/features/menu';
 
 export default function InnerLayout({
   children,
