@@ -8,8 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
-from core import factories, models
-from core.api import serializers
+from core import factories
 
 from ..utils import OIDCToken
 
@@ -116,3 +115,59 @@ def test_api_teams_list_authenticated_distinct():
     content = response.json()
     assert len(content["results"]) == 1
     assert content["results"][0]["id"] == str(team.id)
+
+
+def test_api_teams_order():
+    """
+    Test that the endpoint GET teams is sorted in 'created_at' descending order by default.
+    """
+    identity = factories.IdentityFactory()
+    user = identity.user
+    jwt_token = OIDCToken.for_user(user)
+
+    team_ids = [
+        str(team.id) for team in factories.TeamFactory.create_batch(5, users=[user])
+    ]
+
+    response = APIClient().get(
+        "/api/v1.0/teams/",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+    response_team_ids = [team["id"] for team in response_data["results"]]
+
+    team_ids.reverse()
+    assert (
+        response_team_ids == team_ids
+    ), "created_at values are not sorted from newest to oldest"
+
+
+def test_api_teams_order_param():
+    """
+    Test that the 'created_at' field is sorted in ascending order
+    when the 'ordering' query parameter is set.
+    """
+    identity = factories.IdentityFactory()
+    user = identity.user
+    jwt_token = OIDCToken.for_user(user)
+
+    team_ids = [
+        str(team.id) for team in factories.TeamFactory.create_batch(5, users=[user])
+    ]
+
+    response = APIClient().get(
+        "/api/v1.0/teams/?ordering=created_at",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    response_team_ids = [team["id"] for team in response_data["results"]]
+
+    assert (
+        response_team_ids == team_ids
+    ), "created_at values are not sorted from oldest to newest"

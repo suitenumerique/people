@@ -5,6 +5,7 @@ from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
 from rest_framework import (
     decorators,
     exceptions,
+    filters,
     mixins,
     pagination,
     response,
@@ -244,6 +245,9 @@ class TeamViewSet(
 
     permission_classes = [permissions.AccessPermission]
     serializer_class = serializers.TeamSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created_at"]
+    ordering = ["-created_at"]
     queryset = models.Team.objects.all()
 
     def get_queryset(self):
