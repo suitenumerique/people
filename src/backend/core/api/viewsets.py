@@ -1,6 +1,6 @@
 """API endpoints"""
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Func, OuterRef, Q, Subquery, Value
+from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
 
 from rest_framework import (
     decorators,
@@ -202,9 +202,11 @@ class UserViewSet(
 
             # Search by case-insensitive and accent-insensitive trigram similarity
             if query := self.request.GET.get("q", ""):
-                similarity = TrigramSimilarity(
-                    Func("identities__email", function="unaccent"),
-                    Func(Value(query), function="unaccent"),
+                similarity = Max(
+                    TrigramSimilarity(
+                        Func("identities__email", function="unaccent"),
+                        Func(Value(query), function="unaccent"),
+                    )
                 )
                 queryset = (
                     queryset.annotate(similarity=similarity)

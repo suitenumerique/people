@@ -100,10 +100,9 @@ def test_api_users_authenticated_list_by_email():
     assert user_ids == [str(nicole.user.id), str(frank.user.id)]
 
 
-def test_api_users_authenticated_list_multiplie_identities_user():
+def test_api_users_authenticated_list_multiple_identities_single_user():
     """
-    Authenticated users should be able to search users with a case-insensitive and
-    partial query on the email.
+    User with multiple identities should appear only once in results.
     """
     user = factories.UserFactory(email="tester@ministry.fr")
     factories.IdentityFactory(user=user, email=user.email)
@@ -122,8 +121,36 @@ def test_api_users_authenticated_list_multiplie_identities_user():
     assert response.status_code == HTTP_200_OK
     # A single user is returned, despite similarity matching both emails
     assert response.json()["count"] == 1
+    assert response.json()["results"][0]["id"] == str(dave.id)
+
+
+def test_api_users_authenticated_list_multiple_identities_best_result():
+    """
+    User with multiple identities should be ranked
+    on their best matching identities.
+    """
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email)
+    jwt_token = OIDCToken.for_user(user)
+
+    dave = factories.UserFactory()
+    davina = factories.UserFactory()
+    prudence = factories.UserFactory()
+    factories.IdentityFactory(user=dave, email="david.bowman@work.com")
+    factories.IdentityFactory(user=dave, email="babibou@ehehe.com")
+    factories.IdentityFactory(user=davina, email="davina.bowan@work.com")
+    factories.IdentityFactory(user=prudence, email="prudence.crandall@work.com")
+
+    # Full query should work
+    response = APIClient().get(
+        "/api/v1.0/users/?q=david.bowman@work.com",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 3
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(dave.id)
+    assert user_ids == [str(dave.id), str(davina.id), str(prudence.id)]
 
 
 def test_api_users_authenticated_list_uppercase_content():
