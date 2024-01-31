@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p "$(dirname -- "${BASH_SOURCE[0]}")/../.git/hooks/"
 PRE_COMMIT_FILE="$(dirname -- "${BASH_SOURCE[0]}")/../.git/hooks/pre-commit"
 
 cat <<'EOF' >$PRE_COMMIT_FILE
@@ -16,7 +17,7 @@ exec </dev/tty
 
 for d in $DIRS; do
 	# find files containing secrets that should be encrypted
-	for f in $(find "${d}" -type f -regex ".*enc.*"); do
+	for f in $(find "${d}" -type f -regex ".*\.enc\..*"); do
 		if ! $(grep -q "unencrypted_suffix" $f); then
 			printf '\xF0\x9F\x92\xA5 '
 			echo "File $f has non encrypted secrets!"
