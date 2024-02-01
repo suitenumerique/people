@@ -124,10 +124,10 @@ def test_api_users_authenticated_list_multiple_identities_single_user():
     assert response.json()["results"][0]["id"] == str(dave.id)
 
 
-def test_api_users_authenticated_list_multiple_identities_best_result():
+def test_api_users_authenticated_list_multiple_identities_multiple_users():
     """
     User with multiple identities should be ranked
-    on their best matching identities.
+    on their best matching identity.
     """
     user = factories.UserFactory(email="tester@ministry.fr")
     factories.IdentityFactory(user=user, email=user.email)
