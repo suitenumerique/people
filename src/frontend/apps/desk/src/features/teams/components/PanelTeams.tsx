@@ -8,9 +8,13 @@ import { useCunninghamTheme } from '@/cunningham';
 
 import { useTeams } from '../api/useTeams';
 import IconNone from '../assets/icon-none.svg';
+import { useTeamStore } from '../store/useTeamsStore';
 
 export const PanelTeams = () => {
-  const { data, isPending, isError } = useTeams();
+  const ordering = useTeamStore((state) => state.ordering);
+  const { data, isPending, isError } = useTeams({
+    ordering,
+  });
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
 
@@ -48,7 +52,7 @@ export const PanelTeams = () => {
   }
 
   return (
-    <Box as="ul" $gap="1rem" className="p-s mt-t">
+    <Box as="ul" $gap="1rem" className="p-s mt-t" $css="overflow:auto;">
       {data?.results.map((team) => (
         <Box
           as="li"

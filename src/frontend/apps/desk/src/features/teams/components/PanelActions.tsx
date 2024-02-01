@@ -7,9 +7,11 @@ import { Box } from '@/components';
 
 import { default as IconAdd } from '../assets/icon-add.svg?url';
 import { default as IconSort } from '../assets/icon-sort.svg?url';
+import { useTeamStore } from '../store/useTeamsStore';
 
 export const PanelActions = () => {
   const { t } = useTranslation();
+  const changeOrdering = useTeamStore((state) => state.changeOrdering);
 
   return (
     <Box
@@ -26,6 +28,7 @@ export const PanelActions = () => {
         icon={<Image priority src={IconSort} alt={t('Sort teams icon')} />}
         color="tertiary"
         className="c__button-no-bg p-0 m-0"
+        onClick={changeOrdering}
       />
       <Button
         aria-label={t('Add a team')}

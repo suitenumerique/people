@@ -34,7 +34,6 @@ export function useCreateTeam() {
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_TEAM],
-        exact: true,
       });
     },
   });

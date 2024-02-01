@@ -1,1 +1,2 @@
-export * from './components/Panel';
+export * from './components';
+export * from './api';

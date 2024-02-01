@@ -20,13 +20,24 @@ interface TeamResponse {
   accesses: Access[];
 }
 
+export enum TeamsOrdering {
+  BY_CREATED_ON = 'created_at',
+  BY_CREATED_ON_DESC = '-created_at',
+}
+
+export type TeamsParams = {
+  ordering?: TeamsOrdering;
+};
+
 type TeamsResponse = APIList<TeamResponse>;
 export interface TeamsResponseError {
   detail: string;
 }
 
-export const getTeams = async () => {
-  const response = await fetchAPI(`teams/`);
+export const getTeams = async (props?: TeamsParams) => {
+  const response = await fetchAPI(
+    `teams/${props?.ordering ? `?ordering=${props.ordering}` : ''}`,
+  );
 
   if (!response.ok) {
     throw new Error(`Couldn't fetch teams: ${response.statusText}`);
@@ -37,6 +48,7 @@ export const getTeams = async () => {
 export const KEY_LIST_TEAM = 'teams';
 
 export function useTeams(
+  param?: TeamsParams,
   queryConfig?: UseQueryOptions<
     TeamsResponse,
     TeamsResponseError,
@@ -44,8 +56,8 @@ export function useTeams(
   >,
 ) {
   return useQuery<TeamsResponse, TeamsResponseError, TeamsResponse>({
-    queryKey: [KEY_LIST_TEAM],
-    queryFn: getTeams,
+    queryKey: [KEY_LIST_TEAM, param],
+    queryFn: () => getTeams(param),
     ...queryConfig,
   });
 }
