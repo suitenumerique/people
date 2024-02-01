@@ -108,4 +108,5 @@ class TeamAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
+    prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name",)

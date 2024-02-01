@@ -1,16 +1,11 @@
 """
 Tests for Teams API endpoint in People's core app: retrieve
 """
-import random
-from collections import Counter
-from unittest import mock
-
 import pytest
 from rest_framework.test import APIClient
 
 from core import factories
-
-from ..utils import OIDCToken
+from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -82,5 +77,6 @@ def test_api_teams_retrieve_authenticated_related():
     assert response.json() == {
         "id": str(team.id),
         "name": team.name,
+        "slug": team.slug,
         "abilities": team.get_abilities(user),
     }

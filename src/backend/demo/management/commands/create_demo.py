@@ -38,7 +38,7 @@ class BulkQueue:
         if not objects:
             return
 
-        objects[0]._meta.model.objects.bulk_create(objects, ignore_conflicts=True)  # noqa: SLF001
+        objects[0]._meta.model.objects.bulk_create(objects, ignore_conflicts=False)  # noqa: SLF001
         # In debug mode, Django keeps query cache which creates a memory leak in this case
         db.reset_queries()
         self.queue[objects[0]._meta.model.__name__] = []  # noqa: SLF001
@@ -143,6 +143,8 @@ def create_demo(stdout):
             queue.push(
                 models.Team(
                     name=f"Team {i:d}",
+                    # slug should be automatic but bulk_create doesn't use save
+                    slug=f"team-{i:d}",
                 )
             )
         queue.flush()

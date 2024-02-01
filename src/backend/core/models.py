@@ -11,6 +11,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, mail, validators
 from django.db import models
 from django.utils.functional import lazy
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 import jsonschema
@@ -315,6 +316,7 @@ class Team(BaseModel):
     """
 
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True, null=False)
 
     users = models.ManyToManyField(
         User,
@@ -331,6 +333,15 @@ class Team(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        """Overriding save function to compute the slug."""
+        self.slug = self.get_slug()
+        return super().save(*args, **kwargs)
+
+    def get_slug(self):
+        """Compute slug value from name."""
+        return slugify(self.name)
 
     def get_abilities(self, user):
         """

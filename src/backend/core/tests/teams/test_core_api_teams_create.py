@@ -3,12 +3,10 @@ Tests for Teams API endpoint in People's core app: create
 """
 import pytest
 from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import AccessToken
 
-from core.factories import IdentityFactory, TeamFactory, UserFactory
+from core.factories import IdentityFactory, TeamFactory
 from core.models import Team
-
-from ..utils import OIDCToken
+from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -48,3 +46,73 @@ def test_api_teams_create_authenticated():
     team = Team.objects.get()
     assert team.name == "my team"
     assert team.accesses.filter(role="owner", user=user).exists()
+
+
+def test_api_teams_create_authenticated_slugify_name():
+    """
+    Creating teams should automatically generate a slug.
+    """
+    identity = IdentityFactory()
+    jwt_token = OIDCToken.for_user(identity.user)
+
+    response = APIClient().post(
+        "/api/v1.0/teams/",
+        {"name": "my team"},
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 201
+    team = Team.objects.get()
+    assert team.name == "my team"
+    assert team.slug == "my-team"
+
+
+@pytest.mark.parametrize(
+    "param",
+    [
+        ("my team", "my-team"),
+        ("my     team", "my-team"),
+        ("MY TEAM TOO", "my-team-too"),
+        ("mon équipe", "mon-equipe"),
+        ("front devs & UX", "front-devs-ux"),
+    ],
+)
+def test_api_teams_create_authenticated_expected_slug(param):
+    """
+    Creating teams should automatically create unaccented, no unicode, lower-case slug.
+    """
+    identity = IdentityFactory()
+    jwt_token = OIDCToken.for_user(identity.user)
+
+    response = APIClient().post(
+        "/api/v1.0/teams/",
+        {
+            "name": param[0],
+        },
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 201
+    team = Team.objects.get()
+    assert team.name == param[0]
+    assert team.slug == param[1]
+
+
+def test_api_teams_create_authenticated_unique_slugs():
+    """
+    Creating teams should raise an error if already existing slug.
+    """
+    TeamFactory(name="existing team")
+    identity = IdentityFactory()
+    jwt_token = OIDCToken.for_user(identity.user)
+
+    response = APIClient().post(
+        "/api/v1.0/teams/",
+        {
+            "name": "èxisting team",
+        },
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+
+    assert response.status_code == 400
+    assert response.json()["slug"] == ["Team with this Slug already exists."]

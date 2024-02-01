@@ -131,11 +131,12 @@ class TeamSerializer(serializers.ModelSerializer):
 
     abilities = serializers.SerializerMethodField(read_only=True)
     accesses = TeamAccessSerializer(many=True, read_only=True)
+    slug = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Team
-        fields = ["id", "name", "accesses", "abilities"]
-        read_only_fields = ["id", "accesses", "abilities"]
+        fields = ["id", "name", "accesses", "abilities", "slug"]
+        read_only_fields = ["id", "accesses", "abilities", "slug"]
 
     def get_abilities(self, team) -> dict:
         """Return abilities of the logged-in user on the instance."""
@@ -143,3 +144,7 @@ class TeamSerializer(serializers.ModelSerializer):
         if request:
             return team.get_abilities(request.user)
         return {}
+
+    def get_slug(self, instance):
+        """Return slug from the team's name."""
+        return instance.get_slug()

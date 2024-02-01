@@ -5,12 +5,10 @@ import random
 
 import pytest
 from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import AccessToken
 
-from core import factories, models
+from core import factories
 from core.api import serializers
-
-from ..utils import OIDCToken
+from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -100,28 +98,31 @@ def test_api_teams_update_authenticated_administrators():
     jwt_token = OIDCToken.for_user(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
-    old_team_values = serializers.TeamSerializer(instance=team).data
+    initial_values = serializers.TeamSerializer(instance=team).data
 
-    new_team_values = serializers.TeamSerializer(instance=factories.TeamFactory()).data
+    # generate new random values
+    new_values = serializers.TeamSerializer(instance=factories.TeamFactory.build()).data
     response = APIClient().put(
         f"/api/v1.0/teams/{team.id!s}/",
-        new_team_values,
+        new_values,
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
 
     team.refresh_from_db()
-    team_values = serializers.TeamSerializer(instance=team).data
-    for key, value in team_values.items():
-        if key in ["id", "accesses"]:
-            assert value == old_team_values[key]
+    final_values = serializers.TeamSerializer(instance=team).data
+    for key, value in final_values.items():
+        if key in ["id", "accesses"]:  # pylint: disable=R1733
+            assert value == initial_values[key]
         else:
-            assert value == new_team_values[key]
+            # name, slug and abilities successfully modified
+            assert value == new_values[key]
 
 
 def test_api_teams_update_authenticated_owners():
-    """Administrators of a team should be allowed to update it."""
+    """Administrators of a team should be allowed to update it,
+    apart from read-only fields."""
     identity = factories.IdentityFactory()
     user = identity.user
     jwt_token = OIDCToken.for_user(user)
@@ -129,7 +130,9 @@ def test_api_teams_update_authenticated_owners():
     team = factories.TeamFactory(users=[(user, "owner")])
     old_team_values = serializers.TeamSerializer(instance=team).data
 
-    new_team_values = serializers.TeamSerializer(instance=factories.TeamFactory()).data
+    new_team_values = serializers.TeamSerializer(
+        instance=factories.TeamFactory.build()
+    ).data
     response = APIClient().put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_team_values,
@@ -144,6 +147,7 @@ def test_api_teams_update_authenticated_owners():
         if key in ["id", "accesses"]:
             assert value == old_team_values[key]
         else:
+            # name, slug and abilities successfully modified
             assert value == new_team_values[key]
 
 
@@ -174,3 +178,31 @@ def test_api_teams_update_administrator_or_owner_of_another():
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
     assert team_values == old_team_values
+
+
+def test_api_teams_update_existing_slug_should_return_error():
+    """
+    Updating a team's name to an existing slug should return a bad request,
+    instead of creating a duplicate.
+    """
+    identity = factories.IdentityFactory()
+    user = identity.user
+    jwt_token = OIDCToken.for_user(user)
+
+    factories.TeamFactory(name="Existing team", users=[(user, "administrator")])
+    my_team = factories.TeamFactory(name="New team", users=[(user, "administrator")])
+
+    updated_values = serializers.TeamSerializer(instance=my_team).data
+    # Update my team's name for existing team. Creates a duplicate slug
+    updated_values["name"] = "existing team"
+    response = APIClient().put(
+        f"/api/v1.0/teams/{my_team.id!s}/",
+        updated_values,
+        format="json",
+        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
+    )
+    assert response.status_code == 400
+    assert response.json()["slug"] == ["Team with this Slug already exists."]
+    # Both teams names and slugs should be unchanged
+    assert my_team.name == "New team"
+    assert my_team.slug == "new-team"
