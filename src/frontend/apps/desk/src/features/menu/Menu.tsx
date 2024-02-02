@@ -21,7 +21,6 @@ export const Menu = () => {
       className="m-0 p-0"
       $background={colorsTokens()['primary-800']}
       $height="100%"
-      $width="3.75rem"
       $justify="space-between"
     >
       <Box className="pt-b" $direction="column" $gap="0.8rem">

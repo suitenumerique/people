@@ -4,14 +4,14 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { Box, Text } from '@/components/';
 
 interface TooltipProps {
-  buttonRef: React.MutableRefObject<null>;
+  parentRef: React.MutableRefObject<null>;
   textColor: CSSProperties['color'];
   backgroundColor: CSSProperties['color'];
   label: string;
 }
 
 export const Tooltip = ({
-  buttonRef,
+  parentRef,
   backgroundColor,
   textColor,
   label,
@@ -23,7 +23,7 @@ export const Tooltip = ({
   }, []);
 
   return (
-    <Popover parentRef={buttonRef} onClickOutside={() => ''} borderless>
+    <Popover parentRef={parentRef} onClickOutside={() => ''} borderless>
       <Box
         aria-label="tooltip"
         className="ml-t p-t"

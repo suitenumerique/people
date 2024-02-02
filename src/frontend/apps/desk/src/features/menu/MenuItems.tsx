@@ -1,23 +1,13 @@
 import { Button } from '@openfun/cunningham-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
-import { Box } from '@/components/';
+import { Box, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { SVGComponent } from '@/types/components';
 
 import { Tooltip } from './Tooltip';
-
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: #ffffff33;
-  &[aria-current='page'] {
-    color: #ffffff;
-  }
-`;
 
 interface MenuItemProps {
   Icon: SVGComponent;
@@ -29,7 +19,7 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
   const { t } = useTranslation();
   const pathname = usePathname();
   const { colorsTokens } = useCunninghamTheme();
-  const buttonRef = useRef(null);
+  const parentRef = useRef(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const isActive = pathname === href;
@@ -51,9 +41,10 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
     <StyledLink
       href={href}
       aria-current={isActive && 'page'}
-      ref={buttonRef}
+      ref={parentRef}
       onMouseOver={() => setIsTooltipOpen(true)}
       onMouseOut={() => setIsTooltipOpen(false)}
+      style={{ display: 'block' }}
     >
       <Box
         className="m-st p-t"
@@ -86,7 +77,7 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
       </Box>
       {isTooltipOpen && (
         <Tooltip
-          buttonRef={buttonRef}
+          parentRef={parentRef}
           label={label}
           backgroundColor={backgroundTooltip}
           textColor={colorTooltip}

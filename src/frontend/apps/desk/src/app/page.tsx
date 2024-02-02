@@ -1,13 +1,12 @@
 'use client';
 
-import { Button, Field, Input } from '@openfun/cunningham-react';
-import { useState } from 'react';
+import { Button } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { Box } from '@/components';
+import { Box, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Panel, useCreateTeam } from '@/features';
+import { Panel } from '@/features';
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -15,8 +14,6 @@ const StyledButton = styled(Button)`
 
 export default function Home() {
   const { t } = useTranslation();
-  const { mutate: createTeam } = useCreateTeam();
-  const [teamName, setTeamName] = useState('');
   const { colorsTokens } = useCunninghamTheme();
 
   return (
@@ -29,21 +26,9 @@ export default function Home() {
         $width="100%"
         $gap="5rem"
       >
-        <StyledButton>{t('Create a new team')}</StyledButton>
-        <Field>
-          <Input
-            type="text"
-            label={t('Team name')}
-            onChange={(e) => setTeamName(e.target.value)}
-          />
-          <Button
-            fullWidth
-            onClick={() => createTeam(teamName)}
-            className="mt-s"
-          >
-            {t('Create a team')}
-          </Button>
-        </Field>
+        <StyledLink href="/teams/create">
+          <StyledButton>{t('Create a new team')}</StyledButton>
+        </StyledLink>
       </Box>
     </Box>
   );
