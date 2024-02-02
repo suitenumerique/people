@@ -1,5 +1,5 @@
 """
-Management command overrring the "createsuperuser" command to allow creating users
+Management command overriding the "createsuperuser" command to allow creating users
 with their email and no username.
 """
 from django.contrib.auth import get_user_model
@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    """Management command to create super users from an email and a password"""
+    """Management command to create superusers from an email and a password"""
 
     help = "Create a superuser with an email and a password"
 

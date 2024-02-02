@@ -8,7 +8,7 @@ from core import factories, models
 pytestmark = pytest.mark.django_db
 
 
-def test_models_oidc_user_getter_exsting_user_no_email(django_assert_num_queries):
+def test_models_oidc_user_getter_existing_user_no_email(django_assert_num_queries):
     """
     When a valid token is passed, an existing user matching the token's sub should be returned.
     """

@@ -34,11 +34,11 @@ $ make bootstrap
 This command builds the `app` container, installs dependencies, performs
 database migrations and compile translations. It's a good idea to use this
 command each time you are pulling code from the project repository to avoid
-dependency-releated or migration-releated issues.
+dependency-related or migration-related issues.
 
 Your Docker services should now be up and running 🎉
 
-Note that if you need to run them afterwards, you can use the eponym Make rule:
+Note that if you need to run them afterward, you can use the eponym Make rule:
 
 ```bash
 $ make run

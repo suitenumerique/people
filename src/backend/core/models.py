@@ -140,7 +140,7 @@ class Contact(BaseModel):
         try:
             jsonschema.validate(self.data, contact_schema)
         except jsonschema.ValidationError as e:
-            # Specify the property in the data in which the error occured
+            # Specify the property in the data in which the error occurred
             field_path = ".".join(map(str, e.path))
             error_message = f"Validation error in '{field_path:s}': {e.message}"
             raise exceptions.ValidationError({"data": [error_message]}) from e

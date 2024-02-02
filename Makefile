@@ -45,7 +45,7 @@ COMPOSE_RUN         = $(COMPOSE) run --rm
 COMPOSE_RUN_APP     = $(COMPOSE_RUN) app-dev
 COMPOSE_RUN_CROWDIN = $(COMPOSE_RUN) crowdin crowdin
 WAIT_DB             = @$(COMPOSE_RUN) dockerize -wait tcp://$(DB_HOST):$(DB_PORT) -timeout 60s
-WAIT_KC_DB           = $(COMPOSE_RUN) dockerize -wait tcp://kc_postgresql:5432 -timeout 60s
+WAIT_KC_DB          = $(COMPOSE_RUN) dockerize -wait tcp://kc_postgresql:5432 -timeout 60s
 
 # -- Backend
 MANAGE              = $(COMPOSE_RUN_APP) python manage.py
@@ -224,15 +224,15 @@ env.d/development/kc_postgresql:
 env.d/development/crowdin:
 	cp -n env.d/development/crowdin.dist env.d/development/crowdin
 
-crowdin-download: ## Download translated message from crowdin
+crowdin-download: ## Download translated message from Crowdin
 	@$(COMPOSE_RUN_CROWDIN) download -c crowdin/config.yml
 .PHONY: crowdin-download
 
-crowdin-download-sources: ## Download sources from crowdin
+crowdin-download-sources: ## Download sources from Crowdin
 	@$(COMPOSE_RUN_CROWDIN) download sources -c crowdin/config.yml
 .PHONY: crowdin-download-sources
 
-crowdin-upload: ## Upload source translations to crowdin
+crowdin-upload: ## Upload source translations to Crowdin
 	@$(COMPOSE_RUN_CROWDIN) upload sources -c crowdin/config.yml
 .PHONY: crowdin-upload
 
@@ -254,7 +254,7 @@ i18n-download-and-compile: \
   i18n-compile
 .PHONY: i18n-download-and-compile
 
-i18n-generate-and-upload: ## generate source translations for all applications and upload them to crowdin
+i18n-generate-and-upload: ## generate source translations for all applications and upload them to Crowdin
 i18n-generate-and-upload: \
   i18n-generate \
   crowdin-upload
@@ -285,7 +285,7 @@ tsclient-install: ## Install the Typescript API client generator
 	@$(TSCLIENT_YARN) install
 .PHONY: tsclient-install
 
-tsclient: tsclient-install ## Generate a Typescipt API client
+tsclient: tsclient-install ## Generate a Typescript API client
 	@$(TSCLIENT_YARN) generate:api:client:local ../frontend/tsclient
 .PHONY: tsclient-install
 
