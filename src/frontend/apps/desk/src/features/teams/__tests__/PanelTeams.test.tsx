@@ -6,6 +6,8 @@ import { AppWrapper } from '@/tests/utils';
 
 import { PanelTeams } from '../components/PanelTeams';
 
+window.HTMLElement.prototype.scroll = function () {};
+
 describe('PanelTeams', () => {
   afterEach(() => {
     fetchMock.restore();
@@ -44,7 +46,9 @@ describe('PanelTeams', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(await screen.findByLabelText('Empty team icon')).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText('Empty teams icon'),
+    ).toBeInTheDocument();
   });
 
   it('renders with not team to display', async () => {
@@ -68,7 +72,7 @@ describe('PanelTeams', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(await screen.findByLabelText('Team icon')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Teams icon')).toBeInTheDocument();
   });
 
   it('renders the error', async () => {

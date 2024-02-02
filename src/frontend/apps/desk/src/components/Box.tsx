@@ -1,4 +1,4 @@
-import { ReactHTML } from 'react';
+import { ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
 import { CSSProperties } from 'styled-components/dist/types';
 
@@ -18,6 +18,8 @@ export interface BoxProps {
   $radius?: CSSProperties['borderRadius'];
   $width?: CSSProperties['width'];
 }
+
+export type BoxType = ComponentPropsWithRef<typeof Box>;
 
 export const Box = styled('div')<BoxProps>`
   display: flex;

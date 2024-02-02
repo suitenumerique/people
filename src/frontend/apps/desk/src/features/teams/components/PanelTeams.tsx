@@ -1,34 +1,31 @@
 import { Loader } from '@openfun/cunningham-react';
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box, Text } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
+import { InfiniteScroll } from '@/components/InfiniteScroll';
 
-import { useTeams } from '../api/useTeams';
-import IconNone from '../assets/icon-none.svg';
+import { TeamResponse, useTeams } from '../api/useTeams';
 import { useTeamStore } from '../store/useTeamsStore';
 
-export const PanelTeams = () => {
-  const ordering = useTeamStore((state) => state.ordering);
-  const { data, isPending, isError } = useTeams({
-    ordering,
-  });
-  const { t } = useTranslation();
-  const { colorsTokens } = useCunninghamTheme();
+import { PanelTeam } from './PanelTeam';
 
-  if (isPending) {
-    return (
-      <Box $align="center" className="m-l">
-        <Loader />
-      </Box>
-    );
-  }
+interface PanelTeamsStateProps {
+  isLoading: boolean;
+  isError: boolean;
+  teams?: TeamResponse[];
+}
+
+const PanelTeamsState = ({
+  isLoading,
+  isError,
+  teams,
+}: PanelTeamsStateProps) => {
+  const { t } = useTranslation();
 
   if (isError) {
     return (
-      <Box $justify="center" className="m-b">
+      <Box $justify="center" className="mb-b">
         <Text $theme="danger" $align="center" $textAlign="center">
           {t('Something bad happens, please refresh the page.')}
         </Text>
@@ -36,9 +33,17 @@ export const PanelTeams = () => {
     );
   }
 
-  if (!data.count) {
+  if (isLoading) {
     return (
-      <Box $justify="center" className="m-b">
+      <Box $align="center" className="m-l">
+        <Loader />
+      </Box>
+    );
+  }
+
+  if (!teams?.length) {
+    return (
+      <Box $justify="center">
         <Text as="p" className="mb-0 mt-0" $theme="greyscale" $variation="500">
           {t('0 group to display.')}
         </Text>
@@ -51,42 +56,48 @@ export const PanelTeams = () => {
     );
   }
 
+  return teams.map((team) => <PanelTeam team={team} key={team.id} />);
+};
+
+export const PanelTeams = () => {
+  const ordering = useTeamStore((state) => state.ordering);
+  const {
+    data,
+    isError,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useTeams({
+    ordering,
+  });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const teams = useMemo(() => {
+    return data?.pages.reduce((acc, page) => {
+      return acc.concat(page.results);
+    }, [] as TeamResponse[]);
+  }, [data?.pages]);
+
   return (
-    <Box as="ul" $gap="1rem" className="p-s mt-t" $css="overflow:auto;">
-      {data?.results.map((team) => (
-        <Box
-          as="li"
-          key={team.id}
-          $direction="row"
-          $align="center"
-          $gap="0.5rem"
-        >
-          {team.accesses.length ? (
-            <IconGroup
-              className="p-t"
-              width={36}
-              aria-label={t(`Team icon`)}
-              color={colorsTokens()['primary-500']}
-              style={{
-                borderRadius: '10px',
-                border: `1px solid ${colorsTokens()['primary-300']}`,
-              }}
-            />
-          ) : (
-            <IconNone
-              className="p-t"
-              width={36}
-              aria-label={t(`Empty team icon`)}
-              color={colorsTokens()['greyscale-500']}
-              style={{
-                borderRadius: '10px',
-                border: `1px solid ${colorsTokens()['greyscale-300']}`,
-              }}
-            />
-          )}
-          <Text $weight="bold">{team.name}</Text>
-        </Box>
-      ))}
+    <Box $css="overflow: auto;" ref={containerRef}>
+      <InfiniteScroll
+        hasMore={hasNextPage}
+        isLoading={isFetchingNextPage}
+        next={() => {
+          void fetchNextPage();
+        }}
+        scrollContainer={containerRef.current}
+        $gap="1rem"
+        as="ul"
+        className="p-s mt-t"
+        role="listbox"
+      >
+        <PanelTeamsState
+          isLoading={isLoading}
+          isError={isError}
+          teams={teams}
+        />
+      </InfiniteScroll>
     </Box>
   );
 };

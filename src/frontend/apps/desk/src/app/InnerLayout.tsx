@@ -11,11 +11,7 @@ export default function InnerLayout({
       <Header />
       <Box $css="flex: 1;" $direction="row">
         <Menu />
-        <Box
-          $height={`calc(100vh - ${HEADER_HEIGHT})`}
-          $width="100%"
-          $css="overflow: auto;"
-        >
+        <Box $height={`calc(100vh - ${HEADER_HEIGHT})`} $width="100%">
           {children}
         </Box>
       </Box>

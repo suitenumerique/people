@@ -1,4 +1,9 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import {
+  DefinedInitialDataInfiniteOptions,
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 
 import { APIList, fetchAPI } from '@/api';
 
@@ -14,7 +19,7 @@ interface Access {
   user: string;
 }
 
-interface TeamResponse {
+export interface TeamResponse {
   id: string;
   name: string;
   accesses: Access[];
@@ -26,7 +31,10 @@ export enum TeamsOrdering {
 }
 
 export type TeamsParams = {
-  ordering?: TeamsOrdering;
+  ordering: TeamsOrdering;
+};
+type TeamsAPIParams = TeamsParams & {
+  page: number;
 };
 
 type TeamsResponse = APIList<TeamResponse>;
@@ -34,10 +42,9 @@ export interface TeamsResponseError {
   detail: string;
 }
 
-export const getTeams = async (props?: TeamsParams) => {
-  const response = await fetchAPI(
-    `teams/${props?.ordering ? `?ordering=${props.ordering}` : ''}`,
-  );
+export const getTeams = async ({ ordering, page }: TeamsAPIParams) => {
+  const orderingQuery = ordering ? `&ordering=${ordering}` : '';
+  const response = await fetchAPI(`teams/?page=${page}${orderingQuery}`);
 
   if (!response.ok) {
     throw new Error(`Couldn't fetch teams: ${response.statusText}`);
@@ -48,16 +55,32 @@ export const getTeams = async (props?: TeamsParams) => {
 export const KEY_LIST_TEAM = 'teams';
 
 export function useTeams(
-  param?: TeamsParams,
-  queryConfig?: UseQueryOptions<
+  param: TeamsParams,
+  queryConfig?: DefinedInitialDataInfiniteOptions<
     TeamsResponse,
     TeamsResponseError,
-    TeamsResponse
+    InfiniteData<TeamsResponse>,
+    QueryKey,
+    number
   >,
 ) {
-  return useQuery<TeamsResponse, TeamsResponseError, TeamsResponse>({
+  return useInfiniteQuery<
+    TeamsResponse,
+    TeamsResponseError,
+    InfiniteData<TeamsResponse>,
+    QueryKey,
+    number
+  >({
+    initialPageParam: 1,
     queryKey: [KEY_LIST_TEAM, param],
-    queryFn: () => getTeams(param),
+    queryFn: ({ pageParam }) =>
+      getTeams({
+        ...param,
+        page: pageParam,
+      }),
+    getNextPageParam(lastPage, allPages) {
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
     ...queryConfig,
   });
 }
