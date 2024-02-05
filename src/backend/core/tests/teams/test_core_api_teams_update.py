@@ -4,6 +4,13 @@ Tests for Teams API endpoint in People's core app: update
 import random
 
 import pytest
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND,
+)
 from rest_framework.test import APIClient
 
 from core import factories
@@ -24,7 +31,7 @@ def test_api_teams_update_anonymous():
         new_team_values,
         format="json",
     )
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
@@ -53,7 +60,7 @@ def test_api_teams_update_authenticated_unrelated():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 404
+    assert response.status_code == HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Not found."}
 
     team.refresh_from_db()
@@ -81,7 +88,7 @@ def test_api_teams_update_authenticated_members():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 403
+    assert response.status_code == HTTP_403_FORBIDDEN
     assert response.json() == {
         "detail": "You do not have permission to perform this action."
     }
@@ -108,7 +115,7 @@ def test_api_teams_update_authenticated_administrators():
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
 
     team.refresh_from_db()
     final_values = serializers.TeamSerializer(instance=team).data
@@ -139,7 +146,7 @@ def test_api_teams_update_authenticated_owners():
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
 
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
@@ -172,7 +179,7 @@ def test_api_teams_update_administrator_or_owner_of_another():
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
-    assert response.status_code == 404
+    assert response.status_code == HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Not found."}
 
     team.refresh_from_db()
@@ -201,7 +208,7 @@ def test_api_teams_update_existing_slug_should_return_error():
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
-    assert response.status_code == 400
+    assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()["slug"] == ["Team with this Slug already exists."]
     # Both teams names and slugs should be unchanged
     assert my_team.name == "New team"

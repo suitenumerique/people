@@ -2,6 +2,7 @@
 Tests for Teams API endpoint in People's core app: retrieve
 """
 import pytest
+from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 from rest_framework.test import APIClient
 
 from core import factories
@@ -15,7 +16,7 @@ def test_api_teams_retrieve_anonymous():
     team = factories.TeamFactory()
     response = APIClient().get(f"/api/v1.0/teams/{team.id}/")
 
-    assert response.status_code == 401
+    assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
@@ -35,7 +36,7 @@ def test_api_teams_retrieve_authenticated_unrelated():
     response = APIClient().get(
         f"/api/v1.0/teams/{team.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 404
+    assert response.status_code == HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Not found."}
 
 
@@ -55,7 +56,7 @@ def test_api_teams_retrieve_authenticated_related():
     response = APIClient().get(
         f"/api/v1.0/teams/{team.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     content = response.json()
     assert sorted(content.pop("accesses"), key=lambda x: x["user"]) == sorted(
         [
