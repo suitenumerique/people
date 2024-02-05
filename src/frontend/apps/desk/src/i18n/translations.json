@@ -1,14 +1,21 @@
 {
-  "en": {
-    "translation": {
-      "Hello Desk !": "Hello Desk !",
-      "Freedom Equality Fraternity Logo": "Freedom Equality Fraternity Logo"
-    }
-  },
+  "en": { "translation": {} },
   "fr": {
     "translation": {
-      "Hello Desk !": "Bienvenue sur Desk !",
-      "Freedom Equality Fraternity Logo": "Logo Liberté Egalité Fraternité"
+      "Marianne Logo": "Logo Marianne",
+      "Freedom Equality Fraternity Logo": "Logo Liberté Égalité Fraternité",
+      "Desk Logo": "Logo Desk",
+      "Desk": "Desk",
+      "Access to FAQ": "Accès à la FAQ",
+      "FAQ Icon": "Icône FAQ",
+      "FAQ": "FAQ",
+      "Access to the cells menu": "Accès au menu cellules",
+      "Cells icon": "Icône Cellules",
+      "Language Icon": "Icône de langue",
+      "Language": "Langue",
+      "Hello Desk !": "Bonjour Desk !",
+      "Team name": "Nom de l’équipe",
+      "Create Team": "Créer une équipe"
     }
   }
 }

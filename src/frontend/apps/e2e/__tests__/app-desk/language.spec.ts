@@ -8,17 +8,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Language', () => {
-  test('checks translation library works', async ({ page }) => {
-    await expect(
-      page.locator('h1').first().getByText('Bienvenue sur Desk !'),
-    ).toBeVisible();
-  });
-
   test('checks the language picker', async ({ page }) => {
-    const header = page.locator('header').first();
+    await expect(
+      page.locator('h1').first().getByText('Hello Desk !'),
+    ).toBeVisible();
 
-    await header.getByRole('combobox').getByText('FR').click();
-    await header.getByRole('option', { name: 'Language Icon EN' }).click();
-    await expect(header.getByRole('combobox').getByText('EN')).toBeVisible();
+    const header = page.locator('header').first();
+    await header.getByRole('combobox').getByText('EN').click();
+    await header.getByRole('option', { name: 'FR' }).click();
+    await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
+
+    await expect(
+      page.locator('h1').first().getByText('Bonjour Desk !'),
+    ).toBeVisible();
   });
 });
