@@ -16,7 +16,7 @@ const initialState = {
   token: null,
 };
 
-const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   authenticated: initialState.authenticated,
   initialized: initialState.initialized,
   token: initialState.token,
@@ -39,5 +39,3 @@ const useAuthStore = create<AuthStore>((set) => ({
     set(initialState);
   },
 }));
-
-export default useAuthStore;

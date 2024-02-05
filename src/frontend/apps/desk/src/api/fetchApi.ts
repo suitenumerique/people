@@ -1,4 +1,4 @@
-import useAuthStore from '@/auth/useAuthStore';
+import { useAuthStore } from '@/features/';
 
 export const fetchAPI = async (input: string, init?: RequestInit) => {
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${input}`;

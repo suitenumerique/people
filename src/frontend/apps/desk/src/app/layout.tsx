@@ -5,10 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { useCunninghamTheme } from '@/cunningham';
-
+import { Auth } from '@/features/auth/Auth';
 import '@/i18n/initI18n';
-import InnerLayout from './InnerLayout';
 
+import InnerLayout from './InnerLayout';
 import './globals.css';
 
 const queryClient = new QueryClient();
@@ -26,7 +26,9 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools />
           <CunninghamProvider theme={theme}>
-            <InnerLayout>{children}</InnerLayout>
+            <Auth>
+              <InnerLayout>{children}</InnerLayout>
+            </Auth>
           </CunninghamProvider>
         </QueryClientProvider>
       </body>

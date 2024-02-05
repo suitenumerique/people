@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock';
 
-import useAuthStore from '@/auth/useAuthStore';
+import { useAuthStore } from '@/features/';
 
 import { fetchAPI } from '../fetchApi';
 
