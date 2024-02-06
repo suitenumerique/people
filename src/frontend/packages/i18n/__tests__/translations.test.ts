@@ -20,9 +20,28 @@ describe('checks all the frontend translation are made', () => {
       .filter((key) => key !== 'en')
       .forEach((key) => {
         const listKeysDesk = Object.keys(jsonDesk[key].translation).sort();
-        expect(
-          listKeysCrowdin.every((element) => listKeysDesk.includes(element)),
-        ).toBeTruthy();
+        const missingKeys = listKeysCrowdin.filter(
+          (element) => !listKeysDesk.includes(element),
+        );
+        const additionalKeys = listKeysDesk.filter(
+          (element) => !listKeysCrowdin.includes(element),
+        );
+
+        if (missingKeys.length > 0) {
+          console.log(
+            `Missing keys in Desk translations that should be translated in Crowdin, got to https://crowdin.com/:`,
+            missingKeys,
+          );
+        }
+
+        if (additionalKeys.length > 0) {
+          console.log(
+            `Additional keys in Desk translations that seems not present in this branch:`,
+            additionalKeys,
+          );
+        }
+
+        expect(missingKeys.length).toBe(0);
       });
   });
 });
