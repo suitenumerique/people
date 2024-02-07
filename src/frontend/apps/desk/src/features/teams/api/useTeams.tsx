@@ -7,23 +7,7 @@ import {
 
 import { APIList, fetchAPI } from '@/api';
 
-enum Role {
-  MEMBER = 'member',
-  ADMIN = 'administrator',
-  OWNER = 'owner',
-}
-
-interface Access {
-  id: string;
-  role: Role;
-  user: string;
-}
-
-export interface TeamResponse {
-  id: string;
-  name: string;
-  accesses: Access[];
-}
+import { TeamResponse } from './types';
 
 export enum TeamsOrdering {
   BY_CREATED_ON = 'created_at',
@@ -42,14 +26,17 @@ export interface TeamsResponseError {
   detail: string;
 }
 
-export const getTeams = async ({ ordering, page }: TeamsAPIParams) => {
+export const getTeams = async ({
+  ordering,
+  page,
+}: TeamsAPIParams): Promise<TeamsResponse> => {
   const orderingQuery = ordering ? `&ordering=${ordering}` : '';
   const response = await fetchAPI(`teams/?page=${page}${orderingQuery}`);
 
   if (!response.ok) {
     throw new Error(`Couldn't fetch teams: ${response.statusText}`);
   }
-  return response.json();
+  return response.json() as Promise<TeamsResponse>;
 };
 
 export const KEY_LIST_TEAM = 'teams';

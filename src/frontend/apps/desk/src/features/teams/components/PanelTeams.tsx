@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
 
-import { TeamResponse, useTeams } from '../api/useTeams';
+import { TeamResponse } from '../api/types';
+import { useTeams } from '../api/useTeams';
 import { useTeamStore } from '../store/useTeamsStore';
 
 import { PanelTeam } from './PanelTeam';
