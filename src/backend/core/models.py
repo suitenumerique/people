@@ -4,12 +4,14 @@ Declare and configure the models for the People core application
 import json
 import os
 import uuid
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, mail, validators
 from django.db import models
+from django.utils import timezone
 from django.utils.functional import lazy
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -451,6 +453,34 @@ class TeamAccess(BaseModel):
             "put": bool(set_role_to),
             "set_role_to": set_role_to,
         }
+
+
+class Invitation(BaseModel):
+    """User invitation to teams."""
+
+    email = models.EmailField(_("email address"), null=False, blank=False)
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name="invitations",
+    )
+    role = models.CharField(
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+    )
+    issuer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="invitations",
+    )
+
+    def __str__(self):
+        return f"{self.email} invited to {self.team}"
+
+    @property
+    def is_expired(self):
+        """Calculate if invitation is still valid or has expired."""
+        validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
+        return timezone.now() > (self.created_at + validity_duration)
 
 
 def oidc_user_getter(validated_token):

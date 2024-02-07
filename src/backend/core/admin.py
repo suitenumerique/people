@@ -119,3 +119,31 @@ class TeamAdmin(admin.ModelAdmin):
         "updated_at",
     )
     search_fields = ("name",)
+
+
+@admin.register(models.Invitation)
+class InvitationAdmin(admin.ModelAdmin):
+    """Admin interface to handle invitations."""
+
+    fields = (
+        "email",
+        "team",
+        "role",
+        "created_at",
+        "issuer",
+    )
+    readonly_fields = (
+        "created_at",
+        "is_expired",
+        "issuer",
+    )
+    list_display = (
+        "email",
+        "team",
+        "created_at",
+        "is_expired",
+    )
+
+    def save_model(self, request, obj, form, change):
+        obj.issuer = request.user
+        obj.save()

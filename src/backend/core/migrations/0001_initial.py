@@ -106,6 +106,21 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Invitation',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, help_text='primary key for the record as UUID', primary_key=True, serialize=False, verbose_name='id')),
+                ('created_at', models.DateTimeField(auto_now_add=True, help_text='date and time at which a record was created', verbose_name='created at')),
+                ('updated_at', models.DateTimeField(auto_now=True, help_text='date and time at which a record was last updated', verbose_name='updated at')),
+                ('email', models.EmailField(max_length=254, verbose_name='email address')),
+                ('role', models.CharField(choices=[('member', 'Member'), ('administrator', 'Administrator'), ('owner', 'Owner')], default='member', max_length=20)),
+                ('issuer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='invitations', to=settings.AUTH_USER_MODEL)),
+                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='invitations', to='core.team')),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='TeamAccess',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, help_text='primary key for the record as UUID', primary_key=True, serialize=False, verbose_name='id')),

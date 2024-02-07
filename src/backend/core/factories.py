@@ -170,3 +170,15 @@ class TeamAccessFactory(factory.django.DjangoModelFactory):
     team = factory.SubFactory(TeamFactory)
     user = factory.SubFactory(UserFactory)
     role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
+
+
+class InvitationFactory(factory.django.DjangoModelFactory):
+    """A factory to create invitations for a user"""
+
+    class Meta:
+        model = models.Invitation
+
+    email = factory.Faker("email")
+    team = factory.SubFactory(TeamFactory)
+    role = factory.fuzzy.FuzzyChoice([role[0] for role in models.RoleChoices.choices])
+    issuer = factory.SubFactory(UserFactory)

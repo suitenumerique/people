@@ -148,3 +148,12 @@ class TeamSerializer(serializers.ModelSerializer):
     def get_slug(self, instance):
         """Return slug from the team's name."""
         return instance.get_slug()
+
+
+class InvitationSerializer(serializers.ModelSerializer):
+    """Serialize invitations."""
+
+    class Meta:
+        model = models.Invitation
+        fields = ["email", "team", "role", "issuer"]
+        read_only_fields = ["team", "issuer"]
