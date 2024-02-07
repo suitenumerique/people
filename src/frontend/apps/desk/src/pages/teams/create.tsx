@@ -1,12 +1,13 @@
-'use client';
-
 import { Button, Field, Input } from '@openfun/cunningham-react';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateTeam } from '@/features/teams';
+import { NextPageWithLayout } from '@/types/next';
 
-export default function Page() {
+import TeamLayout from './TeamLayout';
+
+const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
   const { mutate: createTeam } = useCreateTeam();
   const [teamName, setTeamName] = useState('');
@@ -23,4 +24,10 @@ export default function Page() {
       </Button>
     </Field>
   );
-}
+};
+
+Page.getLayout = function getLayout(page: ReactElement) {
+  return <TeamLayout>{page}</TeamLayout>;
+};
+
+export default Page;

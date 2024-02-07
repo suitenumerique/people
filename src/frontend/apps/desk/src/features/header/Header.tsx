@@ -95,7 +95,6 @@ export const Header = () => {
                 priority
                 src={IconMyAccount}
                 alt={t(`Profile picture`)}
-                unoptimized
               />
             </Box>
             <Button

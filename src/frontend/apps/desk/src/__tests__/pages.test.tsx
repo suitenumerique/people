@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import { AppWrapper } from '@/tests/utils';
 
-import Page from '../page';
+import Page from '../pages';
 
 describe('Page', () => {
   it('checks Page rendering', () => {
