@@ -4,9 +4,9 @@ import { waitForElementCount } from '../helpers';
 
 import { keyCloakSignIn } from './common';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page);
+  await keyCloakSignIn(page, browserName);
 });
 
 test.describe.configure({ mode: 'serial' });

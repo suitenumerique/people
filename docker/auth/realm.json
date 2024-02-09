@@ -56,12 +56,34 @@
       "realmRoles": ["user"]
     },
     {
-      "username": "user-e2e",
+      "username": "user-e2e-chromium",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e"
+          "value": "password-e2e-chromium"
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "user-e2e-webkit",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password-e2e-webkit"
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "user-e2e-firefox",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password-e2e-firefox"
         }
       ],
       "realmRoles": ["user"]
