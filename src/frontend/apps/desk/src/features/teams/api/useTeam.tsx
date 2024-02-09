@@ -9,14 +9,25 @@ export type TeamParams = {
 };
 
 export interface TeamResponseError {
-  detail: string;
+  detail?: string;
+  status?: number;
+  cause?: string;
 }
 
 export const getTeam = async ({ id }: TeamParams): Promise<TeamResponse> => {
   const response = await fetchAPI(`teams/${id}`);
 
   if (!response.ok) {
-    throw new Error(`Couldn't fetch team: ${response.statusText}`);
+    if (response.status === 404) {
+      throw {
+        status: 404,
+        message: `Team with id ${id} not found`,
+      };
+    }
+
+    throw new Error(`Couldn't fetch team:`, {
+      cause: ((await response.json()) as TeamResponseError).detail,
+    });
   }
   return response.json() as Promise<TeamResponse>;
 };

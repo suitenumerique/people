@@ -1,4 +1,5 @@
 import { Loader } from '@openfun/cunningham-react';
+import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,9 +28,15 @@ interface TeamProps {
 
 const Team = ({ id }: TeamProps) => {
   const { t } = useTranslation();
-  const { data: team, isLoading, isError } = useTeam({ id });
+  const { data: team, isLoading, isError, error } = useTeam({ id });
+  const navigate = useNavigate();
 
   if (isError) {
+    if (error.status === 404) {
+      navigate.replace(`/404`);
+      return null;
+    }
+
     return (
       <Text
         $align="center"

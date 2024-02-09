@@ -94,4 +94,11 @@ test.describe('Teams Create', () => {
     await expect(buttonCreateHomepage).toBeVisible();
     await expect(page).toHaveURL(/\/teams$/);
   });
+
+  test('checks 404 on teams/[id] page', async ({ page }) => {
+    await page.goto('/teams/some-unknown-team');
+    await expect(page.getByText('404 - Page not found')).toBeVisible({
+      timeout: 15000,
+    });
+  });
 });
