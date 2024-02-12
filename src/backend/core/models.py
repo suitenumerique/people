@@ -316,7 +316,7 @@ class Team(BaseModel):
     """
 
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True, null=False)
+    slug = models.SlugField(max_length=100, unique=True, null=False, editable=False)
 
     users = models.ManyToManyField(
         User,
