@@ -121,8 +121,10 @@ def test_api_teams_update_authenticated_administrators():
     team.refresh_from_db()
     final_values = serializers.TeamSerializer(instance=team).data
     for key, value in final_values.items():
-        if key in ["id", "accesses"]:  # pylint: disable=R1733
+        if key in ["id", "accesses", "created_at"]:
             assert value == initial_values[key]
+        elif key == "updated_at":
+            assert value > initial_values[key]
         else:
             # name, slug and abilities successfully modified
             assert value == new_values[key]
@@ -153,8 +155,10 @@ def test_api_teams_update_authenticated_owners():
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
     for key, value in team_values.items():
-        if key in ["id", "accesses"]:
+        if key in ["id", "accesses", "created_at"]:
             assert value == old_team_values[key]
+        elif key == "updated_at":
+            assert value > old_team_values[key]
         else:
             # name, slug and abilities successfully modified
             assert value == new_team_values[key]

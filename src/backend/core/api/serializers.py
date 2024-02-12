@@ -129,8 +129,23 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Team
-        fields = ["id", "name", "accesses", "abilities", "slug"]
-        read_only_fields = ["id", "accesses", "abilities", "slug"]
+        fields = [
+            "id",
+            "name",
+            "accesses",
+            "abilities",
+            "slug",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "accesses",
+            "abilities",
+            "slug",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_abilities(self, team) -> dict:
         """Return abilities of the logged-in user on the instance."""

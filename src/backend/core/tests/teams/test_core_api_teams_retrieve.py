@@ -82,4 +82,6 @@ def test_api_teams_retrieve_authenticated_related():
         "name": team.name,
         "slug": team.slug,
         "abilities": team.get_abilities(user),
+        "created_at": team.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": team.updated_at.isoformat().replace("+00:00", "Z"),
     }

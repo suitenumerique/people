@@ -26,8 +26,10 @@ def test_api_teams_list_anonymous():
 
 
 def test_api_teams_list_authenticated():
-    """Authenticated users should be able to list teams
-    they arean owner/administrator/member of."""
+    """
+    Authenticated users should be able to list teams
+    they are an owner/administrator/member of.
+    """
     identity = factories.IdentityFactory()
     user = identity.user
 
