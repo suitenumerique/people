@@ -10,9 +10,9 @@ from rest_framework import (
     mixins,
     pagination,
     response,
+    throttling,
     viewsets,
 )
-from rest_framework.throttling import UserRateThrottle
 
 from core import models
 
@@ -103,7 +103,7 @@ class Pagination(pagination.PageNumberPagination):
     page_size_query_param = "page_size"
 
 
-class BurstRateThrottle(UserRateThrottle):
+class BurstRateThrottle(throttling.UserRateThrottle):
     """
     Throttle rate for minutes. See DRF section in settings for default value.
     """
@@ -111,7 +111,7 @@ class BurstRateThrottle(UserRateThrottle):
     scope = "burst"
 
 
-class SustainedRateThrottle(UserRateThrottle):
+class SustainedRateThrottle(throttling.UserRateThrottle):
     """
     Throttle rate for hours. See DRF section in settings for default value.
     """
@@ -401,3 +401,77 @@ class TeamAccessViewSet(
                 raise exceptions.ValidationError({"role": message})
 
         serializer.save()
+
+
+class InvitationViewset(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for user invitations to team.
+
+    GET /api/v1.0/teams/<team_id>/invitations/:<invitation_id>/
+        Return list of invitations related to that team or or one
+        team access if an id is provided.
+
+    POST /api/v1.0/teams/<team_id>/invitations/ with expected data:
+        - email: str
+        - role: str [owner|admin|member]
+        - issuer : User, automatically added from user making query, if allowed
+        - team : Team, automatically added from requested URI
+        Return newly created invitation
+
+    PUT / PATCH : Not permitted. Instead of updating your invitation,
+        delete and create a new one.
+
+    DELETE  /api/v1.0/teams/<team_id>/invitations/<invitation_id>/
+        Delete targeted invitation
+    """
+
+    lookup_field = "id"
+    pagination_class = Pagination
+    permission_classes = [permissions.AccessPermission]
+    queryset = (
+        models.Invitation.objects.all().select_related("team").order_by("-created_at")
+    )
+    serializer_class = serializers.InvitationSerializer
+
+    def get_permissions(self):
+        """User only needs to be authenticated to list invitations"""
+        if self.action == "list":
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            return super().get_permissions()
+
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["team_id"] = self.kwargs["team_id"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(team=self.kwargs["team_id"])
+
+        if self.action == "list":
+            # Determine which role the logged-in user has in the team
+            user_role_query = models.TeamAccess.objects.filter(
+                user=self.request.user, team=self.kwargs["team_id"]
+            ).values("role")[:1]
+
+            queryset = (
+                # The logged-in user should be part of a team to see its accesses
+                queryset.filter(
+                    team__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each team access
+                .annotate(user_role=Subquery(user_role_query))
+                .distinct()
+            )
+        return queryset

@@ -229,5 +229,31 @@ class InvitationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Invitation
-        fields = ["email", "team", "role", "issuer"]
-        read_only_fields = ["team", "issuer"]
+        fields = ["id", "created_at", "email", "team", "role", "issuer", "is_expired"]
+        read_only_fields = ["id", "created_at", "team", "issuer", "is_expired"]
+
+    def validate(self, attrs):
+        """Validate and restrict invitation to new user based on email."""
+
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        try:
+            team_id = self.context["team_id"]
+        except KeyError as exc:
+            raise exceptions.ValidationError(
+                "You must set a team ID in kwargs to create a new team invitation."
+            ) from exc
+
+        if not models.TeamAccess.objects.filter(
+            team=team_id,
+            user=user,
+            role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
+        ).exists():
+            raise exceptions.PermissionDenied(
+                "You are not allowed to manage invitation for this team."
+            )
+
+        attrs["team_id"] = team_id
+        attrs["issuer"] = user
+        return attrs

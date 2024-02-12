@@ -463,11 +463,65 @@ class Invitation(BaseModel):
         related_name="invitations",
     )
 
+    class Meta:
+        db_table = "people_invitation"
+        verbose_name = _("Team invitation")
+        verbose_name_plural = _("Team invitations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "team"], name="email_and_team_unique_together"
+            )
+        ]
+
     def __str__(self):
         return f"{self.email} invited to {self.team}"
+
+    def save(self, *args, **kwargs):
+        """Make invitations read-only."""
+        if self.created_at:
+            raise exceptions.PermissionDenied()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        """Validate fields."""
+        super().clean()
+
+        # Check if an identity already exists for the provided email
+        if Identity.objects.filter(email=self.email).exists():
+            raise exceptions.ValidationError(
+                {"email": _("This email is already associated to a registered user.")}
+            )
 
     @property
     def is_expired(self):
         """Calculate if invitation is still valid or has expired."""
+        if not self.created_at:
+            return None
+
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
         return timezone.now() > (self.created_at + validity_duration)
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        can_delete = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.user_role
+            except AttributeError:
+                try:
+                    role = self.team.accesses.filter(user=user).values("role")[0][
+                        "role"
+                    ]
+                except (self._meta.model.DoesNotExist, IndexError):
+                    role = None
+
+            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
+
+        return {
+            "delete": can_delete,
+            "get": bool(role),
+            "patch": False,
+            "put": False,
+        }

@@ -22,6 +22,12 @@ team_related_router.register(
     basename="team_accesses",
 )
 
+team_related_router.register(
+    "invitations",
+    viewsets.InvitationViewset,
+    basename="invitations",
+)
+
 urlpatterns = [
     path(
         f"api/{settings.API_VERSION}/",
