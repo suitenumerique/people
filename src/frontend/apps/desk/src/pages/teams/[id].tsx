@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
-import { useTeam } from '@/features/teams/api/useTeam';
+import { TeamInfo, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
 import TeamLayout from './TeamLayout';
@@ -43,7 +43,7 @@ const Team = ({ id }: TeamProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !team) {
     return (
       <Box $align="center" $justify="center" $height="100%">
         <Loader />
@@ -51,11 +51,7 @@ const Team = ({ id }: TeamProps) => {
     );
   }
 
-  return (
-    <Text as="h3" $textAlign="center">
-      Teams: {team?.name}
-    </Text>
-  );
+  return <TeamInfo team={team} />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {

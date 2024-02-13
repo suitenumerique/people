@@ -69,6 +69,7 @@
   --c--theme--colors--success-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--warning-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--danger-text: var(--c--theme--colors--greyscale-000);
+  --c--theme--colors--card-border: #ddd;
   --c--theme--colors--primary-bg: #fafafa;
   --c--theme--colors--primary-150: #e5eefa;
   --c--theme--colors--info-150: #e5eefa;
@@ -314,6 +315,7 @@
 }
 
 .cunningham-theme--dsfr {
+  --c--theme--colors--card-border: #ddd;
   --c--theme--colors--primary-text: #000091;
   --c--theme--colors--primary-100: #f5f5fe;
   --c--theme--colors--primary-200: #ececfe;
@@ -713,6 +715,10 @@
   color: var(--c--theme--colors--danger-text);
 }
 
+.clr-card-border {
+  color: var(--c--theme--colors--card-border);
+}
+
 .clr-primary-bg {
   color: var(--c--theme--colors--primary-bg);
 }
@@ -1003,6 +1009,10 @@
 
 .bg-danger-text {
   background-color: var(--c--theme--colors--danger-text);
+}
+
+.bg-card-border {
+  background-color: var(--c--theme--colors--card-border);
 }
 
 .bg-primary-bg {

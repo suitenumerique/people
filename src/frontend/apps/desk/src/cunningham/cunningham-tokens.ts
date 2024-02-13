@@ -73,6 +73,7 @@ export const tokens = {
           'success-text': '#FFFFFF',
           'warning-text': '#FFFFFF',
           'danger-text': '#FFFFFF',
+          'card-border': '#DDDDDD',
           'primary-bg': '#FAFAFA',
           'primary-150': '#E5EEFA',
           'info-150': '#E5EEFA',
@@ -322,6 +323,7 @@ export const tokens = {
     dsfr: {
       theme: {
         colors: {
+          'card-border': '#DDDDDD',
           'primary-text': '#000091',
           'primary-100': '#f5f5fe',
           'primary-200': '#ececfe',

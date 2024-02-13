@@ -7,7 +7,7 @@ test.beforeEach(async ({ page, browserName }) => {
   await keyCloakSignIn(page, browserName);
 });
 
-test.describe('Teams', () => {
+test.describe('Teams Create', () => {
   test('checks all the create team elements are visible', async ({ page }) => {
     const buttonCreateHomepage = page.getByRole('button', {
       name: 'Create a new team',
@@ -71,7 +71,7 @@ test.describe('Teams', () => {
     await page.getByText('Team name').fill(teamName);
     await page.getByRole('button', { name: 'Create the team' }).click();
 
-    const elTeam = page.getByText(`Teams: ${teamName}`);
+    const elTeam = page.getByText(`Members of “${teamName}“`);
     await expect(elTeam).toBeVisible();
 
     await panel.getByRole('button', { name: 'Add a team' }).click();
