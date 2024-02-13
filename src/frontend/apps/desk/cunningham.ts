@@ -3,6 +3,7 @@ const config = {
     default: {
       theme: {
         colors: {
+          'primary-bg': '#FAFAFA',
           'primary-100': '#EDF5FA',
           'primary-150': '#E5EEFA',
           'info-150': '#E5EEFA',
@@ -259,6 +260,16 @@ const config = {
         },
         button: {
           'border-radius': '2px',
+          primary: {
+            background: {
+              color: 'var(--c--theme--colors--primary-text)',
+              'color-hover': 'var(--c--theme--colors--primary-700)',
+              'color-active': 'var(--c--theme--colors--primary-900)',
+            },
+            color: '#ffffff',
+            'color-hover': '#ffffff',
+            'color-active': '#ffffff',
+          },
         },
         'forms-checkbox': {
           'border-radius': '0',

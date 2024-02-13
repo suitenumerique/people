@@ -46,7 +46,9 @@ test.describe('Menu', () => {
       page,
     }) => {
       await expect(
-        page.locator('h1').first().getByText('Hello Desk !'),
+        page.getByRole('button', {
+          name: 'Create a new team',
+        }),
       ).toBeVisible();
 
       const menu = page.locator('menu').first();
@@ -57,11 +59,15 @@ test.describe('Menu', () => {
       // eslint-disable-next-line playwright/no-conditional-in-test
       if (isDefault) {
         await expect(
-          page.locator('h1').first().getByText('Hello Desk !'),
+          page.getByRole('button', {
+            name: 'Create a new team',
+          }),
         ).toBeVisible();
       } else {
         await expect(
-          page.locator('h1').first().getByText('Hello Desk !'),
+          page.getByRole('button', {
+            name: 'Create a new team',
+          }),
         ).toBeHidden();
 
         const reg = new RegExp(name.toLowerCase());

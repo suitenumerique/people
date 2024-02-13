@@ -272,6 +272,13 @@ input:-webkit-autofill:focus {
   color: var(--c--components--button--primary--color);
 }
 
+.c__button--primary:hover {
+  background-color: var(
+    --c--components--button--primary--background--color-hover
+  );
+  color: var(--c--components--button--primary--color-hover);
+}
+
 .c__button--primary:active,
 .c__button--primary.c__button--active {
   background-color: var(

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box } from '@/components/';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import MenuItem from './MenuItems';
 import IconRecent from './assets/icon-clock.svg';
 import IconContacts from './assets/icon-contacts.svg';
-import IconGroup from './assets/icon-group.svg';
 import IconSearch from './assets/icon-search.svg';
 import IconFavorite from './assets/icon-stars.svg';
 

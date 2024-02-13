@@ -10,7 +10,9 @@ test.beforeEach(async ({ page }) => {
 test.describe('Language', () => {
   test('checks the language picker', async ({ page }) => {
     await expect(
-      page.locator('h1').first().getByText('Hello Desk !'),
+      page.getByRole('button', {
+        name: 'Create a new team',
+      }),
     ).toBeVisible();
 
     const header = page.locator('header').first();
@@ -19,7 +21,9 @@ test.describe('Language', () => {
     await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
 
     await expect(
-      page.locator('h1').first().getByText('Bonjour Desk !'),
+      page.getByRole('button', {
+        name: 'Créer un nouveau groupe',
+      }),
     ).toBeVisible();
   });
 });

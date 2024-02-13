@@ -24,7 +24,8 @@
       "{{label}} button": "Bouton {{label}}",
       "{{label}} icon": "Icône {{label}}",
       "Team name": "Nom de l’équipe",
-      "Create Team": "Créer une équipe"
+      "Create Team": "Créer une équipe",
+      "Create a new team": "Créer un nouveau groupe"
     }
   }
 }

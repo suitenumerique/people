@@ -69,6 +69,7 @@
   --c--theme--colors--success-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--warning-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--danger-text: var(--c--theme--colors--greyscale-000);
+  --c--theme--colors--primary-bg: #fafafa;
   --c--theme--colors--primary-150: #e5eefa;
   --c--theme--colors--info-150: #e5eefa;
   --c--theme--font--sizes--h1: 2.2rem;
@@ -387,6 +388,18 @@
   --c--theme--font--families--base: marianne;
   --c--components--alert--border-radius: 0;
   --c--components--button--border-radius: 2px;
+  --c--components--button--primary--background--color: var(
+    --c--theme--colors--primary-text
+  );
+  --c--components--button--primary--background--color-hover: var(
+    --c--theme--colors--primary-700
+  );
+  --c--components--button--primary--background--color-active: var(
+    --c--theme--colors--primary-900
+  );
+  --c--components--button--primary--color: #fff;
+  --c--components--button--primary--color-hover: #fff;
+  --c--components--button--primary--color-active: #fff;
   --c--components--forms-checkbox--border-radius: 0;
   --c--components--forms-switch--handle-border-radius: 2px;
   --c--components--forms-switch--rail-border-radius: 4px;
@@ -677,6 +690,10 @@
   color: var(--c--theme--colors--danger-text);
 }
 
+.clr-primary-bg {
+  color: var(--c--theme--colors--primary-bg);
+}
+
 .clr-primary-150 {
   color: var(--c--theme--colors--primary-150);
 }
@@ -963,6 +980,10 @@
 
 .bg-danger-text {
   background-color: var(--c--theme--colors--danger-text);
+}
+
+.bg-primary-bg {
+  background-color: var(--c--theme--colors--primary-bg);
 }
 
 .bg-primary-150 {

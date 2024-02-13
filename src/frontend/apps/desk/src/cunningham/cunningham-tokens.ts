@@ -73,6 +73,7 @@ export const tokens = {
           'success-text': '#FFFFFF',
           'warning-text': '#FFFFFF',
           'danger-text': '#FFFFFF',
+          'primary-bg': '#FAFAFA',
           'primary-150': '#E5EEFA',
           'info-150': '#E5EEFA',
         },
@@ -396,7 +397,19 @@ export const tokens = {
       },
       components: {
         alert: { 'border-radius': '0' },
-        button: { 'border-radius': '2px' },
+        button: {
+          'border-radius': '2px',
+          primary: {
+            background: {
+              color: 'var(--c--theme--colors--primary-text)',
+              'color-hover': 'var(--c--theme--colors--primary-700)',
+              'color-active': 'var(--c--theme--colors--primary-900)',
+            },
+            color: '#ffffff',
+            'color-hover': '#ffffff',
+            'color-active': '#ffffff',
+          },
+        },
         'forms-checkbox': { 'border-radius': '0' },
         'forms-switch': {
           'handle-border-radius': '2px',

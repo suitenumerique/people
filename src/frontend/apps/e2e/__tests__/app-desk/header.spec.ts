@@ -24,7 +24,7 @@ test.describe('Header', () => {
     );
     await expect(header.locator('h2').getByText('Desk')).toHaveCSS(
       'font-family',
-      'marianne',
+      /Marianne/i,
     );
 
     await expect(

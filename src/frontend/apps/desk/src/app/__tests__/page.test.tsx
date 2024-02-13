@@ -11,8 +11,10 @@ describe('Page', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Hello Desk !',
-    );
+    expect(
+      screen.getByRole('button', {
+        name: /Create a new team/i,
+      }),
+    ).toBeInTheDocument();
   });
 });

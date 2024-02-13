@@ -2,9 +2,22 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIList, fetchAPI } from '@/api';
 
+enum Role {
+  MEMBER = 'member',
+  ADMIN = 'administrator',
+  OWNER = 'owner',
+}
+
+interface Access {
+  id: string;
+  role: Role;
+  user: string;
+}
+
 interface TeamResponse {
   id: string;
   name: string;
+  accesses: Access[];
 }
 
 type TeamsResponse = APIList<TeamResponse>;

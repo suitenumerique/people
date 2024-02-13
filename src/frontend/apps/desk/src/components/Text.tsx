@@ -14,6 +14,7 @@ export interface TextProps extends BoxProps {
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
   $weight?: CSSProperties['fontWeight'];
+  $textAlign?: CSSProperties['textAlign'];
   // eslint-disable-next-line @typescript-eslint/ban-types
   $size?: TextSizes | (string & {});
   $theme?:
@@ -38,6 +39,7 @@ export interface TextProps extends BoxProps {
 }
 
 export const TextStyled = styled(Box)<TextProps>`
+  ${({ $textAlign }) => $textAlign && `text-align: ${$textAlign};`}
   ${({ $weight }) => $weight && `font-weight: ${$weight};`}
   ${({ $size }) =>
     $size &&
