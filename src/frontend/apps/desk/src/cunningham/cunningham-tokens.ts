@@ -342,6 +342,7 @@ export const tokens = {
           'secondary-700': '#3b2424',
           'secondary-800': '#341f1f',
           'secondary-900': '#2b1919',
+          'greyscale-text': '#303C4B',
           'greyscale-000': '#cecece',
           'greyscale-100': '#f6f6f6',
           'greyscale-200': '#eeeeee',

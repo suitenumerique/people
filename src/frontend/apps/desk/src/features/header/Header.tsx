@@ -57,7 +57,7 @@ export const Header = () => {
             />
             <Box $align="center" $gap="1rem" $direction="row">
               <Image priority src={IconDesk} alt={t('Desk Logo')} />
-              <Text className="m-0" as="h2">
+              <Text className="m-0" as="h2" $theme="primary">
                 {t('Desk')}
               </Text>
             </Box>
@@ -79,7 +79,9 @@ export const Header = () => {
           </Box>
           <Box $direction="row">
             <Box $direction="row" $align="center" $gap="1rem">
-              <Text $weight="bold">John Doe</Text>
+              <Text $weight="bold" $theme="primary">
+                John Doe
+              </Text>
               <Image
                 width={58}
                 height={58}

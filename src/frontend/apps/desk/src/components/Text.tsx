@@ -55,7 +55,7 @@ export const Text = ({
   return (
     <TextStyled
       as="span"
-      $theme="primary"
+      $theme="greyscale"
       $variation="text"
       {...props}
     ></TextStyled>

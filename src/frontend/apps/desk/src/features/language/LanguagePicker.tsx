@@ -49,7 +49,7 @@ export const LanguagePicker = () => {
           $align="center"
         >
           <Image priority src={IconLanguage} alt={t('Language Icon')} />
-          <Text>{lang.toUpperCase()}</Text>
+          <Text $theme="primary">{lang.toUpperCase()}</Text>
         </Box>
       ),
     }));
