@@ -10,7 +10,6 @@ import { LanguagePicker } from '../language/';
 
 import { default as IconCells } from './assets/icon-cells.svg?url';
 import { default as IconDesk } from './assets/icon-desk.svg?url';
-import { default as IconFAQ } from './assets/icon-faq.svg?url';
 import { default as IconGouv } from './assets/icon-gouv.svg?url';
 import { default as IconMarianne } from './assets/icon-marianne.svg?url';
 import IconMyAccount from './assets/icon-my-account.png';
@@ -76,14 +75,6 @@ export const Header = () => {
           $direction="row"
         >
           <Box $align="center" $direction="row">
-            <Button
-              aria-label={t('Access to FAQ')}
-              icon={<Image priority src={IconFAQ} alt={t('FAQ Icon')} />}
-              className="m-s c__button-no-bg p-0"
-              color="tertiary"
-            >
-              {t('FAQ')}
-            </Button>
             <LanguagePicker />
           </Box>
           <Box $direction="row">

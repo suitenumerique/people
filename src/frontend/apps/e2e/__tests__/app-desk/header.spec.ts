@@ -27,12 +27,6 @@ test.describe('Header', () => {
       /Marianne/i,
     );
 
-    await expect(
-      header.getByRole('button', { name: 'Access to FAQ' }),
-    ).toBeVisible();
-    await expect(header.getByAltText('FAQ Icon')).toBeVisible();
-    await expect(header.getByText('FAQ')).toBeVisible();
-
     await expect(header.getByAltText('Cells icon')).toBeVisible();
 
     await expect(header.getByAltText('Language Icon')).toBeVisible();
