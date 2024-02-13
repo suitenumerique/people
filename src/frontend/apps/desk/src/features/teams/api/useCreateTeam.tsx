@@ -12,7 +12,7 @@ export interface CreateTeamResponseError {
   detail: string;
 }
 
-export const createTeam = async (name: string) => {
+export const createTeam = async (name: string): Promise<CreateTeamResponse> => {
   const response = await fetchAPI(`teams/`, {
     method: 'POST',
     body: JSON.stringify({
@@ -24,17 +24,22 @@ export const createTeam = async (name: string) => {
     throw new Error(`Couldn't create team: ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<CreateTeamResponse>;
 };
 
-export function useCreateTeam() {
+interface CreateTeamProps {
+  onSuccess: (data: CreateTeamResponse) => void;
+}
+
+export function useCreateTeam({ onSuccess }: CreateTeamProps) {
   const queryClient = useQueryClient();
   return useMutation<CreateTeamResponse, CreateTeamResponseError, string>({
     mutationFn: createTeam,
-    onSuccess: () => {
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_TEAM],
       });
+      onSuccess(data);
     },
   });
 }

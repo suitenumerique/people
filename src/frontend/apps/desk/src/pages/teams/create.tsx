@@ -1,4 +1,5 @@
 import { Button, Input, Loader } from '@openfun/cunningham-react';
+import { useRouter } from 'next/navigation';
 import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +13,16 @@ import TeamLayout from './TeamLayout';
 
 const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
-  const { mutate: createTeam, isError, isPending } = useCreateTeam();
+  const router = useRouter();
+  const {
+    mutate: createTeam,
+    isError,
+    isPending,
+  } = useCreateTeam({
+    onSuccess: (team) => {
+      router.push(`/teams/${team.id}`);
+    },
+  });
   const [teamName, setTeamName] = useState('');
   const { colorsTokens } = useCunninghamTheme();
 

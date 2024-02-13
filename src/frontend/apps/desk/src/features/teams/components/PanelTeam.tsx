@@ -2,10 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group.svg';
-import { Box, Text } from '@/components';
+import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { TeamResponse } from '../api/useTeams';
+import { TeamResponse } from '../api/types';
 import IconNone from '../assets/icon-none.svg';
 
 interface TeamProps {
@@ -29,29 +29,33 @@ export const PanelTeam = ({ team }: TeamProps) => {
   };
 
   return (
-    <Box as="li" $direction="row" $align="center" $gap="0.5rem">
-      {hasMembers ? (
-        <IconGroup
-          aria-label={t(`Teams icon`)}
-          color={colorsTokens()['primary-500']}
-          {...commonProps}
-          style={{
-            ...commonProps.style,
-            border: `1px solid ${colorsTokens()['primary-300']}`,
-          }}
-        />
-      ) : (
-        <IconNone
-          aria-label={t(`Empty teams icon`)}
-          color={colorsTokens()['greyscale-500']}
-          {...commonProps}
-          style={{
-            ...commonProps.style,
-            border: `1px solid ${colorsTokens()['greyscale-300']}`,
-          }}
-        />
-      )}
-      <Text $weight="bold">{team.name}</Text>
+    <Box as="li">
+      <StyledLink href={`/teams/${team.id}`}>
+        <Box $align="center" $direction="row" $gap="0.5rem">
+          {hasMembers ? (
+            <IconGroup
+              aria-label={t(`Teams icon`)}
+              color={colorsTokens()['primary-500']}
+              {...commonProps}
+              style={{
+                ...commonProps.style,
+                border: `1px solid ${colorsTokens()['primary-300']}`,
+              }}
+            />
+          ) : (
+            <IconNone
+              aria-label={t(`Empty teams icon`)}
+              color={colorsTokens()['greyscale-500']}
+              {...commonProps}
+              style={{
+                ...commonProps.style,
+                border: `1px solid ${colorsTokens()['greyscale-300']}`,
+              }}
+            />
+          )}
+          <Text $weight="bold">{team.name}</Text>
+        </Box>
+      </StyledLink>
     </Box>
   );
 };

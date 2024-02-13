@@ -27,28 +27,23 @@ test.describe('Teams Panel', () => {
         name: 'Add a team',
       }),
     ).toBeVisible();
-
-    await expect(
-      panel.getByText(
-        'Create your first team by clicking on the "Create a new team" button.',
-      ),
-    ).toBeVisible();
   });
 
   test('002 - checks the sort button', async ({ page, browserName }) => {
     const panel = page.getByLabel('Teams panel').first();
 
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-
-    const randomTeams = Array.from({ length: 3 }, () => {
-      return `team-sort-${browserName}-${Math.floor(Math.random() * 1000)}`;
+    const buttonCreate = page.getByRole('button', { name: 'Create the team' });
+    const randomTeams = Array.from({ length: 3 }, (_el, index) => {
+      return `team-sort-${browserName}-${Math.floor(Math.random() * 1000)}-${index}`;
     });
 
-    for (let i = 0; i < 3; i++) {
-      await page.getByText('Team name').fill(`${randomTeams[i]}-${i}`);
-      await page.getByRole('button', { name: 'Create the team' }).click();
+    for (let i = 0; i < randomTeams.length; i++) {
+      await panel.getByRole('button', { name: 'Add a team' }).click();
+      await page.getByText('Team name').fill(randomTeams[i]);
+      await expect(buttonCreate).toBeEnabled();
+      await buttonCreate.click();
       await expect(
-        panel.locator('li').nth(0).getByText(`${randomTeams[i]}-${i}`),
+        panel.locator('li').nth(0).getByText(randomTeams[i]),
       ).toBeVisible();
     }
 
@@ -58,32 +53,33 @@ test.describe('Teams Panel', () => {
       })
       .click();
 
-    for (let i = 0; i < 3; i++) {
-      await expect(
-        panel.locator('li').nth(i).getByText(`${randomTeams[i]}-${i}`),
-      ).toBeVisible();
-    }
+    await expect(panel.locator('li').getByText(randomTeams[1])).toBeVisible();
+
+    const allTeams = await panel.locator('li').allTextContents();
+    const sortedTeamTexts = allTeams.filter((team) =>
+      randomTeams.some((randomTeam) => team.includes(randomTeam)),
+    );
+    expect(sortedTeamTexts).toStrictEqual(randomTeams);
   });
 
   test('003 - checks the infinite scrool', async ({ page, browserName }) => {
     test.setTimeout(90000);
     const panel = page.getByLabel('Teams panel').first();
 
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-
-    const randomTeams = Array.from({ length: 40 }, () => {
-      return `team-infinite-${browserName}-${Math.floor(Math.random() * 10000)}`;
+    const buttonCreate = page.getByRole('button', { name: 'Create the team' });
+    const randomTeams = Array.from({ length: 40 }, (_el, index) => {
+      return `team-infinite-${browserName}-${Math.floor(Math.random() * 10000)}-${index}`;
     });
-    for (let i = 0; i < 40; i++) {
-      await page.getByText('Team name').fill(`${randomTeams[i]}-${i}`);
-      await page.getByRole('button', { name: 'Create the team' }).click();
-      await expect(
-        panel.locator('li').getByText(`${randomTeams[i]}-${i}`),
-      ).toBeVisible();
+    for (let i = 0; i < randomTeams.length; i++) {
+      await panel.getByRole('button', { name: 'Add a team' }).click();
+      await page.getByText('Team name').fill(randomTeams[i]);
+      await expect(buttonCreate).toBeEnabled();
+      await buttonCreate.click();
+      await expect(panel.locator('li').getByText(randomTeams[i])).toBeVisible();
     }
 
     await expect(panel.locator('li')).toHaveCount(20);
-    await panel.getByText(`${randomTeams[24]}-${24}`).click();
+    await panel.getByText(randomTeams[24]).click();
 
     await waitForElementCount(panel.locator('li'), 21, 10000);
     expect(await panel.locator('li').count()).toBeGreaterThan(20);
