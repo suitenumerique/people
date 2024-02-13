@@ -23,7 +23,6 @@ export const Menu = () => {
       $height="100%"
       $width="3.75rem"
       $justify="space-between"
-      $direction="column"
     >
       <Box className="pt-b" $direction="column" $gap="0.8rem">
         <MenuItem Icon={IconSearch} label={t('Search')} href="/" />

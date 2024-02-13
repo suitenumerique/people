@@ -21,6 +21,7 @@ export interface BoxProps {
 
 export const Box = styled('div')<BoxProps>`
   display: flex;
+  flex-direction: column;
   ${({ $align }) => $align && `align-items: ${$align};`}
   ${({ $background }) => $background && `background: ${$background};`}
   ${({ $color }) => $color && `color: ${$color};`}

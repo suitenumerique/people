@@ -7,12 +7,11 @@ export default function InnerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Box as="main" $direction="column" $height="100vh" $css="overflow:hidden;">
+    <Box as="main" $height="100vh" $css="overflow:hidden;">
       <Header />
-      <Box $css="flex: 1;">
+      <Box $css="flex: 1;" $direction="row">
         <Menu />
         <Box
-          $direction="column"
           $height={`calc(100vh - ${HEADER_HEIGHT})`}
           $width="100%"
           $css="overflow: auto;"

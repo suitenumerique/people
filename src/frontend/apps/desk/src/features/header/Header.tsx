@@ -42,16 +42,21 @@ export const Header = () => {
   return (
     <StyledHeader>
       <RedStripe />
-      <Box className="ml-bx mr-bx" $align="center" $justify="space-between">
-        <Box $direction="column">
+      <Box
+        className="ml-bx mr-bx"
+        $align="center"
+        $justify="space-between"
+        $direction="row"
+      >
+        <Box>
           <Image priority src={IconMarianne} alt={t('Marianne Logo')} />
-          <Box $align="center" $gap="6rem">
+          <Box $align="center" $gap="6rem" $direction="row">
             <Image
               priority
               src={IconGouv}
               alt={t('Freedom Equality Fraternity Logo')}
             />
-            <Box $align="center" $gap="1rem">
+            <Box $align="center" $gap="1rem" $direction="row">
               <Image priority src={IconDesk} alt={t('Desk Logo')} />
               <Text className="m-0" as="h2">
                 {t('Desk')}
@@ -68,18 +73,20 @@ export const Header = () => {
           `}
           $gap="5rem"
           $justify="flex-end"
+          $direction="row"
         >
-          <Box $align="center">
+          <Box $align="center" $direction="row">
             <Button
               aria-label={t('Access to FAQ')}
               icon={<Image priority src={IconFAQ} alt={t('FAQ Icon')} />}
               className="m-s c__button-no-bg p-0"
+              color="tertiary"
             >
               {t('FAQ')}
             </Button>
             <LanguagePicker />
           </Box>
-          <Box>
+          <Box $direction="row">
             <Box $direction="row" $align="center" $gap="1rem">
               <Text $weight="bold">John Doe</Text>
               <Image
