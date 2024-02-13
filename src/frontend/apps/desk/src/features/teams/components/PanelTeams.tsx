@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
 
-import { TeamResponse } from '../api/types';
+import { Team } from '../api/types';
 import { useTeams } from '../api/useTeams';
 import { useTeamStore } from '../store/useTeamsStore';
 
@@ -14,7 +14,7 @@ import { PanelTeam } from './PanelTeam';
 interface PanelTeamsStateProps {
   isLoading: boolean;
   isError: boolean;
-  teams?: TeamResponse[];
+  teams?: Team[];
 }
 
 const PanelTeamsState = ({
@@ -76,7 +76,7 @@ export const PanelTeams = () => {
   const teams = useMemo(() => {
     return data?.pages.reduce((acc, page) => {
       return acc.concat(page.results);
-    }, [] as TeamResponse[]);
+    }, [] as Team[]);
   }, [data?.pages]);
 
   return (

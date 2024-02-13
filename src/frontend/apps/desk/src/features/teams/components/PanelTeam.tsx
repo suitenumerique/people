@@ -6,11 +6,11 @@ import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { TeamResponse } from '../api/types';
+import { Team } from '../api/types';
 import IconNone from '../assets/icon-none.svg';
 
 interface TeamProps {
-  team: TeamResponse;
+  team: Team;
 }
 
 export const PanelTeam = ({ team }: TeamProps) => {

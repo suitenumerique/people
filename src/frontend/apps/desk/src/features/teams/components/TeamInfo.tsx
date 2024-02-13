@@ -5,10 +5,10 @@ import IconGroup from '@/assets/icons/icon-group2.svg';
 import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { TeamResponse } from '../api/types';
+import { Team } from '../api/types';
 
 interface TeamInfoProps {
-  team: TeamResponse;
+  team: Team;
 }
 
 export const TeamInfo = ({ team }: TeamInfoProps) => {

@@ -7,7 +7,7 @@ import {
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
-import { TeamResponse } from './types';
+import { Team } from './types';
 
 export enum TeamsOrdering {
   BY_CREATED_ON = 'created_at',
@@ -21,7 +21,7 @@ type TeamsAPIParams = TeamsParams & {
   page: number;
 };
 
-type TeamsResponse = APIList<TeamResponse>;
+type TeamsResponse = APIList<Team>;
 
 export const getTeams = async ({
   ordering,
@@ -33,6 +33,7 @@ export const getTeams = async ({
   if (!response.ok) {
     throw new APIError('Failed to get the teams', await errorCauses(response));
   }
+
   return response.json() as Promise<TeamsResponse>;
 };
 

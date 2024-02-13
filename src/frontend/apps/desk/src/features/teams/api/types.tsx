@@ -10,7 +10,7 @@ export interface Access {
   user: string;
 }
 
-export interface TeamResponse {
+export interface Team {
   id: string;
   name: string;
   accesses: Access[];
