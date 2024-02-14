@@ -8,8 +8,6 @@ from core import factories
 
 from people.settings import REST_FRAMEWORK  # pylint: disable=E0611
 
-from .utils import OIDCToken
-
 pytestmark = pytest.mark.django_db
 
 
@@ -19,9 +17,9 @@ def test_throttle():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
 
     client = APIClient()
+    client.force_login(user)
     endpoint = "/api/v1.0/users/"
 
     # loop to activate throttle protection
@@ -29,8 +27,8 @@ def test_throttle():
         REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["burst"].replace("/minute", "")
     )
     for _ in range(0, throttle_limit):
-        client.get(endpoint, HTTP_AUTHORIZATION=f"Bearer {jwt_token}")
+        client.get(endpoint)
 
     # this call should err
-    response = client.get(endpoint, HTTP_AUTHORIZATION=f"Bearer {jwt_token}")
+    response = client.get(endpoint)
     assert response.status_code == 429  # too many requests

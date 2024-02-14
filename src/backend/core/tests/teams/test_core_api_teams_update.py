@@ -15,7 +15,6 @@ from rest_framework.test import APIClient
 
 from core import factories
 from core.api import serializers
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -46,18 +45,18 @@ def test_api_teams_update_authenticated_unrelated():
     Authenticated users should not be allowed to update a team to which they are not related.
     """
     identity = factories.IdentityFactory()
-    user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(identity.user)
 
     team = factories.TeamFactory()
     old_team_values = serializers.TeamSerializer(instance=team).data
 
     new_team_values = serializers.TeamSerializer(instance=factories.TeamFactory()).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_team_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
@@ -75,17 +74,18 @@ def test_api_teams_update_authenticated_members():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "member")])
     old_team_values = serializers.TeamSerializer(instance=team).data
 
     new_team_values = serializers.TeamSerializer(instance=factories.TeamFactory()).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_team_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_403_FORBIDDEN
@@ -102,18 +102,19 @@ def test_api_teams_update_authenticated_administrators():
     """Administrators of a team should be allowed to update it."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     initial_values = serializers.TeamSerializer(instance=team).data
 
     # generate new random values
     new_values = serializers.TeamSerializer(instance=factories.TeamFactory.build()).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == HTTP_200_OK
 
@@ -132,7 +133,9 @@ def test_api_teams_update_authenticated_owners():
     apart from read-only fields."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     old_team_values = serializers.TeamSerializer(instance=team).data
@@ -140,11 +143,10 @@ def test_api_teams_update_authenticated_owners():
     new_team_values = serializers.TeamSerializer(
         instance=factories.TeamFactory.build()
     ).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_team_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == HTTP_200_OK
 
@@ -165,18 +167,19 @@ def test_api_teams_update_administrator_or_owner_of_another():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     factories.TeamFactory(users=[(user, random.choice(["administrator", "owner"]))])
     team = factories.TeamFactory(name="Old name")
     old_team_values = serializers.TeamSerializer(instance=team).data
 
     new_team_values = serializers.TeamSerializer(instance=factories.TeamFactory()).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/",
         new_team_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
@@ -194,7 +197,9 @@ def test_api_teams_update_existing_slug_should_return_error():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     factories.TeamFactory(name="Existing team", users=[(user, "administrator")])
     my_team = factories.TeamFactory(name="New team", users=[(user, "administrator")])
@@ -202,11 +207,10 @@ def test_api_teams_update_existing_slug_should_return_error():
     updated_values = serializers.TeamSerializer(instance=my_team).data
     # Update my team's name for existing team. Creates a duplicate slug
     updated_values["name"] = "existing team"
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/teams/{my_team.id!s}/",
         updated_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()["slug"] == ["Team with this Slug already exists."]

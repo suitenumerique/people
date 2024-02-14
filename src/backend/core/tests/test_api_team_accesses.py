@@ -10,8 +10,6 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 
-from .utils import OIDCToken
-
 pytestmark = pytest.mark.django_db
 
 
@@ -34,18 +32,18 @@ def test_api_team_accesses_list_authenticated_unrelated():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
-
     team = factories.TeamFactory()
     factories.TeamAccessFactory.create_batch(3, team=team)
+
+    client = APIClient()
+    client.force_login(user)
 
     # Accesses for other teams to which the user is related should not be listed either
     other_access = factories.TeamAccessFactory(user=user)
     factories.TeamAccessFactory(team=other_access.team)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -63,7 +61,9 @@ def test_api_team_accesses_list_authenticated_related():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory()
     user_access = models.TeamAccess.objects.create(team=team, user=user)  # random role
@@ -73,9 +73,8 @@ def test_api_team_accesses_list_authenticated_related():
     other_access = factories.TeamAccessFactory(user=user)
     factories.TeamAccessFactory(team=other_access.team)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -129,15 +128,14 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team)
 
-    response = APIClient().get(
-        f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
-    )
+    response = client.get(f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/")
     assert response.status_code == 403
     assert response.json() == {
         "detail": "You do not have permission to perform this action."
@@ -148,9 +146,8 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
         factories.TeamAccessFactory(),
         factories.TeamAccessFactory(user=user),
     ]:
-        response = APIClient().get(
+        response = client.get(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         assert response.status_code == 404
@@ -164,14 +161,15 @@ def test_api_team_accesses_retrieve_authenticated_related():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[user])
     access = factories.TeamAccessFactory(team=team)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -211,18 +209,19 @@ def test_api_team_accesses_create_authenticated_unrelated():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     other_user = factories.UserFactory()
     team = factories.TeamFactory()
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -236,21 +235,21 @@ def test_api_team_accesses_create_authenticated_member():
     """Members of a team should not be allowed to create team accesses."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "member")])
     other_user = factories.UserFactory()
 
-    api_client = APIClient()
     for role in [role[0] for role in models.RoleChoices.choices]:
-        response = api_client.post(
+        response = client.post(
             f"/api/v1.0/teams/{team.id!s}/accesses/",
             {
                 "user": str(other_user.id),
                 "role": role,
             },
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         assert response.status_code == 403
@@ -267,22 +266,21 @@ def test_api_team_accesses_create_authenticated_administrator():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
 
-    api_client = APIClient()
-
     # It should not be allowed to create an owner access
-    response = api_client.post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": "owner",
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -295,14 +293,13 @@ def test_api_team_accesses_create_authenticated_administrator():
         [role[0] for role in models.RoleChoices.choices if role[0] != "owner"]
     )
 
-    response = api_client.post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": role,
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 201
@@ -322,21 +319,22 @@ def test_api_team_accesses_create_authenticated_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     other_user = factories.UserFactory()
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": role,
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 201
@@ -382,7 +380,9 @@ def test_api_team_accesses_update_authenticated_unrelated():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     access = factories.TeamAccessFactory()
     old_values = serializers.TeamAccessSerializer(instance=access).data
@@ -393,13 +393,11 @@ def test_api_team_accesses_update_authenticated_unrelated():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{access.team.id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
 
@@ -412,7 +410,9 @@ def test_api_team_accesses_update_authenticated_member():
     """Members of a team should not be allowed to update its accesses."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "member")])
     access = factories.TeamAccessFactory(team=team)
@@ -424,13 +424,11 @@ def test_api_team_accesses_update_authenticated_member():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{access.team.id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
 
@@ -446,7 +444,9 @@ def test_api_team_accesses_update_administrator_except_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     access = factories.TeamAccessFactory(
@@ -461,14 +461,12 @@ def test_api_team_accesses_update_administrator_except_owner():
         "role": random.choice(["administrator", "member"]),
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         if (
@@ -493,7 +491,9 @@ def test_api_team_accesses_update_administrator_from_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
@@ -506,13 +506,11 @@ def test_api_team_accesses_update_administrator_from_owner():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
             data={**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
         access.refresh_from_db()
@@ -527,7 +525,9 @@ def test_api_team_accesses_update_administrator_to_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
@@ -544,14 +544,12 @@ def test_api_team_accesses_update_administrator_to_owner():
         "role": "owner",
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         # We are not allowed or not really updating the role
         if field == "role" or new_data["role"] == old_values["role"]:
@@ -571,7 +569,9 @@ def test_api_team_accesses_update_owner_except_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     factories.UserFactory()
@@ -587,14 +587,12 @@ def test_api_team_accesses_update_owner_except_owner():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         if (
@@ -620,7 +618,9 @@ def test_api_team_accesses_update_owner_for_owners():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(team=team, role="owner")
@@ -632,13 +632,11 @@ def test_api_team_accesses_update_owner_for_owners():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
             data={**old_values, field: value},
             content_type="application/json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
         access.refresh_from_db()
@@ -653,19 +651,19 @@ def test_api_team_accesses_update_owner_self():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team, user=user, role="owner")
     old_values = serializers.TeamAccessSerializer(instance=access).data
     new_role = random.choice(["administrator", "member"])
 
-    api_client = APIClient()
-    response = api_client.put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
         data={**old_values, "role": new_role},
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -675,11 +673,10 @@ def test_api_team_accesses_update_owner_self():
     # Add another owner and it should now work
     factories.TeamAccessFactory(team=team, role="owner")
 
-    response = api_client.put(
+    response = client.put(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
         data={**old_values, "role": new_role},
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -709,13 +706,14 @@ def test_api_team_accesses_delete_authenticated():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     access = factories.TeamAccessFactory()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{access.team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -729,7 +727,9 @@ def test_api_team_accesses_delete_member():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "member")])
     access = factories.TeamAccessFactory(team=team)
@@ -737,9 +737,8 @@ def test_api_team_accesses_delete_member():
     assert models.TeamAccess.objects.count() == 2
     assert models.TeamAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -753,7 +752,9 @@ def test_api_team_accesses_delete_administrators():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
     access = factories.TeamAccessFactory(
@@ -763,9 +764,8 @@ def test_api_team_accesses_delete_administrators():
     assert models.TeamAccess.objects.count() == 2
     assert models.TeamAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 204
@@ -779,7 +779,9 @@ def test_api_team_accesses_delete_owners_except_owners():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(
@@ -789,9 +791,8 @@ def test_api_team_accesses_delete_owners_except_owners():
     assert models.TeamAccess.objects.count() == 2
     assert models.TeamAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 204
@@ -805,7 +806,9 @@ def test_api_team_accesses_delete_owners_for_owners():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(team=team, role="owner")
@@ -813,9 +816,8 @@ def test_api_team_accesses_delete_owners_for_owners():
     assert models.TeamAccess.objects.count() == 2
     assert models.TeamAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -828,15 +830,16 @@ def test_api_team_accesses_delete_owners_last_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team, user=user, role="owner")
 
     assert models.TeamAccess.objects.count() == 1
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403

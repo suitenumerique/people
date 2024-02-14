@@ -6,7 +6,6 @@ from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_N
 from rest_framework.test import APIClient
 
 from core import factories
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -28,13 +27,14 @@ def test_api_teams_retrieve_authenticated_unrelated():
     not related.
     """
     identity = factories.IdentityFactory()
-    user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(identity.user)
 
     team = factories.TeamFactory()
 
-    response = APIClient().get(
-        f"/api/v1.0/teams/{team.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/",
     )
     assert response.status_code == HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Not found."}
@@ -47,14 +47,16 @@ def test_api_teams_retrieve_authenticated_related():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory()
     access1 = factories.TeamAccessFactory(team=team, user=user)
     access2 = factories.TeamAccessFactory(team=team)
 
-    response = APIClient().get(
-        f"/api/v1.0/teams/{team.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/",
     )
     assert response.status_code == HTTP_200_OK
     content = response.json()

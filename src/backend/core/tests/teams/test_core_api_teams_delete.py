@@ -11,7 +11,6 @@ from rest_framework.status import (
 from rest_framework.test import APIClient
 
 from core import factories, models
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -34,13 +33,14 @@ def test_api_teams_delete_authenticated_unrelated():
     related.
     """
     identity = factories.IdentityFactory()
-    user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(identity.user)
 
     team = factories.TeamFactory()
 
-    response = APIClient().delete(
-        f"/api/v1.0/teams/{team.id!s}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/teams/{team.id!s}/",
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
@@ -55,12 +55,14 @@ def test_api_teams_delete_authenticated_member():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "member")])
 
-    response = APIClient().delete(
-        f"/api/v1.0/teams/{team.id}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/teams/{team.id}/",
     )
 
     assert response.status_code == HTTP_403_FORBIDDEN
@@ -77,12 +79,14 @@ def test_api_teams_delete_authenticated_administrator():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "administrator")])
 
-    response = APIClient().delete(
-        f"/api/v1.0/teams/{team.id}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/teams/{team.id}/",
     )
 
     assert response.status_code == HTTP_403_FORBIDDEN
@@ -99,12 +103,14 @@ def test_api_teams_delete_authenticated_owner():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team = factories.TeamFactory(users=[(user, "owner")])
 
-    response = APIClient().delete(
-        f"/api/v1.0/teams/{team.id}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/teams/{team.id}/",
     )
 
     assert response.status_code == HTTP_204_NO_CONTENT

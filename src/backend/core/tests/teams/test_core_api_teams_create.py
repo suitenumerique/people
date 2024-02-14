@@ -11,7 +11,6 @@ from rest_framework.test import APIClient
 
 from core.factories import IdentityFactory, TeamFactory
 from core.models import Team
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -36,15 +35,16 @@ def test_api_teams_create_authenticated():
     """
     identity = IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
 
-    response = APIClient().post(
+    client = APIClient()
+    client.force_login(identity.user)
+
+    response = client.post(
         "/api/v1.0/teams/",
         {
             "name": "my team",
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_201_CREATED
@@ -58,12 +58,12 @@ def test_api_teams_create_authenticated_slugify_name():
     Creating teams should automatically generate a slug.
     """
     identity = IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    client = APIClient()
+    client.force_login(identity.user)
 
-    response = APIClient().post(
+    response = client.post(
         "/api/v1.0/teams/",
         {"name": "my team"},
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_201_CREATED
@@ -87,14 +87,15 @@ def test_api_teams_create_authenticated_expected_slug(param):
     Creating teams should automatically create unaccented, no unicode, lower-case slug.
     """
     identity = IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
 
-    response = APIClient().post(
+    client = APIClient()
+    client.force_login(identity.user)
+
+    response = client.post(
         "/api/v1.0/teams/",
         {
             "name": param[0],
         },
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_201_CREATED
@@ -109,14 +110,15 @@ def test_api_teams_create_authenticated_unique_slugs():
     """
     TeamFactory(name="existing team")
     identity = IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
 
-    response = APIClient().post(
+    client = APIClient()
+    client.force_login(identity.user)
+
+    response = client.post(
         "/api/v1.0/teams/",
         {
             "name": "èxisting team",
         },
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == HTTP_400_BAD_REQUEST

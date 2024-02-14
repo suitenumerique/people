@@ -10,8 +10,6 @@ from rest_framework.test import APIClient
 
 from core import factories
 
-from ..utils import OIDCToken
-
 pytestmark = pytest.mark.django_db
 
 
@@ -28,10 +26,13 @@ def test_api_teams_list_anonymous():
 
 
 def test_api_teams_list_authenticated():
-    """Authenticated users should be able to list teams they are an owner/administrator/member of."""
+    """Authenticated users should be able to list teams
+    they arean owner/administrator/member of."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     expected_ids = {
         str(access.team.id)
@@ -39,8 +40,8 @@ def test_api_teams_list_authenticated():
     }
     factories.TeamFactory.create_batch(2)  # Other teams
 
-    response = APIClient().get(
-        "/api/v1.0/teams/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/teams/",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -57,7 +58,9 @@ def test_api_teams_list_pagination(
     """Pagination should work as expected."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team_ids = [
         str(access.team.id)
@@ -65,8 +68,8 @@ def test_api_teams_list_pagination(
     ]
 
     # Get page 1
-    response = APIClient().get(
-        "/api/v1.0/teams/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/teams/",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -81,8 +84,8 @@ def test_api_teams_list_pagination(
         team_ids.remove(item["id"])
 
     # Get page 2
-    response = APIClient().get(
-        "/api/v1.0/teams/?page=2", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/teams/?page=2",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -101,14 +104,16 @@ def test_api_teams_list_authenticated_distinct():
     """A team with several related users should only be listed once."""
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     other_user = factories.UserFactory()
 
     team = factories.TeamFactory(users=[user, other_user])
 
-    response = APIClient().get(
-        "/api/v1.0/teams/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/teams/",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -123,15 +128,16 @@ def test_api_teams_order():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team_ids = [
         str(team.id) for team in factories.TeamFactory.create_batch(5, users=[user])
     ]
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/teams/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -152,15 +158,16 @@ def test_api_teams_order_param():
     """
     identity = factories.IdentityFactory()
     user = identity.user
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     team_ids = [
         str(team.id) for team in factories.TeamFactory.create_batch(5, users=[user])
     ]
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/teams/?ordering=created_at",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
 
