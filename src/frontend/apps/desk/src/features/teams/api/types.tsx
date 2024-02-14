@@ -7,7 +7,7 @@ enum Role {
 export interface Access {
   id: string;
   role: Role;
-  user: string;
+  user: User;
 }
 
 export interface Team {
@@ -16,4 +16,10 @@ export interface Team {
   accesses: Access[];
   created_at: string;
   updated_at: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
 }
