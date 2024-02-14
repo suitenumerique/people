@@ -5,11 +5,10 @@ import styled from 'styled-components';
 
 import { Box, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-
-import { TeamsOrdering } from '../api/useTeams';
-import IconAdd from '../assets/icon-add.svg';
-import IconSort from '../assets/icon-sort.svg';
-import { useTeamStore } from '../store/useTeamsStore';
+import { TeamsOrdering } from '@/features/teams/api/';
+import IconAdd from '@/features/teams/assets/icon-add.svg';
+import IconSort from '@/features/teams/assets/icon-sort.svg';
+import { useTeamStore } from '@/features/teams/store/useTeamsStore';
 
 const ButtonSort = styled(Button)<{
   $background: CSSProperties['background'];

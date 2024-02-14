@@ -5,15 +5,14 @@ import { useTranslation } from 'react-i18next';
 import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-
-import { Team } from '../api/types';
-import IconNone from '../assets/icon-none.svg';
+import { Team } from '@/features/teams/api/';
+import IconNone from '@/features/teams/assets/icon-none.svg';
 
 interface TeamProps {
   team: Team;
 }
 
-export const PanelTeam = ({ team }: TeamProps) => {
+export const TeamItem = ({ team }: TeamProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const {

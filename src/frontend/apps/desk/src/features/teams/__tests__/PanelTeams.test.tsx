@@ -4,7 +4,7 @@ import fetchMock from 'fetch-mock';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { PanelTeams } from '../components/PanelTeams';
+import { TeamList } from '../components/Panel/TeamList';
 
 window.HTMLElement.prototype.scroll = function () {};
 
@@ -26,7 +26,7 @@ describe('PanelTeams', () => {
       results: [],
     });
 
-    render(<PanelTeams />, { wrapper: AppWrapper });
+    render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
@@ -49,7 +49,7 @@ describe('PanelTeams', () => {
       ],
     });
 
-    render(<PanelTeams />, { wrapper: AppWrapper });
+    render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
@@ -75,7 +75,7 @@ describe('PanelTeams', () => {
       ],
     });
 
-    render(<PanelTeams />, { wrapper: AppWrapper });
+    render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
@@ -105,7 +105,7 @@ describe('PanelTeams', () => {
       ],
     });
 
-    render(<PanelTeams />, { wrapper: AppWrapper });
+    render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
@@ -117,7 +117,7 @@ describe('PanelTeams', () => {
       status: 500,
     });
 
-    render(<PanelTeams />, { wrapper: AppWrapper });
+    render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 

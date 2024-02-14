@@ -5,7 +5,7 @@ import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { PanelActions } from './PanelActions';
-import { PanelTeams } from './PanelTeams';
+import { TeamList } from './TeamList';
 
 export const Panel = () => {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ export const Panel = () => {
         </Text>
         <PanelActions />
       </Box>
-      <PanelTeams />
+      <TeamList />
     </Box>
   );
 };

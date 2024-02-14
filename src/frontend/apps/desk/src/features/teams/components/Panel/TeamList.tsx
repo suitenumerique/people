@@ -4,12 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
+import { Team, useTeams } from '@/features/teams/api/';
+import { useTeamStore } from '@/features/teams/store/useTeamsStore';
 
-import { Team } from '../api/types';
-import { useTeams } from '../api/useTeams';
-import { useTeamStore } from '../store/useTeamsStore';
-
-import { PanelTeam } from './PanelTeam';
+import { TeamItem } from './TeamItem';
 
 interface PanelTeamsStateProps {
   isLoading: boolean;
@@ -17,11 +15,7 @@ interface PanelTeamsStateProps {
   teams?: Team[];
 }
 
-const PanelTeamsState = ({
-  isLoading,
-  isError,
-  teams,
-}: PanelTeamsStateProps) => {
+const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
   const { t } = useTranslation();
 
   if (isError) {
@@ -57,10 +51,10 @@ const PanelTeamsState = ({
     );
   }
 
-  return teams.map((team) => <PanelTeam team={team} key={team.id} />);
+  return teams.map((team) => <TeamItem team={team} key={team.id} />);
 };
 
-export const PanelTeams = () => {
+export const TeamList = () => {
   const ordering = useTeamStore((state) => state.ordering);
   const {
     data,
@@ -92,11 +86,7 @@ export const PanelTeams = () => {
         className="p-0 mt-0"
         role="listbox"
       >
-        <PanelTeamsState
-          isLoading={isLoading}
-          isError={isError}
-          teams={teams}
-        />
+        <TeamListState isLoading={isLoading} isError={isError} teams={teams} />
       </InfiniteScroll>
     </Box>
   );
