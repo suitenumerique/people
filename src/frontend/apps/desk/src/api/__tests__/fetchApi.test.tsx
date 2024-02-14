@@ -1,8 +1,7 @@
 import fetchMock from 'fetch-mock';
 
+import { fetchAPI } from '@/api';
 import { useAuthStore } from '@/features/auth';
-
-import { fetchAPI } from '../fetchApi';
 
 describe('fetchAPI', () => {
   beforeEach(() => {
@@ -20,29 +19,27 @@ describe('fetchAPI', () => {
     );
   });
 
-  it('adds the BEARER automatically', () => {
-    useAuthStore.setState({ token: 'my-token' });
-
+  it('adds the credentials automatically', () => {
     fetchMock.mock('http://some.api.url/api/v1.0/some/url', 200);
 
     void fetchAPI('some/url', { body: 'some body' });
 
     expect(fetchMock.lastOptions()).toEqual({
       body: 'some body',
+      credentials: 'include',
       headers: {
-        Authorization: 'Bearer my-token',
         'Content-Type': 'application/json',
       },
     });
   });
 
   it('logout if 401 response', async () => {
-    useAuthStore.setState({ token: 'my-token' });
+    useAuthStore.setState({ userData: { email: 'test@test.com' } });
 
     fetchMock.mock('http://some.api.url/api/v1.0/some/url', 401);
 
     await fetchAPI('some/url');
 
-    expect(useAuthStore.getState().token).toBeNull();
+    expect(useAuthStore.getState().userData).toBeUndefined();
   });
 });

@@ -14,6 +14,6 @@ export const keyCloakSignIn = async (page: Page, browserName: string) => {
       .getByRole('textbox', { name: 'password' })
       .fill(`password-e2e-${browserName}`);
 
-    await page.click('input[type="submit"]');
+    await page.click('input[type="submit"]', { force: true });
   }
 };

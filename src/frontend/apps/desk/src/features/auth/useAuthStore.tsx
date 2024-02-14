@@ -1,40 +1,39 @@
 import { create } from 'zustand';
 
-import { initKeycloak } from './keycloak';
+import { UserData, getMe } from '@/features/auth/api';
+
+export const login = () => {
+  window.location.replace(
+    new URL('authenticate/', process.env.NEXT_PUBLIC_API_URL).href,
+  );
+};
 
 interface AuthStore {
   authenticated: boolean;
   initAuth: () => void;
-  initialized: boolean;
   logout: () => void;
-  token: string | null;
+  userData?: UserData;
 }
 
 const initialState = {
   authenticated: false,
-  initialized: false,
-  token: null,
+  userData: undefined,
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
   authenticated: initialState.authenticated,
-  initialized: initialState.initialized,
-  token: initialState.token,
+  userData: initialState.userData,
 
-  initAuth: () =>
-    set((state) => {
-      if (process.env.NEXT_PUBLIC_KEYCLOAK_LOGIN && !state.initialized) {
-        initKeycloak((token) => set({ authenticated: true, token }));
-        return { initialized: true };
-      }
-
-      /**
-       * TODO: Implement OIDC production authentication
-       */
-
-      return {};
-    }),
-
+  initAuth: () => {
+    getMe()
+      .then((data: UserData) => {
+        set({ authenticated: true, userData: data });
+      })
+      .catch(() => {
+        // todo - implement a proper login screen to prevent automatic navigation.
+        login();
+      });
+  },
   logout: () => {
     set(initialState);
   },

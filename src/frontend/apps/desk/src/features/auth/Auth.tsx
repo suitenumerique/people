@@ -6,15 +6,11 @@ import { Box } from '@/components';
 import { useAuthStore } from './useAuthStore';
 
 export const Auth = ({ children }: PropsWithChildren) => {
-  const { initAuth, authenticated, initialized } = useAuthStore();
+  const { authenticated, initAuth } = useAuthStore();
 
   useEffect(() => {
-    if (initialized) {
-      return;
-    }
-
     initAuth();
-  }, [initAuth, initialized]);
+  }, [initAuth]);
 
   if (!authenticated) {
     return (
