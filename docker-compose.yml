@@ -93,12 +93,14 @@ services:
     ports:
       - "8082:8082"
       - "8088:8088"
+      - "8083:8083"
     volumes:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./src/frontend/apps/desk/out:/home/desk
       - ./data/media:/data/media:ro
     depends_on:
       - app
+      - keycloak
 
   dockerize:
     image: jwilder/dockerize
@@ -152,6 +154,11 @@ services:
       - start-dev
       - --features=preview
       - --import-realm
+      - --proxy=edge
+      - --hostname-url=http://localhost:8083
+      - --hostname-admin-url=http://localhost:8083/
+      - --hostname-strict=false
+      - --hostname-strict-https=false
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -161,6 +168,7 @@ services:
       KC_DB_PASSWORD: pass
       KC_DB_USERNAME: people
       KC_DB_SCHEMA: public
+      PROXY_ADDRESS_FORWARDING: 'true'
     ports:
       - "8080:8080"
     depends_on:
