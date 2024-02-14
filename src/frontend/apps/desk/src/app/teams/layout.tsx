@@ -4,7 +4,7 @@ import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Panel } from '@/features';
+import { Panel } from '@/features/teams';
 
 export default function Layout({ children }: PropsWithChildren) {
   const { colorsTokens } = useCunninghamTheme();

@@ -4,7 +4,7 @@ import { Button, Field, Input } from '@openfun/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCreateTeam } from '@/features';
+import { useCreateTeam } from '@/features/teams';
 
 export default function Page() {
   const { t } = useTranslation();

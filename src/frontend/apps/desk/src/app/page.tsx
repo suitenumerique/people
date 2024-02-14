@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { Box, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Panel } from '@/features';
+import { Panel } from '@/features/teams';
 
 const StyledButton = styled(Button)`
   width: fit-content;

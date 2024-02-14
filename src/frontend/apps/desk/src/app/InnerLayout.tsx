@@ -1,5 +1,6 @@
 import { Box } from '@/components';
-import { HEADER_HEIGHT, Header, Menu } from '@/features/';
+import { HEADER_HEIGHT, Header } from '@/features/header';
+import { Menu } from '@/features/menu';
 
 export default function InnerLayout({
   children,
