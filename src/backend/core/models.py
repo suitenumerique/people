@@ -288,7 +288,8 @@ class Identity(BaseModel):
 
     def __str__(self):
         main_str = "[main]" if self.is_main else ""
-        return f"{self.email:s}{main_str:s}"
+        id_str = self.email or self.sub
+        return f"{id_str:s}{main_str:s}"
 
     def save(self, *args, **kwargs):
         """Ensure users always have one and only one main identity."""
