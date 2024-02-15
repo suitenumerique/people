@@ -13,7 +13,9 @@ export const Panel = () => {
 
   return (
     <Box
-      $width="28rem"
+      $width="100%"
+      $maxWidth="20rem"
+      $minWidth="14rem"
       $css={`
         border-right: 1px solid ${colorsTokens()['primary-300']};
       `}

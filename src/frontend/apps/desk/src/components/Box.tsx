@@ -17,6 +17,8 @@ export interface BoxProps {
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
   $width?: CSSProperties['width'];
+  $maxWidth?: CSSProperties['maxWidth'];
+  $minWidth?: CSSProperties['minWidth'];
 }
 
 export type BoxType = ComponentPropsWithRef<typeof Box>;
@@ -36,5 +38,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
   ${({ $width }) => $width && `width: ${$width};`}
+  ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
+  ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $css }) => $css && `${$css};`}
 `;

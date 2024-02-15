@@ -25,7 +25,4 @@
   --c--components--forms-select--value-color--disabled: var(
     --c--theme--colors--greyscale-400
   );
-  --c--components--forms-labelledbox--label-color--big: var(
-    --c--theme--colors--primary-500
-  );
 }

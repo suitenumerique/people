@@ -17,7 +17,7 @@
 }
 
 .labelled-box label {
-  color: var(--c--theme--colors--primary-500);
+  color: var(--c--theme--colors--primary-text);
 }
 
 .labelled-box--disabled label {
@@ -53,7 +53,7 @@
 
 .c__input__wrapper:hover,
 .c__textarea__wrapper:hover {
-  box-shadow: var(--c--theme--colors--primary-500) 0 0 0 2px;
+  box-shadow: var(--c--components--forms-input--box-shadow-color) 0 0 0 2px;
 }
 
 .c__textarea__wrapper--disabled:hover,
@@ -325,6 +325,7 @@ input:-webkit-autofill:focus {
     --c--components--button--secondary--background--color-hover
   );
   color: var(--c--components--button--secondary--color-hover);
+  border: 1px solid var(--c--components--button--secondary--border--color-hover);
 }
 
 .c__button--tertiary {

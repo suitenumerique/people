@@ -398,7 +398,7 @@ export const tokens = {
       components: {
         alert: { 'border-radius': '0' },
         button: {
-          'border-radius': '2px',
+          'border-radius': '4px',
           primary: {
             background: {
               color: 'var(--c--theme--colors--primary-text)',
@@ -409,17 +409,33 @@ export const tokens = {
             'color-hover': '#ffffff',
             'color-active': '#ffffff',
           },
+          secondary: {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+              'color-active': 'var(--c--theme--colors--primary-200)',
+            },
+            border: { 'color-hover': 'var(--c--theme--colors--primary-300)' },
+            color: 'var(--c--theme--colors--primary-text)',
+          },
         },
         'forms-checkbox': { 'border-radius': '0' },
+        'forms-datepicker': { 'border-radius': '0' },
+        'forms-fileuploader': { 'border-radius': '0' },
+        'forms-input': {
+          'border-radius': '4px',
+          'background-color': '#ffffff',
+          'border-color': 'var(--c--theme--colors--primary-text)',
+          'box-shadow-color': 'var(--c--theme--colors--primary-text)',
+        },
+        'forms-labelledbox': {
+          'label-color': { big: 'var(--c--theme--colors--primary-text)' },
+        },
+        'forms-select': { 'border-radius': '0' },
         'forms-switch': {
           'handle-border-radius': '2px',
           'rail-border-radius': '4px',
         },
-        'forms-input': { 'border-radius': '0' },
-        'forms-select': { 'border-radius': '0' },
-        'forms-datepicker': { 'border-radius': '0' },
         'forms-textarea': { 'border-radius': '0' },
-        'forms-fileuploader': { 'border-radius': '0' },
       },
     },
   },

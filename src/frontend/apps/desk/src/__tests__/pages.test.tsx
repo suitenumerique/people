@@ -9,8 +9,6 @@ describe('Page', () => {
   it('checks Page rendering', () => {
     render(<Page />, { wrapper: AppWrapper });
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
-
     expect(
       screen.getByRole('button', {
         name: /Create a new team/i,

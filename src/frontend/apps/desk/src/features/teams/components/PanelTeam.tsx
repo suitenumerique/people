@@ -18,9 +18,10 @@ export const PanelTeam = ({ team }: TeamProps) => {
 
   const commonProps = {
     className: 'p-t',
-    width: 36,
+    width: 52,
     style: {
       borderRadius: '10px',
+      flexShrink: 0,
     },
   };
 

@@ -15,11 +15,8 @@ export default function TeamLayout({ children }: PropsWithChildren) {
         <Panel />
         <Box
           $background={colorsTokens()['primary-bg']}
-          $justify="center"
-          $align="center"
           $width="100%"
-          $gap="5rem"
-          $css="overflow:auto;"
+          $height="inherit"
         >
           {children}
         </Box>
