@@ -17,8 +17,6 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 import jsonschema
-from rest_framework_simplejwt.exceptions import InvalidToken
-from rest_framework_simplejwt.settings import api_settings
 from timezone_field import TimeZoneField
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -471,40 +469,3 @@ class Invitation(BaseModel):
         """Calculate if invitation is still valid or has expired."""
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
         return timezone.now() > (self.created_at + validity_duration)
-
-
-def oidc_user_getter(validated_token):
-    """
-    Given a valid OIDC token , retrieve, create or update corresponding user/contact/email from db.
-
-    The token is expected to have the following fields in payload:
-        - sub
-        - email
-        - ...
-    """
-    try:
-        user_id = validated_token[api_settings.USER_ID_CLAIM]
-    except KeyError as exc:
-        raise InvalidToken(
-            _("Token contained no recognizable user identification")
-        ) from exc
-
-    try:
-        email_param = {"email": validated_token["email"]}
-    except KeyError:
-        email_param = {}
-
-    user = (
-        User.objects.filter(identities__sub=user_id)
-        .annotate(identity_email=models.F("identities__email"))
-        .distinct()
-        .first()
-    )
-
-    if user is None:
-        user = User.objects.create(password="!", **email_param)  # noqa: S106
-        Identity.objects.create(user=user, sub=user_id, **email_param)
-    elif email_param and validated_token["email"] != user.identity_email:
-        Identity.objects.filter(sub=user_id).update(email=validated_token["email"])
-
-    return user

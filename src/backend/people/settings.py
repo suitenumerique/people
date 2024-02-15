@@ -180,6 +180,7 @@ class Base(Configuration):
 
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
+        "core.authentication.OIDCAuthenticationBackend",
     ]
 
     # Django's applications from the highest priority to the lowest
@@ -203,6 +204,8 @@ class Base(Configuration):
         "django.contrib.sites",
         "django.contrib.messages",
         "django.contrib.staticfiles",
+        # OIDC third party
+        "mozilla_django_oidc",
     ]
 
     # Cache
@@ -212,7 +215,8 @@ class Base(Configuration):
 
     REST_FRAMEWORK = {
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "core.authentication.DelegatedJWTAuthentication",
+            "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
+            "rest_framework.authentication.SessionAuthentication",
         ),
         "DEFAULT_PARSER_CLASSES": [
             "rest_framework.parsers.JSONParser",
@@ -243,34 +247,6 @@ class Base(Configuration):
         "REDOC_DIST": "SIDECAR",
     }
 
-    # Simple JWT
-    SIMPLE_JWT = {
-        "ALGORITHM": values.Value(
-            "RS256", environ_name="SIMPLE_JWT_ALGORITHM", environ_prefix=None
-        ),
-        "JWK_URL": values.Value(
-            None, environ_name="SIMPLE_JWT_JWK_URL", environ_prefix=None
-        ),
-        "SIGNING_KEY": values.Value(
-            None, environ_name="SIMPLE_JWT_SIGNING_KEY", environ_prefix=None
-        ),
-        "VERIFYING_KEY": values.Value(
-            None, environ_name="SIMPLE_JWT_VERIFYING_KEY", environ_prefix=None
-        ),
-        "AUTH_HEADER_TYPES": ("Bearer",),
-        "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-        "TOKEN_TYPE_CLAIM": "typ",
-        "USER_ID_FIELD": "sub",
-        "USER_ID_CLAIM": "sub",
-        "AUTH_TOKEN_CLASSES": ("core.tokens.BearerToken",),
-    }
-
-    JWT_USER_GETTER = values.Value(
-        "core.models.oidc_user_getter",
-        environ_name="PEOPLE_JWT_USER_GETTER",
-        environ_prefix=None,
-    )
-
     # Mail
     EMAIL_BACKEND = values.Value("django.core.mail.backends.smtp.EmailBackend")
     EMAIL_HOST = values.Value(None)
@@ -300,6 +276,63 @@ class Base(Configuration):
     # Celery
     CELERY_BROKER_URL = values.Value("redis://redis:6379/0")
     CELERY_BROKER_TRANSPORT_OPTIONS = values.DictValue({})
+
+    # Session
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_COOKIE_AGE = 60 * 60 * 12  # 12 hours to match Agent Connect
+
+    # OIDC - Authorization Code Flow
+    OIDC_CREATE_USER = values.BooleanValue(
+        default=True,
+        environ_name="OIDC_CREATE_USER",
+    )
+    OIDC_RP_SIGN_ALGO = values.Value(
+        "RS256", environ_name="OIDC_RP_SIGN_ALGO", environ_prefix=None
+    )
+    OIDC_RP_CLIENT_ID = values.Value(
+        "people", environ_name="OIDC_RP_CLIENT_ID", environ_prefix=None
+    )
+    OIDC_RP_CLIENT_SECRET = values.Value(
+        "ThisIsAnExampleKeyForDevPurposeOnly",
+        environ_name="OIDC_RP_CLIENT_SECRET",
+        environ_prefix=None,
+    )
+    OIDC_OP_JWKS_ENDPOINT = values.Value(
+        environ_name="OIDC_OP_JWKS_ENDPOINT", environ_prefix=None
+    )
+    OIDC_OP_AUTHORIZATION_ENDPOINT = values.Value(
+        environ_name="OIDC_OP_AUTHORIZATION_ENDPOINT", environ_prefix=None
+    )
+    OIDC_OP_TOKEN_ENDPOINT = values.Value(
+        None, environ_name="OIDC_OP_TOKEN_ENDPOINT", environ_prefix=None
+    )
+    OIDC_OP_USER_ENDPOINT = values.Value(
+        None, environ_name="OIDC_OP_USER_ENDPOINT", environ_prefix=None
+    )
+    OIDC_AUTH_REQUEST_EXTRA_PARAMS = values.DictValue(
+        {}, environ_name="OIDC_AUTH_REQUEST_EXTRA_PARAMS", environ_prefix=None
+    )
+    OIDC_RP_SCOPES = values.Value(
+        "openid email", environ_name="OIDC_RP_SCOPES", environ_prefix=None
+    )
+    LOGIN_REDIRECT_URL = values.Value(
+        None, environ_name="LOGIN_REDIRECT_URL", environ_prefix=None
+    )
+    LOGIN_REDIRECT_URL_FAILURE = values.Value(
+        None, environ_name="LOGIN_REDIRECT_URL_FAILURE", environ_prefix=None
+    )
+    LOGOUT_REDIRECT_URL = values.Value(
+        None, environ_name="LOGOUT_REDIRECT_URL", environ_prefix=None
+    )
+    OIDC_USE_NONCE = values.BooleanValue(
+        default=True, environ_name="OIDC_USE_NONCE", environ_prefix=None
+    )
+    OIDC_REDIRECT_REQUIRE_HTTPS = values.BooleanValue(
+        default=False, environ_name="OIDC_REDIRECT_REQUIRE_HTTPS", environ_prefix=None
+    )
+    OIDC_REDIRECT_ALLOWED_HOSTS = values.ListValue(
+        default=[], environ_name="OIDC_REDIRECT_ALLOWED_HOSTS", environ_prefix=None
+    )
 
     # pylint: disable=invalid-name
     @property
@@ -381,7 +414,7 @@ class Development(Base):
 
     ALLOWED_HOSTS = ["*"]
     CORS_ALLOW_ALL_ORIGINS = True
-    CSRF_TRUSTED_ORIGINS = ["http://localhost:8072"]
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:8072", "http://localhost:3000"]
     DEBUG = True
 
     SESSION_COOKIE_NAME = "people_sessionid"
@@ -396,10 +429,6 @@ class Development(Base):
 class Test(Base):
     """Test environment settings"""
 
-    SIMPLE_JWT = {
-        "USER_ID_FIELD": "sub",
-        "USER_ID_CLAIM": "sub",
-    }
     LOGGING = values.DictValue(
         {
             "version": 1,
