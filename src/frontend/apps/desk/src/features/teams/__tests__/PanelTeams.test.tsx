@@ -30,7 +30,7 @@ describe('PanelTeams', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders with empty team to display', async () => {
+  it('renders an empty team', async () => {
     fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
@@ -51,7 +51,33 @@ describe('PanelTeams', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders with not team to display', async () => {
+  it('renders a team with only 1 member', async () => {
+    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+      count: 1,
+      results: [
+        {
+          id: '1',
+          name: 'Team 1',
+          accesses: [
+            {
+              id: '1',
+              role: 'owner',
+            },
+          ],
+        },
+      ],
+    });
+
+    render(<PanelTeams />, { wrapper: AppWrapper });
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    expect(
+      await screen.findByLabelText('Empty teams icon'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders a non-empty team', async () => {
     fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
@@ -62,6 +88,10 @@ describe('PanelTeams', () => {
             {
               id: '1',
               role: 'admin',
+            },
+            {
+              id: '2',
+              role: 'member',
             },
           ],
         },

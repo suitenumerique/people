@@ -16,6 +16,9 @@ export const PanelTeam = ({ team }: TeamProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
 
+  // There is at least 1 owner in the team
+  const hasMembers = team.accesses.length > 1;
+
   const commonProps = {
     className: 'p-t',
     width: 52,
@@ -27,7 +30,7 @@ export const PanelTeam = ({ team }: TeamProps) => {
 
   return (
     <Box as="li" $direction="row" $align="center" $gap="0.5rem">
-      {team.accesses.length ? (
+      {hasMembers ? (
         <IconGroup
           aria-label={t(`Teams icon`)}
           color={colorsTokens()['primary-500']}
