@@ -2,7 +2,7 @@
 
 People is an application to handle users and teams. 
 
-This project is as of yet **not ready for production**. Expect breaking changes.
+As of today, this project is **not yet ready for production**. Expect breaking changes.
 
 People is built on top of [Django Rest
 Framework](https://www.django-rest-framework.org/).

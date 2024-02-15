@@ -1,4 +1,4 @@
-"""Tokens for Magnify's core app."""
+"""Tokens for People's core app."""
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import Token
 

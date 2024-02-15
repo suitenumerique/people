@@ -229,7 +229,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             )
 
     def email_user(self, subject, message, from_email=None, **kwargs):
-        """Send an email to this user."""
+        """Email this user."""
         main_identity = self.identities.get(is_main=True)
         mail.send_mail(subject, message, from_email, [main_identity.email], **kwargs)
 

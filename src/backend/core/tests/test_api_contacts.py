@@ -511,7 +511,7 @@ def test_api_contacts_update_authenticated_owned():
 
 def test_api_contacts_update_authenticated_profile():
     """
-    Authenticated users should be allowed to update their prodile contact.
+    Authenticated users should be allowed to update their profile contact.
     """
     identity = factories.IdentityFactory()
     user = identity.user

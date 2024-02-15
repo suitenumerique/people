@@ -70,19 +70,19 @@ def test_models_identities_is_main_switch():
 
 
 def test_models_identities_email_not_required():
-    """The "email" field can be blank."""
+    """The 'email' field can be blank."""
     user = factories.UserFactory()
     models.Identity.objects.create(user=user, sub="123", email=None)
 
 
 def test_models_identities_user_required():
-    """The "user" field is required."""
+    """The 'user' field is required."""
     with pytest.raises(models.User.DoesNotExist, match="Identity has no user."):
         models.Identity.objects.create(user=None, email="david@example.com")
 
 
 def test_models_identities_email_unique_same_user():
-    """The "email" field should be unique for a given user."""
+    """The 'email' field should be unique for a given user."""
     email = factories.IdentityFactory()
 
     with pytest.raises(
@@ -93,13 +93,13 @@ def test_models_identities_email_unique_same_user():
 
 
 def test_models_identities_email_unique_different_users():
-    """The "email" field should not be unique among users."""
+    """The 'email' field should not be unique among users."""
     email = factories.IdentityFactory()
     factories.IdentityFactory(email=email.email)
 
 
 def test_models_identities_email_normalization():
-    """The email field should be automatically normalized upon saving."""
+    """The 'email' field should be automatically normalized upon saving."""
     email = factories.IdentityFactory()
     email.email = "Thomas.Jefferson@Example.com"
     email.save()
@@ -107,7 +107,7 @@ def test_models_identities_email_normalization():
 
 
 def test_models_identities_ordering():
-    """Identitys should be returned ordered by main status then by their email address."""
+    """Identities should be returned ordered by main status then by their email address."""
     user = factories.UserFactory()
     factories.IdentityFactory.create_batch(5, user=user)
 
@@ -120,21 +120,21 @@ def test_models_identities_ordering():
 
 
 def test_models_identities_sub_null():
-    """The "sub" field should not be null."""
+    """The 'sub' field should not be null."""
     user = factories.UserFactory()
     with pytest.raises(ValidationError, match="This field cannot be null."):
         models.Identity.objects.create(user=user, sub=None)
 
 
 def test_models_identities_sub_blank():
-    """The "sub" field should not be blank."""
+    """The 'sub' field should not be blank."""
     user = factories.UserFactory()
     with pytest.raises(ValidationError, match="This field cannot be blank."):
         models.Identity.objects.create(user=user, email="david@example.com", sub="")
 
 
 def test_models_identities_sub_unique():
-    """The "sub" field should be unique."""
+    """The 'sub' field should be unique."""
     user = factories.UserFactory()
     identity = factories.IdentityFactory()
     with pytest.raises(ValidationError, match="Identity with this Sub already exists."):
@@ -142,7 +142,7 @@ def test_models_identities_sub_unique():
 
 
 def test_models_identities_sub_max_length():
-    """The sub field should be 255 characters maximum."""
+    """The 'sub' field should be 255 characters maximum."""
     factories.IdentityFactory(sub="a" * 255)
     with pytest.raises(ValidationError) as excinfo:
         factories.IdentityFactory(sub="a" * 256)
@@ -154,13 +154,13 @@ def test_models_identities_sub_max_length():
 
 
 def test_models_identities_sub_special_characters():
-    """The sub field should accept periods, dashes, +, @ and underscores."""
+    """The 'sub' field should accept periods, dashes, +, @ and underscores."""
     identity = factories.IdentityFactory(sub="dave.bowman-1+2@hal_9000")
     assert identity.sub == "dave.bowman-1+2@hal_9000"
 
 
 def test_models_identities_sub_spaces():
-    """The sub field should not accept spaces."""
+    """The 'sub' field should not accept spaces."""
     with pytest.raises(ValidationError) as excinfo:
         factories.IdentityFactory(sub="a b")
 
@@ -171,12 +171,12 @@ def test_models_identities_sub_spaces():
 
 
 def test_models_identities_sub_upper_case():
-    """The sub field should accept upper case characters."""
+    """The 'sub' field should accept upper case characters."""
     identity = factories.IdentityFactory(sub="John")
     assert identity.sub == "John"
 
 
 def test_models_identities_sub_ascii():
-    """The sub field should accept non ASCII letters."""
+    """The 'sub' field should accept non ASCII letters."""
     identity = factories.IdentityFactory(sub="rené")
     assert identity.sub == "rené"

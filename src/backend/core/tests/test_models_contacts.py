@@ -52,7 +52,7 @@ def test_models_contacts_base_to_base():
 
 
 def test_models_contacts_owner_base_unique():
-    """Their should be only one contact deriving from a given base contact for a given owner."""
+    """There should be only one contact deriving from a given base contact for a given owner."""
     contact = factories.ContactFactory()
 
     with pytest.raises(ValidationError) as excinfo:

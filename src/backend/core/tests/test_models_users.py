@@ -77,7 +77,7 @@ def test_models_users_profile_owned_by_other():
 
 
 def test_models_users_send_mail_main_existing():
-    """The "email_user' method should send mail to the user's main email address."""
+    """The 'email_user' method should send mail to the user's main email address."""
     main_email = factories.IdentityFactory(email="dave@example.com")
     user = main_email.user
     factories.IdentityFactory.create_batch(2, user=user)
@@ -91,7 +91,7 @@ def test_models_users_send_mail_main_existing():
 
 
 def test_models_users_send_mail_main_missing():
-    """The "email_user' method should fail if the user has no email address."""
+    """The 'email_user' method should fail if the user has no email address."""
     user = factories.UserFactory()
 
     with pytest.raises(models.Identity.DoesNotExist) as excinfo:
