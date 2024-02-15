@@ -254,6 +254,7 @@ class Identity(BaseModel):
         validators=[sub_validator],
     )
     email = models.EmailField(_("email address"), null=True, blank=True)
+    name = models.CharField(_("name"), max_length=100, null=True, blank=True)
     is_main = models.BooleanField(
         _("main"),
         default=False,

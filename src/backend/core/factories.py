@@ -139,6 +139,7 @@ class IdentityFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     sub = factory.Sequence(lambda n: f"user{n!s}")
     email = factory.Faker("email")
+    name = factory.Faker("name")
 
 
 class TeamFactory(factory.django.DjangoModelFactory):

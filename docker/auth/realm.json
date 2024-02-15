@@ -46,6 +46,9 @@
   "users": [
     {
       "username": "people",
+      "email": "people@people.world",
+      "firstName": "John",
+      "lastName": "Doe",
       "enabled": true,
       "credentials": [
         {
@@ -1098,7 +1101,7 @@
         },
         {
           "id": "79712bcf-b7f7-4ca3-b97c-418f48fded9b",
-          "name": "given name",
+          "name": "first name",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-property-mapper",
           "consentRequired": false,
@@ -1107,7 +1110,7 @@
             "user.attribute": "firstName",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "claim.name": "given_name",
+            "claim.name": "first_name",
             "jsonType.label": "String"
           }
         },
@@ -1128,7 +1131,7 @@
         },
         {
           "id": "7f741e96-41fe-4021-bbfd-506e7eb94e69",
-          "name": "family name",
+          "name": "last name",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-property-mapper",
           "consentRequired": false,
@@ -1137,7 +1140,7 @@
             "user.attribute": "lastName",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "claim.name": "family_name",
+            "claim.name": "last_name",
             "jsonType.label": "String"
           }
         },

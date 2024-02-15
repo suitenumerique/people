@@ -11,9 +11,13 @@ from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from faker import Faker
+
 from core import models
 
 from demo import defaults
+
+fake = Faker()
 
 logger = logging.getLogger("people.commands.demo.create_demo")
 
@@ -134,6 +138,7 @@ def create_demo(stdout):
                         sub=uuid4(),
                         email=f"identity{i:d}{user_email:s}",
                         is_main=(i == 0),
+                        name=fake.name(),
                     )
                 )
         queue.flush()

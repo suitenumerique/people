@@ -334,6 +334,12 @@ class Base(Configuration):
         default=[], environ_name="OIDC_REDIRECT_ALLOWED_HOSTS", environ_prefix=None
     )
 
+    USER_OIDC_FIELDS_TO_NAME = values.ListValue(
+        default=["first_name", "last_name"],
+        environ_name="USER_OIDC_FIELDS_TO_NAME",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):

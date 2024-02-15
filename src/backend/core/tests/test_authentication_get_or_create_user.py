@@ -21,7 +21,7 @@ def test_authentication_getter_existing_user_no_email(
     klass = OIDCAuthenticationBackend()
 
     # Create a user and its identity
-    identity = IdentityFactory()
+    identity = IdentityFactory(name=None)
 
     # Create multiple identities for a user
     for _ in range(5):
@@ -46,47 +46,82 @@ def test_authentication_getter_existing_user_with_email(
 ):
     """
     When the user's info contains an email and targets an existing user,
-    it should update the email on the identity but not on the user.
     """
     klass = OIDCAuthenticationBackend()
 
-    identity = IdentityFactory()
+    identity = IdentityFactory(name="John Doe")
 
     # Create multiple identities for a user
     for _ in range(5):
         IdentityFactory(user=identity.user)
 
-    user_email = identity.user.email
     assert models.User.objects.count() == 1
 
     def get_userinfo_mocked(*args):
-        return {"sub": identity.sub, "email": identity.email}
+        return {
+            "sub": identity.sub,
+            "email": identity.email,
+            "first_name": "John",
+            "last_name": "Doe",
+        }
 
     monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
 
-    # Only 1 query if the email has not changed
+    # Only 1 query because email and names have not changed
     with django_assert_num_queries(1):
         user = klass.get_or_create_user(
             access_token="test-token", id_token=None, payload=None
         )
 
-    new_email = "test@fooo.com"
+    assert models.User.objects.get() == user
 
-    def get_userinfo_mocked_new_email(*args):
-        return {"sub": identity.sub, "email": new_email}
 
-    monkeypatch.setattr(
-        OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked_new_email
-    )
+@pytest.mark.parametrize(
+    "first_name, last_name, email",
+    [
+        ("Jack", "Doe", "john.doe@example.com"),
+        ("John", "Duy", "john.doe@example.com"),
+        ("John", "Doe", "jack.duy@example.com"),
+        ("Jack", "Duy", "jack.duy@example.com"),
+    ],
+)
+def test_authentication_getter_existing_user_change_fields(
+    first_name, last_name, email, django_assert_num_queries, monkeypatch
+):
+    """
+    It should update the email or name fields on the identity when they change.
+    The email on the user should not be changed.
+    """
+    klass = OIDCAuthenticationBackend()
 
-    # Additional update query if the email has changed
+    identity = IdentityFactory(name="John Doe", email="john.doe@example.com")
+    user_email = identity.user.email
+
+    # Create multiple identities for a user
+    for _ in range(5):
+        IdentityFactory(user=identity.user)
+
+    assert models.User.objects.count() == 1
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": identity.sub,
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # One and only one additional update query when a field has changed
     with django_assert_num_queries(2):
         user = klass.get_or_create_user(
             access_token="test-token", id_token=None, payload=None
         )
 
     identity.refresh_from_db()
-    assert identity.email == new_email
+    assert identity.email == email
+    assert identity.name == f"{first_name:s} {last_name:s}"
 
     assert models.User.objects.count() == 1
     assert user == identity.user
@@ -121,14 +156,15 @@ def test_authentication_getter_new_user_no_email(monkeypatch):
 def test_authentication_getter_new_user_with_email(monkeypatch):
     """
     If no user matches the user's info sub, a user should be created.
-    User's info contains an email, created user's email should be set.
+    User's email and name should be set on the identity.
+    The "email" field on the User model should not be set as it is reserved for staff users.
     """
     klass = OIDCAuthenticationBackend()
 
     email = "people@example.com"
 
     def get_userinfo_mocked(*args):
-        return {"sub": "123", "email": email}
+        return {"sub": "123", "email": email, "first_name": "John", "last_name": "Doe"}
 
     monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
 
@@ -139,8 +175,9 @@ def test_authentication_getter_new_user_with_email(monkeypatch):
     identity = user.identities.get()
     assert identity.sub == "123"
     assert identity.email == email
+    assert identity.name == "John Doe"
 
-    assert user.email == email
+    assert user.email is None
     assert models.User.objects.count() == 1
 
 

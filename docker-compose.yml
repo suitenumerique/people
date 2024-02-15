@@ -92,8 +92,8 @@ services:
     image: nginx:1.25
     ports:
       - "8082:8082"
-      - "8088:8088"
       - "8083:8083"
+      - "8088:8088"
     volumes:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./src/frontend/apps/desk/out:/home/desk

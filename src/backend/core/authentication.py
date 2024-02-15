@@ -1,5 +1,5 @@
 """Authentication for the People core app."""
-
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -66,9 +66,15 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         user_info = self.get_userinfo(access_token, id_token, payload)
 
-        email = user_info.get("email")
-        sub = user_info.get("sub")
+        # Compute user name from OIDC name fields as defined in settings
+        names_list = [
+            user_info[field]
+            for field in settings.USER_OIDC_FIELDS_TO_NAME
+            if user_info.get(field)
+        ]
+        user_info["name"] = " ".join(names_list) or None
 
+        sub = user_info.get("sub")
         if sub is None:
             raise SuspiciousOperation(
                 _("User info contained no recognizable user identification")
@@ -76,14 +82,23 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         user = (
             self.UserModel.objects.filter(identities__sub=sub)
-            .annotate(identity_email=models.F("identities__email"))
+            .annotate(
+                identity_email=models.F("identities__email"),
+                identity_name=models.F("identities__name"),
+            )
             .distinct()
             .first()
         )
-
         if user:
-            if email and email != user.identity_email:
-                Identity.objects.filter(sub=sub).update(email=email)
+            email = user_info.get("email")
+            name = user_info.get("name")
+            if (
+                email
+                and email != user.identity_email
+                or name
+                and name != user.identity_name
+            ):
+                Identity.objects.filter(sub=sub).update(email=email, name=name)
 
         elif self.get_settings("OIDC_CREATE_USER", True):
             user = self.create_user(user_info)
@@ -92,16 +107,15 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
     def create_user(self, claims):
         """Return a newly created User instance."""
-
-        email = claims.get("email")
         sub = claims.get("sub")
-
         if sub is None:
             raise SuspiciousOperation(
                 _("Claims contained no recognizable user identification")
             )
 
-        user = self.UserModel.objects.create(password="!", email=email)  # noqa: S106
-        Identity.objects.create(user=user, sub=sub, email=email)
+        user = self.UserModel.objects.create(password="!")  # noqa: S106
+        Identity.objects.create(
+            user=user, sub=sub, email=claims.get("email"), name=claims.get("name")
+        )
 
         return user
