@@ -12,7 +12,7 @@ on:
       - 'main'
 
 jobs:
-  build-and-push:
+  build-and-push-backend:
     runs-on: ubuntu-latest
     steps:
       -
@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: lasuite/people
+          images: lasuite/people-backend
       -
         name: Load sops secrets
         uses: rouja/actions-sops@main
@@ -39,6 +39,39 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          target: production
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: lasuite/people-frontend
+      -
+        name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
+      -
+        name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        run: echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: frontend
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
