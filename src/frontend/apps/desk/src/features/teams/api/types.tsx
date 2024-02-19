@@ -14,4 +14,6 @@ export interface Team {
   id: string;
   name: string;
   accesses: Access[];
+  created_at: string;
+  updated_at: string;
 }

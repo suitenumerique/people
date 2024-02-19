@@ -33,7 +33,15 @@ test.describe('Team', () => {
 
     await expect(page.getByText(`1 member`)).toBeVisible();
 
-    await expect(page.getByText(`Created at 06/02/2024`)).toBeVisible();
-    await expect(page.getByText(`Last update at 07/02/2024`)).toBeVisible();
+    const today = new Date(Date.now());
+    const todayFormated = today.toLocaleDateString('en', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    });
+    await expect(page.getByText(`Created at ${todayFormated}`)).toBeVisible();
+    await expect(
+      page.getByText(`Last update at ${todayFormated}`),
+    ).toBeVisible();
   });
 });

@@ -1,3 +1,4 @@
+import { DateTime, DateTimeFormatOptions } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +8,12 @@ import { useCunninghamTheme } from '@/cunningham';
 
 import { Team } from '../api/types';
 
+const format: DateTimeFormatOptions = {
+  month: '2-digit',
+  day: '2-digit',
+  year: 'numeric',
+};
+
 interface TeamInfoProps {
   team: Team;
 }
@@ -14,6 +21,15 @@ interface TeamInfoProps {
 export const TeamInfo = ({ team }: TeamInfoProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
+  const { i18n } = useTranslation();
+
+  const created_at = DateTime.fromISO(team.created_at)
+    .setLocale(i18n.language)
+    .toLocaleString(format);
+
+  const updated_at = DateTime.fromISO(team.updated_at)
+    .setLocale(i18n.language)
+    .toLocaleString(format);
 
   return (
     <Card className="m-b" style={{ paddingBottom: 0 }}>
@@ -52,11 +68,11 @@ export const TeamInfo = ({ team }: TeamInfoProps) => {
         </Text>
         <Text $size="s" $direction="row">
           {t('Created at')}&nbsp;
-          <Text $weight="bold">06/02/2024</Text>
+          <Text $weight="bold">{created_at}</Text>
         </Text>
         <Text $size="s" $direction="row">
           {t('Last update at')}&nbsp;
-          <Text $weight="bold">07/02/2024</Text>
+          <Text $weight="bold">{updated_at}</Text>
         </Text>
       </Box>
     </Card>
