@@ -149,16 +149,6 @@ class Contact(BaseModel):
             raise exceptions.ValidationError({"data": [error_message]}) from e
 
 
-class UserManager(auth_models.UserManager):
-    """
-    Override user manager to get the related contact in the same query by default (Contact model)
-    """
-
-    def get_queryset(self):
-        """Always select the related contact when doing a query on users."""
-        return super().get_queryset().select_related("profile_contact")
-
-
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
 
@@ -202,7 +192,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         ),
     )
 
-    objects = UserManager()
+    objects = auth_models.UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

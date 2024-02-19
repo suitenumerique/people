@@ -311,7 +311,6 @@ def test_api_users_retrieve_me_authenticated():
         "timezone": str(user.timezone),
         "is_device": False,
         "is_staff": False,
-        "data": user.profile_contact.data,
     }
 
 

@@ -186,7 +186,7 @@ class UserViewSet(
     """
 
     permission_classes = [permissions.IsSelf]
-    queryset = models.User.objects.all().select_related("profile_contact")
+    queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
     pagination_class = Pagination

@@ -29,7 +29,6 @@ class ContactSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """Serialize users."""
 
-    data = serializers.SerializerMethodField(read_only=True)
     timezone = TimeZoneSerializerField(use_pytz=False, required=True)
 
     class Meta:
@@ -37,17 +36,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "email",
-            "data",
             "language",
             "timezone",
             "is_device",
             "is_staff",
         ]
-        read_only_fields = ["id", "email", "data", "is_device", "is_staff"]
-
-    def get_data(self, user) -> dict:
-        """Return contact data for the user."""
-        return user.profile_contact.data if user.profile_contact else {}
+        read_only_fields = ["id", "email", "is_device", "is_staff"]
 
 
 class TeamAccessSerializer(serializers.ModelSerializer):
