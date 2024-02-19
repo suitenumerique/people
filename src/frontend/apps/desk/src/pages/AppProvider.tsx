@@ -6,7 +6,20 @@ import { useCunninghamTheme } from '@/cunningham';
 import { Auth } from '@/features/auth/Auth';
 import '@/i18n/initI18n';
 
-const queryClient = new QueryClient();
+/**
+ * QueryClient:
+ *  - defaultOptions:
+ *    - staleTime:
+ *      - global cache duration - we decided 3 minutes
+ *      - It can be overridden to each query
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 3,
+    },
+  },
+});
 
 export default function AppProvider({
   children,
