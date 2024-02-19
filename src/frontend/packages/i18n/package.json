@@ -11,8 +11,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@types/jest": "29.5.11",
-    "@types/node": "20.11.6",
+    "@types/jest": "29.5.12",
+    "@types/node": "20.11.19",
     "eslint-config-people": "*",
     "eslint-plugin-import": "2.29.1",
     "i18next-parser": "8.8.0",
