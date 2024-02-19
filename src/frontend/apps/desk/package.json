@@ -33,7 +33,7 @@
     "@types/jest": "29.5.12",
     "@types/node": "*",
     "@types/react": "18.2.56",
-    "@types/react-dom": "18.2.19",
+    "@types/react-dom": "18.2.18",
     "dotenv": "16.4.4",
     "eslint-config-people": "*",
     "fetch-mock": "9.11.0",
