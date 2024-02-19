@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group2.svg';
 import { Box, Card, StyledLink, Text } from '@/components';
+import { TextErrors } from '@/components/TextErrors';
 import { useCunninghamTheme } from '@/cunningham';
 import { useCreateTeam } from '@/features/teams';
 import { NextPageWithLayout } from '@/types/next';
@@ -18,6 +19,7 @@ const Page: NextPageWithLayout = () => {
     mutate: createTeam,
     isError,
     isPending,
+    error,
   } = useCreateTeam({
     onSuccess: (team) => {
       router.push(`/teams/${team.id}`);
@@ -55,11 +57,7 @@ const Page: NextPageWithLayout = () => {
             onChange={(e) => setTeamName(e.target.value)}
             rightIcon={<span className="material-icons">edit</span>}
           />
-          {isError && (
-            <Text className="mt-s" $theme="danger" $textAlign="center">
-              {t('Something bad happens, please retry.')}
-            </Text>
-          )}
+          {isError && error && <TextErrors causes={error.cause} />}
           {isPending && (
             <Box $align="center">
               <Loader />

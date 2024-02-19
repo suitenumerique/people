@@ -2,9 +2,9 @@ import { Loader } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { Box } from '@/components';
+import { TextErrors } from '@/components/TextErrors';
 import { TeamInfo, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -27,27 +27,16 @@ interface TeamProps {
 }
 
 const Team = ({ id }: TeamProps) => {
-  const { t } = useTranslation();
   const { data: team, isLoading, isError, error } = useTeam({ id });
   const navigate = useNavigate();
 
-  if (isError) {
+  if (isError && error) {
     if (error.status === 404) {
       navigate.replace(`/404`);
       return null;
     }
 
-    return (
-      <Text
-        $align="center"
-        $justify="center"
-        $height="100%"
-        $theme="danger"
-        $textAlign="center"
-      >
-        {t('Something bad happens, please retry.')}
-      </Text>
-    );
+    return <TextErrors causes={error.cause} />;
   }
 
   if (isLoading || !team) {

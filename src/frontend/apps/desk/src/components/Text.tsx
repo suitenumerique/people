@@ -38,6 +38,8 @@ export interface TextProps extends BoxProps {
     | '900';
 }
 
+export type TextType = ComponentPropsWithRef<typeof Text>;
+
 export const TextStyled = styled(Box)<TextProps>`
   ${({ $textAlign }) => $textAlign && `text-align: ${$textAlign};`}
   ${({ $weight }) => $weight && `font-weight: ${$weight};`}

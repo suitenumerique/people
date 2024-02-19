@@ -5,7 +5,7 @@ import {
   useInfiniteQuery,
 } from '@tanstack/react-query';
 
-import { APIList, fetchAPI } from '@/api';
+import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
 import { TeamResponse } from './types';
 
@@ -22,9 +22,6 @@ type TeamsAPIParams = TeamsParams & {
 };
 
 type TeamsResponse = APIList<TeamResponse>;
-export interface TeamsResponseError {
-  detail: string;
-}
 
 export const getTeams = async ({
   ordering,
@@ -34,7 +31,7 @@ export const getTeams = async ({
   const response = await fetchAPI(`teams/?page=${page}${orderingQuery}`);
 
   if (!response.ok) {
-    throw new Error(`Couldn't fetch teams: ${response.statusText}`);
+    throw new APIError('Failed to get the teams', await errorCauses(response));
   }
   return response.json() as Promise<TeamsResponse>;
 };
@@ -45,7 +42,7 @@ export function useTeams(
   param: TeamsParams,
   queryConfig?: DefinedInitialDataInfiniteOptions<
     TeamsResponse,
-    TeamsResponseError,
+    APIError,
     InfiniteData<TeamsResponse>,
     QueryKey,
     number
@@ -53,7 +50,7 @@ export function useTeams(
 ) {
   return useInfiniteQuery<
     TeamsResponse,
-    TeamsResponseError,
+    APIError,
     InfiniteData<TeamsResponse>,
     QueryKey,
     number
