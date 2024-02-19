@@ -4,6 +4,7 @@ const config = {
     description: '${description}',
   },
   keepRemoved: true,
+  keySeparator: false,
 };
 
 export default config;

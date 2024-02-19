@@ -29,7 +29,7 @@ describe('checks all the frontend translation are made', () => {
 
         if (missingKeys.length > 0) {
           console.log(
-            `Missing keys in Desk translations that should be translated in Crowdin, got to https://crowdin.com/:`,
+            `Missing keys in Desk translations that should be translated in Crowdin, got to https://crowdin.com/ :`,
             missingKeys,
           );
         }
