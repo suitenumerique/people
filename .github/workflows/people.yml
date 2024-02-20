@@ -124,7 +124,7 @@ jobs:
           docker-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
           make run
         
-      - name: Apply DRH migrations 
+      - name: Apply DRF migrations
         run: |
           make migrate
 

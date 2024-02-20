@@ -74,7 +74,7 @@ test.describe('Teams Panel', () => {
     expect(sortedTeamTexts).toStrictEqual(randomTeams);
   });
 
-  test('003 - checks the infinite scrool', async ({ page, browserName }) => {
+  test('003 - checks the infinite scroll', async ({ page, browserName }) => {
     test.setTimeout(90000);
     const panel = page.getByLabel('Teams panel').first();
 
