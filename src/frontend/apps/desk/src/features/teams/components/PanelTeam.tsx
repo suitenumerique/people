@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,9 +16,13 @@ interface TeamProps {
 export const PanelTeam = ({ team }: TeamProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
+  const {
+    query: { id },
+  } = useRouter();
 
   // There is at least 1 owner in the team
   const hasMembers = team.accesses.length > 1;
+  const isActive = team.id === id;
 
   const commonProps = {
     className: 'p-t',
@@ -25,12 +30,40 @@ export const PanelTeam = ({ team }: TeamProps) => {
     style: {
       borderRadius: '10px',
       flexShrink: 0,
+      background: '#fff',
     },
   };
 
+  const activeStyle = `
+    border-right: 4px solid ${colorsTokens()['primary-600']};
+    background: ${colorsTokens()['primary-400']};
+    span{
+      color: ${colorsTokens()['primary-text']};
+    }
+  `;
+
+  const hoverStyle = `
+    &:hover{
+      border-right: 4px solid ${colorsTokens()['primary-400']};
+      background: ${colorsTokens()['primary-300']};
+      
+      span{
+        color: ${colorsTokens()['primary-text']};
+      }
+    }
+  `;
+
   return (
-    <Box as="li">
-      <StyledLink href={`/teams/${team.id}`}>
+    <Box
+      className="m-0"
+      as="li"
+      $css={`
+        transition: all 0.2s ease-in; 
+        border-right: 4px solid transparent;
+        ${isActive ? activeStyle : hoverStyle}
+      `}
+    >
+      <StyledLink className="p-s pt-t pb-t" href={`/teams/${team.id}`}>
         <Box $align="center" $direction="row" $gap="0.5rem">
           {hasMembers ? (
             <IconGroup
@@ -53,7 +86,12 @@ export const PanelTeam = ({ team }: TeamProps) => {
               }}
             />
           )}
-          <Text $weight="bold">{team.name}</Text>
+          <Text
+            $weight="bold"
+            $color={!hasMembers ? colorsTokens()['greyscale-600'] : undefined}
+          >
+            {team.name}
+          </Text>
         </Box>
       </StyledLink>
     </Box>

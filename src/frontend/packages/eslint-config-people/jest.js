@@ -43,6 +43,7 @@ module.exports = {
         'jest/expect-expect': 'error',
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
+        'react/react-in-jsx-scope': 'off',
       },
     },
   ],

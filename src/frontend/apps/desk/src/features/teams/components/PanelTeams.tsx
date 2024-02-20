@@ -44,7 +44,7 @@ const PanelTeamsState = ({
 
   if (!teams?.length) {
     return (
-      <Box $justify="center">
+      <Box $justify="center" className="m-s">
         <Text as="p" className="mb-0 mt-0" $theme="greyscale" $variation="500">
           {t('0 group to display.')}
         </Text>
@@ -88,9 +88,8 @@ export const PanelTeams = () => {
           void fetchNextPage();
         }}
         scrollContainer={containerRef.current}
-        $gap="1rem"
         as="ul"
-        className="p-s mt-t"
+        className="p-0 mt-0"
         role="listbox"
       >
         <PanelTeamsState

@@ -8,6 +8,13 @@ import { PanelTeams } from '../components/PanelTeams';
 
 window.HTMLElement.prototype.scroll = function () {};
 
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: () => ({
+    query: {},
+  }),
+}));
+
 describe('PanelTeams', () => {
   afterEach(() => {
     fetchMock.restore();

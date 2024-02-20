@@ -2,7 +2,6 @@ const common = require('./common');
 
 module.exports = {
   extends: [
-    'people/jest',
     'next',
     'plugin:prettier/recommended',
     'plugin:@tanstack/eslint-plugin-query/recommended',
@@ -30,6 +29,12 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
   },
-  overrides: common.eslintTS,
+  overrides: [
+    ...common.eslintTS,
+    {
+      files: ['*.spec.*', '*.test.*', '**/__mock__/**/*'],
+      extends: ['people/jest'],
+    },
+  ],
   ignorePatterns: ['node_modules'],
 };
