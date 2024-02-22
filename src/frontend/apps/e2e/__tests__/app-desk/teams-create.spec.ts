@@ -80,4 +80,18 @@ test.describe('Teams Create', () => {
     await panel.locator('li').getByText(teamName).click();
     await expect(elTeam).toBeVisible();
   });
+
+  test('checks alias teams url with homepage', async ({ page }) => {
+    await expect(page).toHaveURL('/');
+
+    const buttonCreateHomepage = page.getByRole('button', {
+      name: 'Create a new team',
+    });
+
+    await expect(buttonCreateHomepage).toBeVisible();
+
+    await page.goto('/teams');
+    await expect(buttonCreateHomepage).toBeVisible();
+    await expect(page).toHaveURL(/\/teams$/);
+  });
 });
