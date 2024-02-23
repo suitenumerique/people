@@ -115,6 +115,7 @@ jobs:
       - name: Set services env variables
         run: |
           make create-env-files
+          cat env.d/development/common.e2e.dist >> env.d/development/common
 
       - name: Build and Start Docker Servers
         env:
