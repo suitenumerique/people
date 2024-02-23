@@ -293,7 +293,6 @@ class Base(Configuration):
         "people", environ_name="OIDC_RP_CLIENT_ID", environ_prefix=None
     )
     OIDC_RP_CLIENT_SECRET = values.Value(
-        "ThisIsAnExampleKeyForDevPurposeOnly",
         environ_name="OIDC_RP_CLIENT_SECRET",
         environ_prefix=None,
     )
