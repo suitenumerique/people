@@ -15,7 +15,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@openfun/cunningham-react": "2.5.0",
+    "@openfun/cunningham-react": "2.4.0",
     "@tanstack/react-query": "5.24.1",
     "i18next": "23.10.0",
     "luxon": "3.4.4",
