@@ -26,22 +26,66 @@ class ContactSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class UserSerializer(serializers.ModelSerializer):
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop("fields", None)
+
+        # Instantiate the superclass normally
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+
+class UserSerializer(DynamicFieldsModelSerializer):
     """Serialize users."""
 
     timezone = TimeZoneSerializerField(use_pytz=False, required=True)
+    name = serializers.SerializerMethodField(read_only=True)
+    email = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.User
         fields = [
             "id",
+            "name",
             "email",
             "language",
             "timezone",
             "is_device",
             "is_staff",
         ]
-        read_only_fields = ["id", "email", "is_device", "is_staff"]
+        read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
+
+    def _get_main_identity_attr(self, obj, attribute_name):
+        """Return the specified attribute of the main identity."""
+        try:
+            return getattr(obj.main_identity[0], attribute_name)
+        except TypeError:
+            return getattr(obj.main_identity, attribute_name)
+        except IndexError:
+            main_identity = obj.identities.filter(is_main=True).first()
+            return getattr(obj.main_identity, attribute_name) if main_identity else None
+        except AttributeError:
+            return None
+
+    def get_name(self, obj):
+        """Return main identity's name."""
+        return self._get_main_identity_attr(obj, "name")
+
+    def get_email(self, obj):
+        """Return main identity's email."""
+        return self._get_main_identity_attr(obj, "email")
 
 
 class TeamAccessSerializer(serializers.ModelSerializer):
@@ -120,11 +164,31 @@ class TeamAccessSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class TeamAccessReadOnlySerializer(TeamAccessSerializer):
+    """Serialize team accesses for list and retrieve actions."""
+
+    user = UserSerializer(read_only=True, fields=["id", "name", "email"])
+
+    class Meta:
+        model = models.TeamAccess
+        fields = [
+            "id",
+            "user",
+            "role",
+            "abilities",
+        ]
+        read_only_fields = [
+            "id",
+            "user",
+            "role",
+            "abilities",
+        ]
+
+
 class TeamSerializer(serializers.ModelSerializer):
     """Serialize teams."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
-    accesses = TeamAccessSerializer(many=True, read_only=True)
     slug = serializers.SerializerMethodField()
 
     class Meta:

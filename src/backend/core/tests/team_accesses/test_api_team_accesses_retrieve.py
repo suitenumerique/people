@@ -33,26 +33,23 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
     identity = factories.IdentityFactory()
     user = identity.user
 
-    team = factories.TeamFactory()
-    access = factories.TeamAccessFactory(team=team)
+    access = factories.TeamAccessFactory(team=factories.TeamFactory())
 
     client = APIClient()
     client.force_login(user)
     response = client.get(
-        f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
+        f"/api/v1.0/teams/{access.team.id!s}/accesses/{access.id!s}/",
     )
-    assert response.status_code == 403
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Not found."}
 
     # Accesses related to another team should be excluded even if the user is related to it
-    for access in [
+    for other_access in [
         factories.TeamAccessFactory(),
         factories.TeamAccessFactory(user=user),
     ]:
         response = client.get(
-            f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
+            f"/api/v1.0/teams/{access.team.id!s}/accesses/{other_access.id!s}/",
         )
 
         assert response.status_code == 404
@@ -64,11 +61,11 @@ def test_api_team_accesses_retrieve_authenticated_related():
     A user who is related to a team should be allowed to retrieve the
     associated team user accesses.
     """
-    identity = factories.IdentityFactory()
+    identity = factories.IdentityFactory(is_main=True)
     user = identity.user
 
-    team = factories.TeamFactory(users=[user])
-    access = factories.TeamAccessFactory(team=team)
+    team = factories.TeamFactory()
+    access = factories.TeamAccessFactory(team=team, user=user)
 
     client = APIClient()
     client.force_login(user)
@@ -79,7 +76,11 @@ def test_api_team_accesses_retrieve_authenticated_related():
     assert response.status_code == 200
     assert response.json() == {
         "id": str(access.id),
-        "user": str(access.user.id),
-        "role": access.role,
+        "user": {
+            "id": str(access.user.id),
+            "email": str(identity.email),
+            "name": str(identity.name),
+        },
+        "role": str(access.role),
         "abilities": access.get_abilities(user),
     }

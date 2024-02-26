@@ -58,24 +58,13 @@ def test_api_teams_retrieve_authenticated_related():
     response = client.get(
         f"/api/v1.0/teams/{team.id!s}/",
     )
+
     assert response.status_code == HTTP_200_OK
-    content = response.json()
-    assert sorted(content.pop("accesses"), key=lambda x: x["user"]) == sorted(
+    assert sorted(response.json().pop("accesses")) == sorted(
         [
-            {
-                "id": str(access1.id),
-                "user": str(user.id),
-                "role": access1.role,
-                "abilities": access1.get_abilities(user),
-            },
-            {
-                "id": str(access2.id),
-                "user": str(access2.user.id),
-                "role": access2.role,
-                "abilities": access2.get_abilities(user),
-            },
-        ],
-        key=lambda x: x["user"],
+            str(access1.id),
+            str(access2.id),
+        ]
     )
     assert response.json() == {
         "id": str(team.id),

@@ -45,7 +45,7 @@ def test_api_team_accesses_create_authenticated_unrelated():
 
     client = APIClient()
     client.force_login(user)
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),
@@ -155,7 +155,7 @@ def test_api_team_accesses_create_authenticated_owner():
 
     client = APIClient()
     client.force_login(user)
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/teams/{team.id!s}/accesses/",
         {
             "user": str(other_user.id),

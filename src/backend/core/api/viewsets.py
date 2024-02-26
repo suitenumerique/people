@@ -1,6 +1,6 @@
 """API endpoints"""
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
+from django.db.models import Func, Max, OuterRef, Prefetch, Q, Subquery, Value
 
 from rest_framework import (
     decorators,
@@ -199,6 +199,12 @@ class UserViewSet(
             # Exclude inactive contacts
             queryset = queryset.filter(
                 is_active=True,
+            ).prefetch_related(
+                Prefetch(
+                    "identities",
+                    queryset=models.Identity.objects.filter(is_main=True),
+                    to_attr="main_identity",
+                )
             )
 
             # Search by case-insensitive and accent-insensitive trigram similarity
@@ -227,9 +233,12 @@ class UserViewSet(
         """
         Return information on currently logged user
         """
-        context = {"request": request}
+        user = request.user
+        user.main_identity = models.Identity.objects.filter(
+            user=user, is_main=True
+        ).first()
         return response.Response(
-            self.serializer_class(request.user, context=context).data
+            self.serializer_class(user, context={"request": request}).data
         )
 
 
@@ -305,7 +314,8 @@ class TeamAccessViewSet(
     pagination_class = Pagination
     permission_classes = [permissions.AccessPermission]
     queryset = models.TeamAccess.objects.all().select_related("user")
-    serializer_class = serializers.TeamAccessSerializer
+    list_serializer_class = serializers.TeamAccessReadOnlySerializer
+    detail_serializer_class = serializers.TeamAccessSerializer
 
     def get_permissions(self):
         """User only needs to be authenticated to list team accesses"""
@@ -322,21 +332,34 @@ class TeamAccessViewSet(
         context["team_id"] = self.kwargs["team_id"]
         return context
 
+    def get_serializer_class(self):
+        if self.action in {"list", "retrieve"}:
+            return self.list_serializer_class
+        return self.detail_serializer_class
+
     def get_queryset(self):
         """Return the queryset according to the action."""
         queryset = super().get_queryset()
         queryset = queryset.filter(team=self.kwargs["team_id"])
 
-        if self.action == "list":
+        if self.action in {"list", "retrieve"}:
             # Limit to team access instances related to a team THAT also has a team access
             # instance for the logged-in user (we don't want to list only the team access
             # instances pointing to the logged-in user)
             user_role_query = models.TeamAccess.objects.filter(
                 team__accesses__user=self.request.user
             ).values("role")[:1]
+
             queryset = (
                 queryset.filter(
                     team__accesses__user=self.request.user,
+                )
+                .prefetch_related(
+                    Prefetch(
+                        "user__identities",
+                        queryset=models.Identity.objects.filter(is_main=True),
+                        to_attr="main_identity",
+                    )
                 )
                 .annotate(user_role=Subquery(user_role_query))
                 .distinct()
