@@ -56,7 +56,8 @@ test.describe('Menu', () => {
       const buttonMenu = menu.getByLabel(`${name} button`);
       await buttonMenu.click();
 
-      // eslint-disable-next-line playwright/no-conditional-in-test
+      /* eslint-disable playwright/no-conditional-expect */
+      /* eslint-disable playwright/no-conditional-in-test */
       if (isDefault) {
         await expect(
           page.getByRole('button', {
@@ -73,6 +74,8 @@ test.describe('Menu', () => {
         const reg = new RegExp(name.toLowerCase());
         await expect(page).toHaveURL(reg);
       }
+      /* eslint-enable playwright/no-conditional-expect */
+      /* eslint-enable playwright/no-conditional-in-test */
     });
   }
 });

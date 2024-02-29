@@ -78,6 +78,7 @@ const config = {
         'forms-labelledbox': {
           'label-color': {
             small: 'var(--c--theme--colors--primary-500)',
+            'small-disabled': 'var(--c--theme--colors--greyscale-400)',
             big: {
               disabled: 'var(--c--theme--colors--greyscale-400)',
             },
@@ -85,6 +86,8 @@ const config = {
         },
         'forms-select': {
           'border-color': 'var(--c--theme--colors--primary-500)',
+          'border-color-disabled-hover':
+            'var(--c--theme--colors--greyscale-200)',
           'border-radius': {
             hover: 'var(--c--components--forms-select--border-radius)',
             focus: 'var(--c--components--forms-select--border-radius)',
@@ -199,10 +202,10 @@ const config = {
           'secondary-800': '#341f1f',
           'secondary-900': '#2b1919',
           'greyscale-text': '#303C4B',
-          'greyscale-000': '#cecece',
-          'greyscale-100': '#f6f6f6',
-          'greyscale-200': '#eeeeee',
-          'greyscale-300': '#e5e5e5',
+          'greyscale-000': '#f6f6f6',
+          'greyscale-100': '#eeeeee',
+          'greyscale-200': '#e5e5e5',
+          'greyscale-300': '#e1e1e1',
           'greyscale-400': '#dddddd',
           'greyscale-500': '#cecece',
           'greyscale-600': '#7b7b7b',
@@ -284,6 +287,20 @@ const config = {
             color: 'var(--c--theme--colors--primary-text)',
           },
         },
+        datagrid: {
+          header: {
+            color: 'var(--c--theme--colors--primary-text)',
+            size: 'var(--c--theme--font--sizes--s)',
+          },
+          body: {
+            'background-color': 'transparent',
+            'background-color-hover': '#F4F4FD',
+          },
+          pagination: {
+            'background-color': 'transparent',
+            'background-color-active': 'var(--c--theme--colors--primary-300)',
+          },
+        },
         'forms-checkbox': {
           'border-radius': '0',
         },
@@ -305,7 +322,12 @@ const config = {
           },
         },
         'forms-select': {
-          'border-radius': '0',
+          'border-radius': '4px',
+          'border-radius-hover': '4px',
+          'background-color': '#ffffff',
+          'border-color': 'var(--c--theme--colors--primary-text)',
+          'border-color-hover': 'var(--c--theme--colors--primary-text)',
+          'box-shadow-color': 'var(--c--theme--colors--primary-text)',
         },
         'forms-switch': {
           'handle-border-radius': '2px',

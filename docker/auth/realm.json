@@ -60,6 +60,9 @@
     },
     {
       "username": "user-e2e-chromium",
+      "email": "user@chromium.e2e",
+      "firstName": "E2E",
+      "lastName": "Chromium",
       "enabled": true,
       "credentials": [
         {
@@ -71,6 +74,9 @@
     },
     {
       "username": "user-e2e-webkit",
+      "email": "user@webkit.e2e",
+      "firstName": "E2E",
+      "lastName": "Webkit",
       "enabled": true,
       "credentials": [
         {
@@ -82,6 +88,9 @@
     },
     {
       "username": "user-e2e-firefox",
+      "email": "user@firefox.e2e",
+      "firstName": "E2E",
+      "lastName": "Firefox",
       "enabled": true,
       "credentials": [
         {

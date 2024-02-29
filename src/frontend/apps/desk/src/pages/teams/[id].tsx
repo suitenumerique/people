@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { TeamInfo, useTeam } from '@/features/teams/';
+import { MemberGrid, TeamInfo, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
 import TeamLayout from './TeamLayout';
@@ -47,7 +47,12 @@ const Team = ({ id }: TeamProps) => {
     );
   }
 
-  return <TeamInfo team={team} />;
+  return (
+    <>
+      <TeamInfo team={team} />
+      <MemberGrid team={team} />
+    </>
+  );
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {

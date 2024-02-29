@@ -14,6 +14,7 @@ export interface BoxProps {
   $gap?: CSSProperties['gap'];
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
+  $overflow?: CSSProperties['overflow'];
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
   $width?: CSSProperties['width'];
@@ -35,6 +36,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
+  ${({ $overflow }) => $overflow && `overflow: ${$overflow};`}
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
   ${({ $width }) => $width && `width: ${$width};`}

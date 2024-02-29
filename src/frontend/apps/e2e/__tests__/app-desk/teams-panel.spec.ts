@@ -1,34 +1,8 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import { waitForElementCount } from '../helpers';
 
-import { keyCloakSignIn } from './common';
-
-const createTeam = async (
-  page: Page,
-  teamName: string,
-  browserName: string,
-  length: number,
-) => {
-  const panel = page.getByLabel('Teams panel').first();
-  const buttonCreate = page.getByRole('button', { name: 'Create the team' });
-
-  const randomTeams = Array.from({ length }, (_el, index) => {
-    return `${teamName}-${browserName}-${Math.floor(Math.random() * 10000)}-${index}`;
-  });
-
-  for (let i = 0; i < randomTeams.length; i++) {
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-    await page.getByText('Team name').fill(randomTeams[i]);
-    await expect(buttonCreate).toBeEnabled();
-    await buttonCreate.click();
-    await expect(
-      panel.locator('li').nth(0).getByText(randomTeams[i]),
-    ).toBeVisible();
-  }
-
-  return randomTeams;
-};
+import { createTeam, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');

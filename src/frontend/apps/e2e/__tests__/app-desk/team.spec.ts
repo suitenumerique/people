@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from './common';
+import { createTeam, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -12,13 +12,9 @@ test.describe('Team', () => {
     page,
     browserName,
   }) => {
-    const panel = page.getByLabel('Teams panel').first();
-
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-
-    const teamName = `My new team ${browserName}-${Math.floor(Math.random() * 1000)}`;
-    await page.getByText('Team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create the team' }).click();
+    const teamName = (
+      await createTeam(page, 'team-top-box', browserName, 1)
+    ).shift();
 
     await expect(page.getByLabel('icon group')).toBeVisible();
     await expect(
@@ -43,5 +39,36 @@ test.describe('Team', () => {
     await expect(
       page.getByText(`Last update at ${todayFormated}`),
     ).toBeVisible();
+  });
+
+  test('checks the datagrid members', async ({ page, browserName }) => {
+    await createTeam(page, 'team-admin', browserName, 1);
+
+    const table = page.getByLabel('List members card').getByRole('table');
+
+    const thead = table.locator('thead');
+    await expect(thead.getByText(/Names/i)).toBeVisible();
+    await expect(thead.getByText(/Emails/i)).toBeVisible();
+    await expect(thead.getByText(/Roles/i)).toBeVisible();
+
+    const rows = table.getByRole('row');
+    expect(await rows.count()).toBe(21);
+
+    await expect(
+      rows.nth(1).getByRole('cell').nth(0).getByLabel('Member icon'),
+    ).toBeVisible();
+
+    const textCellName = await rows
+      .nth(1)
+      .getByRole('cell')
+      .nth(1)
+      .textContent();
+    expect(textCellName).toEqual(expect.any(String));
+    await expect(rows.nth(1).getByRole('cell').nth(2)).toContainText('@');
+    expect(
+      ['owner', 'member', 'admin'].includes(
+        (await rows.nth(1).getByRole('cell').nth(3).textContent()) as string,
+      ),
+    ).toBeTruthy();
   });
 });
