@@ -15,6 +15,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@faker-js/faker": "8.4.1",
     "@openfun/cunningham-react": "2.4.0",
     "@tanstack/react-query": "5.24.8",
     "i18next": "23.10.0",
