@@ -225,14 +225,14 @@ input:-webkit-autofill:focus {
   background: var(--c--components--datagrid--pagination--background-color);
 }
 
-.c__pagination__list .c__button--tertiary.c__button--active {
+.c__pagination__list .c__button--tertiary-text.c__button--active {
   background-color: var(
     --c--components--datagrid--pagination--background-color-active
   );
   color: var(--c--theme--colors--greyscale-800);
 }
 
-.c__pagination__list .c__button--tertiary:disabled {
+.c__pagination__list .c__button--tertiary-text:disabled {
   display: none;
 }
 
@@ -387,6 +387,18 @@ input:-webkit-autofill:focus {
     --c--components--button--tertiary--background--color-disabled
   );
   color: var(--c--components--button--tertiary--color-disabled);
+}
+
+.c__button--tertiary-text {
+  border: none;
+}
+
+.c__button--tertiary-text:hover,
+.c__button--tertiary-text:focus-visible {
+  background-color: var(
+    --c--components--button--tertiary-text--background--color-hover
+  );
+  color: var(--c--components--button--tertiary-text--color-hover);
 }
 
 .c__button--danger {

@@ -20,13 +20,6 @@
       "matchManagers": ["npm"],
       "matchPackageNames": ["@types/react-dom"],
       "allowedVersions": ">18.2.19"
-    },
-    {
-      "enabled": false,
-      "groupName": "ignored js @openfun/cunningham-react@2.5.0",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["@openfun/cunningham-react"],
-      "allowedVersions": ">2.5.0"
     }
   ]
 }

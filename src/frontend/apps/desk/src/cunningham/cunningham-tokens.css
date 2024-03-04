@@ -421,6 +421,12 @@
   --c--components--button--secondary--color: var(
     --c--theme--colors--primary-text
   );
+  --c--components--button--tertiary-text--background--color-hover: var(
+    --c--theme--colors--primary-100
+  );
+  --c--components--button--tertiary-text--color-hover: var(
+    --c--theme--colors--primary-text
+  );
   --c--components--datagrid--header--color: var(
     --c--theme--colors--primary-text
   );

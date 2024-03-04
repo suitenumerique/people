@@ -286,6 +286,12 @@ const config = {
             },
             color: 'var(--c--theme--colors--primary-text)',
           },
+          'tertiary-text': {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+            },
+            'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
         },
         datagrid: {
           header: {
