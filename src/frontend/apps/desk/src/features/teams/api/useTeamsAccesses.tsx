@@ -2,9 +2,6 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
-import { PAGE_SIZE } from '../conf';
-
-import { dummyDataAPITeamAccesses } from './data/teams';
 import { Access } from './types';
 
 export type TeamAccessesAPIParams = {
@@ -18,15 +15,6 @@ export const getTeamAccesses = async ({
   page,
   teamId,
 }: TeamAccessesAPIParams): Promise<AccessesResponse> => {
-  /**
-   * TODO: Remove this block when the API endpoint is ready
-   */
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(dummyDataAPITeamAccesses(100, PAGE_SIZE));
-    }, 500);
-  });
-
   const response = await fetchAPI(`teams/${teamId}/accesses/?page=${page}`);
 
   if (!response.ok) {

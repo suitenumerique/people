@@ -41,7 +41,10 @@ test.describe('Team', () => {
     ).toBeVisible();
   });
 
-  test('checks the datagrid members', async ({ page, browserName }) => {
+  test('checks the admin members is displayed correctly', async ({
+    page,
+    browserName,
+  }) => {
     await createTeam(page, 'team-admin', browserName, 1);
 
     const table = page.getByLabel('List members card').getByRole('table');
@@ -51,24 +54,12 @@ test.describe('Team', () => {
     await expect(thead.getByText(/Emails/i)).toBeVisible();
     await expect(thead.getByText(/Roles/i)).toBeVisible();
 
-    const rows = table.getByRole('row');
-    expect(await rows.count()).toBe(21);
-
-    await expect(
-      rows.nth(1).getByRole('cell').nth(0).getByLabel('Member icon'),
-    ).toBeVisible();
-
-    const textCellName = await rows
-      .nth(1)
-      .getByRole('cell')
-      .nth(1)
-      .textContent();
-    expect(textCellName).toEqual(expect.any(String));
-    await expect(rows.nth(1).getByRole('cell').nth(2)).toContainText('@');
-    expect(
-      ['owner', 'member', 'admin'].includes(
-        (await rows.nth(1).getByRole('cell').nth(3).textContent()) as string,
-      ),
-    ).toBeTruthy();
+    const cells = table.getByRole('row').nth(1).getByRole('cell');
+    await expect(cells.nth(0).getByLabel('Member icon')).toBeVisible();
+    await expect(cells.nth(1)).toHaveText(
+      new RegExp(`E2E ${browserName}`, 'i'),
+    );
+    await expect(cells.nth(2)).toHaveText(`user@${browserName}.e2e`);
+    await expect(cells.nth(3)).toHaveText('owner');
   });
 });
