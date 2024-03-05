@@ -187,7 +187,7 @@ class UserViewSet(
     """
 
     permission_classes = [permissions.IsSelf]
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().order_by("-created_at")
     serializer_class = serializers.UserSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
     pagination_class = Pagination
@@ -314,7 +314,9 @@ class TeamAccessViewSet(
     lookup_field = "pk"
     pagination_class = Pagination
     permission_classes = [permissions.AccessPermission]
-    queryset = models.TeamAccess.objects.all().select_related("user")
+    queryset = (
+        models.TeamAccess.objects.all().select_related("user").order_by("-created_at")
+    )
     list_serializer_class = serializers.TeamAccessReadOnlySerializer
     detail_serializer_class = serializers.TeamAccessSerializer
 

@@ -149,6 +149,7 @@ class TeamFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Team
         django_get_or_create = ("name",)
+        skip_postgeneration_save = True
 
     name = factory.Sequence(lambda n: f"team{n}")
 
