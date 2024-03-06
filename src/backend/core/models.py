@@ -355,7 +355,7 @@ class Team(BaseModel):
             is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
 
         return {
-            "get": True,
+            "get": bool(role),
             "patch": is_owner_or_admin,
             "put": is_owner_or_admin,
             "delete": role == RoleChoices.OWNER,

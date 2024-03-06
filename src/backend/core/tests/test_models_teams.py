@@ -62,7 +62,7 @@ def test_models_teams_get_abilities_anonymous():
     abilities = team.get_abilities(AnonymousUser())
     assert abilities == {
         "delete": False,
-        "get": True,
+        "get": False,
         "patch": False,
         "put": False,
         "manage_accesses": False,
@@ -75,7 +75,7 @@ def test_models_teams_get_abilities_authenticated():
     abilities = team.get_abilities(factories.UserFactory())
     assert abilities == {
         "delete": False,
-        "get": True,
+        "get": False,
         "patch": False,
         "put": False,
         "manage_accesses": False,
