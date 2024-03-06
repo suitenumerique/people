@@ -1,24 +1,29 @@
+import merge from 'lodash/merge';
 import { create } from 'zustand';
 
 import { tokens } from './cunningham-tokens';
-type ColorsTokens = typeof tokens.themes.default.theme.colors;
-type ComponentTokens = typeof tokens.themes.default.components;
+
+type Tokens = typeof tokens.themes.default & Partial<typeof tokens.themes.dsfr>;
+type ColorsTokens = Tokens['theme']['colors'];
+type ComponentTokens = Tokens['components'];
+type Theme = 'default' | 'dsfr';
 
 interface AuthStore {
-  theme: string;
-  setTheme: (theme: string) => void;
-  colorsTokens: () => ColorsTokens;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  colorsTokens: () => Partial<ColorsTokens>;
   componentTokens: () => ComponentTokens;
 }
 
 const useCunninghamTheme = create<AuthStore>((set, get) => {
-  const currentTheme = () => tokens.themes[get().theme as 'default'];
+  const currentTheme = () =>
+    merge(tokens.themes['default'], tokens.themes[get().theme]) as Tokens;
 
   return {
     theme: 'dsfr',
     colorsTokens: () => currentTheme().theme.colors,
     componentTokens: () => currentTheme().components,
-    setTheme: (theme: string) => {
+    setTheme: (theme: Theme) => {
       set({ theme });
     },
   };
