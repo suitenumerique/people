@@ -58,21 +58,30 @@ export const TeamInfo = ({ team }: TeamInfoProps) => {
       </Box>
       <Box
         className="p-s"
-        $gap="1rem"
+        $gap="2rem"
         $direction="row"
-        $justify="space-evenly"
-        $css={`border-top: 1px solid ${colorsTokens()['card-border']};`}
+        $justify="start"
+        $css={`
+        border-top: 1px solid ${colorsTokens()['card-border']};
+        padding-left: 1.5rem;
+        @media (min-width: 768px) {
+          padding-left: 6rem;
+        }`}
       >
-        <Text $size="s">
+        <Text $size="s" as="p">
           {t('{{count}} member', { count: team.accesses.length })}
         </Text>
-        <Text $size="s" $direction="row">
+        <Text $size="s" $display="inline" as="p">
           {t('Created at')}&nbsp;
-          <Text $weight="bold">{created_at}</Text>
+          <Text $weight="bold" $display="inline">
+            {created_at}
+          </Text>
         </Text>
-        <Text $size="s" $direction="row">
+        <Text $size="s" $display="inline" as="p">
           {t('Last update at')}&nbsp;
-          <Text $weight="bold">{updated_at}</Text>
+          <Text $weight="bold" $display="inline">
+            {updated_at}
+          </Text>
         </Text>
       </Box>
     </Card>
