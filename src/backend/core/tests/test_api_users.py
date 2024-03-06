@@ -54,15 +54,15 @@ def test_api_users_authenticated_list_by_email():
     partial query on the email.
     """
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
 
-    dave = factories.IdentityFactory(email="david.bowman@work.com", is_main=True)
-    nicole = factories.IdentityFactory(email="nicole_foole@work.com", is_main=True)
-    frank = factories.IdentityFactory(email="frank_poole@work.com", is_main=True)
-    factories.IdentityFactory(email="heywood_floyd@work.com", is_main=True)
+    dave = factories.IdentityFactory(email="david.bowman@work.com", name="david bowman", is_main=True)
+    nicole = factories.IdentityFactory(email="nicole_foole@work.com", name="nicole foole", is_main=True)
+    frank = factories.IdentityFactory(email="frank_poole@work.com", name="frank poole", is_main=True)
+    factories.IdentityFactory(email="heywood_floyd@work.com", name="heywood floyd", is_main=True)
 
     # Full query should work
     response = client.get(
@@ -119,14 +119,16 @@ def test_api_users_authenticated_list_multiple_identities_single_user():
     User with multiple identities should appear only once in results.
     """
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
 
     dave = factories.UserFactory()
-    factories.IdentityFactory(user=dave, email="david.bowman@work.com")
-    factories.IdentityFactory(user=dave, email="david.bowman@fun.fr")
+    factories.IdentityFactory(
+        user=dave, email="dave.bowman@work.com", name="dave bowman"
+    )
+    factories.IdentityFactory(user=dave, email="dave.bowman@fun.fr", name="dave bowman")
 
     # Full query should work
     response = client.get(
@@ -145,21 +147,23 @@ def test_api_users_authenticated_list_multiple_identities_multiple_users():
     on their best matching identity.
     """
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
 
     dave = factories.UserFactory()
     dave_identity = factories.IdentityFactory(
-        user=dave, email="david.bowman@work.com", is_main=True
+        user=dave, email="dave.bowman@work.com", is_main=True, name="dave bowman"
     )
-    factories.IdentityFactory(user=dave, email="babibou@ehehe.com")
+    factories.IdentityFactory(user=dave, email="babibou@ehehe.com", name="babihou")
     davina_identity = factories.IdentityFactory(
-        user=factories.UserFactory(), email="davina.bowan@work.com"
+        user=factories.UserFactory(), email="davina.bowan@work.com", name="davina"
     )
     prue_identity = factories.IdentityFactory(
-        user=factories.UserFactory(), email="prudence.crandall@work.com"
+        user=factories.UserFactory(),
+        email="prudence.crandall@work.com",
+        name="prudence",
     )
 
     # Full query should work
@@ -203,12 +207,14 @@ def test_api_users_authenticated_list_multiple_identities_multiple_users():
 def test_api_users_authenticated_list_uppercase_content():
     """Upper case content should be found by lower case query."""
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
 
-    dave = factories.IdentityFactory(email="DAVID.BOWMAN@INTENSEWORK.COM")
+    dave = factories.IdentityFactory(
+        email="DAVID.BOWMAN@INTENSEWORK.COM", name="DAVID BOWMAN"
+    )
 
     # Unaccented full address
     response = client.get(
@@ -232,12 +238,12 @@ def test_api_users_authenticated_list_uppercase_content():
 def test_api_users_list_authenticated_capital_query():
     """Upper case query should find lower case content."""
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
 
-    dave = factories.IdentityFactory(email="david.bowman@work.com")
+    dave = factories.IdentityFactory(email="david.bowman@work.com", name="david bowman")
 
     # Full uppercase query
     response = client.get(
@@ -261,12 +267,14 @@ def test_api_users_list_authenticated_capital_query():
 def test_api_contacts_list_authenticated_accented_query():
     """Accented content should be found by unaccented query."""
     user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email)
+    factories.IdentityFactory(user=user, email=user.email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
 
-    helene = factories.IdentityFactory(email="helene.bowman@work.com")
+    helene = factories.IdentityFactory(
+        email="helene.bowman@work.com", name="helene bowman"
+    )
 
     # Accented full query
     response = client.get(
