@@ -59,10 +59,16 @@ def test_api_users_authenticated_list_by_email():
     client = APIClient()
     client.force_login(user)
 
-    dave = factories.IdentityFactory(email="david.bowman@work.com", name="david bowman", is_main=True)
-    nicole = factories.IdentityFactory(email="nicole_foole@work.com", name="nicole foole", is_main=True)
-    frank = factories.IdentityFactory(email="frank_poole@work.com", name="frank poole", is_main=True)
-    factories.IdentityFactory(email="heywood_floyd@work.com", name="heywood floyd", is_main=True)
+    dave = factories.IdentityFactory(
+        email="david.bowman@work.com", name=None, is_main=True
+    )
+    nicole = factories.IdentityFactory(
+        email="nicole_foole@work.com", name=None, is_main=True
+    )
+    frank = factories.IdentityFactory(
+        email="frank_poole@work.com", name=None, is_main=True
+    )
+    factories.IdentityFactory(email="heywood_floyd@work.com", name=None, is_main=True)
 
     # Full query should work
     response = client.get(
@@ -112,6 +118,104 @@ def test_api_users_authenticated_list_by_email():
             "timezone": str(frank.user.timezone),
         },
     ]
+
+
+def test_api_users_authenticated_list_by_name():
+    """
+    Authenticated users should be able to search users with a case-insensitive and
+    partial query on the name.
+    """
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+
+    client = APIClient()
+    client.force_login(user)
+
+    dave = factories.IdentityFactory(name="dave bowman", email=None, is_main=True)
+    nicole = factories.IdentityFactory(name="nicole foole", email=None, is_main=True)
+    frank = factories.IdentityFactory(name="frank poole", email=None, is_main=True)
+    factories.IdentityFactory(name="heywood floyd", email=None, is_main=True)
+
+    # Full query should work
+    response = client.get(
+        "/api/v1.0/users/?q=david.bowman@work.com",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids[0] == str(dave.user.id)
+
+    # Partial query should work
+    response = client.get("/api/v1.0/users/?q=fran")
+
+    assert response.status_code == HTTP_200_OK
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids[0] == str(frank.user.id)
+
+    # Result that matches a trigram twice ranks better than result that matches once
+    response = client.get("/api/v1.0/users/?q=ole")
+
+    assert response.status_code == HTTP_200_OK
+    user_ids = [user["id"] for user in response.json()["results"]]
+    # "Nicole Foole" matches twice on "ole"
+    assert user_ids == [str(nicole.user.id), str(frank.user.id)]
+
+    # Even with a low similarity threshold, query should match expected user
+    response = client.get("/api/v1.0/users/?q=ool")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["results"] == [
+        {
+            "id": str(nicole.user.id),
+            "email": nicole.email,
+            "name": nicole.name,
+            "is_device": nicole.user.is_device,
+            "is_staff": nicole.user.is_staff,
+            "language": nicole.user.language,
+            "timezone": str(nicole.user.timezone),
+        },
+        {
+            "id": str(frank.user.id),
+            "email": frank.email,
+            "name": frank.name,
+            "is_device": frank.user.is_device,
+            "is_staff": frank.user.is_staff,
+            "language": frank.user.language,
+            "timezone": str(frank.user.timezone),
+        },
+    ]
+
+
+def test_api_users_authenticated_list_by_name_and_email():
+    """
+    Authenticated users should be able to search users with a case-insensitive and
+    partial query on the name and email.
+    """
+
+    user = factories.UserFactory(email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+
+    client = APIClient()
+    client.force_login(user)
+
+    nicole = factories.IdentityFactory(
+        email="nicole_foole@work.com", name="nicole foole", is_main=True
+    )
+    frank = factories.IdentityFactory(
+        email="oleg_poole@work.com", name=None, is_main=True
+    )
+    david = factories.IdentityFactory(email=None, name="david role", is_main=True)
+
+    # Result that matches a trigram in name and email ranks better than result that matches once
+    response = client.get("/api/v1.0/users/?q=ole")
+
+    assert response.status_code == HTTP_200_OK
+    user_ids = [user["id"] for user in response.json()["results"]]
+
+    # "Nicole Foole" matches twice on "ole" in her name and twice on "ole" in her email
+    # "Oleg poole" matches twice on "ole" in her email
+    # "David role" matches once on "ole" in his name
+    assert user_ids == [str(nicole.user.id), str(frank.user.id), str(david.user.id)]
 
 
 def test_api_users_authenticated_list_multiple_identities_single_user():

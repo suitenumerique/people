@@ -2,6 +2,7 @@
 
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Func, Max, OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models.functions import Coalesce
 
 from rest_framework import (
     decorators,
@@ -18,9 +19,7 @@ from core import models
 
 from . import permissions, serializers
 
-EMAIL_SIMILARITY_THRESHOLD = 0.01
-# TrigramSimilarity threshold is lower for searching email than for names,
-# to improve matching results
+SIMILARITY_THRESHOLD = 0.04
 
 
 class NestedGenericViewSet(viewsets.GenericViewSet):
@@ -212,13 +211,21 @@ class UserViewSet(
             if query := self.request.GET.get("q", ""):
                 similarity = Max(
                     TrigramSimilarity(
-                        Func("identities__email", function="unaccent"),
+                        Coalesce(
+                            Func("identities__email", function="unaccent"), Value("")
+                        ),
+                        Func(Value(query), function="unaccent"),
+                    )
+                    + TrigramSimilarity(
+                        Coalesce(
+                            Func("identities__name", function="unaccent"), Value("")
+                        ),
                         Func(Value(query), function="unaccent"),
                     )
                 )
                 queryset = (
                     queryset.annotate(similarity=similarity)
-                    .filter(similarity__gte=EMAIL_SIMILARITY_THRESHOLD)
+                    .filter(similarity__gte=SIMILARITY_THRESHOLD)
                     .order_by("-similarity")
                 )
 
