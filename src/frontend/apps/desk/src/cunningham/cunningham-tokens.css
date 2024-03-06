@@ -396,16 +396,13 @@
   --c--theme--font--families--accent: marianne;
   --c--theme--font--families--base: marianne;
   --c--components--alert--border-radius: 0;
+  --c--components--button--medium-height: 48px;
   --c--components--button--border-radius: 4px;
   --c--components--button--primary--background--color: var(
     --c--theme--colors--primary-text
   );
-  --c--components--button--primary--background--color-hover: var(
-    --c--theme--colors--primary-700
-  );
-  --c--components--button--primary--background--color-active: var(
-    --c--theme--colors--primary-900
-  );
+  --c--components--button--primary--background--color-hover: #1212ff;
+  --c--components--button--primary--background--color-active: #2323ff;
   --c--components--button--primary--color: #fff;
   --c--components--button--primary--color-hover: #fff;
   --c--components--button--primary--color-active: #fff;
@@ -418,12 +415,8 @@
   --c--components--button--primary-text--color-hover: var(
     --c--theme--colors--primary-text
   );
-  --c--components--button--secondary--background--color-hover: var(
-    --c--theme--colors--primary-100
-  );
-  --c--components--button--secondary--background--color-active: var(
-    --c--theme--colors--primary-200
-  );
+  --c--components--button--secondary--background--color-hover: #f6f6f6;
+  --c--components--button--secondary--background--color-active: #ededed;
   --c--components--button--secondary--border--color-hover: var(
     --c--theme--colors--primary-300
   );
@@ -450,12 +443,16 @@
   --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
   --c--components--forms-datepicker--border-radius: 0;
   --c--components--forms-fileuploader--border-radius: 0;
+  --c--components--forms-field--color: var(--c--theme--colors--primary-text);
   --c--components--forms-input--border-radius: 4px;
   --c--components--forms-input--background-color: #fff;
   --c--components--forms-input--border-color: var(
     --c--theme--colors--primary-text
   );
   --c--components--forms-input--box-shadow-color: var(
+    --c--theme--colors--primary-text
+  );
+  --c--components--forms-input--value-color: var(
     --c--theme--colors--primary-text
   );
   --c--components--forms-labelledbox--label-color--big: var(

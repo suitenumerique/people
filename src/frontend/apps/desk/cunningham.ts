@@ -265,12 +265,13 @@ const config = {
           'border-radius': '0',
         },
         button: {
+          'medium-height': '48px',
           'border-radius': '4px',
           primary: {
             background: {
               color: 'var(--c--theme--colors--primary-text)',
-              'color-hover': 'var(--c--theme--colors--primary-700)',
-              'color-active': 'var(--c--theme--colors--primary-900)',
+              'color-hover': '#1212ff',
+              'color-active': '#2323ff',
             },
             color: '#ffffff',
             'color-hover': '#ffffff',
@@ -285,8 +286,8 @@ const config = {
           },
           secondary: {
             background: {
-              'color-hover': 'var(--c--theme--colors--primary-100)',
-              'color-active': 'var(--c--theme--colors--primary-200)',
+              'color-hover': '#F6F6F6',
+              'color-active': '#EDEDED',
             },
             border: {
               'color-hover': 'var(--c--theme--colors--primary-300)',
@@ -324,11 +325,15 @@ const config = {
         'forms-fileuploader': {
           'border-radius': '0',
         },
+        'forms-field': {
+          color: 'var(--c--theme--colors--primary-text)',
+        },
         'forms-input': {
           'border-radius': '4px',
           'background-color': '#ffffff',
           'border-color': 'var(--c--theme--colors--primary-text)',
           'box-shadow-color': 'var(--c--theme--colors--primary-text)',
+          'value-color': 'var(--c--theme--colors--primary-text)',
         },
         'forms-labelledbox': {
           'label-color': {
