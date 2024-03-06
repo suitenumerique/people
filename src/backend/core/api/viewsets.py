@@ -348,7 +348,7 @@ class TeamAccessViewSet(
             # instance for the logged-in user (we don't want to list only the team access
             # instances pointing to the logged-in user)
             user_role_query = models.TeamAccess.objects.filter(
-                team__accesses__user=self.request.user
+                user=self.request.user, team=self.kwargs["team_id"]
             ).values("role")[:1]
 
             queryset = (
