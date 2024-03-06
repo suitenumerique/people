@@ -1,10 +1,9 @@
-import { Button } from '@openfun/cunningham-react';
 import Image from 'next/image';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { Box, Text } from '@/components/';
+import { Box, BoxButton, Text } from '@/components/';
 
 import { LanguagePicker } from '../language/';
 
@@ -90,12 +89,9 @@ export const Header = () => {
                 alt={t(`Profile picture`)}
               />
             </Box>
-            <Button
-              aria-label={t('Access to the cells menu')}
-              icon={<Image priority src={IconCells} alt={t('Cells icon')} />}
-              color="tertiary"
-              className="c__button-no-bg p-0 m-0"
-            />
+            <BoxButton aria-label={t('Access to the cells menu')}>
+              <Image priority src={IconCells} alt={t('Cells icon')} />
+            </BoxButton>
           </Box>
         </Box>
       </Box>

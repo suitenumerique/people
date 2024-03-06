@@ -1,32 +1,12 @@
-import { Button } from '@openfun/cunningham-react';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
-import { Box, StyledLink } from '@/components';
+import { Box, BoxButton, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { TeamsOrdering } from '@/features/teams/api/';
 import IconAdd from '@/features/teams/assets/icon-add.svg';
 import IconSort from '@/features/teams/assets/icon-sort.svg';
 import { useTeamStore } from '@/features/teams/store/useTeamsStore';
-
-const ButtonSort = styled(Button)<{
-  $background: CSSProperties['background'];
-  $color: CSSProperties['color'];
-}>`
-  &.c__button {
-    svg {
-      background-color: transparent;
-      transition: all 0.3s;
-    }
-
-    &.c__button--active svg {
-      background-color: ${({ $background }) => $background};
-      border-radius: 10rem;
-      color: ${({ $color }) => $color};
-    }
-  }
-`;
 
 export const PanelActions = () => {
   const { t } = useTranslation();
@@ -47,27 +27,26 @@ export const PanelActions = () => {
         }
       `}
     >
-      <ButtonSort
+      <BoxButton
         aria-label={t('Sort the teams')}
-        icon={
-          <IconSort width={30} height={30} aria-label={t('Sort teams icon')} />
-        }
-        color="tertiary"
-        className="c__button-no-bg p-0 m-0"
         onClick={changeOrdering}
-        active={ordering === TeamsOrdering.BY_CREATED_ON}
-        $background={colorsTokens()['primary-200']}
+        $radius="100%"
+        $background={
+          ordering === TeamsOrdering.BY_CREATED_ON
+            ? colorsTokens()['primary-200']
+            : 'transparent'
+        }
         $color={colorsTokens()['primary-600']}
-      />
+      >
+        <IconSort width={30} height={30} aria-label={t('Sort teams icon')} />
+      </BoxButton>
       <StyledLink href="/teams/create">
-        <Button
+        <BoxButton
           aria-label={t('Add a team')}
-          icon={
-            <IconAdd width={30} height={30} aria-label={t('Add team icon')} />
-          }
-          color="tertiary"
-          className="c__button-no-bg p-0 m-0"
-        />
+          $color={colorsTokens()['primary-600']}
+        >
+          <IconAdd width={30} height={30} aria-label={t('Add team icon')} />
+        </BoxButton>
       </StyledLink>
     </Box>
   );

@@ -55,11 +55,6 @@ export const Text = ({
   ...props
 }: ComponentPropsWithRef<typeof TextStyled>) => {
   return (
-    <TextStyled
-      as="span"
-      $theme="greyscale"
-      $variation="text"
-      {...props}
-    ></TextStyled>
+    <TextStyled as="span" $theme="greyscale" $variation="text" {...props} />
   );
 };

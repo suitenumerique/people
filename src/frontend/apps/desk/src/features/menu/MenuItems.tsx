@@ -1,9 +1,8 @@
-import { Button } from '@openfun/cunningham-react';
 import { usePathname } from 'next/navigation';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, StyledLink } from '@/components';
+import { Box, BoxButton, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { SVGComponent } from '@/types/components';
 
@@ -57,23 +56,15 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
         $background={background}
         $radius="10px"
       >
-        <Button
-          aria-label={t(`{{label}} button`, { label })}
-          icon={
-            <Box $color={color}>
-              <Icon
-                width="2.375rem"
-                aria-label={t(`{{label}} icon`, { label })}
-                style={{
-                  transition: 'color 0.2s ease-in-out',
-                }}
-              />
-            </Box>
-          }
-          color="tertiary"
-          className="c__button-no-bg p-0 m-0"
-          style={{ flexDirection: 'column', gap: '0' }}
-        />
+        <BoxButton aria-label={t(`{{label}} button`, { label })} $color={color}>
+          <Icon
+            width="2.375rem"
+            aria-label={t(`{{label}} icon`, { label })}
+            style={{
+              transition: 'color 0.2s ease-in-out',
+            }}
+          />
+        </BoxButton>
       </Box>
       {isTooltipOpen && (
         <Tooltip
