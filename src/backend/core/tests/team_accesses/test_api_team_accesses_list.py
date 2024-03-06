@@ -54,20 +54,27 @@ def test_api_team_accesses_list_authenticated_unrelated():
 def test_api_team_accesses_list_authenticated_related():
     """
     Authenticated users should be able to list team accesses for a team
-    to which they are related, whatever their role in the team.
+    to which they are related, with a given role.
     """
     identity = factories.IdentityFactory(is_main=True)
     user = identity.user
 
     team = factories.TeamFactory()
-    user_access = models.TeamAccess.objects.create(team=team, user=user)  # random role
 
-    # other team members should appear
-    other_member = factories.UserFactory()
-    other_member_identity = factories.IdentityFactory(is_main=True, user=other_member)
-    access1 = factories.TeamAccessFactory.create(team=team, user=other_member)
+    owner = factories.IdentityFactory(is_main=True)
+    access1 = factories.TeamAccessFactory.create(
+        team=team, user=owner.user, role="owner"
+    )
 
-    # Accesses for other teams to which the user is related should not be listed either
+    administrator = factories.IdentityFactory(is_main=True)
+    access2 = factories.TeamAccessFactory.create(
+        team=team, user=administrator.user, role="administrator"
+    )
+
+    # Ensure this user's role is different from other team members to test abilities' computation
+    user_access = models.TeamAccess.objects.create(team=team, user=user, role="member")
+
+    # Grant other team accesses to the user, they should not be listed either
     other_access = factories.TeamAccessFactory(user=user)
     factories.TeamAccessFactory(team=other_access.team)
 
@@ -78,7 +85,7 @@ def test_api_team_accesses_list_authenticated_related():
     )
 
     assert response.status_code == 200
-    assert response.json()["count"] == 2
+    assert response.json()["count"] == 3
     assert sorted(response.json()["results"], key=lambda x: x["id"]) == sorted(
         [
             {
@@ -95,11 +102,21 @@ def test_api_team_accesses_list_authenticated_related():
                 "id": str(access1.id),
                 "user": {
                     "id": str(access1.user.id),
-                    "email": str(other_member_identity.email),
-                    "name": str(other_member_identity.name),
+                    "email": str(owner.email),
+                    "name": str(owner.name),
                 },
                 "role": str(access1.role),
                 "abilities": access1.get_abilities(user),
+            },
+            {
+                "id": str(access2.id),
+                "user": {
+                    "id": str(access2.user.id),
+                    "email": str(administrator.email),
+                    "name": str(administrator.name),
+                },
+                "role": str(access2.role),
+                "abilities": access2.get_abilities(user),
             },
         ],
         key=lambda x: x["id"],
