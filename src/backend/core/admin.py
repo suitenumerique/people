@@ -145,6 +145,20 @@ class InvitationAdmin(admin.ModelAdmin):
         "is_expired",
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            # all fields read only = disable update
+            return self.fields
+        return self.readonly_fields
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        """Custom edit form. Remove 'save' buttons."""
+        extra_context = extra_context or {}
+        extra_context["show_save_and_continue"] = False
+        extra_context["show_save"] = False
+        extra_context["show_save_and_add_another"] = False
+        return super().change_view(request, object_id, extra_context=extra_context)
+
     def save_model(self, request, obj, form, change):
         obj.issuer = request.user
         obj.save()
