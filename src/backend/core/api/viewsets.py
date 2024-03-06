@@ -344,14 +344,13 @@ class TeamAccessViewSet(
         queryset = queryset.filter(team=self.kwargs["team_id"])
 
         if self.action in {"list", "retrieve"}:
-            # Limit to team access instances related to a team THAT also has a team access
-            # instance for the logged-in user (we don't want to list only the team access
-            # instances pointing to the logged-in user)
+            # Determine which role the logged-in user has in the team
             user_role_query = models.TeamAccess.objects.filter(
                 user=self.request.user, team=self.kwargs["team_id"]
             ).values("role")[:1]
 
             queryset = (
+                # The logged-in user should be part of a team to see its accesses
                 queryset.filter(
                     team__accesses__user=self.request.user,
                 )
@@ -362,6 +361,8 @@ class TeamAccessViewSet(
                         to_attr="main_identity",
                     )
                 )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each team access
                 .annotate(user_role=Subquery(user_role_query))
                 .distinct()
             )
