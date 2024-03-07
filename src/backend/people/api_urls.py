@@ -1,4 +1,5 @@
 """API URL Configuration"""
+
 from django.conf import settings
 from django.urls import include, path, re_path
 

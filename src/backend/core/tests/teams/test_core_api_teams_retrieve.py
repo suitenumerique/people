@@ -1,6 +1,7 @@
 """
 Tests for Teams API endpoint in People's core app: retrieve
 """
+
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 from rest_framework.test import APIClient

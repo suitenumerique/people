@@ -1,4 +1,5 @@
 """Client serializers for the People core app."""
+
 from rest_framework import exceptions, serializers
 from timezone_field.rest_framework import TimeZoneSerializerField
 

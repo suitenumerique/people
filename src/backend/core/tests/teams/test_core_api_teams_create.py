@@ -1,6 +1,7 @@
 """
 Tests for Teams API endpoint in People's core app: create
 """
+
 import pytest
 from rest_framework.status import (
     HTTP_201_CREATED,

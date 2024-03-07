@@ -1,6 +1,7 @@
 """
 Tests for Teams API endpoint in People's core app: delete
 """
+
 import pytest
 from rest_framework.status import (
     HTTP_204_NO_CONTENT,

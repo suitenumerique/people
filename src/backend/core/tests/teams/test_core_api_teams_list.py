@@ -1,6 +1,7 @@
 """
 Tests for Teams API endpoint in People's core app: list
 """
+
 from unittest import mock
 
 import pytest

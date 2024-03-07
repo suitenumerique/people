@@ -1,6 +1,7 @@
 """
 Test users API endpoints in the People core app.
 """
+
 from unittest import mock
 
 import pytest

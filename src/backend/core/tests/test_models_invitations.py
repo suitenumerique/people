@@ -1,6 +1,7 @@
 """
 Unit tests for the Invitation model
 """
+
 from django.core.exceptions import ValidationError
 
 import pytest

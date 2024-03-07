@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the People core application
 """
+
 import json
 import os
 import uuid

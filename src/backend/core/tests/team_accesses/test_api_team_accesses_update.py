@@ -1,6 +1,7 @@
 """
 Test for team accesses API endpoints in People's core app : update
 """
+
 import random
 from uuid import uuid4
 

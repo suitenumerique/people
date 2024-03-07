@@ -1,6 +1,7 @@
 """
 Test Throttle in People's app.
 """
+
 import pytest
 from rest_framework.test import APIClient
 

@@ -1,6 +1,7 @@
 """
 Test contacts API endpoints in People's core app.
 """
+
 from django.test.utils import override_settings
 
 import pytest

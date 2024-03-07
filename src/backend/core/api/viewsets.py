@@ -1,4 +1,5 @@
 """API endpoints"""
+
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Func, Max, OuterRef, Prefetch, Q, Subquery, Value
 

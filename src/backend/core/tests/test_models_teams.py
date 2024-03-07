@@ -1,6 +1,7 @@
 """
 Unit tests for the Team model
 """
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 

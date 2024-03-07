@@ -2,6 +2,7 @@
 Management command overriding the "createsuperuser" command to allow creating users
 with their email and no username.
 """
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 

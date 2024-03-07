@@ -1,6 +1,7 @@
 """
 Test for team accesses API endpoints in People's core app : create
 """
+
 import random
 
 import pytest

@@ -1,6 +1,7 @@
 """
 Test for team accesses API endpoints in People's core app : list
 """
+
 import pytest
 from rest_framework.test import APIClient
 

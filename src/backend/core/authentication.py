@@ -1,4 +1,5 @@
 """Authentication for the People core app."""
+
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
