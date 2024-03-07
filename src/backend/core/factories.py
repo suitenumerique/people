@@ -155,12 +155,13 @@ class TeamFactory(factory.django.DjangoModelFactory):
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
         """Add users to team from a given list of users with or without roles."""
-        if create and extracted:
-            for item in extracted:
-                if isinstance(item, models.User):
-                    TeamAccessFactory(team=self, user=item)
-                else:
-                    TeamAccessFactory(team=self, user=item[0], role=item[1])
+        if not create or not extracted:
+            return
+        for user_entry in extracted:
+            if isinstance(user_entry, models.User):
+                TeamAccessFactory(team=self, user=user_entry)
+            else:
+                TeamAccessFactory(team=self, user=user_entry[0], role=user_entry[1])
 
 
 class TeamAccessFactory(factory.django.DjangoModelFactory):
