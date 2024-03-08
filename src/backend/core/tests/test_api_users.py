@@ -440,6 +440,58 @@ def test_api_users_list_pagination(
     assert len(content["results"]) == 2
 
 
+@pytest.mark.parametrize("page_size", [1, 10, 99, 100])
+def test_api_users_list_pagination_page_size(
+    page_size,
+):
+    """Page's size on pagination should work as expected."""
+    identity = factories.IdentityFactory()
+    user = identity.user
+
+    client = APIClient()
+    client.force_login(user)
+
+    for i in range(page_size):
+        factories.UserFactory.create(email=f"user-{i}@people.com")
+
+    response = client.get(
+        f"/api/v1.0/users/?page_size={page_size}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    content = response.json()
+
+    assert content["count"] == page_size + 1
+    assert len(content["results"]) == page_size
+
+
+@pytest.mark.parametrize("page_size", [101, 200])
+def test_api_users_list_pagination_wrong_page_size(
+    page_size,
+):
+    """Page's size on pagination should be limited to "max_page_size"."""
+    identity = factories.IdentityFactory()
+    user = identity.user
+
+    client = APIClient()
+    client.force_login(user)
+
+    for i in range(page_size):
+        factories.UserFactory.create(email=f"user-{i}@people.com")
+
+    response = client.get(
+        f"/api/v1.0/users/?page_size={page_size}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    content = response.json()
+
+    assert content["count"] == page_size + 1
+
+    # Length should not exceed "max_page_size" default value
+    assert len(content["results"]) == 100
+
+
 def test_api_users_retrieve_me_anonymous():
     """Anonymous users should not be allowed to list users."""
     factories.UserFactory.create_batch(2)
