@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { UserData, getMe } from '@/features/auth/api';
+import { User, getMe } from '@/features/auth/api';
 
 export const login = () => {
   window.location.replace(
@@ -12,7 +12,7 @@ interface AuthStore {
   authenticated: boolean;
   initAuth: () => void;
   logout: () => void;
-  userData?: UserData;
+  userData?: User;
 }
 
 const initialState = {
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   initAuth: () => {
     getMe()
-      .then((data: UserData) => {
+      .then((data: User) => {
         set({ authenticated: true, userData: data });
       })
       .catch(() => {

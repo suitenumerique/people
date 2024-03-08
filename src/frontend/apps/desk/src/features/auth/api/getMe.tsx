@@ -1,16 +1,6 @@
 import { fetchAPI } from '@/api';
 
-/**
- * Represents user data retrieved from the API.
- * This interface is incomplete, and will be
- * refactored in a near future.
- *
- * @interface UserData
- * @property {string} email - The email of the user.
- */
-export interface UserData {
-  email: string;
-}
+import { User } from './types';
 
 /**
  * Asynchronously retrieves the current user's data from the API.
@@ -20,12 +10,12 @@ export interface UserData {
  * @async
  * @function getMe
  * @throws {Error} Throws an error if the API request fails.
- * @returns {Promise<UserData>} A promise that resolves to the user data.
+ * @returns {Promise<User>} A promise that resolves to the user data.
  */
-export const getMe = async (): Promise<UserData> => {
+export const getMe = async (): Promise<User> => {
   const response = await fetchAPI(`users/me/`);
   if (!response.ok) {
     throw new Error(`Couldn't fetch user data: ${response.statusText}`);
   }
-  return response.json() as Promise<UserData>;
+  return response.json() as Promise<User>;
 };
