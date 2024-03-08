@@ -129,16 +129,19 @@ def create_demo(stdout):
         users_values = list(models.User.objects.values("id", "email"))
         for user_dict in users_values:
             for i in range(
-                random.randint(0, defaults.NB_OBJECTS["max_identities_per_user"])
+                random.choices(range(5), weights=[5, 50, 30, 10, 5], k=1)[0]
             ):
                 user_email = user_dict["email"]
                 queue.push(
                     models.Identity(
                         user_id=user_dict["id"],
                         sub=uuid4(),
-                        email=f"identity{i:d}{user_email:s}",
                         is_main=(i == 0),
-                        name=fake.name(),
+                        # Leave 3% of emails and names empty
+                        email=f"identity{i:d}{user_email:s}"
+                        if random.random() < 0.97
+                        else None,
+                        name=fake.name() if random.random() < 0.97 else None,
                     )
                 )
         queue.flush()
