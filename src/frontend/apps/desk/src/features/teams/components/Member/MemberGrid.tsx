@@ -33,6 +33,12 @@ export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
   }, [data?.count, pageSize, setPagesCount]);
 
+  const dictRole = {
+    [Role.ADMIN]: t('Admin'),
+    [Role.MEMBER]: t('Member'),
+    [Role.OWNER]: t('Owner'),
+  };
+
   return (
     <Card
       className="m-b pb-s"
@@ -78,8 +84,11 @@ export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
             headerName: t('Emails'),
           },
           {
-            field: 'role',
+            id: 'role',
             headerName: t('Roles'),
+            renderCell({ row }) {
+              return dictRole[row.role];
+            },
           },
           {
             id: 'column-actions',

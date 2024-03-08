@@ -60,7 +60,7 @@ test.describe('Team', () => {
       new RegExp(`E2E ${browserName}`, 'i'),
     );
     await expect(cells.nth(2)).toHaveText(`user@${browserName}.e2e`);
-    await expect(cells.nth(3)).toHaveText('owner');
+    await expect(cells.nth(3)).toHaveText(/Owner/i);
   });
 
   test('try to update the owner role but cannot because it is the last owner', async ({
