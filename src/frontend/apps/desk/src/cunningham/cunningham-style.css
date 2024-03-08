@@ -434,3 +434,10 @@ input:-webkit-autofill:focus {
     --c--components--button--danger--background--color-disabled
   );
 }
+
+/**
+ * Modal
+*/
+.c__modal__backdrop {
+  z-index: 1000;
+}

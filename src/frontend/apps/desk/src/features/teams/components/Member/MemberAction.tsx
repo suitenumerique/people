@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { DropButton, Text } from '@/components';
 import { Access, Role } from '@/features/teams/api';
 
+import { ModalRole } from './ModalRole';
+
 interface MemberActionProps {
   access: Access;
   currentRole: Role;
@@ -17,6 +19,7 @@ export const MemberAction = ({
   teamId,
 }: MemberActionProps) => {
   const { t } = useTranslation();
+  const [isModalRoleOpen, setIsModalRoleOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
 
   if (
@@ -46,6 +49,7 @@ export const MemberAction = ({
       >
         <Button
           onClick={() => {
+            setIsModalRoleOpen(true);
             setIsDropOpen(false);
           }}
           color="primary-text"
@@ -54,6 +58,14 @@ export const MemberAction = ({
           <Text $theme="primary">{t('Update the role')}</Text>
         </Button>
       </DropButton>
+      {isModalRoleOpen && (
+        <ModalRole
+          access={access}
+          currentRole={currentRole}
+          onClose={() => setIsModalRoleOpen(false)}
+          teamId={teamId}
+        />
+      )}
     </>
   );
 };
