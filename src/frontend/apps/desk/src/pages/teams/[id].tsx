@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MemberGrid, TeamInfo, useTeam } from '@/features/teams/';
+import { MemberGrid, Role, TeamInfo, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
 import TeamLayout from './TeamLayout';
@@ -47,10 +47,16 @@ const Team = ({ id }: TeamProps) => {
     );
   }
 
+  const currentRole = team.abilities.delete
+    ? Role.OWNER
+    : team.abilities.manage_accesses
+      ? Role.ADMIN
+      : Role.MEMBER;
+
   return (
     <>
       <TeamInfo team={team} />
-      <MemberGrid team={team} />
+      <MemberGrid teamId={team.id} currentRole={currentRole} />
     </>
   );
 };

@@ -276,6 +276,13 @@ const config = {
             'color-hover': '#ffffff',
             'color-active': '#ffffff',
           },
+          'primary-text': {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+              'color-active': 'var(--c--theme--colors--primary-100)',
+            },
+            'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
           secondary: {
             background: {
               'color-hover': 'var(--c--theme--colors--primary-100)',
@@ -309,6 +316,7 @@ const config = {
         },
         'forms-checkbox': {
           'border-radius': '0',
+          color: 'var(--c--theme--colors--primary-text)',
         },
         'forms-datepicker': {
           'border-radius': '0',

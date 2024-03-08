@@ -329,6 +329,22 @@ input:-webkit-autofill:focus {
   border-color: var(--c--components--button--primary--border--color-active);
 }
 
+.c__button--primary-text:active,
+.c__button--primary-text.c__button--active {
+  border: none;
+  background-color: var(
+    --c--components--button--primary-text--background--color-active
+  );
+}
+
+.c__button--primary-text:hover,
+.c__button--primary-text:focus-visible {
+  background-color: var(
+    --c--components--button--primary-text--background--color-hover
+  );
+  color: var(--c--components--button--primary-text--color-hover);
+}
+
 .c__button:disabled {
   background-color: var(--c--components--button--disabled--background--color);
   color: var(--c--components--button--disabled--color);

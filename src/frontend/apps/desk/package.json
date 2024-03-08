@@ -32,6 +32,7 @@
     "@tanstack/react-query-devtools": "5.24.8",
     "@testing-library/jest-dom": "6.4.2",
     "@testing-library/react": "14.2.1",
+    "@testing-library/user-event": "14.5.2",
     "@types/jest": "29.5.12",
     "@types/luxon": "3.4.2",
     "@types/node": "*",

@@ -409,6 +409,15 @@
   --c--components--button--primary--color: #fff;
   --c--components--button--primary--color-hover: #fff;
   --c--components--button--primary--color-active: #fff;
+  --c--components--button--primary-text--background--color-hover: var(
+    --c--theme--colors--primary-100
+  );
+  --c--components--button--primary-text--background--color-active: var(
+    --c--theme--colors--primary-100
+  );
+  --c--components--button--primary-text--color-hover: var(
+    --c--theme--colors--primary-text
+  );
   --c--components--button--secondary--background--color-hover: var(
     --c--theme--colors--primary-100
   );
@@ -438,6 +447,7 @@
     --c--theme--colors--primary-300
   );
   --c--components--forms-checkbox--border-radius: 0;
+  --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
   --c--components--forms-datepicker--border-radius: 0;
   --c--components--forms-fileuploader--border-radius: 0;
   --c--components--forms-input--border-radius: 4px;

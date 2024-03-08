@@ -5,23 +5,25 @@ import { useTranslation } from 'react-i18next';
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Card, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Team, useTeamAccesses } from '@/features/teams/api/';
+import { Role, useTeamAccesses } from '@/features/teams/api/';
 import { PAGE_SIZE } from '@/features/teams/conf';
 
+import { MemberAction } from './MemberAction';
+
 interface MemberGridProps {
-  team: Team;
+  teamId: string;
+  currentRole: Role;
 }
 
-export const MemberGrid = ({ team }: MemberGridProps) => {
+export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
-
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
   const { page, pageSize, setPagesCount } = pagination;
   const { data, isLoading, error } = useTeamAccesses({
-    teamId: team.id,
+    teamId: teamId,
     page,
   });
 
@@ -78,6 +80,18 @@ export const MemberGrid = ({ team }: MemberGridProps) => {
           {
             field: 'role',
             headerName: t('Roles'),
+          },
+          {
+            id: 'column-actions',
+            renderCell: ({ row }) => {
+              return (
+                <MemberAction
+                  teamId={teamId}
+                  access={row}
+                  currentRole={currentRole}
+                />
+              );
+            },
           },
         ]}
         rows={accesses || []}

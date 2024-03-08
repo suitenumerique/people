@@ -415,6 +415,13 @@ export const tokens = {
             'color-hover': '#ffffff',
             'color-active': '#ffffff',
           },
+          'primary-text': {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+              'color-active': 'var(--c--theme--colors--primary-100)',
+            },
+            'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
           secondary: {
             background: {
               'color-hover': 'var(--c--theme--colors--primary-100)',
@@ -444,7 +451,10 @@ export const tokens = {
             'background-color-active': 'var(--c--theme--colors--primary-300)',
           },
         },
-        'forms-checkbox': { 'border-radius': '0' },
+        'forms-checkbox': {
+          'border-radius': '0',
+          color: 'var(--c--theme--colors--primary-text)',
+        },
         'forms-datepicker': { 'border-radius': '0' },
         'forms-fileuploader': { 'border-radius': '0' },
         'forms-input': {
