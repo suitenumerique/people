@@ -3,6 +3,7 @@ Test for team accesses API endpoints in People's core app : list
 """
 
 import pytest
+from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories, models
@@ -225,23 +226,60 @@ def test_api_team_accesses_list_authenticated_ordering():
     response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=role",
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     assert response.json()["count"] == 21
 
-    results = [
-        team_access["role"]
-        for team_access in response.json()["results"]
-    ]
+    results = [team_access["role"] for team_access in response.json()["results"]]
     assert sorted(results) == results
 
     response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=-role",
     )
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 21
+
+    results = [team_access["role"] for team_access in response.json()["results"]]
+    assert sorted(results, reverse=True) == results
+
+
+@pytest.mark.parametrize("ordering_fields", ["name", "email"])
+def test_api_team_accesses_list_authenticated_ordering_user(ordering_fields):
+    """Team accesses can be ordered by user's fields "email" or "name"."""
+
+    user = factories.UserFactory()
+    factories.IdentityFactory(user=user, is_main=True)
+
+    team = factories.TeamFactory()
+    models.TeamAccess.objects.create(team=team, user=user)
+
+    # create 20 new team members
+    for _ in range(20):
+        extra_user = factories.IdentityFactory(is_main=True).user
+        factories.TeamAccessFactory(team=team, user=extra_user)
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering={ordering_fields}",
+    )
+    assert response.status_code == HTTP_200_OK
     assert response.json()["count"] == 21
 
     results = [
-        team_access["role"]
+        team_access["user"][ordering_fields]
+        for team_access in response.json()["results"]
+    ]
+    assert sorted(results) == results
+
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=-{ordering_fields}",
+    )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 21
+
+    results = [
+        team_access["user"][ordering_fields]
         for team_access in response.json()["results"]
     ]
     assert sorted(results, reverse=True) == results

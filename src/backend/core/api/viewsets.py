@@ -327,8 +327,8 @@ class TeamAccessViewSet(
     detail_serializer_class = serializers.TeamAccessSerializer
 
     filter_backends = [filters.OrderingFilter]
-    ordering = ['role']
-    ordering_fields = ['role']
+    ordering = ["role"]
+    ordering_fields = ["role", "email", "name"]
 
     def get_permissions(self):
         """User only needs to be authenticated to list team accesses"""
@@ -361,6 +361,10 @@ class TeamAccessViewSet(
                 user=self.request.user, team=self.kwargs["team_id"]
             ).values("role")[:1]
 
+            user_main_identity_query = models.Identity.objects.filter(
+                user=OuterRef("user_id"), is_main=True
+            )
+
             queryset = (
                 # The logged-in user should be part of a team to see its accesses
                 queryset.filter(
@@ -375,7 +379,11 @@ class TeamAccessViewSet(
                 )
                 # Abilities are computed based on logged-in user's role and
                 # the user role on each team access
-                .annotate(user_role=Subquery(user_role_query))
+                .annotate(
+                    user_role=Subquery(user_role_query),
+                    email=Subquery(user_main_identity_query.values("email")[:1]),
+                    name=Subquery(user_main_identity_query.values("name")[:1]),
+                )
                 .distinct()
             )
         return queryset
