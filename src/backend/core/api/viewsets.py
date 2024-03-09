@@ -326,6 +326,10 @@ class TeamAccessViewSet(
     list_serializer_class = serializers.TeamAccessReadOnlySerializer
     detail_serializer_class = serializers.TeamAccessSerializer
 
+    filter_backends = [filters.OrderingFilter]
+    ordering = ['role']
+    ordering_fields = ['role']
+
     def get_permissions(self):
         """User only needs to be authenticated to list team accesses"""
         if self.action == "list":

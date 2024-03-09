@@ -203,3 +203,45 @@ def test_api_team_accesses_list_authenticated_constant_numqueries(
 
     assert response.status_code == 200
     assert response.json()["count"] == 21
+
+
+def test_api_team_accesses_list_authenticated_ordering():
+    """Team accesses can be ordered by "role"."""
+
+    user = factories.UserFactory()
+    factories.IdentityFactory(user=user, is_main=True)
+
+    team = factories.TeamFactory()
+    models.TeamAccess.objects.create(team=team, user=user)
+
+    # create 20 new team members
+    for _ in range(20):
+        extra_user = factories.IdentityFactory(is_main=True).user
+        factories.TeamAccessFactory(team=team, user=extra_user)
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=role",
+    )
+    assert response.status_code == 200
+    assert response.json()["count"] == 21
+
+    results = [
+        team_access["role"]
+        for team_access in response.json()["results"]
+    ]
+    assert sorted(results) == results
+
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=-role",
+    )
+    assert response.status_code == 200
+    assert response.json()["count"] == 21
+
+    results = [
+        team_access["role"]
+        for team_access in response.json()["results"]
+    ]
+    assert sorted(results, reverse=True) == results
