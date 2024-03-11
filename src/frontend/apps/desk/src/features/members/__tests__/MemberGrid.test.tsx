@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
@@ -214,5 +214,133 @@ describe('MemberGrid', () => {
     expect(
       screen.queryByLabelText('Add members to the team'),
     ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['name', 'Names'],
+    ['email', 'Emails'],
+    ['role', 'Roles'],
+  ])('checks the sorting', async (ordering, header_name) => {
+    const mockedData = [
+      {
+        id: '123',
+        role: Role.ADMIN,
+        user: {
+          id: '123',
+          name: 'albert',
+          email: 'albert@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '789',
+        role: Role.OWNER,
+        user: {
+          id: '456',
+          name: 'philipp',
+          email: 'philipp@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '456',
+        role: Role.MEMBER,
+        user: {
+          id: '789',
+          name: 'fany',
+          email: 'fany@test.com',
+        },
+        abilities: {} as any,
+      },
+    ];
+
+    const sortedMockedData = [...mockedData].sort((a, b) =>
+      a.id > b.id ? 1 : -1,
+    );
+    const reversedMockedData = [...sortedMockedData].reverse();
+
+    fetchMock.get(`/api/teams/123456/accesses/?page=1`, {
+      count: 3,
+      results: mockedData,
+    });
+
+    fetchMock.get(`/api/teams/123456/accesses/?page=1&ordering=${ordering}`, {
+      count: 3,
+      results: sortedMockedData,
+    });
+
+    fetchMock.get(`/api/teams/123456/accesses/?page=1&ordering=-${ordering}`, {
+      count: 3,
+      results: reversedMockedData,
+    });
+
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
+      wrapper: AppWrapper,
+    });
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    expect(fetchMock.lastUrl()).toBe(`/api/teams/123456/accesses/?page=1`);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    let rows = screen.getAllByRole('row');
+    expect(rows[1]).toHaveTextContent('albert');
+    expect(rows[2]).toHaveTextContent('philipp');
+    expect(rows[3]).toHaveTextContent('fany');
+
+    expect(screen.queryByLabelText('arrow_drop_down')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('arrow_drop_up')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(header_name));
+
+    expect(fetchMock.lastUrl()).toBe(
+      `/api/teams/123456/accesses/?page=1&ordering=${ordering}`,
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    rows = screen.getAllByRole('row');
+    expect(rows[1]).toHaveTextContent('albert');
+    expect(rows[2]).toHaveTextContent('fany');
+    expect(rows[3]).toHaveTextContent('philipp');
+
+    expect(await screen.findByText('arrow_drop_up')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(header_name));
+
+    expect(fetchMock.lastUrl()).toBe(
+      `/api/teams/123456/accesses/?page=1&ordering=-${ordering}`,
+    );
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    rows = screen.getAllByRole('row');
+    expect(rows[1]).toHaveTextContent('philipp');
+    expect(rows[2]).toHaveTextContent('fany');
+    expect(rows[3]).toHaveTextContent('albert');
+
+    expect(await screen.findByText('arrow_drop_down')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(header_name));
+
+    expect(fetchMock.lastUrl()).toBe('/api/teams/123456/accesses/?page=1');
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    rows = screen.getAllByRole('row');
+    expect(rows[1]).toHaveTextContent('albert');
+    expect(rows[2]).toHaveTextContent('philipp');
+    expect(rows[3]).toHaveTextContent('fany');
+
+    expect(screen.queryByLabelText('arrow_drop_down')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('arrow_drop_up')).not.toBeInTheDocument();
   });
 });

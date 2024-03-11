@@ -1,4 +1,9 @@
-import { Button, DataGrid, usePagination } from '@openfun/cunningham-react';
+import {
+  Button,
+  DataGrid,
+  SortModel,
+  usePagination,
+} from '@openfun/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +23,33 @@ interface MemberGridProps {
   currentRole: Role;
 }
 
+// FIXME : ask Cunningham to export this type
+type SortModelItem = {
+  field: string;
+  sort: 'asc' | 'desc' | null;
+};
+
+const defaultOrderingMapping: Record<string, string> = {
+  'user.name': 'name',
+  'user.email': 'email',
+  localizedRole: 'role',
+};
+
+/**
+ * Formats the sorting model based on a given mapping.
+ * @param {SortModelItem} sortModel The sorting model item containing field and sort direction.
+ * @param {Record<string, string>} mapping The mapping object to map field names.
+ * @returns {string} The formatted sorting string.
+ */
+function formatSortModel(
+  sortModel: SortModelItem,
+  mapping = defaultOrderingMapping,
+) {
+  const { field, sort } = sortModel;
+  const orderingField = mapping[field] || field;
+  return sort === 'desc' ? `-${orderingField}` : orderingField;
+}
+
 export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   const [isModalMemberOpen, setIsModalMemberOpen] = useState(false);
   const { t } = useTranslation();
@@ -25,23 +57,41 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
+  const [sortModel, setSortModel] = useState<SortModel>([]);
   const { page, pageSize, setPagesCount } = pagination;
+
+  const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
+
   const { data, isLoading, error } = useTeamAccesses({
     teamId: team.id,
     page,
+    ordering,
   });
 
-  const accesses = data?.results;
-
-  useEffect(() => {
-    setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
-  }, [data?.count, pageSize, setPagesCount]);
-
-  const dictRole = {
+  const localizedRoles = {
     [Role.ADMIN]: t('Admin'),
     [Role.MEMBER]: t('Member'),
     [Role.OWNER]: t('Owner'),
   };
+
+  /*
+   * Bug occurs from the Cunningham Datagrid component, when applying sorting
+   * on null values. Sanitize empty values to ensure consistent sorting functionality.
+   */
+  const accesses =
+    data?.results?.map((access) => ({
+      ...access,
+      localizedRole: localizedRoles[access.role],
+      user: {
+        ...access.user,
+        name: access.user.name || '',
+        email: access.user.email || '',
+      },
+    })) || [];
+
+  useEffect(() => {
+    setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
+  }, [data?.count, pageSize, setPagesCount]);
 
   return (
     <>
@@ -104,11 +154,8 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
               headerName: t('Emails'),
             },
             {
-              id: 'role',
+              field: 'localizedRole',
               headerName: t('Roles'),
-              renderCell({ row }) {
-                return dictRole[row.role];
-              },
             },
             {
               id: 'column-actions',
@@ -123,9 +170,11 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
               },
             },
           ]}
-          rows={accesses || []}
+          rows={accesses}
           isLoading={isLoading}
           pagination={pagination}
+          onSortModelChange={setSortModel}
+          sortModel={sortModel}
         />
       </Card>
       {isModalMemberOpen && (

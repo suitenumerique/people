@@ -7,6 +7,7 @@ import { Access } from '../types';
 export type TeamAccessesAPIParams = {
   page: number;
   teamId: string;
+  ordering?: string;
 };
 
 type AccessesResponse = APIList<Access>;
@@ -14,8 +15,15 @@ type AccessesResponse = APIList<Access>;
 export const getTeamAccesses = async ({
   page,
   teamId,
+  ordering,
 }: TeamAccessesAPIParams): Promise<AccessesResponse> => {
-  const response = await fetchAPI(`teams/${teamId}/accesses/?page=${page}`);
+  let url = `teams/${teamId}/accesses/?page=${page}`;
+
+  if (ordering) {
+    url += '&ordering=' + ordering;
+  }
+
+  const response = await fetchAPI(url);
 
   if (!response.ok) {
     throw new APIError(
