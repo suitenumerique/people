@@ -44,19 +44,22 @@ export const DropButton = ({
     setIsLocalOpen(isOpen);
   }, [isOpen]);
 
+  const onOpenChangeHandler = (isOpen: boolean) => {
+    setIsLocalOpen(isOpen);
+    onOpenChange?.(isOpen);
+    setTimeout(() => {
+      setOpacity(isOpen);
+    }, 10);
+  };
+
   return (
-    <DialogTrigger
-      onOpenChange={(isOpen) => {
-        setIsLocalOpen(isOpen);
-        onOpenChange?.(isOpen);
-        setTimeout(() => {
-          setOpacity(isOpen);
-        }, 10);
-      }}
-      isOpen={isLocalOpen}
-    >
+    <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
       <StyledButton>{button}</StyledButton>
-      <StyledPopover style={{ opacity: opacity ? 1 : 0 }} isOpen={isLocalOpen}>
+      <StyledPopover
+        style={{ opacity: opacity ? 1 : 0 }}
+        isOpen={isLocalOpen}
+        onOpenChange={onOpenChangeHandler}
+      >
         {children}
       </StyledPopover>
     </DialogTrigger>
