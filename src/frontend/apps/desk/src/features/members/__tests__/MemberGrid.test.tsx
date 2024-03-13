@@ -5,8 +5,8 @@ import fetchMock from 'fetch-mock';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { Access, Role } from '../api';
-import { MemberGrid } from '../components/Member/MemberGrid';
+import { MemberGrid } from '../components/MemberGrid';
+import { Access, Role } from '../types';
 
 describe('MemberGrid', () => {
   afterEach(() => {

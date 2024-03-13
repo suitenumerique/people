@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DropButton, Text } from '@/components';
-import { Access, Role } from '@/features/teams/api';
+
+import { Access, Role } from '../types';
 
 import { ModalRole } from './ModalRole';
 

@@ -4,8 +4,8 @@ import fetchMock from 'fetch-mock';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { Access, Role } from '../api';
-import { MemberAction } from '../components/Member/MemberAction';
+import { MemberAction } from '../components/MemberAction';
+import { Access, Role } from '../types';
 
 const access: Access = {
   id: '789',

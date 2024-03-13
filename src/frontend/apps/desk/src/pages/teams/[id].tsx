@@ -5,7 +5,8 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MemberGrid, Role, TeamInfo, useTeam } from '@/features/teams/';
+import { MemberGrid, Role } from '@/features/members';
+import { TeamInfo, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
 import TeamLayout from './TeamLayout';

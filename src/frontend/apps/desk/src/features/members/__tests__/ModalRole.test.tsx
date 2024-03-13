@@ -6,8 +6,8 @@ import fetchMock from 'fetch-mock';
 import { useAuthStore } from '@/features/auth';
 import { AppWrapper } from '@/tests/utils';
 
-import { Access, Role } from '../api';
-import { ModalRole } from '../components/Member/ModalRole';
+import { ModalRole } from '../components/ModalRole';
+import { Access, Role } from '../types';
 
 const toast = jest.fn();
 jest.mock('@openfun/cunningham-react', () => ({

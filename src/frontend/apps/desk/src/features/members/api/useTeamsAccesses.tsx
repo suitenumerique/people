@@ -2,7 +2,7 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
-import { Access } from './types';
+import { Access } from '../types';
 
 export type TeamAccessesAPIParams = {
   page: number;

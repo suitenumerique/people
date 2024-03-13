@@ -12,7 +12,9 @@ import { useState } from 'react';
 
 import { Box, Text, TextErrors } from '@/components';
 import { useAuthStore } from '@/features/auth';
-import { Access, Role, useUpdateTeamAccess } from '@/features/teams/api/';
+
+import { useUpdateTeamAccess } from '../api/useUpdateTeamAccess';
+import { Access, Role } from '../types';
 
 interface ModalRoleProps {
   access: Access;

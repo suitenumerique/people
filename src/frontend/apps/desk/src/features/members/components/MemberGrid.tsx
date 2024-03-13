@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Card, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Role, useTeamAccesses } from '@/features/teams/api/';
-import { PAGE_SIZE } from '@/features/teams/conf';
+
+import { useTeamAccesses } from '../api/useTeamsAccesses';
+import { PAGE_SIZE } from '../conf';
+import { Role } from '../types';
 
 import { MemberAction } from './MemberAction';
 

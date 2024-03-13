@@ -5,9 +5,10 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
+import { KEY_TEAM } from '@/features/teams/api/useTeam';
 
-import { Access, Role } from './types';
-import { KEY_TEAM } from './useTeam';
+import { Access, Role } from '../types';
+
 import { KEY_LIST_TEAM_ACCESSES } from './useTeamsAccesses';
 
 interface UpdateTeamAccessProps {
