@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Card, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { Team } from '@/features/teams/api';
 
 import { useTeamAccesses } from '../api/useTeamsAccesses';
 import { PAGE_SIZE } from '../conf';
@@ -14,11 +15,11 @@ import { MemberAction } from './MemberAction';
 import { ModalAddMembers } from './ModalAddMembers';
 
 interface MemberGridProps {
-  teamId: string;
+  team: Team;
   currentRole: Role;
 }
 
-export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
+export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   const [isModalMemberOpen, setIsModalMemberOpen] = useState(false);
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
@@ -27,7 +28,7 @@ export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
   });
   const { page, pageSize, setPagesCount } = pagination;
   const { data, isLoading, error } = useTeamAccesses({
-    teamId: teamId,
+    teamId: team.id,
     page,
   });
 
@@ -113,7 +114,7 @@ export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
               renderCell: ({ row }) => {
                 return (
                   <MemberAction
-                    teamId={teamId}
+                    teamId={team.id}
                     access={row}
                     currentRole={currentRole}
                   />
@@ -127,7 +128,10 @@ export const MemberGrid = ({ teamId, currentRole }: MemberGridProps) => {
         />
       </Card>
       {isModalMemberOpen && (
-        <ModalAddMembers onClose={() => setIsModalMemberOpen(false)} />
+        <ModalAddMembers
+          onClose={() => setIsModalMemberOpen(false)}
+          team={team}
+        />
       )}
     </>
   );

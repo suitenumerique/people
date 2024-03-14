@@ -19,6 +19,9 @@ module.exports = {
       files: ['*.spec.*', '*.test.*', '**/__mock__/**/*'],
       extends: ['plugin:playwright/recommended'],
       plugins: ['playwright'],
+      rules: {
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+      },
     },
   ],
   ignorePatterns: ['node_modules'],

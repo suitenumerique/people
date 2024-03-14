@@ -3,10 +3,16 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
+import { Team } from '@/features/teams/api';
 import { AppWrapper } from '@/tests/utils';
 
 import { MemberGrid } from '../components/MemberGrid';
 import { Access, Role } from '../types';
+
+const team = {
+  id: '123456',
+  name: 'teamName',
+} as Team;
 
 describe('MemberGrid', () => {
   afterEach(() => {
@@ -19,7 +25,7 @@ describe('MemberGrid', () => {
       results: [],
     });
 
-    render(<MemberGrid teamId="123456" currentRole={Role.ADMIN} />, {
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
       wrapper: AppWrapper,
     });
 
@@ -72,7 +78,7 @@ describe('MemberGrid', () => {
       results: accesses,
     });
 
-    render(<MemberGrid teamId="123456" currentRole={Role.ADMIN} />, {
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
       wrapper: AppWrapper,
     });
 
@@ -104,7 +110,7 @@ describe('MemberGrid', () => {
       })),
     });
 
-    render(<MemberGrid teamId="123456" currentRole={Role.ADMIN} />, {
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
       wrapper: AppWrapper,
     });
 
@@ -156,7 +162,7 @@ describe('MemberGrid', () => {
         ],
       });
 
-      render(<MemberGrid teamId="123456" currentRole={role} />, {
+      render(<MemberGrid team={team} currentRole={role} />, {
         wrapper: AppWrapper,
       });
 
@@ -188,7 +194,7 @@ describe('MemberGrid', () => {
       },
     });
 
-    render(<MemberGrid teamId="123456" currentRole={Role.ADMIN} />, {
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
       wrapper: AppWrapper,
     });
 
