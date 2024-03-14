@@ -11,6 +11,9 @@ on:
     branches:
       - 'main'
 
+env:
+  DOCKER_USER: 1001:127
+
 jobs:
   build-and-push-backend:
     runs-on: ubuntu-latest
@@ -40,6 +43,7 @@ jobs:
         with:
           context: .
           target: production
+          build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -72,6 +76,7 @@ jobs:
         with:
           context: .
           target: frontend
+          build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
