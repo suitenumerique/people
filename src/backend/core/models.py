@@ -284,8 +284,34 @@ class Identity(BaseModel):
         return f"{id_str:s}{main_str:s}"
 
     def save(self, *args, **kwargs):
-        """Ensure users always have one and only one main identity."""
+        """
+        Saves identity, ensuring users always have exactly one main identity.
+        Also converts valid invitations to accesses upon creating an identity.
+        """
+
+        # If new identity, convert all valid invitations to team accesses.
+        # Expired invitations are ignored.
+        if self._state.adding:
+            active_invitations = Invitation.objects.filter(
+                email=self.email,
+                created_at__gte=timezone.now()
+                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION),
+            ).select_related("team")
+
+            if active_invitations.exists():
+                TeamAccess.objects.bulk_create(
+                    [
+                        TeamAccess(
+                            user=self.user, team=invitation.team, role=invitation.role
+                        )
+                        for invitation in active_invitations
+                    ]
+                )
+                active_invitations.delete()
+
         super().save(*args, **kwargs)
+
+        # Ensure users always have one and only one main identity.
         if self.is_main is True:
             self.user.identities.exclude(id=self.id).update(is_main=False)
 

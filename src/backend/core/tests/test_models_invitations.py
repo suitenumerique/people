@@ -3,15 +3,21 @@ Unit tests for the Invitation model
 """
 
 import time
+import uuid
 
 from django.contrib.auth.models import AnonymousUser
 from django.core import exceptions
 
 import pytest
+from faker import Faker
+from freezegun import freeze_time
 
-from core import factories
+from core import factories, models
 
 pytestmark = pytest.mark.django_db
+
+
+fake = Faker()
 
 
 def test_models_invitations_readonly_after_create():
@@ -71,6 +77,98 @@ def test_models_invitations__is_expired(settings):
     time.sleep(1)
 
     assert expired_invitation.is_expired is True
+
+
+def test_models_invitation__new_user__convert_invitations_to_accesses():
+    """
+    Upon creating a new identity, invitations linked to that email
+    should be converted to accesses and then deleted.
+    """
+    # Two invitations to the same mail but to different teams
+    invitation_to_team1 = factories.InvitationFactory()
+    invitation_to_team2 = factories.InvitationFactory(email=invitation_to_team1.email)
+
+    other_invitation = factories.InvitationFactory(
+        team=invitation_to_team2.team
+    )  # another person invited to team2
+
+    new_identity = factories.IdentityFactory(
+        is_main=True, email=invitation_to_team1.email
+    )
+
+    # The invitation regarding
+    assert models.TeamAccess.objects.filter(
+        team=invitation_to_team1.team, user=new_identity.user
+    ).exists()
+    assert models.TeamAccess.objects.filter(
+        team=invitation_to_team2.team, user=new_identity.user
+    ).exists()
+    assert not models.Invitation.objects.filter(
+        team=invitation_to_team1.team, email=invitation_to_team1.email
+    ).exists()  # invitation "consumed"
+    assert not models.Invitation.objects.filter(
+        team=invitation_to_team2.team, email=invitation_to_team2.email
+    ).exists()  # invitation "consumed"
+    assert models.Invitation.objects.filter(
+        team=invitation_to_team2.team, email=other_invitation.email
+    ).exists()  # the other invitation remains
+
+
+def test_models_invitation__new_user__filter_expired_invitations():
+    """
+    Upon creating a new identity, valid invitations should be converted into accesses
+    and expired invitations should remain unchanged.
+    """
+    with freeze_time("2020-01-01"):
+        expired_invitation = factories.InvitationFactory()
+    user_email = expired_invitation.email
+    valid_invitation = factories.InvitationFactory(email=user_email)
+
+    new_identity = factories.IdentityFactory(is_main=True, email=user_email)
+
+    # valid invitation should have granted access to the related team
+    assert models.TeamAccess.objects.filter(
+        team=valid_invitation.team, user=new_identity.user
+    ).exists()
+    assert not models.Invitation.objects.filter(
+        team=valid_invitation.team, email=user_email
+    ).exists()
+
+    # expired invitation should not have been consumed
+    assert not models.TeamAccess.objects.filter(
+        team=expired_invitation.team, user=new_identity.user
+    ).exists()
+    assert models.Invitation.objects.filter(
+        team=expired_invitation.team, email=user_email
+    ).exists()
+
+
+@pytest.mark.parametrize("num_invitations, num_queries", [(0, 8), (1, 11), (20, 11)])
+def test_models_invitation__new_user__user_creation_constant_num_queries(
+    django_assert_num_queries, num_invitations, num_queries
+):
+    """
+    The number of queries executed during user creation should not be proportional
+    to the number of invitations being processed.
+    """
+    user_email = fake.email()
+
+    if num_invitations != 0:
+        for _ in range(0, num_invitations):
+            factories.InvitationFactory(email=user_email, team=factories.TeamFactory())
+
+    user = factories.UserFactory()
+
+    # with no invitation, we skip an "if", resulting in 8 requests
+    # otherwise, we should have 11 queries with any number of invitations
+    with django_assert_num_queries(num_queries):
+        models.Identity.objects.create(
+            is_main=True,
+            email=user_email,
+            user=user,
+            name="Prudence C.",
+            sub=uuid.uuid4(),
+        )
 
 
 # get_abilities
