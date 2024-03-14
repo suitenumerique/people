@@ -38,7 +38,7 @@ RUN yarn build
 
 
 # ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.25 as frontend
+FROM nginxinc/nginx-unprivileged:1.25 as frontend-production
 
 # Un-privileged user running the application
 ARG DOCKER_USER
@@ -147,7 +147,7 @@ WORKDIR /app
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
 # ---- Development image ----
-FROM core as development
+FROM core as backend-development
 
 # Switch back to the root user to install development dependencies
 USER root:root
@@ -175,7 +175,7 @@ ENV DB_HOST=postgresql \
 CMD python manage.py runserver 0.0.0.0:8000
 
 # ---- Production image ----
-FROM core as production
+FROM core as backend-production
 
 ARG PEOPLE_STATIC_ROOT=/data/static
 
