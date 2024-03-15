@@ -1,4 +1,5 @@
 import { User } from '@/features/auth/';
+import { Team } from '@/features/teams/';
 
 export enum Role {
   MEMBER = 'member',
@@ -17,4 +18,14 @@ export interface Access {
     put: boolean;
     set_role_to: Role[];
   };
+}
+
+export interface Invitation {
+  id: string;
+  created_at: string;
+  email: string;
+  team: Team['id'];
+  role: Role;
+  issuer: User['id'];
+  is_expired: boolean;
 }
