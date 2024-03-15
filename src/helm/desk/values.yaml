@@ -30,7 +30,7 @@ commonEnvVars: &commonEnvVars
 ## @param ingress.host Host for the Ingress
 ## @param ingress.path Path to use for the Ingress
 ingress:
-  enabled: true
+  enabled: false
   className: null
   host: desk.example.com
   path: /
