@@ -13,13 +13,6 @@
       "groupName": "ignored js dependencies",
       "matchManagers": ["npm"],
       "matchPackageNames": ["node", "node-fetch", "i18next-parser"]
-    },
-    {
-      "enabled": false,
-      "groupName": "ignored js @types/react-dom@18.2.19",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["@types/react-dom"],
-      "allowedVersions": ">18.2.19"
     }
   ]
 }
