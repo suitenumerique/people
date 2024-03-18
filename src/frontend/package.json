@@ -24,7 +24,7 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@types/node": "20.11.25",
+    "@types/node": "20.11.28",
     "typescript": "5.4.2"
   }
 }
