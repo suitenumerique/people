@@ -36,6 +36,8 @@ environments:
   dev:
     values:
       - version: 0.0.1
+    secrets:
+      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
   staging:
     values:
       - version: 0.0.1
