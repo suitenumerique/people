@@ -441,3 +441,8 @@ input:-webkit-autofill:focus {
 .c__modal__backdrop {
   z-index: 1000;
 }
+
+.c__modal__close .c__button--tertiary-text:hover,
+.c__modal__close .c__button--tertiary-text:focus-visible {
+  box-shadow: none;
+}
