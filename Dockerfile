@@ -172,7 +172,7 @@ ENV DB_HOST=postgresql \
     DB_PORT=5432
 
 # Run django development server
-CMD python manage.py runserver 0.0.0.0:8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # ---- Production image ----
 FROM core as backend-production
@@ -194,4 +194,4 @@ COPY --from=link-collector ${PEOPLE_STATIC_ROOT} ${PEOPLE_STATIC_ROOT}
 COPY --from=mail-builder /mail/backend/core/templates/mail /app/core/templates/mail
 
 # The default command runs gunicorn WSGI server in people's main module
-CMD gunicorn -c /usr/local/etc/gunicorn/people.py people.wsgi:application
+CMD ["gunicorn", "-c", "/usr/local/etc/gunicorn/people.py", "people.wsgi:application"]
