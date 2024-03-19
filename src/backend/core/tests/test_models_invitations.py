@@ -2,11 +2,14 @@
 Unit tests for the Invitation model
 """
 
+import smtplib
 import time
 import uuid
+from logging import Logger
+from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
-from django.core import exceptions
+from django.core import exceptions, mail
 
 import pytest
 from faker import Faker
@@ -236,3 +239,64 @@ def test_models_team_invitations_get_abilities_member():
         "patch": False,
         "put": False,
     }
+
+
+def test_models_team_invitations_email():
+    """Check email invitation during invitation creation."""
+
+    member_access = factories.TeamAccessFactory(role="member")
+    team = member_access.team
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    factories.TeamAccessFactory(team=team)
+    invitation = factories.InvitationFactory(team=team, email="john@people.com")
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 1
+
+    # pylint: disable-next=no-member
+    (email,) = mail.outbox
+
+    assert email.to == [invitation.email]
+    assert email.subject == "Invitation to join Desk!"
+
+    email_content = " ".join(email.body.split())
+    assert "Invitation to join Desk!" in email_content
+
+
+@mock.patch(
+    "django.core.mail.send_mail",
+    side_effect=smtplib.SMTPException("Error SMTPException"),
+)
+@mock.patch.object(Logger, "error")
+def test_models_team_invitations_email_failed(mock_logger, _mock_send_mail):
+    """Check invitation behavior when an SMTP error occurs during invitation creation."""
+
+    member_access = factories.TeamAccessFactory(role="member")
+    team = member_access.team
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    factories.TeamAccessFactory(team=team)
+
+    # No error should be raised
+    invitation = factories.InvitationFactory(team=team, email="john@people.com")
+
+    # No email has been sent
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    # Logger should be called
+    mock_logger.assert_called_once()
+
+    (
+        _,
+        email,
+        exception,
+    ) = mock_logger.call_args.args
+
+    assert email == invitation.email
+    assert isinstance(exception, smtplib.SMTPException)

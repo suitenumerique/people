@@ -9,13 +9,13 @@ from .views import (
 
 urlpatterns = [
     path(
-        "__debug__/mail/hello_html",
+        "__debug__/mail/invitation_html",
         DebugViewHtml.as_view(),
-        name="debug.mail.hello_html",
+        name="debug.mail.invitation_html",
     ),
     path(
-        "__debug__/mail/hello_txt",
+        "__debug__/mail/invitation_txt",
         DebugViewTxt.as_view(),
-        name="debug.mail.hello_txt",
+        name="debug.mail.invitation_txt",
     ),
 ]

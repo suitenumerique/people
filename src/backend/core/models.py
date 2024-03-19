@@ -4,21 +4,27 @@ Declare and configure the models for the People core application
 
 import json
 import os
+import smtplib
 import uuid
 from datetime import timedelta
+from logging import getLogger
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, mail, validators
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import lazy
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import override
 
 import jsonschema
 from timezone_field import TimeZoneField
+
+logger = getLogger(__name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 contact_schema_path = os.path.join(current_dir, "jsonschema", "contact_data.json")
@@ -516,6 +522,8 @@ class Invitation(BaseModel):
             raise exceptions.PermissionDenied()
         super().save(*args, **kwargs)
 
+        self.email_invitation()
+
     def clean(self):
         """Validate fields."""
         super().clean()
@@ -559,3 +567,24 @@ class Invitation(BaseModel):
             "patch": False,
             "put": False,
         }
+
+    def email_invitation(self):
+        """Email invitation to the user."""
+        try:
+            with override(self.issuer.language):
+                template_vars = {
+                    "title": _("Invitation to join Desk!"),
+                }
+                msg_html = render_to_string("mail/html/invitation.html", template_vars)
+                msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
+                mail.send_mail(
+                    _("Invitation to join Desk!"),
+                    msg_plain,
+                    settings.EMAIL_FROM,
+                    [self.email],
+                    html_message=msg_html,
+                    fail_silently=False,
+                )
+
+        except smtplib.SMTPException as exception:
+            logger.error("invitation to %s was not sent: %s", self.email, exception)

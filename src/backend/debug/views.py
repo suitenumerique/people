@@ -11,8 +11,6 @@ class DebugBaseView(TemplateView):
 
         context = super().get_context_data(**kwargs)
         context["title"] = "Development email preview"
-        context["email"] = "random@gmail.com"
-        context["fullname"] = "robert"
 
         return context
 
@@ -20,10 +18,10 @@ class DebugBaseView(TemplateView):
 class DebugViewHtml(DebugBaseView):
     """Debug View for HTML Email Layout"""
 
-    template_name = "mail/html/hello.html"
+    template_name = "mail/html/invitation.html"
 
 
 class DebugViewTxt(DebugBaseView):
     """Debug View for Text Email Layout"""
 
-    template_name = "mail/text/hello.txt"
+    template_name = "mail/text/invitation.txt"
