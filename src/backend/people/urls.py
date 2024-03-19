@@ -12,6 +12,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from debug import urls as debug_urls
+
 from . import api_urls
 
 API_VERSION = settings.API_VERSION
@@ -25,6 +27,7 @@ if settings.DEBUG:
         urlpatterns
         + staticfiles_urlpatterns()
         + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        + debug_urls.urlpatterns
     )
 
 if settings.USE_SWAGGER or settings.DEBUG:

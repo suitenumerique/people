@@ -2,11 +2,11 @@
   <mj-include path="./partial/header.mjml" />
   <mj-body mj-class="bg--blue-100">
     <mj-wrapper css-class="wrapper" padding="20px 40px 40px 40px">
-    <mj-section>
-      <mj-column>
-        <mj-image src="{% base64_static 'people/images/logo_people.png' %}" width="200px" align="left" alt="{%trans 'Company logo' %}" />
-      </mj-column>
-    </mj-section>
+      <mj-section>
+        <mj-column>
+          <mj-image src="{% base64_static 'people/images/logo_people.png' %}" width="200px" align="left" alt="{%trans 'Company logo' %}" />
+        </mj-column>
+      </mj-section>
       <mj-section mj-class="bg--blue-100" border-radius="6px 6px 0 0" padding="30px 50px 60px 50px">
         <mj-column>
           <mj-text padding="0">
