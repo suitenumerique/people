@@ -116,7 +116,11 @@ test.describe('Teams Create', () => {
 
   test('checks 404 on teams/[id] page', async ({ page }) => {
     await page.goto('/teams/some-unknown-team');
-    await expect(page.getByText('404 - Page not found')).toBeVisible({
+    await expect(
+      page.getByText(
+        'It seems that the page you are looking for does not exist or cannot be displayed correctly.',
+      ),
+    ).toBeVisible({
       timeout: 15000,
     });
   });
