@@ -5,7 +5,7 @@ image:
 
 backend:
   envVars:
-    DJANGO_CORS_ALLOWED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
+    DJANGO_CSRF_TRUSTED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
     DJANGO_SECRET_KEY: "ThisIsAnExampleKeyForDevPurposeOnly"
