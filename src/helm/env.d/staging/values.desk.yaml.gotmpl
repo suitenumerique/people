@@ -58,6 +58,10 @@ backend:
       secretKeyRef:
         name: postgresql.postgres.libre.sh
         key: password
+    REDIS_URL:
+      secretKeyRef:
+        name: redis.redis.libre.sh
+        key: url
 
 frontend:
   image:
