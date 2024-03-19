@@ -69,6 +69,22 @@ You first need to create a superuser account:
 $ make superuser
 ```
 
+### Run frontend
+
+Run the front with:
+
+```bash
+$ make run-front-desk
+```
+
+Then access at
+[http://localhost:3000](http://localhost:3000)
+
+user: people
+
+password: people
+
+
 ## Contributing
 
 This project is intended to be community-driven, so please, do not hesitate to
