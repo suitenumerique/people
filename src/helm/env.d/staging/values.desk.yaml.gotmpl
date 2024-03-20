@@ -75,3 +75,10 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
+admin:
+  enabled: true
+  host: desk-staging.beta.numerique.gouv.fr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/auth
