@@ -35,9 +35,12 @@ fs.readdirSync(folderPath).map((language) => {
 
   // Transform the json file to the format expected by i18next
   const jsonKeyMessage = {};
-  Object.keys(json).forEach((key) => {
-    jsonKeyMessage[key] = json[key].message;
-  });
+  Object.keys(json)
+    .sort()
+    .forEach((key) => {
+      jsonKeyMessage[key] = json[key].message;
+    });
+
   jsonI18n[language] = {
     translation: jsonKeyMessage,
   };
