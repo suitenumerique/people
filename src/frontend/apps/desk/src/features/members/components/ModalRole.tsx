@@ -67,6 +67,8 @@ export const ModalRole = ({
         </Button>
       }
       onClose={() => onClose()}
+      closeOnClickOutside
+      hideCloseButton
       rightActions={
         <Button
           color="primary"
