@@ -175,13 +175,13 @@ describe('MemberGrid', () => {
       if (expected) {
         expect(
           await screen.findAllByRole('button', {
-            name: 'Member options',
+            name: 'Open the member options modal',
           }),
         ).toBeDefined();
       } else {
         expect(
           screen.queryByRole('button', {
-            name: 'Member options',
+            name: 'Open the member options modal',
           }),
         ).not.toBeInTheDocument();
       }

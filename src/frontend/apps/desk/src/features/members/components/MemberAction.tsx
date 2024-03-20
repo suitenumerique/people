@@ -2,7 +2,7 @@ import { Button } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DropButton, Text } from '@/components';
+import { DropButton, IconOptions, Text } from '@/components';
 
 import { Access, Role } from '../types';
 
@@ -34,16 +34,10 @@ export const MemberAction = ({
     <>
       <DropButton
         button={
-          <span
-            aria-label={t('Member options')}
-            className="material-icons"
-            style={{
-              transition: 'all 0.3s ease-in-out',
-              transform: `rotate(${isDropOpen ? '90' : '0'}deg)`,
-            }}
-          >
-            more_vert
-          </span>
+          <IconOptions
+            isOpen={isDropOpen}
+            aria-label={t('Open the member options modal')}
+          />
         }
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}

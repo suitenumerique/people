@@ -33,7 +33,9 @@ describe('MemberAction', () => {
       },
     );
 
-    expect(await screen.findByLabelText('Member options')).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText('Open the member options modal'),
+    ).toBeInTheDocument();
   });
 
   it('checks the render when member', () => {
@@ -44,7 +46,9 @@ describe('MemberAction', () => {
       },
     );
 
-    expect(screen.queryByLabelText('Member options')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Open the member options modal'),
+    ).not.toBeInTheDocument();
   });
 
   it('checks the render when admin', async () => {
@@ -55,7 +59,9 @@ describe('MemberAction', () => {
       },
     );
 
-    expect(await screen.findByLabelText('Member options')).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText('Open the member options modal'),
+    ).toBeInTheDocument();
   });
 
   it('checks the render when admin to owner', () => {
@@ -70,6 +76,8 @@ describe('MemberAction', () => {
       },
     );
 
-    expect(screen.queryByLabelText('Member options')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Open the member options modal'),
+    ).not.toBeInTheDocument();
   });
 });
