@@ -79,6 +79,24 @@
   color: var(--c--components--forms-input--value-color--disabled);
 }
 
+.c__input__wrapper--error .c__input {
+  color: var(--c--components--forms-input--color--error);
+}
+
+.c__input__wrapper--error:not(.c__input__wrapper--disabled):hover {
+  border-color: var(--c--components--forms-input--border--color-error-hover);
+  color: var(--c--components--forms-input--color--error-hover);
+}
+
+.c__input__wrapper--error:hover {
+  box-shadow: var(--c--components--forms-input--color--box-shadow-error-hover) 0
+    0 0 2px;
+}
+
+.c__input__wrapper--error:not(.c__input__wrapper--disabled):hover label {
+  color: var(--c--components--forms-input--border--color-error-hover);
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:focus {
   transition:

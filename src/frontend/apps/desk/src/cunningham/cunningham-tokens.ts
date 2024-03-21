@@ -179,6 +179,11 @@ export const tokens = {
         'forms-input': {
           'value-color': 'var(--c--theme--colors--primary-500)',
           'border-color': 'var(--c--theme--colors--primary-500)',
+          color: {
+            error: 'var(--c--theme--colors--danger-500)',
+            'error-hover': 'var(--c--theme--colors--danger-500)',
+            'box-shadow-error-hover': 'var(--c--theme--colors--danger-500)',
+          },
         },
         'forms-labelledbox': {
           'label-color': {
@@ -217,6 +222,7 @@ export const tokens = {
             'border-color-hover': 'var(--c--theme--colors--greyscale-200)',
           },
         },
+        modal: { 'background-color': '#ffffff' },
         button: {
           'border-radius': {
             active: 'var(--c--components--button--border-radius)',
@@ -425,7 +431,10 @@ export const tokens = {
           },
           secondary: {
             background: { 'color-hover': '#F6F6F6', 'color-active': '#EDEDED' },
-            border: { 'color-hover': 'var(--c--theme--colors--primary-300)' },
+            border: {
+              color: 'var(--c--theme--colors--primary-600)',
+              'color-hover': 'var(--c--theme--colors--primary-600)',
+            },
             color: 'var(--c--theme--colors--primary-text)',
           },
           'tertiary-text': {
