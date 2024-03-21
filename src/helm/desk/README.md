@@ -4,26 +4,34 @@
 
 ### General configuration
 
-| Name                                  | Description                                          | Value                    |
-| ------------------------------------- | ---------------------------------------------------- | ------------------------ |
-| `image.repository`                    | Repository to use to pull desk's container image     | `lasuite/people-backend` |
-| `image.tag`                           | desk's container tag                                 | `latest`                 |
-| `image.pullPolicy`                    | Container image pull policy                          | `IfNotPresent`           |
-| `image.credentials.username`          | Username for container registry authentication       |                          |
-| `image.credentials.password`          | Password for container registry authentication       |                          |
-| `image.credentials.registry`          | Registry url for which the credentials are specified |                          |
-| `image.credentials.name`              | Name of the generated secret for imagePullSecrets    |                          |
-| `nameOverride`                        | Override the chart name                              | `""`                     |
-| `fullnameOverride`                    | Override the full application name                   | `""`                     |
-| `ingress.enabled`                     | whether to enable the Ingress or not                 | `true`                   |
-| `ingress.className`                   | IngressClass to use for the Ingress                  | `nil`                    |
-| `ingress.host`                        | Host for the Ingress                                 | `desk.example.com`       |
-| `ingress.path`                        | Path to use for the Ingress                          | `/`                      |
-| `ingress.hosts`                       | Additional host to configure for the Ingress         | `[]`                     |
-| `ingress.tls.enabled`                 | Weather to enable TLS for the Ingress                | `true`                   |
-| `ingress.tls.additional[].secretName` | Secret name for additional TLS config                |                          |
-| `ingress.tls.additional[].hosts[]`    | Hosts for additional TLS config                      |                          |
-| `ingress.customBackends`              | Add custom backends to ingress                       | `[]`                     |
+| Name                                       | Description                                          | Value                    |
+| ------------------------------------------ | ---------------------------------------------------- | ------------------------ |
+| `image.repository`                         | Repository to use to pull desk's container image     | `lasuite/people-backend` |
+| `image.tag`                                | desk's container tag                                 | `latest`                 |
+| `image.pullPolicy`                         | Container image pull policy                          | `IfNotPresent`           |
+| `image.credentials.username`               | Username for container registry authentication       |                          |
+| `image.credentials.password`               | Password for container registry authentication       |                          |
+| `image.credentials.registry`               | Registry url for which the credentials are specified |                          |
+| `image.credentials.name`                   | Name of the generated secret for imagePullSecrets    |                          |
+| `nameOverride`                             | Override the chart name                              | `""`                     |
+| `fullnameOverride`                         | Override the full application name                   | `""`                     |
+| `ingress.enabled`                          | whether to enable the Ingress or not                 | `false`                  |
+| `ingress.className`                        | IngressClass to use for the Ingress                  | `nil`                    |
+| `ingress.host`                             | Host for the Ingress                                 | `desk.example.com`       |
+| `ingress.path`                             | Path to use for the Ingress                          | `/`                      |
+| `ingress.hosts`                            | Additional host to configure for the Ingress         | `[]`                     |
+| `ingress.tls.enabled`                      | Weather to enable TLS for the Ingress                | `true`                   |
+| `ingress.tls.additional[].secretName`      | Secret name for additional TLS config                |                          |
+| `ingress.tls.additional[].hosts[]`         | Hosts for additional TLS config                      |                          |
+| `ingress.customBackends`                   | Add custom backends to ingress                       | `[]`                     |
+| `ingressAdmin.enabled`                     | whether to enable the Ingress or not                 | `false`                  |
+| `ingressAdmin.className`                   | IngressClass to use for the Ingress                  | `nil`                    |
+| `ingressAdmin.host`                        | Host for the Ingress                                 | `desk.example.com`       |
+| `ingressAdmin.path`                        | Path to use for the Ingress                          | `/admin`                 |
+| `ingressAdmin.hosts`                       | Additional host to configure for the Ingress         | `[]`                     |
+| `ingressAdmin.tls.enabled`                 | Weather to enable TLS for the Ingress                | `true`                   |
+| `ingressAdmin.tls.additional[].secretName` | Secret name for additional TLS config                |                          |
+| `ingressAdmin.tls.additional[].hosts[]`    | Hosts for additional TLS config                      |                          |
 
 ### backend
 
@@ -48,19 +56,18 @@
 | `backend.service.annotations`                         | Annotations to add to the backend Service                                          | `{}`                                            |
 | `backend.migrate.command`                             | backend migrate command                                                            | `["python","manage.py","migrate","--no-input"]` |
 | `backend.migrate.restartPolicy`                       | backend migrate job restart policy                                                 | `Never`                                         |
-| `backend.probes`                                      | Configure probe for backend                                                        | `{}`                                            |
-| `backend.probes.liveness.path`                        | Configure path for backend HTTP liveness probe                                     |                                                 |
-| `backend.probes.liveness.targetPort`                  | Configure port for backend HTTP liveness probe                                     |                                                 |
-| `backend.probes.liveness.initialDelaySeconds`         | Configure initial delay for backend liveness probe                                 |                                                 |
-| `backend.probes.liveness.initialDelaySeconds`         | Configure timeout for backend liveness probe                                       |                                                 |
-| `backend.probes.startup.path`                         | Configure path for backend HTTP startup probe                                      |                                                 |
-| `backend.probes.startup.targetPort`                   | Configure port for backend HTTP startup probe                                      |                                                 |
-| `backend.probes.startup.initialDelaySeconds`          | Configure initial delay for backend startup probe                                  |                                                 |
-| `backend.probes.startup.initialDelaySeconds`          | Configure timeout for backend startup probe                                        |                                                 |
-| `backend.probes.readiness.path`                       | Configure path for backend HTTP readiness probe                                    |                                                 |
-| `backend.probes.readiness.targetPort`                 | Configure port for backend HTTP readiness probe                                    |                                                 |
-| `backend.probes.readiness.initialDelaySeconds`        | Configure initial delay for backend readiness probe                                |                                                 |
-| `backend.probes.readiness.initialDelaySeconds`        | Configure timeout for backend readiness probe                                      |                                                 |
+| `backend.probes.liveness.path`                        | Configure path for backend HTTP liveness probe                                     | `/__heartbeat__`                                |
+| `backend.probes.liveness.targetPort`                  | Configure port for backend HTTP liveness probe                                     | `undefined`                                     |
+| `backend.probes.liveness.initialDelaySeconds`         | Configure initial delay for backend liveness probe                                 | `10`                                            |
+| `backend.probes.liveness.initialDelaySeconds`         | Configure timeout for backend liveness probe                                       | `10`                                            |
+| `backend.probes.startup.path`                         | Configure path for backend HTTP startup probe                                      | `undefined`                                     |
+| `backend.probes.startup.targetPort`                   | Configure port for backend HTTP startup probe                                      | `undefined`                                     |
+| `backend.probes.startup.initialDelaySeconds`          | Configure initial delay for backend startup probe                                  | `undefined`                                     |
+| `backend.probes.startup.initialDelaySeconds`          | Configure timeout for backend startup probe                                        | `undefined`                                     |
+| `backend.probes.readiness.path`                       | Configure path for backend HTTP readiness probe                                    | `/__lbheartbeat__`                              |
+| `backend.probes.readiness.targetPort`                 | Configure port for backend HTTP readiness probe                                    | `undefined`                                     |
+| `backend.probes.readiness.initialDelaySeconds`        | Configure initial delay for backend readiness probe                                | `10`                                            |
+| `backend.probes.readiness.initialDelaySeconds`        | Configure timeout for backend readiness probe                                      | `10`                                            |
 | `backend.resources`                                   | Resource requirements for the backend container                                    | `{}`                                            |
 | `backend.nodeSelector`                                | Node selector for the backend Pod                                                  | `{}`                                            |
 | `backend.tolerations`                                 | Tolerations for the backend Pod                                                    | `[]`                                            |
