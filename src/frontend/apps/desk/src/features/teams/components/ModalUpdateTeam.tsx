@@ -1,20 +1,20 @@
 import {
   Button,
-  Input,
-  Loader,
   Modal,
   ModalSize,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { t } from 'i18next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { Box, Text, TextErrors } from '@/components';
+import { Box, Text } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import { Team, useUpdateTeam } from '../api';
 import IconEdit from '../assets/icon-edit.svg';
+
+import { InputTeamName } from './InputTeamName';
 
 interface ModalUpdateTeamProps {
   onClose: () => void;
@@ -23,8 +23,7 @@ interface ModalUpdateTeamProps {
 
 export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
   const { colorsTokens } = useCunninghamTheme();
-  const [newTeamName, setNewTeamName] = useState(team.name);
-  const [isShowingError, setIsShowingError] = useState(false);
+  const [teamName, setTeamName] = useState(team.name);
   const { toast } = useToastProvider();
 
   const {
@@ -40,12 +39,6 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
       onClose();
     },
   });
-
-  useEffect(() => {
-    if (isError) {
-      setIsShowingError(true);
-    }
-  }, [isError]);
 
   return (
     <Modal
@@ -70,7 +63,7 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
           fullWidth
           onClick={() =>
             updateTeam({
-              name: newTeamName,
+              name: teamName,
               id: team.id,
             })
           }
@@ -93,24 +86,11 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
           {t('Enter the new name of the selected team')}
         </Text>
 
-        <Input
-          fullWidth
-          type="text"
+        <InputTeamName
           label={t('New name...')}
           defaultValue={team.name}
-          onChange={(e) => {
-            setNewTeamName(e.target.value);
-            setIsShowingError(false);
-          }}
-          rightIcon={<span className="material-icons">edit</span>}
-          state={isShowingError ? 'error' : undefined}
+          {...{ error, isError, isPending, setTeamName }}
         />
-        {isError && error && <TextErrors causes={error.cause} />}
-        {isPending && (
-          <Box $align="center">
-            <Loader />
-          </Box>
-        )}
       </Box>
     </Modal>
   );

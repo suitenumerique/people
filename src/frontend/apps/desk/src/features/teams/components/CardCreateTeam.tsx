@@ -1,13 +1,15 @@
-import { Button, Input, Loader } from '@openfun/cunningham-react';
+import { Button } from '@openfun/cunningham-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group2.svg';
-import { Box, Card, StyledLink, Text, TextErrors } from '@/components';
+import { Box, Card, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { useCreateTeam } from '../api';
+
+import { InputTeamName } from './InputTeamName';
 
 export const CardCreateTeam = () => {
   const { t } = useTranslation();
@@ -46,19 +48,10 @@ export const CardCreateTeam = () => {
             {t('Name the team')}
           </Text>
         </Box>
-        <Input
-          fullWidth
-          type="text"
+        <InputTeamName
           label={t('Team name')}
-          onChange={(e) => setTeamName(e.target.value)}
-          rightIcon={<span className="material-icons">edit</span>}
+          {...{ error, isError, isPending, setTeamName }}
         />
-        {isError && error && <TextErrors causes={error.cause} />}
-        {isPending && (
-          <Box $align="center">
-            <Loader />
-          </Box>
-        )}
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
