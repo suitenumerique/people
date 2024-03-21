@@ -42,7 +42,7 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
         f"/api/v1.0/teams/{access.team.id!s}/accesses/{access.id!s}/",
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No TeamAccess matches the given query."}
 
     # Accesses related to another team should be excluded even if the user is related to it
     for other_access in [
@@ -54,7 +54,7 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
         )
 
         assert response.status_code == 404
-        assert response.json() == {"detail": "Not found."}
+        assert response.json() == {"detail": "No TeamAccess matches the given query."}
 
 
 def test_api_team_accesses_retrieve_authenticated_related():

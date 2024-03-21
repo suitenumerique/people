@@ -45,7 +45,7 @@ def test_api_teams_delete_authenticated_unrelated():
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Team matches the given query."}
     assert models.Team.objects.count() == 1
 
 

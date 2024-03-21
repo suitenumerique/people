@@ -38,7 +38,7 @@ def test_api_teams_retrieve_authenticated_unrelated():
         f"/api/v1.0/teams/{team.id!s}/",
     )
     assert response.status_code == HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Team matches the given query."}
 
 
 def test_api_teams_retrieve_authenticated_related():

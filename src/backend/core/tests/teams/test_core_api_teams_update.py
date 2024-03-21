@@ -61,7 +61,7 @@ def test_api_teams_update_authenticated_unrelated():
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Team matches the given query."}
 
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
@@ -188,7 +188,7 @@ def test_api_teams_update_administrator_or_owner_of_another():
     )
 
     assert response.status_code == HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Team matches the given query."}
 
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
