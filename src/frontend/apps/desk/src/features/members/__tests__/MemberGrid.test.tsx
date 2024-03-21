@@ -37,6 +37,9 @@ describe('MemberGrid', () => {
     );
 
     expect(screen.getByText('This table is empty')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Add members to the team'),
+    ).toBeInTheDocument();
   });
 
   it('checks the render with members', async () => {
@@ -201,5 +204,15 @@ describe('MemberGrid', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
 
     expect(await screen.findByText('All broken :(')).toBeInTheDocument();
+  });
+
+  it('cannot add members when current role is member', () => {
+    render(<MemberGrid team={team} currentRole={Role.MEMBER} />, {
+      wrapper: AppWrapper,
+    });
+
+    expect(
+      screen.queryByLabelText('Add members to the team'),
+    ).not.toBeInTheDocument();
   });
 });

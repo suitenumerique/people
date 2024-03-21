@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Card, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Team } from '@/features/teams/api';
+import { Team } from '@/features/teams';
 
-import { useTeamAccesses } from '../api/useTeamsAccesses';
+import { useTeamAccesses } from '../api/';
 import { PAGE_SIZE } from '../conf';
 import { Role } from '../types';
 
@@ -46,19 +46,21 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
 
   return (
     <>
-      <Box className="m-b mb-s" $align="flex-end">
-        <Button
-          aria-label={t('Add members to the team')}
-          style={{
-            width: 'fit-content',
-            minWidth: '8rem',
-            justifyContent: 'center',
-          }}
-          onClick={() => setIsModalMemberOpen(true)}
-        >
-          {t('Add')}
-        </Button>
-      </Box>
+      {currentRole !== Role.MEMBER && (
+        <Box className="m-b mb-s" $align="flex-end">
+          <Button
+            aria-label={t('Add members to the team')}
+            style={{
+              width: 'fit-content',
+              minWidth: '8rem',
+              justifyContent: 'center',
+            }}
+            onClick={() => setIsModalMemberOpen(true)}
+          >
+            {t('Add')}
+          </Button>
+        </Box>
+      )}
       <Card
         className="m-b pb-s"
         $overflow="auto"
@@ -129,6 +131,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
       </Card>
       {isModalMemberOpen && (
         <ModalAddMembers
+          currentRole={currentRole}
           onClose={() => setIsModalMemberOpen(false)}
           team={team}
         />

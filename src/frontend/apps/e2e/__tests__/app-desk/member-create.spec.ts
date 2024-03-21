@@ -34,6 +34,8 @@ test.describe('Members Create', () => {
 
     await page.getByLabel('Add members to the team').click();
 
+    await expect(page.getByRole('radio', { name: 'Owner' })).toBeHidden();
+
     const inputSearch = page.getByLabel(/Find a member to add to the team/);
 
     for (let i = 0; i < 2; i++) {
@@ -51,6 +53,11 @@ test.describe('Members Create', () => {
       ).toBeVisible();
       await expect(page.getByLabel(`Remove ${users[i].name}`)).toBeVisible();
     }
+
+    await expect(page.getByText(/Choose a role/)).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Member' })).toBeChecked();
+    await expect(page.getByRole('radio', { name: 'Owner' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Admin' })).toBeVisible();
   });
 
   test('it selects non existing email', async ({ page, browserName }) => {
