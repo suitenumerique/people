@@ -286,34 +286,42 @@ class Identity(BaseModel):
     def save(self, *args, **kwargs):
         """
         Saves identity, ensuring users always have exactly one main identity.
-        Also converts valid invitations to accesses upon creating an identity.
+        If it's a new identity, give its user access to the relevant teams.
         """
 
-        # If new identity, convert all valid invitations to team accesses.
-        # Expired invitations are ignored.
         if self._state.adding:
-            active_invitations = Invitation.objects.filter(
-                email=self.email,
-                created_at__gte=timezone.now()
-                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION),
-            ).select_related("team")
-
-            if active_invitations.exists():
-                TeamAccess.objects.bulk_create(
-                    [
-                        TeamAccess(
-                            user=self.user, team=invitation.team, role=invitation.role
-                        )
-                        for invitation in active_invitations
-                    ]
-                )
-                active_invitations.delete()
+            self._convert_valid_invitations()
 
         super().save(*args, **kwargs)
 
         # Ensure users always have one and only one main identity.
         if self.is_main is True:
             self.user.identities.exclude(id=self.id).update(is_main=False)
+
+    def _convert_valid_invitations(self):
+        """
+        Convert valid invitations to team accesses.
+        Expired invitations are ignored.
+        """
+
+        valid_invitations = Invitation.objects.filter(
+            email=self.email,
+            created_at__gte=(
+                timezone.now()
+                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
+            ),
+        ).select_related("team")
+
+        if not valid_invitations.exists():
+            return
+
+        TeamAccess.objects.bulk_create(
+            [
+                TeamAccess(user=self.user, team=invitation.team, role=invitation.role)
+                for invitation in valid_invitations
+            ]
+        )
+        valid_invitations.delete()
 
     def clean(self):
         """Normalize the email field and clean the 'is_main' field."""
