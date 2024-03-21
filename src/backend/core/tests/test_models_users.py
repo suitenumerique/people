@@ -36,13 +36,13 @@ def test_models_users_email_unique():
     with pytest.raises(
         ValidationError, match="User with this Email address already exists."
     ):
-        factories.UserFactory(email=user.email)
+        models.User.objects.create(email=user.email)
 
 
 def test_models_users_email_several_null():
     """Several users with a null value for the "email" field can co-exist."""
     factories.UserFactory(email=None)
-    factories.UserFactory(email=None)
+    models.User.objects.create(email=None, password="foo.")
 
     assert models.User.objects.filter(email__isnull=True).count() == 2
 
