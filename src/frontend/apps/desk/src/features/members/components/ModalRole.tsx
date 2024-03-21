@@ -2,19 +2,19 @@ import {
   Button,
   Modal,
   ModalSize,
-  Radio,
-  RadioGroup,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
 import { useAuthStore } from '@/features/auth';
 
 import { useUpdateTeamAccess } from '../api/useUpdateTeamAccess';
 import { Access, Role } from '../types';
+
+import { ChooseRole } from './ChooseRole';
 
 interface ModalRoleProps {
   access: Access;
@@ -29,6 +29,7 @@ export const ModalRole = ({
   onClose,
   teamId,
 }: ModalRoleProps) => {
+  const { t } = useTranslation();
   const [localRole, setLocalRole] = useState(access.role);
   const { userData } = useAuthStore();
   const { toast } = useToastProvider();
@@ -109,32 +110,12 @@ export const ModalRole = ({
           </Text>
         )}
 
-        <RadioGroup>
-          <Radio
-            label={t('Admin')}
-            value={Role.ADMIN}
-            name="role"
-            onChange={(evt) => setLocalRole(evt.target.value as Role)}
-            defaultChecked={access.role === Role.ADMIN}
-            disabled={isNotAllowed}
-          />
-          <Radio
-            label={t('Member')}
-            value={Role.MEMBER}
-            name="role"
-            onChange={(evt) => setLocalRole(evt.target.value as Role)}
-            defaultChecked={access.role === Role.MEMBER}
-            disabled={isNotAllowed}
-          />
-          <Radio
-            label={t('Owner')}
-            value={Role.OWNER}
-            name="role"
-            onChange={(evt) => setLocalRole(evt.target.value as Role)}
-            defaultChecked={access.role === Role.OWNER}
-            disabled={isNotAllowed || currentRole !== Role.OWNER}
-          />
-        </RadioGroup>
+        <ChooseRole
+          defaultRole={access.role}
+          currentRole={currentRole}
+          disabled={isNotAllowed}
+          setRole={setLocalRole}
+        />
       </Box>
     </Modal>
   );
