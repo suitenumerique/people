@@ -11,19 +11,33 @@ import { createGlobalStyle } from 'styled-components';
 
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
+import { useCunninghamTheme } from '@/cunningham';
 import { Team } from '@/features/teams';
 
-import { useCreateInvitation } from '../api';
-import { Invitation, Role } from '../types';
+import { useCreateInvitation, useCreateTeamAccess } from '../api';
+import IconAddMember from '../assets/add-member.svg';
+import { Role } from '../types';
+import {
+  OptionInvitation,
+  OptionNewMember,
+  OptionSelect,
+  OptionType,
+  isOptionNewMember,
+} from '../typesSearchMembers';
 
 import { ChooseRole } from './ChooseRole';
-import { OptionSelect, SearchMembers } from './SearchMembers';
+import { OptionsSelect, SearchMembers } from './SearchMembers';
 
 const GlobalStyle = createGlobalStyle`
   .c__modal {
     overflow: visible;
   }
 `;
+
+type APIErrorMember = APIError<{
+  value: string;
+  type: OptionType;
+}>;
 
 interface ModalAddMembersProps {
   currentRole: Role;
@@ -36,49 +50,81 @@ export const ModalAddMembers = ({
   onClose,
   team,
 }: ModalAddMembersProps) => {
+  const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
-  const [selectedMembers, setSelectedMembers] = useState<OptionSelect>([]);
+  const [selectedMembers, setSelectedMembers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>(Role.MEMBER);
   const { toast } = useToastProvider();
   const { mutateAsync: createInvitation } = useCreateInvitation();
+  const { mutateAsync: createTeamAccess } = useCreateTeamAccess();
 
-  const handleValidate = async () => {
-    const promisesMembers = selectedMembers.map((selectedMember) => {
-      return createInvitation({
-        email: selectedMember.value.email,
-        role: selectedRole,
-        teamId: team.id,
-      });
+  const switchActions = (selectedMembers: OptionsSelect) =>
+    selectedMembers.map(async (selectedMember) => {
+      switch (selectedMember.type) {
+        case OptionType.INVITATION:
+          await createInvitation({
+            email: selectedMember.value.email,
+            role: selectedRole,
+            teamId: team.id,
+          });
+          break;
+
+        case OptionType.NEW_MEMBER:
+          await createTeamAccess({
+            name: selectedMember.value.name,
+            role: selectedRole,
+            teamId: team.id,
+            userId: selectedMember.value.id,
+          });
+          break;
+      }
+
+      return selectedMember;
     });
 
-    const promises = await Promise.allSettled<Invitation>(promisesMembers);
+  const toastOptions = {
+    duration: 4000,
+  };
+
+  const onError = (dataError: APIErrorMember['data']) => {
+    const messageError =
+      dataError?.type === OptionType.INVITATION
+        ? t(`Failed to create the invitation for {{email}}`, {
+            email: dataError?.value,
+          })
+        : t(`Failed to add {{name}} in the team`, {
+            name: dataError?.value,
+          });
+
+    toast(messageError, VariantType.ERROR, toastOptions);
+  };
+
+  const onSuccess = (option: OptionSelect) => {
+    const message = !isOptionNewMember(option)
+      ? t('Invitation sent to {{email}}', {
+          email: option.value.email,
+        })
+      : t('Member {{name}} added to the team', {
+          name: option.value.name,
+        });
+
+    toast(message, VariantType.SUCCESS, toastOptions);
+  };
+
+  const handleValidate = async () => {
+    const settledPromises = await Promise.allSettled<
+      OptionInvitation | OptionNewMember
+    >(switchActions(selectedMembers));
 
     onClose();
-    promises.forEach((promise) => {
-      switch (promise.status) {
+    settledPromises.forEach((settledPromise) => {
+      switch (settledPromise.status) {
         case 'rejected':
-          const apiError = promise.reason as APIError<string>;
-          toast(
-            t(`Failed to create the invitation for {{email}}`, {
-              email: apiError.data,
-            }),
-            VariantType.ERROR,
-            {
-              duration: 4000,
-            },
-          );
+          onError((settledPromise.reason as APIErrorMember).data);
           break;
 
         case 'fulfilled':
-          toast(
-            t('Invitation sent to {{email}}', {
-              email: promise.value.email,
-            }),
-            VariantType.SUCCESS,
-            {
-              duration: 4000,
-            },
-          );
+          onSuccess(settledPromise.value);
           break;
       }
     });
@@ -106,7 +152,14 @@ export const ModalAddMembers = ({
         </Button>
       }
       size={ModalSize.MEDIUM}
-      title={t('Add members to the team')}
+      title={
+        <Box $align="center" $gap="1rem">
+          <IconAddMember width={48} color={colorsTokens()['primary-text']} />
+          <Text $size="h3" className="m-0">
+            {t('Add a member')}
+          </Text>
+        </Box>
+      }
     >
       <GlobalStyle />
       <Box className="mb-xl mt-l">

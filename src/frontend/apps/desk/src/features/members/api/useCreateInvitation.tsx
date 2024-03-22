@@ -5,6 +5,7 @@ import { User } from '@/features/auth';
 import { Team } from '@/features/teams';
 
 import { Invitation, Role } from '../types';
+import { OptionType } from '../typesSearchMembers';
 
 interface CreateInvitationParams {
   email: User['email'];
@@ -28,7 +29,10 @@ export const createInvitation = async ({
   if (!response.ok) {
     throw new APIError(
       `Failed to create the invitation for ${email}`,
-      await errorCauses(response, email),
+      await errorCauses(response, {
+        value: email,
+        type: OptionType.INVITATION,
+      }),
     );
   }
 

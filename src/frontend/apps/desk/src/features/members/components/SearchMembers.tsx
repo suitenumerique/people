@@ -3,20 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Options } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
-import { User } from '@/features/auth';
 import { Team } from '@/features/teams';
 import { isValidEmail } from '@/utils';
 
 import { KEY_LIST_USER, useUsers } from '../api/useUsers';
+import { OptionSelect, OptionType } from '../typesSearchMembers';
 
-export type OptionSelect = Options<{
-  value: Partial<User> & { email: User['email'] };
-  label: string;
-}>;
+export type OptionsSelect = Options<OptionSelect>;
 
 interface SearchMembersProps {
   team: Team;
-  setSelectedMembers: (value: OptionSelect) => void;
+  setSelectedMembers: (value: OptionsSelect) => void;
 }
 
 export const SearchMembers = ({
@@ -26,7 +23,7 @@ export const SearchMembers = ({
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [userQuery, setUserQuery] = useState('');
-  const resolveOptionsRef = useRef<((value: OptionSelect) => void) | null>(
+  const resolveOptionsRef = useRef<((value: OptionsSelect) => void) | null>(
     null,
   );
   const { data } = useUsers(
@@ -44,9 +41,10 @@ export const SearchMembers = ({
       return;
     }
 
-    let users: OptionSelect = options.map((user) => ({
+    let users: OptionsSelect = options.map((user) => ({
       value: user,
-      label: user.name || '',
+      label: user.name || user.email,
+      type: OptionType.NEW_MEMBER,
     }));
 
     if (userQuery && isValidEmail(userQuery)) {
@@ -57,6 +55,7 @@ export const SearchMembers = ({
           {
             value: { email: userQuery },
             label: userQuery,
+            type: OptionType.INVITATION,
           },
         ];
       }
@@ -67,8 +66,8 @@ export const SearchMembers = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options]);
 
-  const loadOptions = (): Promise<OptionSelect> => {
-    return new Promise<OptionSelect>((resolve) => {
+  const loadOptions = (): Promise<OptionsSelect> => {
+    return new Promise<OptionsSelect>((resolve) => {
       resolveOptionsRef.current = resolve;
     });
   };

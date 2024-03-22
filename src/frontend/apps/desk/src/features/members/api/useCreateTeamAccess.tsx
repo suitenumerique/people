@@ -5,6 +5,7 @@ import { User } from '@/features/auth';
 import { KEY_LIST_TEAM, KEY_TEAM, Team } from '@/features/teams';
 
 import { Access, Role } from '../types';
+import { OptionType } from '../typesSearchMembers';
 
 import { KEY_LIST_TEAM_ACCESSES } from '.';
 
@@ -32,7 +33,10 @@ export const createTeamAccess = async ({
   if (!response.ok) {
     throw new APIError(
       `Failed to add ${name} in the team.`,
-      await errorCauses(response),
+      await errorCauses(response, {
+        value: name,
+        type: OptionType.NEW_MEMBER,
+      }),
     );
   }
 
