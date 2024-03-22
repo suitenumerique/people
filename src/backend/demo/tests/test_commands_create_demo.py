@@ -35,7 +35,7 @@ def test_commands_create_demo():
 
 def test_commands_createsuperuser():
     """
-    The createsuperuser management command should create an use
+    The createsuperuser management command should create a user
     with superuser permissions.
     """
 

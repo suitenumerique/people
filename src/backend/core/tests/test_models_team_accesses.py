@@ -2,12 +2,16 @@
 Unit tests for the TeamAccess model
 """
 
+import json
+import re
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 
 import pytest
+import responses
 
-from core import factories
+from core import factories, models
 
 pytestmark = pytest.mark.django_db
 
@@ -37,6 +41,94 @@ def test_models_team_accesses_unique():
         match="Team/user relation with this User and Team already exists.",
     ):
         factories.TeamAccessFactory(user=access.user, team=access.team)
+
+
+def test_models_team_accesses_create_webhook():
+    """
+    When the team has a webhook, creating a team access should fire a call.
+    """
+    user = factories.UserFactory()
+    team = factories.TeamFactory()
+    webhook = factories.TeamWebhookFactory(team=team)
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsp = rsps.add(
+            rsps.PATCH,
+            re.compile(r".*/Groups/.*"),
+            body="{}",
+            status=200,
+            content_type="application/json",
+        )
+
+        models.TeamAccess.objects.create(user=user, team=team)
+
+        assert rsp.call_count == 1
+        assert rsps.calls[0].request.url == webhook.url
+
+        # Payload sent to scim provider
+        payload = json.loads(rsps.calls[0].request.body)
+        assert payload == {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [
+                {
+                    "op": "add",
+                    "path": "members",
+                    "value": [
+                        {
+                            "value": str(user.id),
+                            "email": None,
+                            "type": "User",
+                        }
+                    ],
+                }
+            ],
+        }
+
+
+def test_models_team_accesses_delete_webhook():
+    """
+    When the team has a webhook, deleting a team access should fire a call.
+    """
+    team = factories.TeamFactory()
+    webhook = factories.TeamWebhookFactory(team=team)
+    access = factories.TeamAccessFactory(team=team)
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsp = rsps.add(
+            rsps.PATCH,
+            re.compile(r".*/Groups/.*"),
+            body="{}",
+            status=200,
+            content_type="application/json",
+        )
+
+        access.delete()
+
+        assert rsp.call_count == 1
+        assert rsps.calls[0].request.url == webhook.url
+
+        # Payload sent to scim provider
+        payload = json.loads(rsps.calls[0].request.body)
+        assert payload == {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [
+                {
+                    "op": "remove",
+                    "path": "members",
+                    "value": [
+                        {
+                            "value": str(access.user.id),
+                            "email": None,
+                            "type": "User",
+                        }
+                    ],
+                }
+            ],
+        }
+
+    assert models.TeamAccess.objects.exists() is False
 
 
 # get_abilities

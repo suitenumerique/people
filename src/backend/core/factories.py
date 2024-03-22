@@ -177,6 +177,16 @@ class TeamAccessFactory(factory.django.DjangoModelFactory):
     role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
 
 
+class TeamWebhookFactory(factory.django.DjangoModelFactory):
+    """Create fake team webhooks for testing."""
+
+    class Meta:
+        model = models.TeamWebhook
+
+    team = factory.SubFactory(TeamFactory)
+    url = factory.Sequence(lambda n: f"https://example.com/Groups/{n!s}")
+
+
 class InvitationFactory(factory.django.DjangoModelFactory):
     """A factory to create invitations for a user"""
 

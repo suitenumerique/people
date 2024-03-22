@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, mail, validators
-from django.db import models
+from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import lazy
@@ -23,6 +23,9 @@ from django.utils.translation import override
 
 import jsonschema
 from timezone_field import TimeZoneField
+
+from core.enums import WebhookStatusChoices
+from core.utils.webhooks import scim_synchronizer
 
 logger = getLogger(__name__)
 
@@ -462,6 +465,34 @@ class TeamAccess(BaseModel):
     def __str__(self):
         return f"{self.user!s} is {self.role:s} in team {self.team!s}"
 
+    def save(self, *args, **kwargs):
+        """
+        Override save function to fire webhooks on any addition or update
+        to a team access.
+        """
+
+        if self._state.adding:
+            self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
+            with transaction.atomic():
+                instance = super().save(*args, **kwargs)
+                scim_synchronizer.add_user_to_group(self.team, self.user)
+        else:
+            instance = super().save(*args, **kwargs)
+
+        return instance
+
+    def delete(self, *args, **kwargs):
+        """
+        Override delete method to fire webhooks on  to team accesses.
+        Don't allow deleting a team access until it is successfully synchronized with all
+        its webhooks.
+        """
+        self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
+        with transaction.atomic():
+            arguments = self.team, self.user
+            super().delete(*args, **kwargs)
+            scim_synchronizer.remove_user_from_group(*arguments)
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user taking into account
@@ -510,6 +541,34 @@ class TeamAccess(BaseModel):
             "put": bool(set_role_to),
             "set_role_to": set_role_to,
         }
+
+
+class TeamWebhook(BaseModel):
+    """Webhooks fired on changes in teams."""
+
+    team = models.ForeignKey(Team, related_name="webhooks", on_delete=models.CASCADE)
+    url = models.URLField(_("url"))
+    secret = models.CharField(_("secret"), max_length=255, null=True, blank=True)
+    status = models.CharField(
+        max_length=10,
+        default=WebhookStatusChoices.PENDING,
+        choices=WebhookStatusChoices.choices,
+    )
+
+    class Meta:
+        db_table = "people_team_webhook"
+        verbose_name = _("Team webhook")
+        verbose_name_plural = _("Team webhooks")
+
+    def __str__(self):
+        return f"Webhook to {self.url} for {self.team}"
+
+    def get_headers(self):
+        """Build header dict from webhook object."""
+        headers = {"Content-Type": "application/json"}
+        if self.secret:
+            headers["Authorization"] = f"Bearer {self.secret:s}"
+        return headers
 
 
 class Invitation(BaseModel):

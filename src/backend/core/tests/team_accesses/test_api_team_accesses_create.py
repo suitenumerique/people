@@ -2,9 +2,12 @@
 Test for team accesses API endpoints in People's core app : create
 """
 
+import json
 import random
+import re
 
 import pytest
+import responses
 from rest_framework.test import APIClient
 
 from core import factories, models
@@ -174,3 +177,60 @@ def test_api_team_accesses_create_authenticated_owner():
         "role": role,
         "user": str(other_user.id),
     }
+
+
+def test_api_team_accesses_create_webhook():
+    """
+    When the team has a webhook, creating a team access should fire a call.
+    """
+    user, other_user = factories.UserFactory.create_batch(2)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    webhook = factories.TeamWebhookFactory(team=team)
+
+    role = random.choice([role[0] for role in models.RoleChoices.choices])
+
+    client = APIClient()
+    client.force_login(user)
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsp = rsps.add(
+            rsps.PATCH,
+            re.compile(r".*/Groups/.*"),
+            body="{}",
+            status=200,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/teams/{team.id!s}/accesses/",
+            {
+                "user": str(other_user.id),
+                "role": role,
+            },
+            format="json",
+        )
+        assert response.status_code == 201
+
+        assert rsp.call_count == 1
+        assert rsps.calls[0].request.url == webhook.url
+
+        # Payload sent to scim provider
+        payload = json.loads(rsps.calls[0].request.body)
+        assert payload == {
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [
+                {
+                    "op": "add",
+                    "path": "members",
+                    "value": [
+                        {
+                            "value": str(other_user.id),
+                            "email": None,
+                            "type": "User",
+                        }
+                    ],
+                }
+            ],
+        }

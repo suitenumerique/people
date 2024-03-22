@@ -53,6 +53,15 @@ class TeamAccessInline(admin.TabularInline):
     readonly_fields = ("created_at", "updated_at")
 
 
+class TeamWebhookInline(admin.TabularInline):
+    """Inline admin class for team webhooks."""
+
+    extra = 0
+    autocomplete_fields = ["team"]
+    model = models.TeamWebhook
+    readonly_fields = ("created_at", "updated_at")
+
+
 @admin.register(models.User)
 class UserAdmin(auth_admin.UserAdmin):
     """Admin class for the User model"""
@@ -112,7 +121,7 @@ class UserAdmin(auth_admin.UserAdmin):
 class TeamAdmin(admin.ModelAdmin):
     """Team admin interface declaration."""
 
-    inlines = (TeamAccessInline,)
+    inlines = (TeamAccessInline, TeamWebhookInline)
     list_display = (
         "name",
         "slug",
