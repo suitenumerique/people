@@ -206,6 +206,10 @@ class UserViewSet(
                 )
             )
 
+            # Exclude all users already in the given team
+            if team_id := self.request.GET.get("team_id", ""):
+                queryset = queryset.exclude(teams__id=team_id)
+
             # Search by case-insensitive and accent-insensitive trigram similarity
             if query := self.request.GET.get("q", ""):
                 similarity = Max(
