@@ -18,13 +18,9 @@ export const keyCloakSignIn = async (page: Page, browserName: string) => {
   }
 };
 
-export const randomTeamsName = (
-  teamName: string,
-  browserName: string,
-  length: number,
-) =>
+export const randomName = (name: string, browserName: string, length: number) =>
   Array.from({ length }, (_el, index) => {
-    return `${teamName}-${browserName}-${Math.floor(Math.random() * 10000)}-${index}`;
+    return `${browserName}-${Math.floor(Math.random() * 10000)}-${index}-${name}`;
   });
 
 export const createTeam = async (
@@ -36,7 +32,7 @@ export const createTeam = async (
   const panel = page.getByLabel('Teams panel').first();
   const buttonCreate = page.getByRole('button', { name: 'Create the team' });
 
-  const randomTeams = randomTeamsName(teamName, browserName, length);
+  const randomTeams = randomName(teamName, browserName, length);
 
   for (let i = 0; i < randomTeams.length; i++) {
     await panel.getByRole('button', { name: 'Add a team' }).click();

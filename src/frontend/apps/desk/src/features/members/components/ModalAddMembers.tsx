@@ -1,12 +1,20 @@
-import { Button, Modal, ModalSize } from '@openfun/cunningham-react';
+import {
+  Button,
+  Modal,
+  ModalSize,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
+import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { Team } from '@/features/teams';
 
-import { Role } from '../types';
+import { useCreateInvitation } from '../api';
+import { Invitation, Role } from '../types';
 
 import { ChooseRole } from './ChooseRole';
 import { OptionSelect, SearchMembers } from './SearchMembers';
@@ -30,7 +38,51 @@ export const ModalAddMembers = ({
 }: ModalAddMembersProps) => {
   const { t } = useTranslation();
   const [selectedMembers, setSelectedMembers] = useState<OptionSelect>([]);
-  const [, setSelectedRole] = useState<Role>(Role.MEMBER);
+  const [selectedRole, setSelectedRole] = useState<Role>(Role.MEMBER);
+  const { toast } = useToastProvider();
+  const { mutateAsync: createInvitation } = useCreateInvitation();
+
+  const handleValidate = async () => {
+    const promisesMembers = selectedMembers.map((selectedMember) => {
+      return createInvitation({
+        email: selectedMember.value.email,
+        role: selectedRole,
+        teamId: team.id,
+      });
+    });
+
+    const promises = await Promise.allSettled<Invitation>(promisesMembers);
+
+    onClose();
+    promises.forEach((promise) => {
+      switch (promise.status) {
+        case 'rejected':
+          const apiError = promise.reason as APIError<string>;
+          toast(
+            t(`Failed to create the invitation for {{email}}`, {
+              email: apiError.data,
+            }),
+            VariantType.ERROR,
+            {
+              duration: 4000,
+            },
+          );
+          break;
+
+        case 'fulfilled':
+          toast(
+            t('Invitation sent to {{email}}', {
+              email: promise.value.email,
+            }),
+            VariantType.SUCCESS,
+            {
+              duration: 4000,
+            },
+          );
+          break;
+      }
+    });
+  };
 
   return (
     <Modal
@@ -48,7 +100,7 @@ export const ModalAddMembers = ({
           color="primary"
           fullWidth
           disabled={!selectedMembers.length}
-          onClick={() => {}}
+          onClick={() => void handleValidate()}
         >
           {t('Validate')}
         </Button>

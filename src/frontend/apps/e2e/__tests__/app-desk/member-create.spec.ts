@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createTeam, keyCloakSignIn } from './common';
+import { createTeam, keyCloakSignIn, randomName } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -60,16 +60,31 @@ test.describe('Members Create', () => {
     await expect(page.getByRole('radio', { name: 'Admin' })).toBeVisible();
   });
 
-  test('it selects non existing email', async ({ page, browserName }) => {
-    await createTeam(page, 'member-modal-search-user', browserName, 1);
+  test('it sends an invitation', async ({ page, browserName }) => {
+    await createTeam(page, 'member-invitation', browserName, 1);
 
     await page.getByLabel('Add members to the team').click();
 
     const inputSearch = page.getByLabel(/Find a member to add to the team/);
-    await inputSearch.fill('test@test.fr');
-    await page.getByRole('option', { name: 'test@test.fr' }).click();
 
-    await expect(page.getByText('test@test.fr', { exact: true })).toBeVisible();
-    await expect(page.getByLabel(`Remove test@test.fr`)).toBeVisible();
+    const email = randomName('test@test.fr', browserName, 1)[0];
+    await inputSearch.fill(email);
+    await page.getByRole('option', { name: email }).click();
+
+    await expect(page.getByText(email, { exact: true })).toBeVisible();
+    await expect(page.getByLabel(`Remove ${email}`)).toBeVisible();
+
+    await page.getByRole('radio', { name: 'Owner' }).click();
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/invitations/') && response.status() === 201,
+    );
+
+    await page.getByRole('button', { name: 'Validate' }).click();
+    await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
+
+    const response = await responsePromise;
+    expect(response.ok()).toBeTruthy();
   });
 });

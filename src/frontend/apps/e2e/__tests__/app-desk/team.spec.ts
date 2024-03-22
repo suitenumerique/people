@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createTeam, keyCloakSignIn, randomTeamsName } from './common';
+import { createTeam, keyCloakSignIn, randomName } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -46,7 +46,7 @@ test.describe('Team', () => {
 
     await page.getByLabel(`Open the team options modal`).click();
 
-    const teamName = randomTeamsName('new-team-update-name', browserName, 1)[0];
+    const teamName = randomName('new-team-update-name', browserName, 1)[0];
     await page.getByText('New name...', { exact: true }).fill(teamName);
 
     await page
