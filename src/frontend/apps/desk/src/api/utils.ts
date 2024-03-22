@@ -1,4 +1,4 @@
-export const errorCauses = async (response: Response) => {
+export const errorCauses = async (response: Response, data?: unknown) => {
   const errorsBody = (await response.json()) as Record<
     string,
     string | string[]
@@ -13,5 +13,6 @@ export const errorCauses = async (response: Response) => {
   return {
     status: response.status,
     cause: causes,
+    data,
   };
 };
