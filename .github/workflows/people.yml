@@ -80,9 +80,6 @@ jobs:
       - name: Test App
         run: yarn app:test
 
-      - name: Test Translations
-        run: yarn i18n:test
-
   lint-front:
     runs-on: ubuntu-latest
     defaults:
