@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/numerique-gouv/people#readme",
   "devDependencies": {
-    "openapi-typescript-codegen": "0.27.0"
+    "openapi-typescript-codegen": "0.28.0"
   }
 }
