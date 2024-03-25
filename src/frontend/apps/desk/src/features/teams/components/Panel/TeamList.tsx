@@ -73,7 +73,7 @@ export const TeamList = () => {
   }, [data?.pages]);
 
   return (
-    <Box $css="overflow: auto;" ref={containerRef}>
+    <Box $css="overflow-y: auto; overflow-x: hidden;" ref={containerRef}>
       <InfiniteScroll
         hasMore={hasNextPage}
         isLoading={isFetchingNextPage}

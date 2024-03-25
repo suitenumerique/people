@@ -23,7 +23,7 @@ export const Menu = () => {
       $height="100%"
       $justify="space-between"
     >
-      <Box className="pt-b" $direction="column" $gap="0.8rem">
+      <Box className="pt-l" $direction="column" $gap="0.8rem">
         <MenuItem Icon={IconSearch} label={t('Search')} href="/" />
         <MenuItem Icon={IconFavorite} label={t('Favorite')} href="/favorite" />
         <MenuItem Icon={IconRecent} label={t('Recent')} href="/recent" />

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { Box, BoxButton, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import IconOpenClose from '@/features/teams/assets/icon-open-close.svg';
 
 import { PanelActions } from './PanelActions';
 import { TeamList } from './TeamList';
@@ -11,32 +12,69 @@ export const Panel = () => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
 
+  const [isOpen, setIsOpen] = useState(true);
+
+  const closedOverridingStyles = !isOpen && {
+    $width: '0',
+    $maxWidth: '0',
+    $minWidth: '0',
+  };
+
+  const transition = 'all 0.5s ease-in-out';
+
   return (
     <Box
       $width="100%"
       $maxWidth="20rem"
       $minWidth="14rem"
       $css={`
+        position: relative;
         border-right: 1px solid ${colorsTokens()['primary-300']};
+        transition: ${transition};
       `}
       $height="inherit"
       aria-label="Teams panel"
+      {...closedOverridingStyles}
     >
-      <Box
-        className="p-s"
-        $direction="row"
-        $align="center"
-        $justify="space-between"
+      <BoxButton
+        aria-label={
+          isOpen ? t('Close the teams panel') : t('Open the teams panel')
+        }
+        $color={colorsTokens()['primary-600']}
         $css={`
-          border-bottom: 1px solid ${colorsTokens()['primary-300']};
+          position: absolute;
+          right: -1.2rem;
+          top: 1.03rem;
+          transform: rotate(${isOpen ? '0' : '180'}deg);
+          transition: ${transition};
+        `}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <IconOpenClose width={24} height={24} />
+      </BoxButton>
+      <Box
+        $css={`
+          overflow: hidden;
+          opacity: ${isOpen ? '1' : '0'};
+          transition: ${transition};
         `}
       >
-        <Text $weight="bold" $size="1.25rem">
-          {t('Recents')}
-        </Text>
-        <PanelActions />
+        <Box
+          className="pr-l pl-s pt-s pb-s"
+          $direction="row"
+          $align="center"
+          $justify="space-between"
+          $css={`
+            border-bottom: 1px solid ${colorsTokens()['primary-300']};
+          `}
+        >
+          <Text $weight="bold" $size="1.25rem">
+            {t('Recents')}
+          </Text>
+          <PanelActions />
+        </Box>
+        <TeamList />
       </Box>
-      <TeamList />
     </Box>
   );
 };

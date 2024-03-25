@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
+import { Panel } from '@/features/teams';
 import { AppWrapper } from '@/tests/utils';
 
 import { TeamList } from '../components/Panel/TeamList';
@@ -126,5 +128,47 @@ describe('PanelTeams', () => {
         'Something bad happens, please refresh the page.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('renders with team panel open', async () => {
+    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+      count: 1,
+      results: [],
+    });
+
+    render(<Panel />, { wrapper: AppWrapper });
+
+    expect(
+      screen.getByRole('button', { name: 'Close the teams panel' }),
+    ).toBeVisible();
+
+    expect(await screen.findByText('Recents')).toBeVisible();
+  });
+
+  it('closes and opens the team panel', async () => {
+    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+      count: 1,
+      results: [],
+    });
+
+    render(<Panel />, { wrapper: AppWrapper });
+
+    expect(await screen.findByText('Recents')).toBeVisible();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Close the teams panel',
+      }),
+    );
+
+    expect(await screen.findByText('Recents')).not.toBeVisible();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Open the teams panel',
+      }),
+    );
+
+    expect(await screen.findByText('Recents')).toBeVisible();
   });
 });
