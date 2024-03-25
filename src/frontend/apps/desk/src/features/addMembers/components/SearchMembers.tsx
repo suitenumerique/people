@@ -7,7 +7,7 @@ import { Team } from '@/features/teams';
 import { isValidEmail } from '@/utils';
 
 import { KEY_LIST_USER, useUsers } from '../api/useUsers';
-import { OptionSelect, OptionType } from '../typesSearchMembers';
+import { OptionSelect, OptionType } from '../types';
 
 export type OptionsSelect = Options<OptionSelect>;
 

@@ -12,20 +12,19 @@ import { createGlobalStyle } from 'styled-components';
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { ChooseRole, Role } from '@/features/members';
 import { Team } from '@/features/teams';
 
 import { useCreateInvitation, useCreateTeamAccess } from '../api';
 import IconAddMember from '../assets/add-member.svg';
-import { Role } from '../types';
 import {
   OptionInvitation,
   OptionNewMember,
   OptionSelect,
   OptionType,
   isOptionNewMember,
-} from '../typesSearchMembers';
+} from '../types';
 
-import { ChooseRole } from './ChooseRole';
 import { OptionsSelect, SearchMembers } from './SearchMembers';
 
 const GlobalStyle = createGlobalStyle`
