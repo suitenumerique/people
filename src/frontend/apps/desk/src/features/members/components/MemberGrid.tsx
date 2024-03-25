@@ -162,7 +162,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
               renderCell: ({ row }) => {
                 return (
                   <MemberAction
-                    teamId={team.id}
+                    team={team}
                     access={row}
                     currentRole={currentRole}
                   />
