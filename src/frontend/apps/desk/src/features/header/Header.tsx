@@ -8,7 +8,7 @@ import { ApplicationsMenu } from '@/features/header/ApplicationsMenu';
 
 import { LanguagePicker } from '../language/';
 
-import { default as IconDesk } from './assets/icon-desk.svg?url';
+import { default as IconApplication } from './assets/icon-application.svg?url';
 import { default as IconGouv } from './assets/icon-gouv.svg?url';
 import { default as IconMarianne } from './assets/icon-marianne.svg?url';
 import IconMyAccount from './assets/icon-my-account.png';
@@ -55,9 +55,9 @@ export const Header = () => {
               alt={t('Freedom Equality Fraternity Logo')}
             />
             <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconDesk} alt={t('Desk Logo')} />
+              <Image priority src={IconApplication} alt={t('Equipes Logo')} />
               <Text className="m-0" as="h2" $theme="primary">
-                {t('Desk')}
+                {t('Equipes')}
               </Text>
             </Box>
           </Box>
