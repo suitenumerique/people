@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Define required arguments "email" and "password"."""
         parser.add_argument(
-            "--email",
+            "--admin_email",
             help=("Email for the user."),
         )
         parser.add_argument(
@@ -30,11 +30,11 @@ class Command(BaseCommand):
         Given an email and a password, create a superuser or upgrade the existing
         user to superuser status.
         """
-        email = options.get("email")
+        email = options.get("admin_email")
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(admin_email=email)
         except User.DoesNotExist:
-            user = User(email=email)
+            user = User(admin_email=email)
             message = "Superuser created successfully."
         else:
             if user.is_superuser and user.is_staff:

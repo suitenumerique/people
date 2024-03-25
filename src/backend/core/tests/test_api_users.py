@@ -53,8 +53,8 @@ def test_api_users_authenticated_list_by_email():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the email.
     """
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -125,8 +125,8 @@ def test_api_users_authenticated_list_by_name():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the name.
     """
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -192,8 +192,8 @@ def test_api_users_authenticated_list_by_name_and_email():
     partial query on the name and email.
     """
 
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -225,7 +225,7 @@ def test_api_users_authenticated_list_exclude_users_already_in_team(
     Authenticated users should be able to search users
     but the result should exclude all users already in the given team.
     """
-    user = factories.UserFactory(email="tester@ministry.fr")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
     factories.IdentityFactory(user=user, email=user.email, name="john doe")
     client = APIClient()
     client.force_login(user)
@@ -280,8 +280,8 @@ def test_api_users_authenticated_list_multiple_identities_single_user():
     """
     User with multiple identities should appear only once in results.
     """
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
@@ -308,8 +308,8 @@ def test_api_users_authenticated_list_multiple_identities_multiple_users():
     User with multiple identities should be ranked
     on their best matching identity.
     """
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -368,8 +368,8 @@ def test_api_users_authenticated_list_multiple_identities_multiple_users():
 
 def test_api_users_authenticated_list_uppercase_content():
     """Upper case content should be found by lower case query."""
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
@@ -399,8 +399,8 @@ def test_api_users_authenticated_list_uppercase_content():
 
 def test_api_users_list_authenticated_capital_query():
     """Upper case query should find lower case content."""
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="eva karl")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
 
     client = APIClient()
     client.force_login(user)
@@ -428,8 +428,8 @@ def test_api_users_list_authenticated_capital_query():
 
 def test_api_contacts_list_authenticated_accented_query():
     """Accented content should be found by unaccented query."""
-    user = factories.UserFactory(email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(admin_email="tester@ministry.fr")
+    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -510,7 +510,7 @@ def test_api_users_list_pagination_page_size(
     client.force_login(user)
 
     for i in range(page_size):
-        factories.UserFactory.create(email=f"user-{i}@people.com")
+        factories.UserFactory.create(admin_email=f"user-{i}@people.com")
 
     response = client.get(
         f"/api/v1.0/users/?page_size={page_size}",
@@ -535,7 +535,7 @@ def test_api_users_list_pagination_wrong_page_size(
     client.force_login(user)
 
     for i in range(page_size):
-        factories.UserFactory.create(email=f"user-{i}@people.com")
+        factories.UserFactory.create(admin_email=f"user-{i}@people.com")
 
     response = client.get(
         f"/api/v1.0/users/?page_size={page_size}",

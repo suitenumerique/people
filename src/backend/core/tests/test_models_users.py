@@ -31,20 +31,20 @@ def test_models_users_id_unique():
 
 
 def test_models_users_email_unique():
-    """The "email" field should be unique except for the null value."""
+    """The "admin_email" field should be unique except for the null value."""
     user = factories.UserFactory()
     with pytest.raises(
-        ValidationError, match="User with this Email address already exists."
+        ValidationError, match="User with this Admin email address already exists."
     ):
-        models.User.objects.create(email=user.email)
+        models.User.objects.create(admin_email=user.admin_email, password="password")
 
 
 def test_models_users_email_several_null():
     """Several users with a null value for the "email" field can co-exist."""
-    factories.UserFactory(email=None)
-    models.User.objects.create(email=None, password="foo.")
+    factories.UserFactory(admin_email=None)
+    models.User.objects.create(admin_email=None, password="foo.")
 
-    assert models.User.objects.filter(email__isnull=True).count() == 2
+    assert models.User.objects.filter(admin_email__isnull=True).count() == 2
 
 
 def test_models_users_profile_not_owned():
@@ -91,11 +91,26 @@ def test_models_users_send_mail_main_existing():
     )
 
 
-def test_models_users_send_mail_main_missing():
-    """The 'email_user' method should fail if the user has no email address."""
+def test_models_users_send_mail_main_admin():
+    """
+    The 'email_user' method should send mail to the user's admin email address if the
+    user has no related identities.
+    """
     user = factories.UserFactory()
 
-    with pytest.raises(models.Identity.DoesNotExist) as excinfo:
+    with mock.patch("django.core.mail.send_mail") as mock_send:
         user.email_user("my subject", "my message")
 
-    assert str(excinfo.value) == "Identity matching query does not exist."
+    mock_send.assert_called_once_with(
+        "my subject", "my message", None, [user.admin_email]
+    )
+
+
+def test_models_users_send_mail_main_missing():
+    """The 'email_user' method should fail if the user has no email address."""
+    user = factories.UserFactory(admin_email=None)
+
+    with pytest.raises(ValueError) as excinfo:
+        user.email_user("my subject", "my message")
+
+    assert str(excinfo.value) == "You must first set an email for the user."

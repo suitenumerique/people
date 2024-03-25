@@ -31,3 +31,14 @@ def test_commands_create_demo():
     assert models.Identity.objects.exists()
     assert models.Team.objects.count() == 3
     assert models.TeamAccess.objects.count() >= 3
+
+
+def test_commands_createsuperuser():
+    """
+    The createsuperuser management command should create an use
+    with superuser permissions.
+    """
+
+    call_command("createsuperuser")
+
+    assert models.User.objects.count() == 1

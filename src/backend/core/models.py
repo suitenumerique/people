@@ -74,7 +74,7 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         """Call `full_clean` before saving."""
         self.full_clean()
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class Contact(BaseModel):
@@ -157,7 +157,9 @@ class Contact(BaseModel):
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
 
-    email = models.EmailField(_("email address"), unique=True, null=True, blank=True)
+    admin_email = models.EmailField(
+        _("admin email address"), unique=True, null=True, blank=True
+    )
     profile_contact = models.OneToOneField(
         Contact,
         on_delete=models.SET_NULL,
@@ -199,7 +201,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     objects = auth_models.UserManager()
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = "admin_email"
     REQUIRED_FIELDS = []
 
     class Meta:
@@ -211,8 +213,31 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         return (
             str(self.profile_contact)
             if self.profile_contact
-            else self.email or str(self.id)
+            else self.admin_email or str(self.id)
         )
+
+    def _get_identities_main(self):
+        """Return a list with the main identity or an empty list."""
+        try:
+            return self._identities_main
+        except AttributeError:
+            return self.identities.filter(is_main=True)
+
+    @property
+    def name(self):
+        """Return main identity's name."""
+        try:
+            return self._get_identities_main()[0].name
+        except IndexError:
+            return None
+
+    @property
+    def email(self):
+        """Return main identity's email."""
+        try:
+            return self._get_identities_main()[0].email
+        except IndexError:
+            return None
 
     def clean(self):
         """Validate fields."""
@@ -225,8 +250,10 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Email this user."""
-        main_identity = self.identities.get(is_main=True)
-        mail.send_mail(subject, message, from_email, [main_identity.email], **kwargs)
+        email = self.email or self.admin_email
+        if not email:
+            raise ValueError("You must first set an email for the user.")
+        mail.send_mail(subject, message, from_email, [email], **kwargs)
 
     @classmethod
     def get_email_field_name(cls):
@@ -368,7 +395,7 @@ class Team(BaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        """Overriding save function to compute the slug."""
+        """Override save function to compute the slug."""
         self.slug = self.get_slug()
         return super().save(*args, **kwargs)
 

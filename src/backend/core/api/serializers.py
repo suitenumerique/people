@@ -52,41 +52,21 @@ class UserSerializer(DynamicFieldsModelSerializer):
     """Serialize users."""
 
     timezone = TimeZoneSerializerField(use_pytz=False, required=True)
-    name = serializers.SerializerMethodField(read_only=True)
-    email = serializers.SerializerMethodField(read_only=True)
+    email = serializers.ReadOnlyField()
+    name = serializers.ReadOnlyField()
 
     class Meta:
         model = models.User
         fields = [
             "id",
-            "name",
             "email",
             "language",
+            "name",
             "timezone",
             "is_device",
             "is_staff",
         ]
         read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
-
-    def _get_main_identity_attr(self, obj, attribute_name):
-        """Return the specified attribute of the main identity."""
-        try:
-            return getattr(obj.main_identity[0], attribute_name)
-        except TypeError:
-            return getattr(obj.main_identity, attribute_name)
-        except IndexError:
-            main_identity = obj.identities.filter(is_main=True).first()
-            return getattr(obj.main_identity, attribute_name) if main_identity else None
-        except AttributeError:
-            return None
-
-    def get_name(self, obj):
-        """Return main identity's name."""
-        return self._get_main_identity_attr(obj, "name")
-
-    def get_email(self, obj):
-        """Return main identity's email."""
-        return self._get_main_identity_attr(obj, "email")
 
 
 class TeamAccessSerializer(serializers.ModelSerializer):

@@ -95,7 +95,7 @@ def test_authentication_getter_existing_user_change_fields(
     klass = OIDCAuthenticationBackend()
 
     identity = IdentityFactory(name="John Doe", email="john.doe@example.com")
-    user_email = identity.user.email
+    user_email = identity.user.admin_email
 
     # Create multiple identities for a user
     for _ in range(5):
@@ -125,7 +125,7 @@ def test_authentication_getter_existing_user_change_fields(
 
     assert models.User.objects.count() == 1
     assert user == identity.user
-    assert user.email == user_email
+    assert user.admin_email == user_email
 
 
 def test_authentication_getter_new_user_no_email(monkeypatch):
@@ -148,7 +148,7 @@ def test_authentication_getter_new_user_no_email(monkeypatch):
     assert identity.sub == "123"
     assert identity.email is None
 
-    assert user.email is None
+    assert user.admin_email is None
     assert user.password == "!"
     assert models.User.objects.count() == 1
 
@@ -177,7 +177,7 @@ def test_authentication_getter_new_user_with_email(monkeypatch):
     assert identity.email == email
     assert identity.name == "John Doe"
 
-    assert user.email is None
+    assert user.admin_email is None
     assert models.User.objects.count() == 1
 
 

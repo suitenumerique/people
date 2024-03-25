@@ -120,13 +120,13 @@ class ContactFactory(BaseContactFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
-    """A factory to random users for testing purposes."""
+    """A factory to create random users for testing purposes."""
 
     class Meta:
         model = models.User
-        django_get_or_create = ("email",)
+        django_get_or_create = ("admin_email",)
 
-    email = factory.Faker("email")
+    admin_email = factory.Faker("email")
     language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
     password = make_password("password")
 

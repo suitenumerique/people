@@ -115,7 +115,7 @@ def create_demo(stdout):
         for i in range(defaults.NB_OBJECTS["users"]):
             queue.push(
                 models.User(
-                    email=f"user{i:d}@example.com",
+                    admin_email=f"user{i:d}@example.com",
                     password="!",
                     is_superuser=False,
                     is_active=True,
@@ -126,12 +126,12 @@ def create_demo(stdout):
         queue.flush()
 
     with Timeit(stdout, "Creating identities"):
-        users_values = list(models.User.objects.values("id", "email"))
+        users_values = list(models.User.objects.values("id", "admin_email"))
         for user_dict in users_values:
             for i in range(
                 random.choices(range(5), weights=[5, 50, 30, 10, 5], k=1)[0]
             ):
-                user_email = user_dict["email"]
+                user_email = user_dict["admin_email"]
                 queue.push(
                     models.Identity(
                         user_id=user_dict["id"],

@@ -67,7 +67,7 @@ class UserAdmin(auth_admin.UserAdmin):
                 )
             },
         ),
-        (_("Personal info"), {"fields": ("email", "language", "timezone")}),
+        (_("Personal info"), {"fields": ("admin_email", "language", "timezone")}),
         (
             _("Permissions"),
             {
@@ -88,13 +88,13 @@ class UserAdmin(auth_admin.UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2"),
+                "fields": ("admin_email", "password1", "password2"),
             },
         ),
     )
     inlines = (IdentityInline, TeamAccessInline)
     list_display = (
-        "email",
+        "admin_email",
         "created_at",
         "updated_at",
         "is_active",
@@ -105,7 +105,7 @@ class UserAdmin(auth_admin.UserAdmin):
     list_filter = ("is_staff", "is_superuser", "is_device", "is_active")
     ordering = ("is_active", "-is_superuser", "-is_staff", "-is_device", "-updated_at")
     readonly_fields = ("id", "created_at", "updated_at")
-    search_fields = ("id", "email", "identities__sub", "identities__email")
+    search_fields = ("id", "admin_email", "identities__sub", "identities__email")
 
 
 @admin.register(models.Team)
