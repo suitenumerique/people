@@ -6,11 +6,10 @@ import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Card, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { ModalAddMembers } from '@/features/addMembers';
-import { Team } from '@/features/teams';
+import { Role, Team } from '@/features/teams';
 
 import { useTeamAccesses } from '../api/';
 import { PAGE_SIZE } from '../conf';
-import { Role } from '../types';
 
 import { MemberAction } from './MemberAction';
 

@@ -1,7 +1,7 @@
 import { Radio, RadioGroup } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
-import { Role } from '..';
+import { Role } from '@/features/teams';
 
 interface ChooseRoleProps {
   currentRole: Role;

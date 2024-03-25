@@ -2,7 +2,7 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-import { Team } from './types';
+import { Team } from '../types';
 
 export type TeamParams = {
   id: string;

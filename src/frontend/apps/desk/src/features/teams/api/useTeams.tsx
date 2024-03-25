@@ -7,7 +7,7 @@ import {
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
-import { Team } from './types';
+import { Team } from '../types';
 
 export enum TeamsOrdering {
   BY_CREATED_ON = 'created_at',

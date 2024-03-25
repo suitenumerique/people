@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/features/auth';
-import { Access, KEY_LIST_TEAM_ACCESSES, Role } from '@/features/members';
-import { KEY_LIST_TEAM, KEY_TEAM, Team } from '@/features/teams';
+import { Access, KEY_LIST_TEAM_ACCESSES } from '@/features/members';
+import { KEY_LIST_TEAM, KEY_TEAM, Role, Team } from '@/features/teams';
 
 import { OptionType } from '../types';
 

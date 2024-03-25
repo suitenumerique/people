@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DropButton, IconOptions, Text } from '@/components';
+import { Role } from '@/features/teams';
 
-import { Access, Role } from '../types';
+import { Access } from '../types';
 
 import { ModalRole } from './ModalRole';
 

@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { KEY_TEAM } from '@/features/teams/api/useTeam';
+import { KEY_TEAM, Role } from '@/features/teams/';
 
-import { Access, Role } from '../types';
+import { Access } from '../types';
 
 import { KEY_LIST_TEAM_ACCESSES } from './useTeamsAccesses';
 

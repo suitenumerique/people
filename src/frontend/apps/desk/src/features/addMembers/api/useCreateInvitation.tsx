@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/features/auth';
-import { Invitation, Role } from '@/features/members';
-import { Team } from '@/features/teams';
+import { Invitation } from '@/features/members';
+import { Role, Team } from '@/features/teams';
 
 import { OptionType } from '../types';
 

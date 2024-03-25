@@ -11,8 +11,9 @@ import { useState } from 'react';
 import { Box, Text } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
-import { Team, useUpdateTeam } from '../api';
+import { useUpdateTeam } from '../api';
 import IconEdit from '../assets/icon-edit.svg';
+import { Team } from '../types';
 
 import { InputTeamName } from './InputTeamName';
 

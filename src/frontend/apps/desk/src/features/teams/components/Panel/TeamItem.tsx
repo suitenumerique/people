@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Team } from '@/features/teams/api/';
+import { Team } from '@/features/teams/';
 import IconNone from '@/features/teams/assets/icon-none.svg';
 
 interface TeamProps {

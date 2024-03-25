@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
-import { Team } from '@/features/teams/api';
+import { Role, Team } from '@/features/teams';
 import { AppWrapper } from '@/tests/utils';
 
 import { MemberGrid } from '../components/MemberGrid';
-import { Access, Role } from '../types';
+import { Access } from '../types';
 
 const team = {
   id: '123456',

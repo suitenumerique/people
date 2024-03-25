@@ -12,8 +12,8 @@ import { createGlobalStyle } from 'styled-components';
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { ChooseRole, Role } from '@/features/members';
-import { Team } from '@/features/teams';
+import { ChooseRole } from '@/features/members';
+import { Role, Team } from '@/features/teams';
 
 import { useCreateInvitation, useCreateTeamAccess } from '../api';
 import IconAddMember from '../assets/add-member.svg';

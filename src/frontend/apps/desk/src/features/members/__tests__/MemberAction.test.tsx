@@ -2,10 +2,11 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
+import { Role } from '@/features/teams';
 import { AppWrapper } from '@/tests/utils';
 
 import { MemberAction } from '../components/MemberAction';
-import { Access, Role } from '../types';
+import { Access } from '../types';
 
 const access: Access = {
   id: '789',

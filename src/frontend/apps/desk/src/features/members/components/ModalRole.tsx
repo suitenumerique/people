@@ -10,9 +10,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
 import { useAuthStore } from '@/features/auth';
+import { Role } from '@/features/teams';
 
 import { useUpdateTeamAccess } from '../api/useUpdateTeamAccess';
-import { Access, Role } from '../types';
+import { Access } from '../types';
 
 import { ChooseRole } from './ChooseRole';
 

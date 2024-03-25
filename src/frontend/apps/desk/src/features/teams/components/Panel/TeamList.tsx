@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
-import { Team, useTeams } from '@/features/teams/api/';
-import { useTeamStore } from '@/features/teams/store/useTeamsStore';
+import { Team, useTeamStore, useTeams } from '@/features/teams/';
 
 import { TeamItem } from './TeamItem';
 

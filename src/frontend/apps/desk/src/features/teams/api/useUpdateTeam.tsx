@@ -2,7 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-import { Team } from './types';
+import { Team } from '../types';
+
 import { KEY_TEAM } from './useTeam';
 import { KEY_LIST_TEAM } from './useTeams';
 

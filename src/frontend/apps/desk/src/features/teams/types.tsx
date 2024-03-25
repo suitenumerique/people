@@ -1,5 +1,11 @@
 import { Access } from '@/features/members';
 
+export enum Role {
+  MEMBER = 'member',
+  ADMIN = 'administrator',
+  OWNER = 'owner',
+}
+
 export interface Team {
   id: string;
   name: string;
