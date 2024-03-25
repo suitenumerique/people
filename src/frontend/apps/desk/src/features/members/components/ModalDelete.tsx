@@ -11,11 +11,11 @@ import { useRouter } from 'next/navigation';
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { useAuthStore } from '@/features/auth';
 import { Role, Team } from '@/features/teams/';
 
 import { useDeleteTeamAccess } from '../api/useDeleteTeamAccess';
 import IconRemoveMember from '../assets/icon-remove-member.svg';
+import { useWhoAmI } from '../hooks/useWhoAmI';
 import { Access } from '../types';
 
 interface ModalDeleteProps {
@@ -26,12 +26,12 @@ interface ModalDeleteProps {
 }
 
 export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
-  const { userData } = useAuthStore();
   const { toast } = useToastProvider();
   const { colorsTokens } = useCunninghamTheme();
   const router = useRouter();
 
-  const isMyself = userData?.id === access.user.id;
+  const { isMyself, isLastOwner, isOtherOwner } = useWhoAmI(access);
+  const isNotAllowed = isOtherOwner || isLastOwner;
 
   const {
     mutate: removeTeamAccess,
@@ -52,14 +52,6 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
       isMyself ? router.push('/') : onClose();
     },
   });
-
-  const rolesAllowed = access.abilities.set_role_to;
-  const isLastOwner =
-    !rolesAllowed.length && access.role === Role.OWNER && isMyself;
-
-  const isOtherOwner = access.role === Role.OWNER && userData?.id && !isMyself;
-
-  const isNotAllowed = isOtherOwner || isLastOwner;
 
   return (
     <Modal
