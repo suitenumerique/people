@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { User, getMe } from './api';
+import { User, getMe, logout } from './api';
 
 export const login = () => {
   window.location.replace(
@@ -30,11 +30,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
         set({ authenticated: true, userData: data });
       })
       .catch(() => {
-        // todo - implement a proper login screen to prevent automatic navigation.
         login();
       });
   },
   logout: () => {
-    set(initialState);
+    void logout().then(() => {
+      set(initialState);
+    });
   },
 }));

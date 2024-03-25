@@ -1,2 +1,3 @@
-export * from './getMe';
 export * from './types';
+export * from './getMe';
+export * from './logout';

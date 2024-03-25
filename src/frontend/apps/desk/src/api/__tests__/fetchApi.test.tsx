@@ -34,25 +34,22 @@ describe('fetchAPI', () => {
   });
 
   it('logout if 401 response', async () => {
-    const mockReplace = jest.fn();
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      enumerable: true,
-      value: {
-        replace: mockReplace,
-      },
+    useAuthStore.setState({
+      authenticated: true,
+      userData: { id: '123', email: 'test@test.com' },
     });
 
-    useAuthStore.setState({ userData: { email: 'test@test.com', id: '1234' } });
-
     fetchMock.mock('http://some.api.url/api/v1.0/some/url', 401);
+    fetchMock.mock('http://some.api.url/api/v1.0/logout/', 302);
 
     await fetchAPI('some/url');
 
-    expect(useAuthStore.getState().userData).toBeUndefined();
+    await Promise.all([fetchMock.flush()]);
 
-    expect(mockReplace).toHaveBeenCalledWith(
-      'http://some.api.url/api/v1.0/authenticate/',
-    );
+    expect(fetchMock.lastUrl()).toEqual('http://some.api.url/api/v1.0/logout/');
+
+    const { userData, authenticated } = useAuthStore.getState();
+    expect(userData).toBeUndefined();
+    expect(authenticated).toBeFalsy();
   });
 });
