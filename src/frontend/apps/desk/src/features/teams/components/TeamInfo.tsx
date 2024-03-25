@@ -67,15 +67,12 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
         </Box>
         <Box
           className="p-s"
-          $gap="2rem"
+          $gap="3rem"
           $direction="row"
           $justify="start"
           $css={`
             border-top: 1px solid ${colorsTokens()['card-border']};
             padding-left: 1.5rem;
-            @media (min-width: 768px) {
-              padding-left: 6rem;
-            }
           `}
         >
           <Text $size="s" as="p">
