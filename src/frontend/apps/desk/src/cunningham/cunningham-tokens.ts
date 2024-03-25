@@ -335,6 +335,7 @@ export const tokens = {
           'card-border': '#DDDDDD',
           'primary-text': '#000091',
           'primary-100': '#f5f5fe',
+          'primary-150': '#F4F4FD',
           'primary-200': '#ececfe',
           'primary-300': '#e3e3fd',
           'primary-400': '#cacafb',
