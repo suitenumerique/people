@@ -8,7 +8,7 @@ backend:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
-    DJANGO_SECRET_KEY: "ThisIsAnExampleKeyForDevPurposeOnly"
+    DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
     DJANGO_SETTINGS_MODULE: people.settings
     DJANGO_SUPERUSER_PASSWORD: admin
     DJANGO_EMAIL_HOST: "mailcatcher"

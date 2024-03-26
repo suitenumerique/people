@@ -11,7 +11,7 @@ backend:
     DJANGO_CSRF_TRUSTED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
-    DJANGO_SECRET_KEY: "ThisIsAnExampleKeyForDevPurposeOnly"
+    DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
     DJANGO_SETTINGS_MODULE: people.settings
     DJANGO_SUPERUSER_PASSWORD: admin
     DJANGO_EMAIL_HOST: "snap-mail.numerique.gouv.fr"
