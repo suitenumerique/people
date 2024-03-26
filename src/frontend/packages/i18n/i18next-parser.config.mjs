@@ -3,7 +3,7 @@ const config = {
     message: '${key}',
     description: '${description}',
   },
-  keepRemoved: true,
+  keepRemoved: false,
   keySeparator: false,
 };
 
