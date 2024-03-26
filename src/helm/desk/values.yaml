@@ -88,6 +88,9 @@ backend:
   ## @param backend.sidecars Add sidecars containers to backend deployment
   sidecars: []
 
+  ## @param backend.migrateJobAnnotations Annotations for the migrate job
+  migrateJobAnnotations: {}
+
   ## @param backend.securityContext Configure backend Pod security context
   securityContext: null
 

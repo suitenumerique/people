@@ -4,6 +4,9 @@ image:
   tag: "main"
 
 backend:
+  migrateJobAnnotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   envVars:
     DJANGO_CSRF_TRUSTED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
