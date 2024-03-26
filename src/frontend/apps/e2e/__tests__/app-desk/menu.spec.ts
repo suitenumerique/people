@@ -18,7 +18,7 @@ test.describe('Menu', () => {
     {
       name: 'Mail Domains',
       isDefault: false,
-      expectedUrl: '/mail-domains',
+      expectedUrl: '/mail-domains/',
       expectedText: 'Mail Domains',
     },
   ];

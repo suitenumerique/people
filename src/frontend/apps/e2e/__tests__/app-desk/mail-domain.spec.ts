@@ -110,10 +110,10 @@ test.describe('Mail domain', () => {
 
     await clickOnMailDomainsNavButton(page);
 
-    await expect(page).toHaveURL(/mail-domains/);
+    await expect(page).toHaveURL(/mail-domains\//);
 
     await page.getByRole('listbox').first().getByText('domain.fr').click();
-    await expect(page).toHaveURL(/mail-domains\/domainfr/);
+    await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
     await expect(
       page.getByRole('heading', { name: /domain\.fr/ }).first(),
@@ -192,10 +192,10 @@ test.describe('Mail domain', () => {
 
     await clickOnMailDomainsNavButton(page);
 
-    await expect(page).toHaveURL(/mail-domains/);
+    await expect(page).toHaveURL(/mail-domains\//);
 
     await page.getByRole('listbox').first().getByText('domain.fr').click();
-    await expect(page).toHaveURL(/mail-domains\/domainfr/);
+    await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
     await expect(
       page.getByRole('heading', { name: 'domain.fr' }),

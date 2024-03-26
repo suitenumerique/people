@@ -56,17 +56,17 @@ test.describe('Footer', () => {
     {
       linkName: 'Legal Notice',
       pageName: 'Legal Notice',
-      url: '/legal-notice',
+      url: '/legal-notice/',
     },
     {
       linkName: 'Personal data and cookies',
       pageName: 'Personal data and cookies',
-      url: '/personal-data-cookies',
+      url: '/personal-data-cookies/',
     },
     {
       linkName: 'Accessibility: non-compliant',
       pageName: 'Accessibility statement',
-      url: '/accessibility',
+      url: '/accessibility/',
     },
   ];
   for (const { linkName, url, pageName } of legalPages) {

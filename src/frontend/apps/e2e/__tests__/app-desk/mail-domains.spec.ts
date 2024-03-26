@@ -49,7 +49,7 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
 
-      await expect(page).toHaveURL(/mail-domains/);
+      await expect(page).toHaveURL(/mail-domains\//);
 
       const responsePromiseSortDesc = page.waitForResponse(
         (response) =>
@@ -105,7 +105,7 @@ test.describe('Mail domains', () => {
         .first()
         .getByLabel(`Mail Domains button`)
         .click();
-      await expect(page).toHaveURL(/mail-domains/);
+      await expect(page).toHaveURL(/mail-domains\//);
       await expect(
         page.getByLabel('mail domains panel', { exact: true }),
       ).toBeVisible();
@@ -129,7 +129,7 @@ test.describe('Mail domains', () => {
         .first()
         .getByLabel(`Mail Domains button`)
         .click();
-      await expect(page).toHaveURL(/mail-domains/);
+      await expect(page).toHaveURL(/mail-domains\//);
       await expect(
         page.getByLabel('mail domains panel', { exact: true }),
       ).toBeVisible();
