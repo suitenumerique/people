@@ -72,12 +72,14 @@ frontend:
 ingress:
   enabled: true
   host: desk-staging.beta.numerique.gouv.fr
+  className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
 ingressAdmin:
   enabled: true
   host: desk-staging.beta.numerique.gouv.fr
+  className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/start
