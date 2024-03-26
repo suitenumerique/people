@@ -44,7 +44,8 @@ test.describe('Team', () => {
   test('it updates the team name', async ({ page, browserName }) => {
     await createTeam(page, 'team-update-name', browserName, 1);
 
-    await page.getByLabel(`Open the team options modal`).click();
+    await page.getByLabel(`Open the team options`).click();
+    await page.getByRole('button', { name: `Update the team` }).click();
 
     const teamName = randomName('new-team-update-name', browserName, 1)[0];
     await page.getByText('New name...', { exact: true }).fill(teamName);

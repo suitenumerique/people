@@ -56,7 +56,7 @@ const Team = ({ id }: TeamProps) => {
 
   return (
     <>
-      <TeamInfo team={team} />
+      <TeamInfo team={team} currentRole={currentRole} />
       <MemberGrid team={team} currentRole={currentRole} />
     </>
   );

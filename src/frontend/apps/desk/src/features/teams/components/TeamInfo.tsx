@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group2.svg';
-import { Box, BoxButton, Card, IconOptions, Text } from '@/components';
+import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { Team } from '../api/types';
+import { Role, Team } from '../types';
 
 import { ModalUpdateTeam } from './ModalUpdateTeam';
+import { TeamActions } from './TeamActions';
 
 const format: DateTimeFormatOptions = {
   month: '2-digit',
@@ -18,9 +19,10 @@ const format: DateTimeFormatOptions = {
 
 interface TeamInfoProps {
   team: Team;
+  currentRole: Role;
 }
 
-export const TeamInfo = ({ team }: TeamInfoProps) => {
+export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const { i18n } = useTranslation();
@@ -38,16 +40,7 @@ export const TeamInfo = ({ team }: TeamInfoProps) => {
     <>
       <Card className="m-b" style={{ paddingBottom: 0 }}>
         <Box $css="align-self: flex-end;" className="m-t" $position="absolute">
-          <BoxButton
-            onClick={() => {
-              setIsModalUpdateOpen(true);
-            }}
-          >
-            <IconOptions
-              isOpen={isModalUpdateOpen}
-              aria-label={t('Open the team options modal')}
-            />
-          </BoxButton>
+          <TeamActions currentRole={currentRole} team={team} />
         </Box>
         <Box className="m-b" $direction="row" $align="center" $gap="1.5rem">
           <IconGroup

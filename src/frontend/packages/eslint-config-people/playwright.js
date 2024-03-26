@@ -16,6 +16,12 @@ module.exports = {
   overrides: [
     ...common.eslintTS,
     {
+      files: ['**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+      },
+    },
+    {
       files: ['*.spec.*', '*.test.*', '**/__mock__/**/*'],
       extends: ['plugin:playwright/recommended'],
       plugins: ['playwright'],
