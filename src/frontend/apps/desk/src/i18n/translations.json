@@ -1,4 +1,11 @@
 {
+  "en": {
+    "translation": {
+      "{{count}} member_many": "{{count}} members",
+      "{{count}} member_one": "{{count}} member",
+      "{{count}} member_other": "{{count}} members"
+    }
+  },
   "fr": {
     "translation": {
       "0 group to display.": "0 groupe à afficher.",
