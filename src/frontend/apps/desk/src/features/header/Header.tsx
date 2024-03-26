@@ -3,11 +3,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { Box, BoxButton, Text } from '@/components/';
+import { Box, Text } from '@/components/';
+import { ApplicationsMenu } from '@/features/header/ApplicationsMenu';
 
 import { LanguagePicker } from '../language/';
 
-import { default as IconCells } from './assets/icon-cells.svg?url';
 import { default as IconDesk } from './assets/icon-desk.svg?url';
 import { default as IconGouv } from './assets/icon-gouv.svg?url';
 import { default as IconMarianne } from './assets/icon-marianne.svg?url';
@@ -76,7 +76,7 @@ export const Header = () => {
           <Box $align="center" $direction="row">
             <LanguagePicker />
           </Box>
-          <Box $direction="row">
+          <Box $direction="row" $align="center">
             <Box $direction="row" $align="center" $gap="1rem">
               <Text $weight="bold" $theme="primary">
                 John Doe
@@ -89,9 +89,7 @@ export const Header = () => {
                 alt={t(`Profile picture`)}
               />
             </Box>
-            <BoxButton aria-label={t('Access to the cells menu')}>
-              <Image priority src={IconCells} alt={t('Cells icon')} />
-            </BoxButton>
+            <ApplicationsMenu />
           </Box>
         </Box>
       </Box>
