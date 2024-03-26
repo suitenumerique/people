@@ -57,6 +57,8 @@ export const ModalAddMembers = ({
   const { mutateAsync: createInvitation } = useCreateInvitation();
   const { mutateAsync: createTeamAccess } = useCreateTeamAccess();
 
+  const [isPending, setIsPending] = useState<boolean>(false);
+
   const switchActions = (selectedMembers: OptionsSelect) =>
     selectedMembers.map(async (selectedMember) => {
       switch (selectedMember.type) {
@@ -111,11 +113,15 @@ export const ModalAddMembers = ({
   };
 
   const handleValidate = async () => {
+    setIsPending(true);
+
     const settledPromises = await Promise.allSettled<
       OptionInvitation | OptionNewMember
     >(switchActions(selectedMembers));
 
     onClose();
+    setIsPending(false);
+
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
         case 'rejected':
@@ -133,7 +139,12 @@ export const ModalAddMembers = ({
     <Modal
       isOpen
       leftActions={
-        <Button color="secondary" fullWidth onClick={onClose}>
+        <Button
+          color="secondary"
+          fullWidth
+          onClick={onClose}
+          disabled={isPending}
+        >
           {t('Cancel')}
         </Button>
       }
@@ -144,7 +155,7 @@ export const ModalAddMembers = ({
         <Button
           color="primary"
           fullWidth
-          disabled={!selectedMembers.length}
+          disabled={!selectedMembers.length || isPending}
           onClick={() => void handleValidate()}
         >
           {t('Validate')}
@@ -166,6 +177,7 @@ export const ModalAddMembers = ({
           team={team}
           setSelectedMembers={setSelectedMembers}
           selectedMembers={selectedMembers}
+          disabled={isPending}
         />
         {selectedMembers.length > 0 && (
           <Box className="mt-s">
@@ -174,7 +186,7 @@ export const ModalAddMembers = ({
             </Text>
             <ChooseRole
               currentRole={currentRole}
-              disabled={false}
+              disabled={isPending}
               defaultRole={Role.MEMBER}
               setRole={setSelectedRole}
             />

@@ -57,7 +57,10 @@ export const CardCreateTeam = () => {
         <StyledLink href="/">
           <Button color="secondary">{t('Cancel')}</Button>
         </StyledLink>
-        <Button onClick={() => createTeam(teamName)} disabled={!teamName}>
+        <Button
+          onClick={() => createTeam(teamName)}
+          disabled={!teamName || isPending}
+        >
           {t('Create the team')}
         </Button>
       </Box>
