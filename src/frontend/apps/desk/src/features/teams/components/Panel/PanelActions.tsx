@@ -13,6 +13,8 @@ export const PanelActions = () => {
   const { changeOrdering, ordering } = useTeamStore();
   const { colorsTokens } = useCunninghamTheme();
 
+  const isSortAsc = ordering === TeamsOrdering.BY_CREATED_ON;
+
   return (
     <Box
       $direction="row"
@@ -28,14 +30,14 @@ export const PanelActions = () => {
       `}
     >
       <BoxButton
-        aria-label={t('Sort the teams')}
+        aria-label={
+          isSortAsc
+            ? t('Sort the teams by creation date descendent')
+            : t('Sort the teams by creation date ascendent')
+        }
         onClick={changeOrdering}
         $radius="100%"
-        $background={
-          ordering === TeamsOrdering.BY_CREATED_ON
-            ? colorsTokens()['primary-200']
-            : 'transparent'
-        }
+        $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
         $color={colorsTokens()['primary-600']}
       >
         <IconSort width={30} height={30} aria-label={t('Sort teams icon')} />

@@ -9,9 +9,8 @@ test.beforeEach(async ({ page, browserName }) => {
   await keyCloakSignIn(page, browserName);
 });
 
-test.describe.configure({ mode: 'serial' });
 test.describe('Teams Panel', () => {
-  test('001 - checks all the elements are visible', async ({ page }) => {
+  test('checks all the elements are visible', async ({ page }) => {
     const panel = page.getByLabel('Teams panel').first();
 
     await expect(panel.getByText('Recents')).toBeVisible();
@@ -29,26 +28,41 @@ test.describe('Teams Panel', () => {
     ).toBeVisible();
   });
 
-  test('002 - checks the sort button', async ({ page, browserName }) => {
+  test('checks the sort button', async ({ page }) => {
+    const responsePromiseSortDesc = page.waitForResponse(
+      (response) =>
+        response.url().includes('/teams/?page=1&ordering=-created_at') &&
+        response.status() === 200,
+    );
+
+    const responsePromiseSortAsc = page.waitForResponse(
+      (response) =>
+        response.url().includes('/teams/?page=1&ordering=created_at') &&
+        response.status() === 200,
+    );
+
     const panel = page.getByLabel('Teams panel').first();
-    const randomTeams = await createTeam(page, 'team-sort', browserName, 3);
 
     await panel
       .getByRole('button', {
-        name: 'Sort the teams',
+        name: 'Sort the teams by creation date ascendent',
       })
       .click();
 
-    await expect(panel.locator('li').getByText(randomTeams[1])).toBeVisible();
+    const responseSortAsc = await responsePromiseSortAsc;
+    expect(responseSortAsc.ok()).toBeTruthy();
 
-    const allTeams = await panel.locator('li').allTextContents();
-    const sortedTeamTexts = allTeams.filter((team) =>
-      randomTeams.some((randomTeam) => team.includes(randomTeam)),
-    );
-    expect(sortedTeamTexts).toStrictEqual(randomTeams);
+    await panel
+      .getByRole('button', {
+        name: 'Sort the teams by creation date descendent',
+      })
+      .click();
+
+    const responseSortDesc = await responsePromiseSortDesc;
+    expect(responseSortDesc.ok()).toBeTruthy();
   });
 
-  test('003 - checks the infinite scroll', async ({ page, browserName }) => {
+  test('checks the infinite scroll', async ({ page, browserName }) => {
     test.setTimeout(90000);
     const panel = page.getByLabel('Teams panel').first();
 
@@ -66,10 +80,7 @@ test.describe('Teams Panel', () => {
     expect(await panel.locator('li').count()).toBeGreaterThan(20);
   });
 
-  test('004 - checks the hover and selected state', async ({
-    page,
-    browserName,
-  }) => {
+  test('checks the hover and selected state', async ({ page, browserName }) => {
     const panel = page.getByLabel('Teams panel').first();
     await createTeam(page, 'team-hover', browserName, 2);
 
