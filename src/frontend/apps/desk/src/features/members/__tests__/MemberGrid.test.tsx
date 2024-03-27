@@ -207,6 +207,8 @@ describe('MemberGrid', () => {
   });
 
   it('cannot add members when current role is member', () => {
+    fetchMock.get(`/api/teams/123456/accesses/?page=1`, 200);
+
     render(<MemberGrid team={team} currentRole={Role.MEMBER} />, {
       wrapper: AppWrapper,
     });
