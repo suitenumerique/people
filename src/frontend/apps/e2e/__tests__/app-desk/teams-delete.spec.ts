@@ -12,7 +12,7 @@ test.describe('Teams Delete', () => {
     page,
     browserName,
   }) => {
-    await createTeam(page, 'team-update-name', browserName, 1);
+    await createTeam(page, 'team-update-name-1', browserName, 1);
 
     await page.getByLabel(`Open the team options`).click();
     await page.getByRole('button', { name: `Delete the team` }).click();
@@ -27,7 +27,7 @@ test.describe('Teams Delete', () => {
     page,
     browserName,
   }) => {
-    await createTeam(page, 'team-update-name', browserName, 1);
+    await createTeam(page, 'team-update-name-2', browserName, 1);
 
     await addNewMember(page, 0, 'Owner');
 
@@ -55,7 +55,7 @@ test.describe('Teams Delete', () => {
     page,
     browserName,
   }) => {
-    await createTeam(page, 'team-update-name', browserName, 1);
+    await createTeam(page, 'team-update-name-3', browserName, 1);
 
     await addNewMember(page, 0, 'Owner');
 

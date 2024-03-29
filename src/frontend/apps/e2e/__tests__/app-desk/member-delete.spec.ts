@@ -35,7 +35,7 @@ test.describe('Members Delete', () => {
     page,
     browserName,
   }) => {
-    await createTeam(page, 'member-delete-1', browserName, 1);
+    await createTeam(page, 'member-delete-2', browserName, 1);
 
     await addNewMember(page, 0, 'Owner');
 
@@ -59,7 +59,7 @@ test.describe('Members Delete', () => {
   });
 
   test('it cannot delete owner member', async ({ page, browserName }) => {
-    await createTeam(page, 'member-delete-1', browserName, 1);
+    await createTeam(page, 'member-delete-3', browserName, 1);
 
     const username = await addNewMember(page, 0, 'Owner');
 
@@ -80,7 +80,7 @@ test.describe('Members Delete', () => {
   });
 
   test('it deletes admin member', async ({ page, browserName }) => {
-    await createTeam(page, 'member-delete-1', browserName, 1);
+    await createTeam(page, 'member-delete-4', browserName, 1);
 
     const username = await addNewMember(page, 0, 'Admin');
 
@@ -105,7 +105,7 @@ test.describe('Members Delete', () => {
     page,
     browserName,
   }) => {
-    await createTeam(page, 'member-delete-1', browserName, 1);
+    await createTeam(page, 'member-delete-5', browserName, 1);
 
     const username = await addNewMember(page, 0, 'Owner');
 
@@ -132,7 +132,7 @@ test.describe('Members Delete', () => {
   });
 
   test('it deletes admin member when admin', async ({ page, browserName }) => {
-    await createTeam(page, 'member-delete-1', browserName, 1);
+    await createTeam(page, 'member-delete-6', browserName, 1);
 
     // To not be the only owner
     await addNewMember(page, 0, 'Owner');
