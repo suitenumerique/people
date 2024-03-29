@@ -2,18 +2,25 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
+import { Team } from '@/features/teams';
 
 export type UsersParams = {
   query: string;
+  teamId: Team['id'];
 };
 
 type UsersResponse = APIList<User>;
 
 export const getUsers = async ({
   query,
+  teamId,
 }: UsersParams): Promise<UsersResponse> => {
-  const queryParam = query ? `q=${query}` : '';
-  const response = await fetchAPI(`users/?${queryParam}`);
+  const queriesParams = [];
+  queriesParams.push(query ? `q=${query}` : '');
+  queriesParams.push(teamId ? `team_id=${teamId}` : '');
+  const queryParams = queriesParams.filter(Boolean).join('&');
+
+  const response = await fetchAPI(`users/?${queryParams}`);
 
   if (!response.ok) {
     throw new APIError('Failed to get the users', await errorCauses(response));

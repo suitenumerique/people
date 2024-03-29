@@ -176,14 +176,9 @@ test.describe('Members Create', () => {
     await page.getByLabel('Add members to the team').click();
 
     await inputSearch.fill('test');
-    await page.getByRole('option', { name: users[0].name }).click();
-    await page.getByRole('radio', { name: 'Owner' }).click();
-
-    await page.getByRole('button', { name: 'Validate' }).click();
-
     await expect(
-      page.getByText(`Failed to add ${users[0].name} in the team`),
-    ).toBeVisible();
+      page.getByRole('option', { name: users[0].name }),
+    ).toBeHidden();
   });
 
   test('it try to add twice the same invitation', async ({
@@ -218,12 +213,6 @@ test.describe('Members Create', () => {
     await page.getByLabel('Add members to the team').click();
 
     await inputSearch.fill(email);
-    await page.getByRole('option', { name: email }).click();
-
-    await page.getByRole('button', { name: 'Validate' }).click();
-
-    await expect(
-      page.getByText(`Failed to create the invitation for ${email}`),
-    ).toBeVisible();
+    await expect(page.getByRole('option', { name: email })).toBeHidden();
   });
 });

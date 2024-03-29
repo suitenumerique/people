@@ -13,11 +13,13 @@ export type OptionsSelect = Options<OptionSelect>;
 
 interface SearchMembersProps {
   team: Team;
+  selectedMembers: OptionsSelect;
   setSelectedMembers: (value: OptionsSelect) => void;
 }
 
 export const SearchMembers = ({
   team,
+  selectedMembers,
   setSelectedMembers,
 }: SearchMembersProps) => {
   const { t } = useTranslation();
@@ -27,7 +29,7 @@ export const SearchMembers = ({
     null,
   );
   const { data } = useUsers(
-    { query: userQuery },
+    { query: userQuery, teamId: team.id },
     {
       enabled: !!userQuery,
       queryKey: [KEY_LIST_USER, { query: userQuery }],
@@ -41,16 +43,28 @@ export const SearchMembers = ({
       return;
     }
 
-    let users: OptionsSelect = options.map((user) => ({
+    const optionsFiltered = options.filter(
+      (user) =>
+        !selectedMembers?.find(
+          (selectedUser) => selectedUser.value.email === user.email,
+        ),
+    );
+
+    let users: OptionsSelect = optionsFiltered.map((user) => ({
       value: user,
       label: user.name || user.email,
       type: OptionType.NEW_MEMBER,
     }));
 
     if (userQuery && isValidEmail(userQuery)) {
-      const isFound = !!options.find((user) => user.email === userQuery);
+      const isFoundUser = !!optionsFiltered.find(
+        (user) => user.email === userQuery,
+      );
+      const isFoundEmail = !!selectedMembers.find(
+        (selectedMember) => selectedMember.value.email === userQuery,
+      );
 
-      if (!isFound) {
+      if (!isFoundUser && !isFoundEmail) {
         users = [
           {
             value: { email: userQuery },
@@ -64,7 +78,7 @@ export const SearchMembers = ({
     resolveOptionsRef.current(users);
     resolveOptionsRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options]);
+  }, [options, selectedMembers]);
 
   const loadOptions = (): Promise<OptionsSelect> => {
     return new Promise<OptionsSelect>((resolve) => {

@@ -162,7 +162,11 @@ export const ModalAddMembers = ({
     >
       <GlobalStyle />
       <Box className="mb-xl mt-l">
-        <SearchMembers team={team} setSelectedMembers={setSelectedMembers} />
+        <SearchMembers
+          team={team}
+          setSelectedMembers={setSelectedMembers}
+          selectedMembers={selectedMembers}
+        />
         {selectedMembers.length > 0 && (
           <Box className="mt-s">
             <Text as="h4" $textAlign="left" className="mb-t">
