@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Script from 'next/script';
 import React from 'react';
 
@@ -12,15 +11,13 @@ import React from 'react';
  * This PoC has been created by @manuhabitela.
  *
  * It includes external CSS and JavaScript files for styling and functionality.
+ *
+ * Style has to be included as well: https://suite-numerique-gaufre.osc-fr1.scalingo.io/public/styles/gaufre-vanilla.css \
+ * To respect next.js standards, the css is included using the `_document.ts` component.
+ * @see https://github.com/numerique-gouv/people/blob/main/src/frontend/apps/desk/src/pages/_document.tsx#L8
  */
 export const ApplicationsMenu = () => (
   <>
-    <Head>
-      <link
-        rel="stylesheet"
-        href="https://suite-numerique-gaufre.osc-fr1.scalingo.io/public/styles/gaufre-vanilla.css"
-      />
-    </Head>
     <Script
       src="https://suite-numerique-gaufre.osc-fr1.scalingo.io/public/widget.js"
       strategy="lazyOnload"
