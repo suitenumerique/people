@@ -347,6 +347,23 @@ class TeamAccessViewSet(
         queryset = queryset.filter(team=self.kwargs["team_id"])
 
         if self.action in {"list", "retrieve"}:
+            if query := self.request.GET.get("q", ""):
+                similarity = Max(
+                    TrigramSimilarity(
+                        Coalesce(Func("user__email", function="unaccent"), Value("")),
+                        Func(Value(query), function="unaccent"),
+                    )
+                    + TrigramSimilarity(
+                        Coalesce(Func("user__name", function="unaccent"), Value("")),
+                        Func(Value(query), function="unaccent"),
+                    )
+                )
+                queryset = (
+                    queryset.annotate(similarity=similarity)
+                    .filter(similarity__gte=SIMILARITY_THRESHOLD)
+                    .order_by("-similarity")
+                )
+
             # Determine which role the logged-in user has in the team
             user_role_query = models.TeamAccess.objects.filter(
                 user=self.request.user, team=self.kwargs["team_id"]

@@ -115,6 +115,154 @@ def test_api_team_accesses_list_authenticated_related():
     )
 
 
+def test_api_team_accesses_list_find_members(django_assert_num_queries):
+    """
+    Authenticated users should be able to search users access with a case-insensitive and
+    partial query on the name.
+    """
+    dave = factories.UserFactory(name="dave bowman", email=None)
+    frank = factories.UserFactory(name="frank poole", email=None)
+    mary = factories.UserFactory(name="mary poole", email=None)
+    nicole = factories.UserFactory(name="nicole foole", email=None)
+    factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    factories.UserFactory(name="heywood floyd", email=None)
+    factories.UserFactory(name="Andrei Smyslov", email=None)
+    factories.TeamFactory.create_batch(10)
+
+    # Add Mary, Nicole and Dave in the same team
+    team = factories.TeamFactory(
+        name="Odyssey",
+        users=[
+            (mary, models.RoleChoices.OWNER),
+            (nicole, models.RoleChoices.ADMIN),
+            (dave, models.RoleChoices.MEMBER),
+        ],
+    )
+    factories.TeamFactory(users=[(frank, models.RoleChoices.MEMBER)])
+
+    # Search users in the team Odyssey
+    client = APIClient()
+    client.force_login(mary)
+
+    # 5 queries are needed here:
+    # - 1 query: select on user authenticated
+    # - 4 queries: get all users, owner included (2 more queries)
+    with django_assert_num_queries(5):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 3
+
+    # We can find David Bowman
+    # 3 queries are needed here:
+    # - 1 query: user authenticated
+    # - 2 queries: search user query with match
+    with django_assert_num_queries(3):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/?q=bowman",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 1
+    dave_access = dave.accesses.get(team=team)
+    assert response.json()["results"][0]["id"] == str(dave_access.id)
+
+    # We can find Nicole
+    # 3 queries are needed here:
+    # - 1 query: user authenticated
+    # - 2 queries: search user query with match
+    with django_assert_num_queries(3):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/?q=nicol",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 1
+    nicole_access = nicole.accesses.get(team=team)
+    assert response.json()["results"][0]["id"] == str(nicole_access.id)
+
+    # We can find Nicole and Mary
+    # 5 queries are needed here:
+    # - 1 query: select on user authenticated
+    # - 4 queries: search user query with match and the owner found (2 more queries)
+    with django_assert_num_queries(5):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/?q=ool",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 2
+    user_access_ids = sorted([user["id"] for user in response.json()["results"]])
+    mary_access = mary.accesses.get(team=team)
+    assert sorted([str(mary_access.id), str(nicole_access.id)]) == user_access_ids
+
+    # We cannot find Andrei, because he isn't a member of the current team
+    # 2 queries are needed here:
+    # - 1 query: select on user authenticated
+    # - 1 query: search user query with no match
+    with django_assert_num_queries(2):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/?q=andrei",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 0
+
+    # We can find Mary
+    # 5 queries are needed here:
+    # - 1 query: select on user authenticated
+    # - 4 queries: search user query with match and an owner found (2 more queries)
+    with django_assert_num_queries(5):
+        response = client.get(
+            f"/api/v1.0/teams/{team.id!s}/accesses/?q=mary",
+        )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 1
+    assert response.json()["results"][0]["id"] == str(mary_access.id)
+
+
+def test_api_team_accesses__list_find_members_by_email():
+    """
+    Authenticated users should be able to search users access with a case-insensitive and
+    partial query on the email.
+    """
+    user = factories.UserFactory(name=None)
+
+    # set all names to None to match only on emails
+    colleague1 = factories.UserFactory(name=None, email="prudence_crandall@edu.us")
+    colleague2 = factories.UserFactory(name=None, email="reinebrunehaut@gouv.fr")
+    colleague3 = factories.UserFactory(name=None, email="artemisia.gentileschi@arte.it")
+
+    # Add all colleague in the same team
+    team = factories.TeamFactory(
+        users=[
+            (user, models.RoleChoices.ADMIN),
+            (colleague1, models.RoleChoices.OWNER),
+            (colleague2, models.RoleChoices.ADMIN),
+            (colleague3, models.RoleChoices.MEMBER),
+        ],
+    )
+    factories.TeamAccessFactory.create_batch(4)
+
+    # Create another team with similar email
+    factories.TeamFactory(
+        users=[
+            (
+                factories.UserFactory(name=None, email="bruneau@gouv.fr"),
+                models.RoleChoices.ADMIN,
+            ),
+        ],
+    )
+
+    # Search users in the team Odyssey
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.get(
+        f"/api/v1.0/teams/{team.id!s}/accesses/?q=BRUNE",
+    )
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["count"] == 1
+    assert response.json()["results"][0]["user"]["email"] == "reinebrunehaut@gouv.fr"
+
+
 def test_api_team_accesses_list_authenticated_constant_numqueries(
     django_assert_num_queries,
 ):
