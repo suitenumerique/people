@@ -121,7 +121,10 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
           & table th:first-child, 
           & table td:first-child {
             padding-right: 0;
-            width: 0;
+            width: 3.5rem;
+          }
+          & table td:last-child {
+            text-align: right;
           }
       `}
         aria-label={t('List members card')}
