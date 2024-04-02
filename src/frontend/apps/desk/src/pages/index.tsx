@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
+import { TeamLayout } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
 
 import Teams from './teams/';
-import TeamLayout from './teams/TeamLayout';
 
 const Page: NextPageWithLayout = () => {
   return <Teams />;

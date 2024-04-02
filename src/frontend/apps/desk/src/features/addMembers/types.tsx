@@ -1,4 +1,4 @@
-import { User } from '@/features/auth';
+import { User } from '@/core/auth';
 
 export enum OptionType {
   INVITATION = 'invitation',

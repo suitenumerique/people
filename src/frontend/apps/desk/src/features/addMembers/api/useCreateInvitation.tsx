@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { User } from '@/features/auth';
+import { User } from '@/core/auth';
 import { Invitation } from '@/features/members';
 import { Role, Team } from '@/features/teams';
 

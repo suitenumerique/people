@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/core/auth';
 import { Role } from '@/features/teams';
 import { AppWrapper } from '@/tests/utils';
 

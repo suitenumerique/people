@@ -1,7 +1,7 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
-import { User } from '@/features/auth';
+import { User } from '@/core/auth';
 
 export type UsersParams = {
   query: string;

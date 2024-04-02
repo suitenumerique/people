@@ -3,8 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { useCunninghamTheme } from '@/cunningham';
-import { Auth } from '@/features/auth/Auth';
 import '@/i18n/initI18n';
+
+import { Auth } from './auth/Auth';
 
 /**
  * QueryClient:
@@ -21,11 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function AppProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AppProvider({ children }: { children: React.ReactNode }) {
   const { theme } = useCunninghamTheme();
 
   return (

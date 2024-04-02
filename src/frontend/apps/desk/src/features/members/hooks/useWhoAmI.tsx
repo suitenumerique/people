@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/core/auth';
 import { Role } from '@/features/teams';
 
 import { Access } from '../types';

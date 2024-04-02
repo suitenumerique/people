@@ -1,9 +1,8 @@
 import { ReactElement } from 'react';
 
 import { Box } from '@/components';
+import { MainLayout } from '@/core';
 import { NextPageWithLayout } from '@/types/next';
-
-import MainLayout from '../MainLayout';
 
 const Page: NextPageWithLayout = () => {
   return <Box>Favorite</Box>;

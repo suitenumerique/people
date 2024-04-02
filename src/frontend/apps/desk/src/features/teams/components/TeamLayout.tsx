@@ -1,12 +1,11 @@
 import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
+import { MainLayout } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 import { Panel } from '@/features/teams';
 
-import MainLayout from '../MainLayout';
-
-export default function TeamLayout({ children }: PropsWithChildren) {
+export function TeamLayout({ children }: PropsWithChildren) {
   const { colorsTokens } = useCunninghamTheme();
 
   return (

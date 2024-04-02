@@ -1,7 +1,7 @@
 import fetchMock from 'fetch-mock';
 
 import { fetchAPI } from '@/api';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/core/auth';
 
 describe('fetchAPI', () => {
   beforeEach(() => {

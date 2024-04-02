@@ -2,9 +2,9 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 
+import { AppProvider } from '@/core/';
 import { NextPageWithLayout } from '@/types/next';
 
-import AppProvider from './AppProvider';
 import './globals.css';
 
 type AppPropsWithLayout = AppProps & {

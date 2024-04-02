@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { User, getMe } from '@/features/auth/api';
+import { User, getMe } from './api';
 
 export const login = () => {
   window.location.replace(

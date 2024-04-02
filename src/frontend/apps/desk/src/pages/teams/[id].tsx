@@ -6,10 +6,8 @@ import { ReactElement } from 'react';
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import { MemberGrid } from '@/features/members';
-import { Role, TeamInfo, useTeam } from '@/features/teams/';
+import { Role, TeamInfo, TeamLayout, useTeam } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
-
-import TeamLayout from './TeamLayout';
 
 const Page: NextPageWithLayout = () => {
   const {

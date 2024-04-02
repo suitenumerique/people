@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink } from '@/components';
+import { TeamLayout } from '@/features/teams/';
 import { NextPageWithLayout } from '@/types/next';
-
-import TeamLayout from './TeamLayout';
 
 const StyledButton = styled(Button)`
   width: fit-content;

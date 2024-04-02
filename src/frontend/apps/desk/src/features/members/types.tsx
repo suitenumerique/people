@@ -1,4 +1,4 @@
-import { User } from '@/features/auth/';
+import { User } from '@/core/auth';
 import { Role, Team } from '@/features/teams/';
 
 export interface Access {

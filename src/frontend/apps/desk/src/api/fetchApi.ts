@@ -1,4 +1,4 @@
-import { login, useAuthStore } from '@/features/auth';
+import { login, useAuthStore } from '@/core/auth';
 
 /**
  * Retrieves the CSRF token from the document's cookies.
