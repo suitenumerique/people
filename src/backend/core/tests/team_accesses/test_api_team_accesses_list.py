@@ -266,11 +266,15 @@ def test_api_team_accesses_list_authenticated_ordering_user(ordering_fields):
     assert response.status_code == HTTP_200_OK
     assert response.json()["count"] == 21
 
+    def normalize(x):
+        """Mimic Django order_by, which is case-insensitive and space-insensitive"""
+        return x.casefold().replace(" ", "")
+
     results = [
         team_access["user"][ordering_fields]
         for team_access in response.json()["results"]
     ]
-    assert sorted(results) == results
+    assert sorted(results, key=normalize) == results
 
     response = client.get(
         f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=-{ordering_fields}",
@@ -282,4 +286,4 @@ def test_api_team_accesses_list_authenticated_ordering_user(ordering_fields):
         team_access["user"][ordering_fields]
         for team_access in response.json()["results"]
     ]
-    assert sorted(results, reverse=True) == results
+    assert sorted(results, reverse=True, key=normalize) == results
