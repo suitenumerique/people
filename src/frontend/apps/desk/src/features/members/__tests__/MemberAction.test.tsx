@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-import { Role } from '@/features/teams';
+import { Role, Team } from '@/features/teams';
 import { AppWrapper } from '@/tests/utils';
 
 import { MemberAction } from '../components/MemberAction';
@@ -21,6 +21,11 @@ const access: Access = {
   } as any,
 };
 
+const team = {
+  id: '123456',
+  name: 'teamName',
+} as Team;
+
 describe('MemberAction', () => {
   afterEach(() => {
     fetchMock.restore();
@@ -28,7 +33,7 @@ describe('MemberAction', () => {
 
   it('checks the render when owner', async () => {
     render(
-      <MemberAction access={access} currentRole={Role.OWNER} teamId="123" />,
+      <MemberAction access={access} currentRole={Role.OWNER} team={team} />,
       {
         wrapper: AppWrapper,
       },
@@ -41,7 +46,7 @@ describe('MemberAction', () => {
 
   it('checks the render when member', () => {
     render(
-      <MemberAction access={access} currentRole={Role.MEMBER} teamId="123" />,
+      <MemberAction access={access} currentRole={Role.MEMBER} team={team} />,
       {
         wrapper: AppWrapper,
       },
@@ -54,7 +59,7 @@ describe('MemberAction', () => {
 
   it('checks the render when admin', async () => {
     render(
-      <MemberAction access={access} currentRole={Role.ADMIN} teamId="123" />,
+      <MemberAction access={access} currentRole={Role.ADMIN} team={team} />,
       {
         wrapper: AppWrapper,
       },
@@ -70,7 +75,7 @@ describe('MemberAction', () => {
       <MemberAction
         access={{ ...access, role: Role.OWNER }}
         currentRole={Role.ADMIN}
-        teamId="123"
+        team={team}
       />,
       {
         wrapper: AppWrapper,
