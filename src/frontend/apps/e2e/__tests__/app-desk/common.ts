@@ -39,9 +39,7 @@ export const createTeam = async (
     await page.getByText('Team name').fill(randomTeams[i]);
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
-    await expect(
-      panel.locator('li').nth(0).getByText(randomTeams[i]),
-    ).toBeVisible();
+    await expect(panel.locator('li').getByText(randomTeams[i])).toBeVisible();
   }
 
   return randomTeams;

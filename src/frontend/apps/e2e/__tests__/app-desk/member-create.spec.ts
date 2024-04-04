@@ -49,7 +49,7 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Select user 2
-    await inputSearch.fill('test1');
+    await inputSearch.fill('test');
     await page.getByRole('option', { name: users[1].name }).click();
 
     // Select email
