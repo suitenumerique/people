@@ -14,13 +14,18 @@ pytestmark = pytest.mark.django_db
 
 
 def test_models_users_str():
-    """The str representation should be the full name."""
+    """
+    user str representation should return name or email when avalaible.
+    Otherwise, it should return the sub.
+    """
     user = factories.UserFactory()
-    contact = factories.ContactFactory(full_name="david bowman", owner=user)
-    user.profile_contact = contact
-    user.save()
+    assert str(user) == user.name
 
-    assert str(user) == "david bowman"
+    no_name_user = factories.UserFactory(name=None)
+    assert str(no_name_user) == no_name_user.email
+
+    no_name_no_email_user = factories.UserFactory(name=None, email=None)
+    assert str(no_name_no_email_user) == f"User {no_name_no_email_user.sub}"
 
 
 def test_models_users_id_unique():
