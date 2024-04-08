@@ -190,6 +190,7 @@ class Base(Configuration):
         # People
         "core",
         "demo",
+        "mailbox_manager",
         "drf_spectacular",
         # Third party apps
         "corsheaders",
