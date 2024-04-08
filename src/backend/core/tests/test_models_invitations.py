@@ -257,7 +257,7 @@ def test_models_team_invitations_email():
     assert len(mail.outbox) == 1
 
     # pylint: disable-next=no-member
-    (email,) = mail.outbox
+    email = mail.outbox[0]
 
     assert email.to == [invitation.email]
     assert email.subject == "Invitation to join Desk!"
