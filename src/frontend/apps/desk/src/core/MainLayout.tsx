@@ -1,8 +1,10 @@
+import { PropsWithChildren } from 'react';
+
 import { Box } from '@/components';
 import { HEADER_HEIGHT, Header } from '@/features/header';
 import { Menu } from '@/features/menu';
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
+export function MainLayout({ children }: PropsWithChildren) {
   return (
     <Box $height="100vh" $css="overflow:hidden;">
       <Header />
