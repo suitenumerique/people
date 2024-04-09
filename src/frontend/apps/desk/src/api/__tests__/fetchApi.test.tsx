@@ -34,22 +34,14 @@ describe('fetchAPI', () => {
   });
 
   it('logout if 401 response', async () => {
-    useAuthStore.setState({
-      authenticated: true,
-      userData: { id: '123', email: 'test@test.com' },
-    });
+    const logoutMock = jest.fn();
+    jest
+      .spyOn(useAuthStore.getState(), 'logout')
+      .mockImplementation(logoutMock);
 
     fetchMock.mock('http://some.api.url/api/v1.0/some/url', 401);
-    fetchMock.mock('http://some.api.url/api/v1.0/logout/', 302);
-
     await fetchAPI('some/url');
 
-    await Promise.all([fetchMock.flush()]);
-
-    expect(fetchMock.lastUrl()).toEqual('http://some.api.url/api/v1.0/logout/');
-
-    const { userData, authenticated } = useAuthStore.getState();
-    expect(userData).toBeUndefined();
-    expect(authenticated).toBeFalsy();
+    expect(logoutMock).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { User, getMe, logout } from './api';
+import { User, getMe } from './api';
 
 export const login = () => {
   window.location.replace(
@@ -34,8 +34,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
   },
   logout: () => {
-    void logout().then(() => {
-      set(initialState);
-    });
+    window.location.replace(
+      new URL('logout/', process.env.NEXT_PUBLIC_API_URL).href,
+    );
   },
 }));

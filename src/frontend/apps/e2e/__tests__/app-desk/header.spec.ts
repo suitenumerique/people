@@ -50,8 +50,6 @@ test.describe('Header', () => {
       })
       .click();
 
-    // FIXME - assert the session has been killed in Keycloak
-
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
   });
 
