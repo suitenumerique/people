@@ -1,4 +1,4 @@
-"""Authentication for the People core app."""
+"""Authentication Backends for the People core app."""
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -10,7 +10,7 @@ from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
 
-from .models import Identity
+from core.models import Identity
 
 
 class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
