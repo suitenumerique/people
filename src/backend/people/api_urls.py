@@ -8,11 +8,16 @@ from rest_framework.routers import DefaultRouter
 
 from core.api import viewsets
 
+from mailbox_manager.api import viewsets as mail_viewsets
+
 # - Main endpoints
 router = DefaultRouter()
 router.register("contacts", viewsets.ContactViewSet, basename="contacts")
 router.register("teams", viewsets.TeamViewSet, basename="teams")
 router.register("users", viewsets.UserViewSet, basename="users")
+router.register(
+    "mail-domains", mail_viewsets.MailDomainViewSet, basename="mail-domains"
+)
 
 # - Routes nested under a team
 team_related_router = DefaultRouter()
@@ -28,6 +33,15 @@ team_related_router.register(
     basename="invitations",
 )
 
+# - Routes nested under a mail domain
+maildomain_related_router = DefaultRouter()
+maildomain_related_router.register(
+    "mailboxes",
+    mail_viewsets.MailBoxViewSet,
+    basename="mailboxes",
+)
+
+
 urlpatterns = [
     path(
         f"api/{settings.API_VERSION}/",
@@ -38,6 +52,10 @@ urlpatterns = [
                 re_path(
                     r"^teams/(?P<team_id>[0-9a-z-]*)/",
                     include(team_related_router.urls),
+                ),
+                re_path(
+                    r"^mail-domains/(?P<domain_id>[0-9a-z-]*)/",
+                    include(maildomain_related_router.urls),
                 ),
             ]
         ),
