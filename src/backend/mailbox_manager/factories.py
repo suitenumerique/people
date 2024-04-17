@@ -18,8 +18,23 @@ class MailDomainFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.MailDomain
+        django_get_or_create = ("name",)
+        skip_postgeneration_save = True
 
     name = factory.Faker("domain_name")
+
+    @factory.post_generation
+    def users(self, create, extracted, **kwargs):
+        """Add users to domain from a given list of users with or without roles."""
+        if not create or not extracted:
+            return
+        for user_entry in extracted:
+            if isinstance(user_entry, core_models.User):
+                MailDomainAccessFactory(domain=self, user=user_entry)
+            else:
+                MailDomainAccessFactory(
+                    domain=self, user=user_entry[0], role=user_entry[1]
+                )
 
 
 class MailDomainAccessFactory(factory.django.DjangoModelFactory):

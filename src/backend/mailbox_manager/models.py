@@ -25,6 +25,29 @@ class MailDomain(BaseModel):
     def __str__(self):
         return self.name
 
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the domain.
+        """
+        is_owner_or_admin = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.accesses.filter(user=user).values("role")[0]["role"]
+            except (MailDomainAccess.DoesNotExist, IndexError):
+                role = None
+
+        is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
+
+        return {
+            "get": bool(role),
+            "patch": is_owner_or_admin,
+            "put": is_owner_or_admin,
+            "delete": role == RoleChoices.OWNER,
+            "manage_accesses": is_owner_or_admin,
+        }
+
 
 class MailDomainAccess(BaseModel):
     """Allow to manage users' accesses to mail domains."""
@@ -39,7 +62,7 @@ class MailDomainAccess(BaseModel):
     domain = models.ForeignKey(
         MailDomain,
         on_delete=models.CASCADE,
-        related_name="mail_domain_accesses",
+        related_name="accesses",
         null=False,
         blank=False,
     )

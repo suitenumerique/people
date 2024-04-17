@@ -1,4 +1,4 @@
-"""Client serializers for the People mailbox_manager app."""
+"""Client serializers for People's mailbox manager app."""
 
 from rest_framework import serializers
 
@@ -18,4 +18,24 @@ class MailDomainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.MailDomain
-        fields = ["id", "name"]
+        fields = [
+            "id",
+            "name",
+            "created_at",
+            "updated_at",
+        ]
+
+
+class MailDomainAccessSerializer(serializers.ModelSerializer):
+    """Serialize mail domain accesses."""
+
+    class Meta:
+        model = models.MailDomainAccess
+        fields = [
+            "id",
+            "user",
+            "role",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id"]
