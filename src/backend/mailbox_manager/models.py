@@ -54,7 +54,7 @@ class MailDomainAccess(BaseModel):
         unique_together = ("user", "domain")
 
     def __str__(self):
-        return f"Access of user {self.user!s} on domain {self.domain:s}."
+        return f"Access of user {self.user} on domain {self.domain}."
 
 
 class Mailbox(BaseModel):
@@ -85,4 +85,4 @@ class Mailbox(BaseModel):
         unique_together = ("local_part", "domain")
 
     def __str__(self):
-        return f"{self.local_part!s}@{self.domain.name:s}."
+        return f"{self.local_part!s}@{self.domain.name:s}"
