@@ -31,6 +31,8 @@ releases:
     installed: {{ ne .Environment.Name "dev" | toYaml }}
     namespace: {{ .Namespace }}
     chart: ./extra
+    secrets:
+      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
 
   - name: desk
     version: {{ .Values.version }}
