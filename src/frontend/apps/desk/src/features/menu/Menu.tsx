@@ -19,12 +19,13 @@ export const Menu = () => {
   return (
     <Box
       as="menu"
-      className="m-0 p-0"
       $background={colorsTokens()['primary-800']}
       $height="100%"
       $justify="space-between"
+      $padding="none"
+      $margin="none"
     >
-      <Box className="pt-l" $direction="column" $gap="0.8rem">
+      <Box $padding={{ top: 'large' }} $direction="column" $gap="0.8rem">
         <MenuItem Icon={IconSearch} label={t('Search')} href="/" />
         <MenuItem Icon={IconMail} label={t('Mails')} href="/mails" />
         <MenuItem Icon={IconFavorite} label={t('Favorite')} href="/favorite" />

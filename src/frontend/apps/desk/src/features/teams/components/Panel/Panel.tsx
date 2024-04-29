@@ -60,7 +60,7 @@ export const Panel = () => {
         `}
       >
         <Box
-          className="pr-l pl-s pt-s pb-s"
+          $padding={{ all: 'small', right: 'large' }}
           $direction="row"
           $align="center"
           $justify="space-between"

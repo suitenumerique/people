@@ -24,7 +24,7 @@ export function MailContent() {
   ];
 
   return (
-    <Card className="m-l p-s">
+    <Card $padding="small" $margin="large">
       <DataGrid
         columns={[
           {

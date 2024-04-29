@@ -19,7 +19,7 @@ const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
 
   if (isError) {
     return (
-      <Box $justify="center" className="mb-b">
+      <Box $justify="center" $margin={{ bottom: 'big' }}>
         <Text $theme="danger" $align="center" $textAlign="center">
           {t('Something bad happens, please refresh the page.')}
         </Text>
@@ -29,7 +29,7 @@ const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
 
   if (isLoading) {
     return (
-      <Box $align="center" className="m-l">
+      <Box $align="center" $margin="large">
         <Loader />
       </Box>
     );
@@ -37,8 +37,13 @@ const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
 
   if (!teams?.length) {
     return (
-      <Box $justify="center" className="m-s">
-        <Text as="p" className="mb-0 mt-0" $theme="greyscale" $variation="500">
+      <Box $justify="center" $margin="small">
+        <Text
+          as="p"
+          $margin={{ vertical: 'none' }}
+          $theme="greyscale"
+          $variation="500"
+        >
           {t('0 group to display.')}
         </Text>
         <Text as="p" $theme="greyscale" $variation="500">
@@ -82,7 +87,8 @@ export const TeamList = () => {
         }}
         scrollContainer={containerRef.current}
         as="ul"
-        className="p-0 mt-0"
+        $margin={{ top: 'none' }}
+        $padding="none"
         role="listbox"
       >
         <TeamListState isLoading={isLoading} isError={isError} teams={teams} />

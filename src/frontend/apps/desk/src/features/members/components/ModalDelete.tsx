@@ -83,7 +83,7 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
       title={
         <Box $align="center" $gap="1rem">
           <IconRemoveMember width={48} color={colorsTokens()['primary-text']} />
-          <Text $size="h3" className="m-0">
+          <Text $size="h3" $margin="none">
             {t('Remove the member')}
           </Text>
         </Box>
@@ -98,7 +98,10 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
         </Text>
 
         {isErrorUpdate && (
-          <TextErrors className="mb-s" causes={errorUpdate.cause} />
+          <TextErrors
+            $margin={{ bottom: 'small' }}
+            causes={errorUpdate.cause}
+          />
         )}
 
         {(isLastOwner || isOtherOwner) && (
@@ -107,7 +110,7 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
             $direction="row"
             $align="center"
             $gap="0.5rem"
-            className="m-t"
+            $margin="tiny"
             $justify="center"
           >
             <span className="material-icons">warning</span>
@@ -121,7 +124,7 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
 
         <Text
           as="p"
-          className="p-b"
+          $padding="big"
           $direction="row"
           $gap="0.5rem"
           $background={colorsTokens()['primary-150']}

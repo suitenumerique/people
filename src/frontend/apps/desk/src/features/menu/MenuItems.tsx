@@ -46,7 +46,8 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
       style={{ display: 'block' }}
     >
       <Box
-        className="m-st p-t"
+        $margin="xtiny"
+        $padding="tiny"
         as="li"
         $justify="center"
         $css={`

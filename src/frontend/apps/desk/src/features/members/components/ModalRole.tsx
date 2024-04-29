@@ -87,7 +87,10 @@ export const ModalRole = ({
     >
       <Box aria-label={t('Radio buttons to update the roles')}>
         {isErrorUpdate && (
-          <TextErrors className="mb-s" causes={errorUpdate.cause} />
+          <TextErrors
+            $margin={{ bottom: 'small' }}
+            causes={errorUpdate.cause}
+          />
         )}
 
         {(isLastOwner || isOtherOwner) && (
@@ -96,7 +99,7 @@ export const ModalRole = ({
             $direction="row"
             $align="center"
             $gap="0.5rem"
-            className="mb-t"
+            $margin={{ bottom: 'tiny' }}
             $justify="center"
           >
             <span className="material-icons">warning</span>

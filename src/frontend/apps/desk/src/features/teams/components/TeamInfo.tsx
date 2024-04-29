@@ -38,11 +38,11 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
 
   return (
     <>
-      <Card className="m-b" style={{ paddingBottom: 0 }}>
-        <Box $css="align-self: flex-end;" className="m-t" $position="absolute">
+      <Card $margin="big" $padding={{ bottom: 'none' }}>
+        <Box $css="align-self: flex-end;" $margin="tiny" $position="absolute">
           <TeamActions currentRole={currentRole} team={team} />
         </Box>
-        <Box className="m-b" $direction="row" $align="center" $gap="1.5rem">
+        <Box $margin="big" $direction="row" $align="center" $gap="1.5rem">
           <IconGroup
             width={44}
             color={colorsTokens()['primary-text']}
@@ -53,7 +53,12 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
             }}
           />
           <Box>
-            <Text as="h3" $weight="bold" $size="1.25rem" className="mt-0">
+            <Text
+              as="h3"
+              $weight="bold"
+              $size="1.25rem"
+              $margin={{ top: 'none' }}
+            >
               {t('Members of “{{teamName}}“', {
                 teamName: team.name,
               })}
@@ -66,13 +71,12 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
           </Box>
         </Box>
         <Box
-          className="p-s"
+          $padding={{ all: 'small', left: '1.5rem' }}
           $gap="3rem"
           $direction="row"
           $justify="start"
           $css={`
             border-top: 1px solid ${colorsTokens()['card-border']};
-            padding-left: 1.5rem;
           `}
         >
           <Text $size="s" as="p">

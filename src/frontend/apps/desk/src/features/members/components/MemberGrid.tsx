@@ -96,7 +96,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   return (
     <>
       {currentRole !== Role.MEMBER && (
-        <Box className="m-b mb-s" $align="flex-end">
+        <Box $margin={{ all: 'big', bottom: 'small' }} $align="flex-end">
           <Button
             aria-label={t('Add members to the team')}
             style={{
@@ -111,10 +111,10 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
         </Box>
       )}
       <Card
-        className="m-b pb-s"
+        $padding={{ bottom: 'small' }}
+        $margin={{ all: 'big', top: 'none' }}
         $overflow="auto"
         $css={`
-          margin-top:0;
           & .c__pagination__goto {
             display: none;
           }

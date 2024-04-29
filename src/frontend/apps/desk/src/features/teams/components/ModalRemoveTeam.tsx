@@ -73,24 +73,29 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
       title={
         <Box $align="center" $gap="1rem">
           <IconRemove width={48} color={colorsTokens()['primary-text']} />
-          <Text $size="h3" className="m-0">
+          <Text $size="h3" $margin="none">
             {t('Deleting the {{teamName}} team', { teamName: team.name })}
           </Text>
         </Box>
       }
     >
-      <Box className="mb-xl" aria-label={t('Content modal to delete the team')}>
-        <Text as="p" className="mb-b">
+      <Box
+        $margin={{ bottom: 'xl' }}
+        aria-label={t('Content modal to delete the team')}
+      >
+        <Text as="p" $margin={{ bottom: 'big' }}>
           {t('Are you sure you want to delete {{teamName}} team?', {
             teamName: team.name,
           })}
         </Text>
 
-        {isError && <TextErrors className="mb-s" causes={error.cause} />}
+        {isError && (
+          <TextErrors $margin={{ bottom: 'small' }} causes={error.cause} />
+        )}
 
         <Text
           as="p"
-          className="p-s"
+          $padding="small"
           $direction="row"
           $gap="0.5rem"
           $background={colorsTokens()['primary-150']}

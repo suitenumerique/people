@@ -6,7 +6,7 @@ import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
   return (
-    <Box className="p-l" $justify="center" $align="start" $height="inherit">
+    <Box $padding="large" $justify="center" $align="start" $height="inherit">
       <CardCreateTeam />
     </Box>
   );

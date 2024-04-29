@@ -76,14 +76,17 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
       title={
         <Box $align="center" $gap="1rem">
           <IconEdit width={48} color={colorsTokens()['primary-text']} />
-          <Text $size="h3" className="m-0">
+          <Text $size="h3" $margin="none">
             {t('Update team {{teamName}}', { teamName: team.name })}
           </Text>
         </Box>
       }
     >
-      <Box className="mb-xl" aria-label={t('Content modal to update the team')}>
-        <Text as="p" className="mb-b">
+      <Box
+        $margin={{ bottom: 'xl' }}
+        aria-label={t('Content modal to update the team')}
+      >
+        <Text as="p" $margin={{ bottom: 'big' }}>
           {t('Enter the new name of the selected team')}
         </Text>
 

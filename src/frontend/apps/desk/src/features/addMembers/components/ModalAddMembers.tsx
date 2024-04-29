@@ -165,14 +165,14 @@ export const ModalAddMembers = ({
       title={
         <Box $align="center" $gap="1rem">
           <IconAddMember width={48} color={colorsTokens()['primary-text']} />
-          <Text $size="h3" className="m-0">
+          <Text $size="h3" $margin="none">
             {t('Add a member')}
           </Text>
         </Box>
       }
     >
       <GlobalStyle />
-      <Box className="mb-xl mt-l">
+      <Box $margin={{ bottom: 'xl', top: 'large' }}>
         <SearchMembers
           team={team}
           setSelectedMembers={setSelectedMembers}
@@ -180,8 +180,8 @@ export const ModalAddMembers = ({
           disabled={isPending}
         />
         {selectedMembers.length > 0 && (
-          <Box className="mt-s">
-            <Text as="h4" $textAlign="left" className="mb-t">
+          <Box $margin={{ top: 'small' }}>
+            <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
               {t('Choose a role')}
             </Text>
             <ChooseRole
