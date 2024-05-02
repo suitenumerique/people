@@ -6,7 +6,7 @@ import { Box } from '@/components/';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import MenuItem from './MenuItems';
-import IconMail from './assets/icon-mails.svg';
+import IconMailDomains from './assets/icon-mails.svg';
 
 export const Menu = () => {
   const { colorsTokens } = useCunninghamTheme();
@@ -28,7 +28,11 @@ export const Menu = () => {
           href="/"
           alias={['/teams']}
         />
-        <MenuItem Icon={IconMail} label={t('Mails')} href="/mails" />
+        <MenuItem
+          Icon={IconMailDomains}
+          label={t('Mail Domains')}
+          href="/mail-domains"
+        />
       </Box>
     </Box>
   );

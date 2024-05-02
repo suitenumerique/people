@@ -4,7 +4,7 @@ import { Box } from '@/components';
 import { MainLayout } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 
-export function MailLayout({ children }: PropsWithChildren) {
+export function MailDomainsLayout({ children }: PropsWithChildren) {
   const { colorsTokens } = useCunninghamTheme();
 
   return (

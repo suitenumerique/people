@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components';
 
-export function MailContent() {
+export function MailDomainsContent() {
   const { t } = useTranslation();
 
   const dataset = [
