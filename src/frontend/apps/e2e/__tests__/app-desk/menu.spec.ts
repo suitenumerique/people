@@ -16,10 +16,10 @@ test.describe('Menu', () => {
       expectedText: 'Create a new team',
     },
     {
-      name: 'Mails',
+      name: 'Mail Domains',
       isDefault: false,
-      expectedUrl: '/mails',
-      expectedText: 'Emails',
+      expectedUrl: '/mail-domains',
+      expectedText: 'Mail Domains',
     },
   ];
   for (const { name, isDefault, expectedUrl, expectedText } of menuItems) {
