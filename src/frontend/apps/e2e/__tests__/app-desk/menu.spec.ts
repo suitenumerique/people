@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from './common';
+import { createTeam, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -61,4 +61,18 @@ test.describe('Menu', () => {
       await expect(page).toHaveURL(expectedUrl);
     });
   }
+
+  test(`it checks that the sub menu is still highlighted`, async ({
+    page,
+    browserName,
+  }) => {
+    await createTeam(page, 'team-sub-menu', browserName, 1);
+
+    const menu = page.locator('menu').first();
+    const buttonMenu = menu.locator('li').first();
+    await expect(buttonMenu).toHaveCSS(
+      'background-color',
+      'rgb(227, 227, 253)',
+    );
+  });
 });

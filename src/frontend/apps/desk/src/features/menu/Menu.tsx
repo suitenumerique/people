@@ -22,7 +22,12 @@ export const Menu = () => {
       $margin="none"
     >
       <Box $padding={{ top: 'large' }} $direction="column" $gap="0.8rem">
-        <MenuItem Icon={IconGroup} label={t('Teams')} href="/" />
+        <MenuItem
+          Icon={IconGroup}
+          label={t('Teams')}
+          href="/"
+          alias={['/teams']}
+        />
         <MenuItem Icon={IconMail} label={t('Mails')} href="/mails" />
       </Box>
     </Box>
