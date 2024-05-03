@@ -9,14 +9,20 @@ test.beforeEach(async ({ page, browserName }) => {
 
 test.describe('Menu', () => {
   const menuItems = [
-    { name: 'Search', isDefault: true },
-    { name: 'Mails', isDefault: false },
-    { name: 'Favorite', isDefault: false },
-    { name: 'Recent', isDefault: false },
-    { name: 'Contacts', isDefault: false },
-    { name: 'Groups', isDefault: false },
+    {
+      name: 'Teams',
+      isDefault: true,
+      expectedUrl: '',
+      expectedText: 'Create a new team',
+    },
+    {
+      name: 'Mails',
+      isDefault: false,
+      expectedUrl: '/mails',
+      expectedText: 'Emails',
+    },
   ];
-  for (const { name, isDefault } of menuItems) {
+  for (const { name, isDefault, expectedUrl, expectedText } of menuItems) {
     test(`checks that ${name} menu item is displaying correctly`, async ({
       page,
     }) => {
@@ -46,37 +52,13 @@ test.describe('Menu', () => {
     test(`checks that ${name} menu item is routing correctly`, async ({
       page,
     }) => {
-      await expect(
-        page.getByRole('button', {
-          name: 'Create a new team',
-        }),
-      ).toBeVisible();
-
       const menu = page.locator('menu').first();
 
       const buttonMenu = menu.getByLabel(`${name} button`);
       await buttonMenu.click();
 
-      /* eslint-disable playwright/no-conditional-expect */
-      /* eslint-disable playwright/no-conditional-in-test */
-      if (isDefault) {
-        await expect(
-          page.getByRole('button', {
-            name: 'Create a new team',
-          }),
-        ).toBeVisible();
-      } else {
-        await expect(
-          page.getByRole('button', {
-            name: 'Create a new team',
-          }),
-        ).toBeHidden();
-
-        const reg = new RegExp(name.toLowerCase());
-        await expect(page).toHaveURL(reg);
-      }
-      /* eslint-enable playwright/no-conditional-expect */
-      /* eslint-enable playwright/no-conditional-in-test */
+      await expect(page.getByText(expectedText).first()).toBeVisible();
+      await expect(page).toHaveURL(expectedUrl);
     });
   }
 });
