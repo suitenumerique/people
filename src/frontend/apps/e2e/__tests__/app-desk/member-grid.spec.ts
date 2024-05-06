@@ -43,10 +43,12 @@ test.describe('Member Grid', () => {
       new RegExp(`E2E ${browserName}`, 'i'),
     );
     await cells.nth(4).getByLabel('Member options').click();
-    await page.getByText('Update the role').click();
+    await page.getByText('Update role').click();
 
     await expect(
-      page.getByText('You are the last owner, you cannot change your role.'),
+      page.getByText(
+        'You are the sole owner of this group. Make another member the group owner, before you can change your own role.',
+      ),
     ).toBeVisible();
 
     const radioGroup = page.getByLabel('Radio buttons to update the roles');

@@ -19,13 +19,11 @@ test.describe('Team', () => {
     await expect(page.getByLabel('icon group')).toBeVisible();
     await expect(
       page.getByRole('heading', {
-        name: `Members of “${teamName}“`,
+        name: teamName,
         level: 3,
       }),
     ).toBeVisible();
-    await expect(
-      page.getByText(`Add people to the “${teamName}“ group.`),
-    ).toBeVisible();
+    await expect(page.getByText(`Group details`)).toBeVisible();
 
     await expect(page.getByText(`1 member`)).toBeVisible();
 
@@ -55,8 +53,6 @@ test.describe('Team', () => {
       .click();
 
     await expect(page.getByText('The team has been updated.')).toBeVisible();
-    await expect(
-      page.getByText(`Add people to the “${teamName}“ group.`),
-    ).toBeVisible();
+    await expect(page.getByText(`Group details`)).toBeVisible();
   });
 });

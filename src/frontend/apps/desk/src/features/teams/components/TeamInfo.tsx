@@ -59,15 +59,9 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
               $size="1.25rem"
               $margin={{ top: 'none' }}
             >
-              {t('Members of “{{teamName}}“', {
-                teamName: team.name,
-              })}
+              {team.name}
             </Text>
-            <Text $size="m">
-              {t('Add people to the “{{teamName}}“ group.', {
-                teamName: team.name,
-              })}
-            </Text>
+            <Text $size="m">{t('Group details')}</Text>
           </Box>
         </Box>
         <Box

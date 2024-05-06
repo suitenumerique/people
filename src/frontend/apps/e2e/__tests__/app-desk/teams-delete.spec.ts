@@ -31,7 +31,7 @@ test.describe('Teams Delete', () => {
 
     await addNewMember(page, 0, 'Owner');
 
-    // Change role to Admin
+    // Change role to Administration
     const table = page.getByLabel('List members card').getByRole('table');
     const myCells = table
       .getByRole('row')
@@ -39,9 +39,9 @@ test.describe('Teams Delete', () => {
       .getByRole('cell');
     await myCells.nth(4).getByLabel('Member options').click();
 
-    await page.getByText('Update the role').click();
+    await page.getByText('Update role').click();
     const radioGroup = page.getByLabel('Radio buttons to update the roles');
-    await radioGroup.getByRole('radio', { name: 'Admin' }).click();
+    await radioGroup.getByRole('radio', { name: 'Administration' }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
     // Delete the team button should be hidden
@@ -59,7 +59,7 @@ test.describe('Teams Delete', () => {
 
     await addNewMember(page, 0, 'Owner');
 
-    // Change role to Admin
+    // Change role to Administration
     const table = page.getByLabel('List members card').getByRole('table');
     const myCells = table
       .getByRole('row')
@@ -67,7 +67,7 @@ test.describe('Teams Delete', () => {
       .getByRole('cell');
     await myCells.nth(4).getByLabel('Member options').click();
 
-    await page.getByText('Update the role').click();
+    await page.getByText('Update role').click();
     const radioGroup = page.getByLabel('Radio buttons to update the roles');
     await radioGroup.getByRole('radio', { name: 'Member' }).click();
     await page.getByRole('button', { name: 'Validate' }).click();

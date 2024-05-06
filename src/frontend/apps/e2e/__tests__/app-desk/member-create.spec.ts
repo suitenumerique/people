@@ -77,7 +77,9 @@ test.describe('Members Create', () => {
     await expect(page.getByText(/Choose a role/)).toBeVisible();
     await expect(page.getByRole('radio', { name: 'Member' })).toBeChecked();
     await expect(page.getByRole('radio', { name: 'Owner' })).toBeVisible();
-    await expect(page.getByRole('radio', { name: 'Admin' })).toBeVisible();
+    await expect(
+      page.getByRole('radio', { name: 'Administration' }),
+    ).toBeVisible();
   });
 
   test('it sends a new invitation and adds a new member', async ({
@@ -109,7 +111,7 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Admin' }).click();
+    await page.getByRole('radio', { name: 'Administration' }).click();
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
@@ -136,7 +138,7 @@ test.describe('Members Create', () => {
 
     const table = page.getByLabel('List members card').getByRole('table');
     await expect(table.getByText(users[0].name)).toBeVisible();
-    await expect(table.getByText('Admin')).toBeVisible();
+    await expect(table.getByText('Administration')).toBeVisible();
   });
 
   test('it try to add twice the same user', async ({ page, browserName }) => {

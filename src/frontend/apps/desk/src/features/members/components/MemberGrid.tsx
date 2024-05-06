@@ -69,7 +69,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   });
 
   const localizedRoles = {
-    [Role.ADMIN]: t('Admin'),
+    [Role.ADMIN]: t('Administration'),
     [Role.MEMBER]: t('Member'),
     [Role.OWNER]: t('Owner'),
   };

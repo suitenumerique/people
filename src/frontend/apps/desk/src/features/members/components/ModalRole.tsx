@@ -104,7 +104,9 @@ export const ModalRole = ({
           >
             <span className="material-icons">warning</span>
             {isLastOwner &&
-              t('You are the last owner, you cannot change your role.')}
+              t(
+                'You are the sole owner of this group. Make another member the group owner, before you can change your own role.',
+              )}
             {isOtherOwner && t('You cannot update the role of other owner.')}
           </Text>
         )}

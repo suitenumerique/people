@@ -84,7 +84,7 @@ describe('ModalRole', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'Admin',
+        name: 'Administration',
       }),
     ).toBeChecked();
 
@@ -174,12 +174,14 @@ describe('ModalRole', () => {
     );
 
     expect(
-      screen.getByText('You are the last owner, you cannot change your role.'),
+      screen.getByText(
+        'You are the sole owner of this group. Make another member the group owner, before you can change your own role.',
+      ),
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole('radio', {
-        name: 'Admin',
+        name: 'Administration',
       }),
     ).toBeDisabled();
 
@@ -232,7 +234,7 @@ describe('ModalRole', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'Admin',
+        name: 'Administration',
       }),
     ).toBeDisabled();
 
@@ -274,7 +276,7 @@ describe('ModalRole', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'Admin',
+        name: 'Administration',
       }),
     ).toBeEnabled();
 

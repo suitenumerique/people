@@ -94,7 +94,7 @@ describe('MemberGrid', () => {
     expect(screen.getByText('user2@test.com')).toBeInTheDocument();
     expect(screen.getByText('user3@test.com')).toBeInTheDocument();
     expect(screen.getByText('Owner')).toBeInTheDocument();
-    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(screen.getByText('Administration')).toBeInTheDocument();
     expect(screen.getByText('Member')).toBeInTheDocument();
   });
 

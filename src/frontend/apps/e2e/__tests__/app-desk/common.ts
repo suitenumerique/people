@@ -48,7 +48,7 @@ export const createTeam = async (
 export const addNewMember = async (
   page: Page,
   index: number,
-  role: 'Admin' | 'Owner' | 'Member',
+  role: 'Administration' | 'Owner' | 'Member',
   fillText: string = 'test',
 ) => {
   const responsePromiseSearchUser = page.waitForResponse(

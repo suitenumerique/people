@@ -82,7 +82,7 @@ test.describe('Members Delete', () => {
   test('it deletes admin member', async ({ page, browserName }) => {
     await createTeam(page, 'member-delete-4', browserName, 1);
 
-    const username = await addNewMember(page, 0, 'Admin');
+    const username = await addNewMember(page, 0, 'Administration');
 
     const table = page.getByLabel('List members card').getByRole('table');
 
@@ -119,9 +119,9 @@ test.describe('Members Delete', () => {
     await myCells.nth(4).getByLabel('Member options').click();
 
     // Change role to Admin
-    await page.getByText('Update the role').click();
+    await page.getByText('Update role').click();
     const radioGroup = page.getByLabel('Radio buttons to update the roles');
-    await radioGroup.getByRole('radio', { name: 'Admin' }).click();
+    await radioGroup.getByRole('radio', { name: 'Administration' }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
     const cells = table
@@ -137,7 +137,7 @@ test.describe('Members Delete', () => {
     // To not be the only owner
     await addNewMember(page, 0, 'Owner');
 
-    const username = await addNewMember(page, 1, 'Admin', 'something');
+    const username = await addNewMember(page, 1, 'Administration', 'something');
 
     const table = page.getByLabel('List members card').getByRole('table');
 
@@ -149,9 +149,9 @@ test.describe('Members Delete', () => {
     await myCells.nth(4).getByLabel('Member options').click();
 
     // Change role to Admin
-    await page.getByText('Update the role').click();
+    await page.getByText('Update role').click();
     const radioGroup = page.getByLabel('Radio buttons to update the roles');
-    await radioGroup.getByRole('radio', { name: 'Admin' }).click();
+    await radioGroup.getByRole('radio', { name: 'Administration' }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
     const cells = table

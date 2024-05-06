@@ -55,7 +55,7 @@ export const MemberAction = ({
             color="primary-text"
             icon={<span className="material-icons">edit</span>}
           >
-            <Text $theme="primary">{t('Update the role')}</Text>
+            <Text $theme="primary">{t('Update role')}</Text>
           </Button>
           <Button
             aria-label={t('Open the modal to delete this member')}
@@ -66,7 +66,7 @@ export const MemberAction = ({
             color="primary-text"
             icon={<span className="material-icons">delete</span>}
           >
-            <Text $theme="primary">{t('Delete')}</Text>
+            <Text $theme="primary">{t('Remove from group')}</Text>
           </Button>
         </Box>
       </DropButton>

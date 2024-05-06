@@ -21,19 +21,19 @@ export const ChooseRole = ({
   return (
     <RadioGroup>
       <Radio
-        label={t('Admin')}
-        value={Role.ADMIN}
-        name="role"
-        onChange={(evt) => setRole(evt.target.value as Role)}
-        defaultChecked={defaultRole === Role.ADMIN}
-        disabled={disabled}
-      />
-      <Radio
         label={t('Member')}
         value={Role.MEMBER}
         name="role"
         onChange={(evt) => setRole(evt.target.value as Role)}
         defaultChecked={defaultRole === Role.MEMBER}
+        disabled={disabled}
+      />
+      <Radio
+        label={t('Administration')}
+        value={Role.ADMIN}
+        name="role"
+        onChange={(evt) => setRole(evt.target.value as Role)}
+        defaultChecked={defaultRole === Role.ADMIN}
         disabled={disabled}
       />
       <Radio

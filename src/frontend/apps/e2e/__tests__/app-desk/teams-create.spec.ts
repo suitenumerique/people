@@ -71,7 +71,7 @@ test.describe('Teams Create', () => {
     await page.getByText('Team name').fill(teamName);
     await page.getByRole('button', { name: 'Create the team' }).click();
 
-    const elTeam = page.getByText(`Members of “${teamName}“`);
+    const elTeam = page.getByRole('heading', { name: teamName });
     await expect(elTeam).toBeVisible();
 
     await panel.getByRole('button', { name: 'Add a team' }).click();
