@@ -28,7 +28,9 @@ test.describe('Header', () => {
     );
 
     await expect(
-      header.getByText('Les applications de La Suite numérique'),
+      header.getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      }),
     ).toBeVisible();
 
     await expect(header.getByAltText('Language Icon')).toBeVisible();
@@ -51,5 +53,34 @@ test.describe('Header', () => {
     // FIXME - assert the session has been killed in Keycloak
 
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+  });
+
+  test('checks La Gauffre interaction', async ({ page }) => {
+    const header = page.locator('header').first();
+
+    await expect(
+      header.getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      }),
+    ).toBeVisible();
+
+    /**
+     * La gaufre load a js file from a remote server,
+     * it takes some time to load the file and have the interaction available
+     */
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(1500);
+
+    await header
+      .getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      })
+      .click();
+
+    await expect(
+      page.getByRole('link', { name: 'France Transfert' }),
+    ).toBeVisible();
+
+    await expect(page.getByRole('link', { name: 'Grist' })).toBeVisible();
   });
 });

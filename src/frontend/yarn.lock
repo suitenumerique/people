@@ -1398,6 +1398,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@gouvfr-lasuite/integration@0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@gouvfr-lasuite/integration/-/integration-0.1.3.tgz#cbf44473cd2a5b9497814faff459c3d88bc1ddce"
+  integrity sha512-WvAaMyEcNZkNX88Rbi6xo1rxFIGjsg3w8Gxi5NKVyNY0Ph2dXcGkP63ybCKD8JAsWHfxwAvs82wqXFZk5RCJ1g==
+
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.14.tgz#d78e481a039f7566ecc9660b4ea7fe6b1fec442b"

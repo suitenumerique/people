@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
 import { AccountDropdown } from '@/features/header/AccountDropdown';
-import { ApplicationsMenu } from '@/features/header/ApplicationsMenu';
+import { LaGaufre } from '@/features/header/LaGaufre';
 
 import { LanguagePicker } from '../language/';
 
@@ -65,7 +65,7 @@ export const Header = () => {
         <Box $align="center" $gap="1rem" $justify="flex-end" $direction="row">
           <AccountDropdown />
           <LanguagePicker />
-          <ApplicationsMenu />
+          <LaGaufre />
         </Box>
       </Box>
     </StyledHeader>
