@@ -31,11 +31,57 @@ const mailDomainsFixtures: MailDomain[] = [
   },
 ];
 
-test.describe('Mail domain', () => {
+test.describe('Mail domains', () => {
   test.describe('checks all the elements are visible', () => {
     test.beforeEach(async ({ page, browserName }) => {
       await page.goto('/');
       await keyCloakSignIn(page, browserName);
+    });
+
+    test('checks the sort button', async ({ page }) => {
+      await page
+        .locator('menu')
+        .first()
+        .getByLabel(`Mail Domains button`)
+        .click();
+
+      await expect(page).toHaveURL(/mail-domains/);
+
+      const responsePromiseSortDesc = page.waitForResponse(
+        (response) =>
+          response
+            .url()
+            .includes('/mail-domains/?page=1&ordering=-created_at') &&
+          response.status() === 200,
+      );
+
+      const responsePromiseSortAsc = page.waitForResponse(
+        (response) =>
+          response
+            .url()
+            .includes('/mail-domains/?page=1&ordering=created_at') &&
+          response.status() === 200,
+      );
+
+      const panel = page.getByLabel('mail domains panel').first();
+
+      await panel
+        .getByRole('button', {
+          name: 'Sort the domain names by creation date ascendent',
+        })
+        .click();
+
+      const responseSortAsc = await responsePromiseSortAsc;
+      expect(responseSortAsc.ok()).toBeTruthy();
+
+      await panel
+        .getByRole('button', {
+          name: 'Sort the domain names by creation date descendent',
+        })
+        .click();
+
+      const responseSortDesc = await responsePromiseSortDesc;
+      expect(responseSortDesc.ok()).toBeTruthy();
     });
 
     test('when no mail domain exists', async ({ page }) => {

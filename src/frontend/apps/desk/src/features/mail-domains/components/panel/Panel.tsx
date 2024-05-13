@@ -7,6 +7,7 @@ import { useCunninghamTheme } from '@/cunningham';
 import IconOpenClose from '../../assets/icon-open-close.svg';
 
 import { ItemList } from './ItemList';
+import { PanelActions } from './PanelActions';
 
 export const Panel = () => {
   const { t } = useTranslation();
@@ -73,7 +74,9 @@ export const Panel = () => {
           <Text $weight="bold" $size="1.25rem">
             {t('Mail Domains')}
           </Text>
+          <PanelActions />
         </Box>
+
         <ItemList />
       </Box>
     </Box>
