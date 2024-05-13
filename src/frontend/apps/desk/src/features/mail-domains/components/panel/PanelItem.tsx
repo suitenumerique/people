@@ -15,10 +15,10 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const {
-    query: { name },
+    query: { id },
   } = useRouter();
 
-  const isActive = mailDomain.id === name;
+  const isActive = mailDomain.id === id;
 
   const activeStyle = `
     border-right: 4px solid ${colorsTokens()['primary-600']};
