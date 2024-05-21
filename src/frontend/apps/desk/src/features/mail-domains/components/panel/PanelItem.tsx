@@ -51,7 +51,7 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
     >
       <StyledLink
         className="p-s pt-t pb-t"
-        href={`/mail-domains/${mailDomain.name}`}
+        href={`/mail-domains/${mailDomain.id}`}
       >
         <Box $align="center" $direction="row" $gap="0.5rem">
           <IconMailDomains
