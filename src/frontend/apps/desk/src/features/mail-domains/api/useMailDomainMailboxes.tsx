@@ -35,7 +35,7 @@ export const getMailDomainMailboxes = async ({
   return response.json() as Promise<MailDomainMailboxesResponse>;
 };
 
-const KEY_LIST_MAILBOX = 'mailboxes';
+export const KEY_LIST_MAILBOX = 'mailboxes';
 
 export function useMailDomainMailboxes(
   param: MailDomainMailboxesParams,

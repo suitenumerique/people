@@ -1,4 +1,5 @@
 import {
+  Button,
   DataGrid,
   Loader,
   SortModel,
@@ -8,11 +9,13 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
-import { MailDomain } from '@/features/mail-domains';
-import { useMailDomainMailboxes } from '@/features/mail-domains/api/useMailDomainMailboxes';
-import { PAGE_SIZE } from '@/features/mail-domains/conf';
 
+import { useMailboxes } from '../api/useMailboxes';
 import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
+import { PAGE_SIZE } from '../conf';
+import { MailDomain, MailDomainMailbox } from '../types';
+
+import { CreateMailboxForm } from './forms/CreateMailboxForm';
 
 export type ViewMailbox = { email: string; id: string };
 
@@ -44,6 +47,9 @@ function formatSortModel(
 export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   const [sortModel, setSortModel] = useState<SortModel>([]);
   const { t } = useTranslation();
+  const [isCreateMailboxFormVisible, setIsCreateMailboxFormVisible] =
+    useState(false);
+
   const pagination = usePagination({
     defaultPage: 1,
     pageSize: PAGE_SIZE,
@@ -52,7 +58,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   const { page, pageSize, setPagesCount } = pagination;
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
 
-  const { data, isLoading, error } = useMailDomainMailboxes({
+  const { data, isLoading, error } = useMailboxes({
     id: mailDomain.id,
     page,
     ordering,
@@ -60,7 +66,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
 
   const viewMailboxes: ViewMailbox[] =
     mailDomain && data?.results?.length
-      ? data.results.map((mailbox) => ({
+      ? data.results.map((mailbox: MailDomainMailbox) => ({
           email: `${mailbox.local_part}@${mailDomain.name}`,
           id: mailbox.id,
         }))
@@ -75,7 +81,16 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
     </Box>
   ) : (
     <>
-      <TopBanner name={mailDomain.name} />
+      {isCreateMailboxFormVisible && mailDomain ? (
+        <CreateMailboxForm
+          mailDomain={mailDomain}
+          setIsFormVisible={setIsCreateMailboxFormVisible}
+        />
+      ) : null}
+      <TopBanner
+        name={mailDomain.name}
+        setIsFormVisible={setIsCreateMailboxFormVisible}
+      />
       <Card
         $padding={{ bottom: 'small' }}
         $margin={{ all: 'big', top: 'none' }}
@@ -104,20 +119,36 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   );
 }
 
-const TopBanner = ({ name }: { name: string }) => {
+const TopBanner = ({
+  name,
+  setIsFormVisible,
+}: {
+  name: string;
+  setIsFormVisible: (value: boolean) => void;
+}) => {
   const { t } = useTranslation();
 
   return (
-    <Box
-      $direction="row"
-      $align="center"
-      $margin={{ all: 'big', vertical: 'xbig' }}
-      $gap="2.25rem"
-    >
-      <MailDomainsLogo aria-label={t('Mail Domains icon')} />
-      <Text $margin="none" as="h3" $size="h3">
-        {name}
-      </Text>
-    </Box>
+    <>
+      <Box
+        $direction="row"
+        $align="center"
+        $margin={{ all: 'big', vertical: 'xbig' }}
+        $gap="2.25rem"
+      >
+        <MailDomainsLogo aria-label={t('Mail Domains icon')} />
+        <Text $margin="none" as="h3" $size="h3">
+          {name}
+        </Text>
+      </Box>
+      <Box $margin={{ all: 'big', bottom: 'small' }} $align="flex-end">
+        <Button
+          aria-label={t(`Create a mailbox in {{name}} domain`, { name })}
+          onClick={() => setIsFormVisible(true)}
+        >
+          {t('Create a mailbox')}
+        </Button>
+      </Box>
+    </>
   );
 };
