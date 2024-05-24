@@ -37,7 +37,7 @@ export const getMailDomainMailboxes = async ({
 
 export const KEY_LIST_MAILBOX = 'mailboxes';
 
-export function useMailDomainMailboxes(
+export function useMailboxes(
   param: MailDomainMailboxesParams,
   queryConfig?: UseQueryOptions<
     MailDomainMailboxesResponse,
