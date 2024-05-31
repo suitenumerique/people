@@ -349,6 +349,8 @@ def test_api_team_invitations__update__forbidden(method):
 
     client = APIClient()
     client.force_login(user)
+
+    response = None
     if method == "put":
         response = client.put(
             f"/api/v1.0/teams/{invitation.team.id}/invitations/{invitation.id}/",
@@ -357,6 +359,7 @@ def test_api_team_invitations__update__forbidden(method):
         response = client.patch(
             f"/api/v1.0/teams/{invitation.team.id}/invitations/{invitation.id}/",
         )
+    assert response is not None
     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
     assert response.json()["detail"] == f'Method "{method.upper()}" not allowed.'
 

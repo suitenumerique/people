@@ -23,6 +23,8 @@ def exception_handler(exc, context):
             detail = exc.message
         elif hasattr(exc, "messages"):
             detail = exc.messages
+        else:
+            detail = ""
 
         exc = drf_exceptions.ValidationError(detail=detail)
 
