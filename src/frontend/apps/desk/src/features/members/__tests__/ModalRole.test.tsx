@@ -66,7 +66,7 @@ describe('ModalRole', () => {
   });
 
   it('updates the role successfully', async () => {
-    fetchMock.patchOnce(`/api/teams/123/accesses/789/`, {
+    fetchMock.mock(`end:/teams/123/accesses/789/`, {
       status: 200,
       ok: true,
     });
@@ -110,13 +110,13 @@ describe('ModalRole', () => {
       );
     });
 
-    expect(fetchMock.lastUrl()).toBe(`/api/teams/123/accesses/789/`);
+    expect(fetchMock.lastUrl()).toContain(`/teams/123/accesses/789/`);
 
     expect(onClose).toHaveBeenCalled();
   });
 
   it('fails to update the role', async () => {
-    fetchMock.patchOnce(`/api/teams/123/accesses/789/`, {
+    fetchMock.patchOnce(`end:/teams/123/accesses/789/`, {
       status: 500,
       body: {
         detail: 'The server is totally broken',

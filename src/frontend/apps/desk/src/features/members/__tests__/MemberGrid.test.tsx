@@ -20,7 +20,7 @@ describe('MemberGrid', () => {
   });
 
   it('renders with no member to display', async () => {
-    fetchMock.mock(`/api/teams/123456/accesses/?page=1`, {
+    fetchMock.mock(`end:/teams/123456/accesses/?page=1`, {
       count: 0,
       results: [],
     });
@@ -76,7 +76,7 @@ describe('MemberGrid', () => {
       },
     ];
 
-    fetchMock.mock(`/api/teams/123456/accesses/?page=1`, {
+    fetchMock.mock(`end:/teams/123456/accesses/?page=1`, {
       count: 3,
       results: accesses,
     });
@@ -99,7 +99,8 @@ describe('MemberGrid', () => {
   });
 
   it('checks the pagination', async () => {
-    fetchMock.get(`begin:/api/teams/123456/accesses/?page=`, {
+    const regexp = new RegExp(/.*\/teams\/123456\/accesses\/\?page=.*/);
+    fetchMock.get(regexp, {
       count: 40,
       results: Array.from({ length: 20 }, (_, i) => ({
         id: i,
@@ -119,7 +120,7 @@ describe('MemberGrid', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(fetchMock.lastUrl()).toBe('/api/teams/123456/accesses/?page=1');
+    expect(fetchMock.lastUrl()).toContain('/teams/123456/accesses/?page=1');
 
     expect(
       await screen.findByLabelText('You are currently on page 1'),
@@ -131,7 +132,7 @@ describe('MemberGrid', () => {
       await screen.findByLabelText('You are currently on page 2'),
     ).toBeInTheDocument();
 
-    expect(fetchMock.lastUrl()).toBe('/api/teams/123456/accesses/?page=2');
+    expect(fetchMock.lastUrl()).toContain('/teams/123456/accesses/?page=2');
   });
 
   [
@@ -149,7 +150,8 @@ describe('MemberGrid', () => {
     },
   ].forEach(({ role, expected }) => {
     it(`checks action button when ${role}`, async () => {
-      fetchMock.get(`begin:/api/teams/123456/accesses/?page=`, {
+      const regexp = new RegExp(/.*\/teams\/123456\/accesses\/\?page=.*/);
+      fetchMock.get(regexp, {
         count: 1,
         results: [
           {
@@ -190,7 +192,7 @@ describe('MemberGrid', () => {
   });
 
   it('controls the render when api error', async () => {
-    fetchMock.mock(`/api/teams/123456/accesses/?page=1`, {
+    fetchMock.mock(`end:/teams/123456/accesses/?page=1`, {
       status: 500,
       body: {
         cause: 'All broken :(',
@@ -207,7 +209,7 @@ describe('MemberGrid', () => {
   });
 
   it('cannot add members when current role is member', () => {
-    fetchMock.get(`/api/teams/123456/accesses/?page=1`, 200);
+    fetchMock.get(`end:/teams/123456/accesses/?page=1`, 200);
 
     render(<MemberGrid team={team} currentRole={Role.MEMBER} />, {
       wrapper: AppWrapper,
@@ -261,17 +263,17 @@ describe('MemberGrid', () => {
     );
     const reversedMockedData = [...sortedMockedData].reverse();
 
-    fetchMock.get(`/api/teams/123456/accesses/?page=1`, {
+    fetchMock.get(`end:/teams/123456/accesses/?page=1`, {
       count: 3,
       results: mockedData,
     });
 
-    fetchMock.get(`/api/teams/123456/accesses/?page=1&ordering=${ordering}`, {
+    fetchMock.get(`end:/teams/123456/accesses/?page=1&ordering=${ordering}`, {
       count: 3,
       results: sortedMockedData,
     });
 
-    fetchMock.get(`/api/teams/123456/accesses/?page=1&ordering=-${ordering}`, {
+    fetchMock.get(`end:/teams/123456/accesses/?page=1&ordering=-${ordering}`, {
       count: 3,
       results: reversedMockedData,
     });
@@ -282,7 +284,7 @@ describe('MemberGrid', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(fetchMock.lastUrl()).toBe(`/api/teams/123456/accesses/?page=1`);
+    expect(fetchMock.lastUrl()).toContain(`/teams/123456/accesses/?page=1`);
 
     await waitFor(() => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -298,8 +300,8 @@ describe('MemberGrid', () => {
 
     await userEvent.click(screen.getByText(header_name));
 
-    expect(fetchMock.lastUrl()).toBe(
-      `/api/teams/123456/accesses/?page=1&ordering=${ordering}`,
+    expect(fetchMock.lastUrl()).toContain(
+      `/teams/123456/accesses/?page=1&ordering=${ordering}`,
     );
 
     await waitFor(() => {
@@ -315,8 +317,8 @@ describe('MemberGrid', () => {
 
     await userEvent.click(screen.getByText(header_name));
 
-    expect(fetchMock.lastUrl()).toBe(
-      `/api/teams/123456/accesses/?page=1&ordering=-${ordering}`,
+    expect(fetchMock.lastUrl()).toContain(
+      `/teams/123456/accesses/?page=1&ordering=-${ordering}`,
     );
     await waitFor(() => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -331,7 +333,7 @@ describe('MemberGrid', () => {
 
     await userEvent.click(screen.getByText(header_name));
 
-    expect(fetchMock.lastUrl()).toBe('/api/teams/123456/accesses/?page=1');
+    expect(fetchMock.lastUrl()).toContain('/teams/123456/accesses/?page=1');
 
     await waitFor(() => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();

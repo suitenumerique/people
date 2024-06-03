@@ -1,12 +1,8 @@
 import { create } from 'zustand';
 
-import { User, getMe } from './api';
+import { baseApiUrl } from '@/api';
 
-export const login = () => {
-  window.location.replace(
-    new URL('authenticate/', process.env.NEXT_PUBLIC_API_URL).href,
-  );
-};
+import { User, getMe } from './api';
 
 interface AuthStore {
   authenticated: boolean;
@@ -30,12 +26,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
         set({ authenticated: true, userData: data });
       })
       .catch(() => {
-        login();
+        window.location.replace(new URL('authenticate/', baseApiUrl()).href);
       });
   },
   logout: () => {
-    window.location.replace(
-      new URL('logout/', process.env.NEXT_PUBLIC_API_URL).href,
-    );
+    window.location.replace(new URL('logout/', baseApiUrl()).href);
   },
 }));

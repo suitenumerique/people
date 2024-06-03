@@ -23,7 +23,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders with no team to display', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 0,
       results: [],
     });
@@ -40,7 +40,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders an empty team', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -61,7 +61,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders a team with only 1 member', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -87,7 +87,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders a non-empty team', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -115,7 +115,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders the error', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       status: 500,
     });
 
@@ -131,7 +131,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders with team panel open', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });
@@ -146,7 +146,7 @@ describe('PanelTeams', () => {
   });
 
   it('closes and opens the team panel', async () => {
-    fetchMock.mock(`/api/teams/?page=1&ordering=-created_at`, {
+    fetchMock.get(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });
