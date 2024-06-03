@@ -525,7 +525,7 @@ class Production(Base):
     # - Your proxy sets the X-Forwarded-Proto header and sends it to Django
     #
     # In other cases, you should comment the following line to avoid security issues.
-    # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
     # Modern browsers require to have the `secure` attribute on cookies with `Samesite=none`
     CSRF_COOKIE_SECURE = True
