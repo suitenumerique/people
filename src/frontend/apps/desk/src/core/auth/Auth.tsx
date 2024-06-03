@@ -10,7 +10,7 @@ export const Auth = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     initAuth();
-  }, [initAuth, authenticated]);
+  }, [initAuth]);
 
   if (!authenticated) {
     return (
