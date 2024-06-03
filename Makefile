@@ -166,20 +166,26 @@ test-back-parallel: ## run all back-end tests in parallel
 	bin/pytest -n auto $${args:-${1}}
 .PHONY: test-back-parallel
 
-
 makemigrations:  ## run django makemigrations for the people project.
 	@echo "$(BOLD)Running makemigrations$(RESET)"
 	@$(COMPOSE) up -d postgresql
 	@$(WAIT_DB)
-	@$(MANAGE) makemigrations
+	@$(MANAGE) makemigrations $(ARGS)
 .PHONY: makemigrations
 
 migrate:  ## run django migrations for the people project.
 	@echo "$(BOLD)Running migrations$(RESET)"
 	@$(COMPOSE) up -d postgresql
 	@$(WAIT_DB)
-	@$(MANAGE) migrate
+	@$(MANAGE) migrate $(ARGS)
 .PHONY: migrate
+
+showmigrations:  ## run django showmigrations for the people project.
+	@echo "$(BOLD)Running showmigrations$(RESET)"
+	@$(COMPOSE) up -d postgresql
+	@$(WAIT_DB)
+	@$(MANAGE) showmigrations $(ARGS)
+.PHONY: showmigrations
 
 superuser: ## Create an admin superuser with password "admin"
 	@echo "$(BOLD)Creating a Django superuser$(RESET)"
