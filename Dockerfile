@@ -24,8 +24,8 @@ COPY ./src/frontend/packages/eslint-config-people/package.json ./packages/eslint
 
 RUN yarn --frozen-lockfile
 
-### ---- Front-end builder image ----
-FROM node:20 as frontend-builder
+### ---- Front-end builder dev image ----
+FROM node:20 as frontend-builder-dev
 
 WORKDIR /builder
 
@@ -34,8 +34,10 @@ COPY ./src/frontend .
 
 WORKDIR ./apps/desk
 
-RUN yarn build
+### ---- Front-end builder image ----
+FROM frontend-builder-dev as frontend-builder
 
+RUN yarn build
 
 # ---- Front-end image ----
 FROM nginxinc/nginx-unprivileged:1.25 as frontend-production

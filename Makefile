@@ -323,3 +323,12 @@ frontend-i18n-generate: \
 frontend-i18n-compile: ## Format the crowin json files used deploy to the apps
 	cd $(PATH_FRONT) && yarn i18n:deploy
 .PHONY: frontend-i18n-compile
+
+# -- K8S
+start-kind: ## Create the kubernetes cluster
+	./bin/start-kind.sh
+.PHONY: start-kind
+
+tilt-up: ## start tilt - k8s local development
+	tilt up -f ./bin/Tiltfile
+.PHONY: tilt-up

@@ -4,6 +4,7 @@ image:
   tag: "latest"
 
 backend:
+  replicas: 1
   envVars:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Production
@@ -49,8 +50,23 @@ backend:
     POSTGRES_USER: dinum
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
+  command:
+    - "gunicorn"
+    - "-c"
+    - "/usr/local/etc/gunicorn/people.py"
+    - "people.wsgi:application"
+    - "--reload"
 
 frontend:
+  envVars:
+    PORT: 8080
+    NEXT_PUBLIC_API_URL: https://desk.127.0.0.1.nip.io/api/v1.0/
+
+  replicas: 1
+  command:
+    - yarn
+    - dev
+
   image:
     repository: localhost:5001/people-frontend
     pullPolicy: Always
