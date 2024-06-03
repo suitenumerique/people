@@ -18,7 +18,7 @@ def test_api_mailboxes__list_anonymous():
     mail_domain = factories.MailDomainFactory()
     factories.MailboxFactory.create_batch(2, domain=mail_domain)
 
-    response = APIClient().get(f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/")
+    response = APIClient().get(f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
@@ -37,7 +37,7 @@ def test_api_mailboxes__list_authenticated_no_query():
     mailbox1 = factories.MailboxFactory(domain=mail_domain)
     mailbox2 = factories.MailboxFactory(domain=mail_domain)
 
-    response = client.get(f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/")
+    response = client.get(f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["results"] == [
         {

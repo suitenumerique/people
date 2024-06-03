@@ -2,6 +2,8 @@
 Mailbox manager application factories
 """
 
+from django.utils.text import slugify
+
 import factory.fuzzy
 from faker import Faker
 
@@ -22,6 +24,7 @@ class MailDomainFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     name = factory.Faker("domain_name")
+    slug = factory.LazyAttribute(lambda o: slugify(o.name))
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):

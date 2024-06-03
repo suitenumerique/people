@@ -23,14 +23,14 @@ class MailDomainViewSet(
     GET /api/<version>/mail-domains/
         Return a list of mail domains user has access to.
 
-    GET /api/<version>/mail-domains/<domain-id>/
+    GET /api/<version>/mail-domains/<domain-slug>/
         Return details for a mail domain user has access to.
 
     POST /api/<version>/mail-domains/ with expected data:
         - name: str
         Return newly created domain
 
-    DELETE /api/<version>/mail-domains/<domain-id>/
+    DELETE /api/<version>/mail-domains/<domain-slug>/
         Delete targeted team access
     """
 
@@ -39,6 +39,7 @@ class MailDomainViewSet(
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "name"]
     ordering = ["-created_at"]
+    lookup_field = "slug"
     queryset = models.MailDomain.objects.all()
 
     def get_queryset(self):
@@ -85,16 +86,16 @@ class MailBoxViewSet(
 
     def get_queryset(self):
         """Custom queryset to get mailboxes related to a mail domain."""
-        domain_id = self.kwargs.get("domain_id", "")
-        if domain_id:
-            return self.queryset.filter(domain__id=domain_id)
+        domain_slug = self.kwargs.get("domain_slug", "")
+        if domain_slug:
+            return self.queryset.filter(domain__slug=domain_slug)
         return self.queryset
 
     def perform_create(self, serializer):
         """Create new mailbox."""
-        domain_id = self.kwargs.get("domain_id", "")
-        if domain_id:
+        domain_slug = self.kwargs.get("domain_slug", "")
+        if domain_slug:
             serializer.validated_data["domain"] = models.MailDomain.objects.get(
-                id=domain_id
+                slug=domain_slug
             )
         super().perform_create(serializer)

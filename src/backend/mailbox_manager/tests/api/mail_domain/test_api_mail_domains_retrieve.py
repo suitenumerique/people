@@ -17,7 +17,7 @@ def test_api_mail_domains__retrieve_anonymous():
     """Anonymous users should not be allowed to retrieve a domain."""
 
     domain = factories.MailDomainFactory()
-    response = APIClient().get(f"/api/v1.0/mail-domains/{domain.id}/")
+    response = APIClient().get(f"/api/v1.0/mail-domains/{domain.slug}/")
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {
@@ -38,7 +38,7 @@ def test_api_mail_domains__retrieve_authenticated_unrelated():
     domain = factories.MailDomainFactory()
 
     response = client.get(
-        f"/api/v1.0/mail-domains/{domain.id!s}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "No MailDomain matches the given query."}
@@ -59,7 +59,7 @@ def test_api_mail_domains__retrieve_authenticated_related():
     factories.MailDomainAccessFactory(domain=domain, user=user)
 
     response = client.get(
-        f"/api/v1.0/mail-domains/{domain.id!s}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_200_OK

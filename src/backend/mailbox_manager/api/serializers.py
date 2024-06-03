@@ -18,6 +18,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.MailDomain
+        lookup_field = "slug"
         fields = [
             "id",
             "name",

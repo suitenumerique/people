@@ -18,7 +18,7 @@ def test_api_mailboxes__create_anonymous_forbidden():
     mail_domain = factories.MailDomainFactory()
 
     response = APIClient().post(
-        f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/",
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {
             "first_name": "jean",
             "last_name": "doe",
@@ -44,7 +44,7 @@ def test_api_mailboxes__create_authenticated_missing_fields():
 
     mail_domain = factories.MailDomainFactory()
     response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/",
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {
             "first_name": "jean",
             "last_name": "doe",
@@ -58,7 +58,7 @@ def test_api_mailboxes__create_authenticated_missing_fields():
     assert response.json() == {"local_part": ["This field is required."]}
 
     response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/",
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {
             "first_name": "jean",
             "last_name": "doe",
@@ -82,7 +82,7 @@ def test_api_mailboxes__create_authenticated_successful():
 
     mail_domain = factories.MailDomainFactory(name="saint-jean.collectivite.fr")
     response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.id}/mailboxes/",
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {
             "first_name": "jean",
             "last_name": "doe",

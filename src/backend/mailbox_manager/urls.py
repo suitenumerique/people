@@ -32,7 +32,7 @@ urlpatterns = [
             [
                 *maildomain_router.urls,
                 re_path(
-                    r"^mail-domains/(?P<domain_id>[0-9a-z-]*)/",
+                    r"^mail-domains/(?P<domain_slug>[\w-]+)/",
                     include(maildomain_related_router.urls),
                 ),
             ]

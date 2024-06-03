@@ -5,6 +5,7 @@ Declare and configure the models for the People additional application : mailbox
 from django.conf import settings
 from django.core import validators
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel, RoleChoices
@@ -16,6 +17,7 @@ class MailDomain(BaseModel):
     name = models.CharField(
         _("name"), max_length=150, null=False, blank=False, unique=True
     )
+    slug = models.SlugField(null=False, blank=False, unique=True, max_length=80)
 
     class Meta:
         db_table = "people_mail_domain"
@@ -24,6 +26,11 @@ class MailDomain(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super().save(*args, **kwargs)
 
     def get_abilities(self, user):
         """

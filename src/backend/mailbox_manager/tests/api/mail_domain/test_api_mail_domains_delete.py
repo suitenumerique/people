@@ -18,7 +18,7 @@ def test_api_mail_domains__delete_anonymous():
     domain = factories.MailDomainFactory()
 
     response = APIClient().delete(
-        f"/api/v1.0/mail-domains/{domain.id!s}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -36,7 +36,7 @@ def test_api_mail_domains__delete_authenticated_unrelated():
     client = APIClient()
     client.force_login(identity.user)
     response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.id!s}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -56,7 +56,7 @@ def test_api_mail_domains__delete_authenticated_member():
     client = APIClient()
     client.force_login(user)
     response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.id}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -78,7 +78,7 @@ def test_api_mail_domains__delete_authenticated_administrator():
     client = APIClient()
     client.force_login(user)
     response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.id}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -100,7 +100,7 @@ def test_api_mail_domains__delete_authenticated_owner():
     client = APIClient()
     client.force_login(user)
     response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.id}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
