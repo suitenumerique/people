@@ -264,6 +264,7 @@ def test_models_team_invitations_email():
 
     email_content = " ".join(email.body.split())
     assert "Invitation to join Desk!" in email_content
+    assert "[//example.com]" in email_content
 
 
 @mock.patch(

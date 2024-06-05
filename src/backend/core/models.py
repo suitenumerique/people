@@ -12,6 +12,7 @@ from logging import getLogger
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.db import models, transaction
 from django.template.loader import render_to_string
@@ -660,6 +661,7 @@ class Invitation(BaseModel):
             with override(self.issuer.language):
                 template_vars = {
                     "title": _("Invitation to join Desk!"),
+                    "site": Site.objects.get_current(),
                 }
                 msg_html = render_to_string("mail/html/invitation.html", template_vars)
                 msg_plain = render_to_string("mail/text/invitation.txt", template_vars)

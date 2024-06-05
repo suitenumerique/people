@@ -35,7 +35,7 @@
               <li>{% trans "Facilitate exchanges and communication with our messaging and group discussion tools."%}</li>
             </ul>
           </mj-text>
-          <mj-button href="https://desk-staging.beta.numerique.gouv.fr/" background-color="#000091" color="white" padding-bottom="30px">
+          <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
             {% trans "Visit Equipes"%}
           </mj-button>
           <mj-text>{% trans "We are confident that Equipes will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
