@@ -16,7 +16,9 @@ test.describe('Members Create', () => {
 
     await page.getByLabel('Add members to the team').click();
 
-    await expect(page.getByText('Add a member')).toBeVisible();
+    await expect(
+      page.getByRole('dialog').getByText('Add a member'),
+    ).toBeVisible();
     await expect(
       page.getByLabel(/Find a member to add to the team/),
     ).toBeVisible();

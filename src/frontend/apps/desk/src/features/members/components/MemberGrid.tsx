@@ -106,7 +106,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
             }}
             onClick={() => setIsModalMemberOpen(true)}
           >
-            {t('Add')}
+            {t('Add a member')}
           </Button>
         </Box>
       )}

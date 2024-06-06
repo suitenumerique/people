@@ -23,7 +23,7 @@ test.describe('Teams Create', () => {
 
     await expect(
       card.getByRole('heading', {
-        name: 'Name the team',
+        name: 'Create a new group',
         level: 3,
       }),
     ).toBeVisible();

@@ -142,7 +142,7 @@ describe('PanelTeams', () => {
       screen.getByRole('button', { name: 'Close the teams panel' }),
     ).toBeVisible();
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Groups')).toBeVisible();
   });
 
   it('closes and opens the team panel', async () => {
@@ -153,7 +153,7 @@ describe('PanelTeams', () => {
 
     render(<Panel />, { wrapper: AppWrapper });
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Groups')).toBeVisible();
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -161,7 +161,7 @@ describe('PanelTeams', () => {
       }),
     );
 
-    expect(await screen.findByText('Recents')).not.toBeVisible();
+    expect(await screen.findByText('Groups')).not.toBeVisible();
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -169,6 +169,6 @@ describe('PanelTeams', () => {
       }),
     );
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Groups')).toBeVisible();
   });
 });

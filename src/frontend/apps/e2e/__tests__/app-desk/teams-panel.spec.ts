@@ -13,7 +13,7 @@ test.describe('Teams Panel', () => {
   test('checks all the elements are visible', async ({ page }) => {
     const panel = page.getByLabel('Teams panel').first();
 
-    await expect(panel.getByText('Recents')).toBeVisible();
+    await expect(panel.getByText('Groups')).toBeVisible();
 
     await expect(
       panel.getByRole('button', {

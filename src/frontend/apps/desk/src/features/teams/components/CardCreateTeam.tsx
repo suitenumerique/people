@@ -45,7 +45,7 @@ export const CardCreateTeam = () => {
             aria-label={t('icon group')}
           />
           <Text as="h3" $textAlign="center">
-            {t('Name the team')}
+            {t('Create a new group')}
           </Text>
         </Box>
         <InputTeamName

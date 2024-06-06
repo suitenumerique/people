@@ -14,7 +14,6 @@ import { useCunninghamTheme } from '@/cunningham';
 import { Role, Team } from '@/features/teams/';
 
 import { useDeleteTeamAccess } from '../api/useDeleteTeamAccess';
-import IconRemoveMember from '../assets/icon-remove-member.svg';
 import { useWhoAmI } from '../hooks/useWhoAmI';
 import { Access } from '../types';
 
@@ -82,9 +81,8 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <IconRemoveMember width={48} color={colorsTokens()['primary-text']} />
           <Text $size="h3" $margin="none">
-            {t('Remove the member')}
+            {t('Remove this member from the group')}
           </Text>
         </Box>
       }

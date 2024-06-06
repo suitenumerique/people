@@ -69,7 +69,7 @@ export const Panel = () => {
           `}
         >
           <Text $weight="bold" $size="1.25rem">
-            {t('Recents')}
+            {t('Groups')}
           </Text>
           <PanelActions />
         </Box>
