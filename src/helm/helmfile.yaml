@@ -33,7 +33,7 @@ releases:
     namespace: {{ .Namespace }}
     chart: ./extra
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - {{ ne .Environment.Name "dev" | ternary "secrets/numerique-gouv/people/env" "env.d" }}/{{ .Environment.Name }}/secrets.enc.yaml
 
   - name: desk
     version: {{ .Values.version }}
@@ -42,7 +42,7 @@ releases:
     values:
       - env.d/{{ .Environment.Name }}/values.desk.yaml.gotmpl
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - {{ ne .Environment.Name "dev" | ternary "secrets/numerique-gouv/people/env" "env.d" }}/{{ .Environment.Name }}/secrets.enc.yaml
 
 environments:
   dev:
@@ -54,5 +54,5 @@ environments:
     values:
       - version: 0.0.1
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - {{ ne .Environment.Name "dev" | ternary "secrets/numerique-gouv/people/env" "env.d" }}/{{ .Environment.Name }}/secrets.enc.yaml
 
