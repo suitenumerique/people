@@ -84,7 +84,7 @@ def test_models_invitations__is_expired(settings):
 
 def test_models_invitation__new_user__convert_invitations_to_accesses():
     """
-    Upon creating a new identity, invitations linked to that email
+    Upon creating a new user, invitations linked to that email
     should be converted to accesses and then deleted.
     """
     # Two invitations to the same mail but to different teams
@@ -95,16 +95,14 @@ def test_models_invitation__new_user__convert_invitations_to_accesses():
         team=invitation_to_team2.team
     )  # another person invited to team2
 
-    new_identity = factories.IdentityFactory(
-        is_main=True, email=invitation_to_team1.email
-    )
+    new_user = factories.UserFactory(email=invitation_to_team1.email)
 
     # The invitation regarding
     assert models.TeamAccess.objects.filter(
-        team=invitation_to_team1.team, user=new_identity.user
+        team=invitation_to_team1.team, user=new_user
     ).exists()
     assert models.TeamAccess.objects.filter(
-        team=invitation_to_team2.team, user=new_identity.user
+        team=invitation_to_team2.team, user=new_user
     ).exists()
     assert not models.Invitation.objects.filter(
         team=invitation_to_team1.team, email=invitation_to_team1.email
@@ -119,7 +117,7 @@ def test_models_invitation__new_user__convert_invitations_to_accesses():
 
 def test_models_invitation__new_user__filter_expired_invitations():
     """
-    Upon creating a new identity, valid invitations should be converted into accesses
+    Upon creating a new user, valid invitations should be converted into accesses
     and expired invitations should remain unchanged.
     """
     with freeze_time("2020-01-01"):
@@ -127,11 +125,11 @@ def test_models_invitation__new_user__filter_expired_invitations():
     user_email = expired_invitation.email
     valid_invitation = factories.InvitationFactory(email=user_email)
 
-    new_identity = factories.IdentityFactory(is_main=True, email=user_email)
+    new_user = factories.UserFactory(email=user_email)
 
     # valid invitation should have granted access to the related team
     assert models.TeamAccess.objects.filter(
-        team=valid_invitation.team, user=new_identity.user
+        team=valid_invitation.team, user=new_user
     ).exists()
     assert not models.Invitation.objects.filter(
         team=valid_invitation.team, email=user_email
@@ -139,14 +137,14 @@ def test_models_invitation__new_user__filter_expired_invitations():
 
     # expired invitation should not have been consumed
     assert not models.TeamAccess.objects.filter(
-        team=expired_invitation.team, user=new_identity.user
+        team=expired_invitation.team, user=new_user
     ).exists()
     assert models.Invitation.objects.filter(
         team=expired_invitation.team, email=user_email
     ).exists()
 
 
-@pytest.mark.parametrize("num_invitations, num_queries", [(0, 8), (1, 11), (20, 11)])
+@pytest.mark.parametrize("num_invitations, num_queries", [(0, 4), (1, 7), (20, 7)])
 def test_models_invitation__new_user__user_creation_constant_num_queries(
     django_assert_num_queries, num_invitations, num_queries
 ):
@@ -160,15 +158,14 @@ def test_models_invitation__new_user__user_creation_constant_num_queries(
         for _ in range(0, num_invitations):
             factories.InvitationFactory(email=user_email, team=factories.TeamFactory())
 
-    user = factories.UserFactory()
+    factories.UserFactory()
 
     # with no invitation, we skip an "if", resulting in 8 requests
     # otherwise, we should have 11 queries with any number of invitations
     with django_assert_num_queries(num_queries):
-        models.Identity.objects.create(
-            is_main=True,
+        models.User.objects.create(
             email=user_email,
-            user=user,
+            password="!",
             name="Prudence C.",
             sub=uuid.uuid4(),
         )

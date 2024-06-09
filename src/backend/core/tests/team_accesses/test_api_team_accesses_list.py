@@ -28,9 +28,7 @@ def test_api_team_accesses_list_authenticated_unrelated():
     Authenticated users should not be allowed to list team accesses for a team
     to which they are not related.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory()
     factories.TeamAccessFactory.create_batch(3, team=team)
 
@@ -57,19 +55,12 @@ def test_api_team_accesses_list_authenticated_related():
     Authenticated users should be able to list team accesses for a team
     to which they are related, with a given role.
     """
-    identity = factories.IdentityFactory(is_main=True)
-    user = identity.user
-
+    user, administrator, owner = factories.UserFactory.create_batch(3)
     team = factories.TeamFactory()
 
-    owner = factories.IdentityFactory(is_main=True)
-    access1 = factories.TeamAccessFactory.create(
-        team=team, user=owner.user, role="owner"
-    )
-
-    administrator = factories.IdentityFactory(is_main=True)
+    access1 = factories.TeamAccessFactory.create(team=team, user=owner, role="owner")
     access2 = factories.TeamAccessFactory.create(
-        team=team, user=administrator.user, role="administrator"
+        team=team, user=administrator, role="administrator"
     )
 
     # Ensure this user's role is different from other team members to test abilities' computation
@@ -93,8 +84,8 @@ def test_api_team_accesses_list_authenticated_related():
                 "id": str(user_access.id),
                 "user": {
                     "id": str(user_access.user.id),
-                    "email": str(identity.email),
-                    "name": str(identity.name),
+                    "email": str(user.email),
+                    "name": str(user.name),
                 },
                 "role": str(user_access.role),
                 "abilities": user_access.get_abilities(user),
@@ -124,48 +115,6 @@ def test_api_team_accesses_list_authenticated_related():
     )
 
 
-def test_api_team_accesses_list_authenticated_main_identity():
-    """
-    Name and email should be returned from main identity only
-    """
-    user = factories.UserFactory()
-    identity = factories.IdentityFactory(user=user, is_main=True)
-    factories.IdentityFactory(user=user)  # additional non-main identity
-
-    team = factories.TeamFactory()
-    models.TeamAccess.objects.create(team=team, user=user)  # random role
-
-    # other team members should appear, with correct identity
-    other_user = factories.UserFactory()
-    other_main_identity = factories.IdentityFactory(is_main=True, user=other_user)
-    factories.IdentityFactory(user=other_user)
-    factories.TeamAccessFactory.create(team=team, user=other_user)
-
-    # Accesses for other teams to which the user is related should not be listed either
-    other_access = factories.TeamAccessFactory(user=user)
-    factories.TeamAccessFactory(team=other_access.team)
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.get(
-        f"/api/v1.0/teams/{team.id!s}/accesses/",
-    )
-
-    assert response.status_code == 200
-    assert response.json()["count"] == 2
-    users_info = [
-        (access["user"]["email"], access["user"]["name"])
-        for access in response.json()["results"]
-    ]
-    # user information should be returned from main identity
-    assert sorted(users_info) == sorted(
-        [
-            (str(identity.email), str(identity.name)),
-            (str(other_main_identity.email), str(other_main_identity.name)),
-        ]
-    )
-
-
 def test_api_team_accesses_list_authenticated_constant_numqueries(
     django_assert_num_queries,
 ):
@@ -173,31 +122,28 @@ def test_api_team_accesses_list_authenticated_constant_numqueries(
     The number of queries should not depend on the amount of fetched accesses.
     """
     user = factories.UserFactory()
-    factories.IdentityFactory(user=user, is_main=True)
-
     team = factories.TeamFactory()
     models.TeamAccess.objects.create(team=team, user=user)  # random role
 
     client = APIClient()
     client.force_login(user)
-    # Only 4 queries are needed to efficiently fetch team accesses,
+    # Only 3 queries are needed to efficiently fetch team accesses,
     # related users and identities :
     # - query retrieving logged-in user for user_role annotation
     # - count from pagination
-    # - query prefetching users' main identity
     # - distinct from viewset
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(3):
         response = client.get(
             f"/api/v1.0/teams/{team.id!s}/accesses/",
         )
 
     # create 20 new team members
     for _ in range(20):
-        extra_user = factories.IdentityFactory(is_main=True).user
+        extra_user = factories.UserFactory()
         factories.TeamAccessFactory(team=team, user=extra_user)
 
-    # num queries should still be 4
-    with django_assert_num_queries(4):
+    # num queries should still be the same
+    with django_assert_num_queries(3):
         response = client.get(
             f"/api/v1.0/teams/{team.id!s}/accesses/",
         )
@@ -210,14 +156,12 @@ def test_api_team_accesses_list_authenticated_ordering():
     """Team accesses can be ordered by "role"."""
 
     user = factories.UserFactory()
-    factories.IdentityFactory(user=user, is_main=True)
-
     team = factories.TeamFactory()
     models.TeamAccess.objects.create(team=team, user=user)
 
     # create 20 new team members
     for _ in range(20):
-        extra_user = factories.IdentityFactory(is_main=True).user
+        extra_user = factories.UserFactory()
         factories.TeamAccessFactory(team=team, user=extra_user)
 
     client = APIClient()
@@ -242,26 +186,24 @@ def test_api_team_accesses_list_authenticated_ordering():
     assert sorted(results, reverse=True) == results
 
 
-@pytest.mark.parametrize("ordering_fields", ["name", "email"])
-def test_api_team_accesses_list_authenticated_ordering_user(ordering_fields):
-    """Team accesses can be ordered by user's fields "email" or "name"."""
+@pytest.mark.parametrize("ordering_field", ["email", "name"])
+def test_api_team_accesses_list_authenticated_ordering_user(ordering_field):
+    """Team accesses can be ordered by user's fields."""
 
     user = factories.UserFactory()
-    factories.IdentityFactory(user=user, is_main=True)
-
     team = factories.TeamFactory()
     models.TeamAccess.objects.create(team=team, user=user)
 
     # create 20 new team members
     for _ in range(20):
-        extra_user = factories.IdentityFactory(is_main=True).user
+        extra_user = factories.UserFactory()
         factories.TeamAccessFactory(team=team, user=extra_user)
 
     client = APIClient()
     client.force_login(user)
 
     response = client.get(
-        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering={ordering_fields}",
+        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=user__{ordering_field}",
     )
     assert response.status_code == HTTP_200_OK
     assert response.json()["count"] == 21
@@ -271,19 +213,7 @@ def test_api_team_accesses_list_authenticated_ordering_user(ordering_fields):
         return x.casefold().replace(" ", "")
 
     results = [
-        team_access["user"][ordering_fields]
+        team_access["user"][ordering_field]
         for team_access in response.json()["results"]
     ]
     assert sorted(results, key=normalize) == results
-
-    response = client.get(
-        f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=-{ordering_fields}",
-    )
-    assert response.status_code == HTTP_200_OK
-    assert response.json()["count"] == 21
-
-    results = [
-        team_access["user"][ordering_fields]
-        for team_access in response.json()["results"]
-    ]
-    assert sorted(results, reverse=True, key=normalize) == results

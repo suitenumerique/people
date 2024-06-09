@@ -43,9 +43,7 @@ def test_api_team_accesses_update_authenticated_unrelated():
     Authenticated users should not be allowed to update a team access for a team to which
     they are not related.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     access = factories.TeamAccessFactory()
     old_values = serializers.TeamAccessSerializer(instance=access).data
 
@@ -72,9 +70,7 @@ def test_api_team_accesses_update_authenticated_unrelated():
 
 def test_api_team_accesses_update_authenticated_member():
     """Members of a team should not be allowed to update its accesses."""
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "member")])
     access = factories.TeamAccessFactory(team=team)
     old_values = serializers.TeamAccessSerializer(instance=access).data
@@ -105,9 +101,7 @@ def test_api_team_accesses_update_administrator_except_owner():
     A user who is an administrator in a team should be allowed to update a user
     access for this team, as long as they don't try to set the role to owner.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
     access = factories.TeamAccessFactory(
         team=team,
@@ -151,9 +145,7 @@ def test_api_team_accesses_update_administrator_from_owner():
     A user who is an administrator in a team, should not be allowed to update
     the user access of an "owner" for this team.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
     access = factories.TeamAccessFactory(team=team, user=other_user, role="owner")
@@ -184,9 +176,7 @@ def test_api_team_accesses_update_administrator_to_owner():
     A user who is an administrator in a team, should not be allowed to update
     the user access of another user to grant team ownership.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
     access = factories.TeamAccessFactory(
@@ -227,9 +217,7 @@ def test_api_team_accesses_update_owner_except_owner():
     A user who is an owner in a team should be allowed to update
     a user access for this team except for existing "owner" accesses.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "owner")])
     factories.UserFactory()
     access = factories.TeamAccessFactory(
@@ -275,9 +263,7 @@ def test_api_team_accesses_update_owner_for_owners():
     A user who is "owner" of a team should not be allowed to update
     an existing owner access for this team.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(team=team, role="owner")
     old_values = serializers.TeamAccessSerializer(instance=access).data
@@ -307,9 +293,7 @@ def test_api_team_accesses_update_owner_self():
     A user who is owner of a team should be allowed to update
     their own user access provided there are other owners in the team.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team, user=user, role="owner")
     old_values = serializers.TeamAccessSerializer(instance=access).data

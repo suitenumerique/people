@@ -1,7 +1,7 @@
 """API endpoints"""
 
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Func, Max, OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce
 
 from rest_framework import (
@@ -198,12 +198,6 @@ class UserViewSet(
             # Exclude inactive contacts
             queryset = queryset.filter(
                 is_active=True,
-            ).prefetch_related(
-                Prefetch(
-                    "identities",
-                    queryset=models.Identity.objects.filter(is_main=True),
-                    to_attr="_identities_main",
-                )
             )
 
             # Exclude all users already in the given team
@@ -214,15 +208,11 @@ class UserViewSet(
             if query := self.request.GET.get("q", ""):
                 similarity = Max(
                     TrigramSimilarity(
-                        Coalesce(
-                            Func("identities__email", function="unaccent"), Value("")
-                        ),
+                        Coalesce(Func("email", function="unaccent"), Value("")),
                         Func(Value(query), function="unaccent"),
                     )
                     + TrigramSimilarity(
-                        Coalesce(
-                            Func("identities__name", function="unaccent"), Value("")
-                        ),
+                        Coalesce(Func("name", function="unaccent"), Value("")),
                         Func(Value(query), function="unaccent"),
                     )
                 )
@@ -329,7 +319,7 @@ class TeamAccessViewSet(
 
     filter_backends = [filters.OrderingFilter]
     ordering = ["role"]
-    ordering_fields = ["role", "email", "name"]
+    ordering_fields = ["role", "user__email", "user__name"]
 
     def get_permissions(self):
         """User only needs to be authenticated to list team accesses"""
@@ -362,29 +352,17 @@ class TeamAccessViewSet(
                 user=self.request.user, team=self.kwargs["team_id"]
             ).values("role")[:1]
 
-            user_main_identity_query = models.Identity.objects.filter(
-                user=OuterRef("user_id"), is_main=True
-            )
-
             queryset = (
                 # The logged-in user should be part of a team to see its accesses
                 queryset.filter(
                     team__accesses__user=self.request.user,
                 )
-                .prefetch_related(
-                    Prefetch(
-                        "user__identities",
-                        queryset=models.Identity.objects.filter(is_main=True),
-                        to_attr="_identities_main",
-                    )
-                )
                 # Abilities are computed based on logged-in user's role and
                 # the user role on each team access
                 .annotate(
                     user_role=Subquery(user_role_query),
-                    email=Subquery(user_main_identity_query.values("email")[:1]),
-                    name=Subquery(user_main_identity_query.values("name")[:1]),
                 )
+                .select_related("user")
                 .distinct()
             )
         return queryset

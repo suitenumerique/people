@@ -31,8 +31,7 @@ def test_api_teams_list_authenticated():
     Authenticated users should be able to list teams
     they are an owner/administrator/member of.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -59,8 +58,7 @@ def test_api_teams_list_pagination(
     _mock_page_size,
 ):
     """Pagination should work as expected."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -105,8 +103,7 @@ def test_api_teams_list_pagination(
 
 def test_api_teams_list_authenticated_distinct():
     """A team with several related users should only be listed once."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -129,8 +126,7 @@ def test_api_teams_order():
     """
     Test that the endpoint GET teams is sorted in 'created_at' descending order by default.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -159,8 +155,7 @@ def test_api_teams_order_param():
     Test that the 'created_at' field is sorted in ascending order
     when the 'ordering' query parameter is set.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

@@ -10,15 +10,17 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    """Management command to create superusers from an email and a password"""
+    """
+    Management command to create superusers from a username and a password for demo purposes.
+    """
 
-    help = "Create a superuser with an email and a password"
+    help = "Create a superuser with a username and a password for demo purposes"
 
     def add_arguments(self, parser):
-        """Define required arguments "email" and "password"."""
+        """Define required arguments "username" and "password"."""
         parser.add_argument(
-            "--admin_email",
-            help=("Email for the user."),
+            "--username",
+            help=("Username for the user."),
         )
         parser.add_argument(
             "--password",
@@ -30,11 +32,11 @@ class Command(BaseCommand):
         Given an email and a password, create a superuser or upgrade the existing
         user to superuser status.
         """
-        email = options.get("admin_email")
+        username = options.get("username")
         try:
-            user = User.objects.get(admin_email=email)
+            user = User.objects.get(sub=username)
         except User.DoesNotExist:
-            user = User(admin_email=email)
+            user = User(sub=username)
             message = "Superuser created successfully."
         else:
             if user.is_superuser and user.is_staff:

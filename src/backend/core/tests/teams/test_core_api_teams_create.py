@@ -10,7 +10,7 @@ from rest_framework.status import (
 )
 from rest_framework.test import APIClient
 
-from core.factories import IdentityFactory, TeamFactory
+from core.factories import TeamFactory, UserFactory
 from core.models import Team
 
 pytestmark = pytest.mark.django_db
@@ -34,11 +34,10 @@ def test_api_teams_create_authenticated():
     Authenticated users should be able to create teams and should automatically be declared
     as the owner of the newly created team.
     """
-    identity = IdentityFactory()
-    user = identity.user
+    user = UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/teams/",
@@ -58,9 +57,9 @@ def test_api_teams_create_authenticated_slugify_name():
     """
     Creating teams should automatically generate a slug.
     """
-    identity = IdentityFactory()
+    user = UserFactory()
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/teams/",
@@ -87,10 +86,10 @@ def test_api_teams_create_authenticated_expected_slug(param):
     """
     Creating teams should automatically create unaccented, no unicode, lower-case slug.
     """
-    identity = IdentityFactory()
+    user = UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/teams/",
@@ -110,10 +109,10 @@ def test_api_teams_create_authenticated_unique_slugs():
     Creating teams should raise an error if already existing slug.
     """
     TeamFactory(name="existing team")
-    identity = IdentityFactory()
+    user = UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/teams/",

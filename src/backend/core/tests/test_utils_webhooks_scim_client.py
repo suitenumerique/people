@@ -28,8 +28,8 @@ def test_utils_webhooks_add_user_to_group_no_webhooks():
 @mock.patch.object(Logger, "info")
 def test_utils_webhooks_add_user_to_group_success(mock_info):
     """The user passed to the function should get added."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhooks = factories.TeamWebhookFactory.create_batch(2, team=access.team)
 
     with responses.RequestsMock() as rsps:
@@ -64,7 +64,7 @@ def test_utils_webhooks_add_user_to_group_success(mock_info):
                         "value": [
                             {
                                 "value": str(access.user.id),
-                                "email": identity.email,
+                                "email": user.email,
                                 "type": "User",
                             }
                         ],
@@ -90,8 +90,8 @@ def test_utils_webhooks_add_user_to_group_success(mock_info):
 @mock.patch.object(Logger, "info")
 def test_utils_webhooks_remove_user_from_group_success(mock_info):
     """The user passed to the function should get removed."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhooks = factories.TeamWebhookFactory.create_batch(2, team=access.team)
 
     with responses.RequestsMock() as rsps:
@@ -121,7 +121,7 @@ def test_utils_webhooks_remove_user_from_group_success(mock_info):
                         "value": [
                             {
                                 "value": str(access.user.id),
-                                "email": identity.email,
+                                "email": user.email,
                                 "type": "User",
                             }
                         ],
@@ -148,8 +148,8 @@ def test_utils_webhooks_remove_user_from_group_success(mock_info):
 @mock.patch.object(Logger, "info")
 def test_utils_webhooks_add_user_to_group_failure(mock_info, mock_error):
     """The logger should be called on webhook call failure."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhooks = factories.TeamWebhookFactory.create_batch(2, team=access.team)
 
     with responses.RequestsMock() as rsps:
@@ -179,7 +179,7 @@ def test_utils_webhooks_add_user_to_group_failure(mock_info, mock_error):
                         "value": [
                             {
                                 "value": str(access.user.id),
-                                "email": identity.email,
+                                "email": user.email,
                                 "type": "User",
                             }
                         ],
@@ -207,8 +207,8 @@ def test_utils_webhooks_add_user_to_group_failure(mock_info, mock_error):
 @mock.patch.object(Logger, "info")
 def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
     """webhooks synchronization supports retries."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhook = factories.TeamWebhookFactory(team=access.team)
 
     url = re.compile(r".*/Groups/.*")
@@ -236,7 +236,7 @@ def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
                         "value": [
                             {
                                 "value": str(access.user.id),
-                                "email": identity.email,
+                                "email": user.email,
                                 "type": "User",
                             }
                         ],
@@ -262,8 +262,8 @@ def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
 @mock.patch.object(Logger, "info")
 def test_utils_synchronize_course_runs_max_retries_exceeded(mock_info, mock_error):
     """Webhooks synchronization has exceeded max retries and should get logged."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhook = factories.TeamWebhookFactory(team=access.team)
 
     with responses.RequestsMock() as rsps:
@@ -290,7 +290,7 @@ def test_utils_synchronize_course_runs_max_retries_exceeded(mock_info, mock_erro
                     "value": [
                         {
                             "value": str(access.user.id),
-                            "email": identity.email,
+                            "email": user.email,
                             "type": "User",
                         }
                     ],
@@ -314,8 +314,8 @@ def test_utils_synchronize_course_runs_max_retries_exceeded(mock_info, mock_erro
 
 def test_utils_webhooks_add_user_to_group_authorization():
     """Secret token should be passed in authorization header when set."""
-    identity = factories.IdentityFactory()
-    access = factories.TeamAccessFactory(user=identity.user)
+    user = factories.UserFactory()
+    access = factories.TeamAccessFactory(user=user)
     webhook = factories.TeamWebhookFactory(team=access.team, secret="123")
 
     with responses.RequestsMock() as rsps:

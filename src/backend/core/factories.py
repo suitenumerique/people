@@ -124,24 +124,13 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.User
-        django_get_or_create = ("admin_email",)
-
-    admin_email = factory.Faker("email")
-    language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
-    password = make_password("password")
-
-
-class IdentityFactory(factory.django.DjangoModelFactory):
-    """A factory to create identities for a user"""
-
-    class Meta:
-        model = models.Identity
         django_get_or_create = ("sub",)
 
-    user = factory.SubFactory(UserFactory)
     sub = factory.Sequence(lambda n: f"user{n!s}")
     email = factory.Faker("email")
     name = factory.Faker("name")
+    language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
+    password = make_password("password")
 
 
 class TeamFactory(factory.django.DjangoModelFactory):

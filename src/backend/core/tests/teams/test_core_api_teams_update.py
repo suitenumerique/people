@@ -45,10 +45,10 @@ def test_api_teams_update_authenticated_unrelated():
     """
     Authenticated users should not be allowed to update a team to which they are not related.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     team = factories.TeamFactory()
     old_team_values = serializers.TeamSerializer(instance=team).data
@@ -73,8 +73,7 @@ def test_api_teams_update_authenticated_members():
     Users who are members of a team but not administrators should
     not be allowed to update it.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -101,8 +100,7 @@ def test_api_teams_update_authenticated_members():
 
 def test_api_teams_update_authenticated_administrators():
     """Administrators of a team should be allowed to update it."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -134,8 +132,7 @@ def test_api_teams_update_authenticated_administrators():
 def test_api_teams_update_authenticated_owners():
     """Administrators of a team should be allowed to update it,
     apart from read-only fields."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -170,8 +167,7 @@ def test_api_teams_update_administrator_or_owner_of_another():
     Being administrator or owner of a team should not grant authorization to update
     another team.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -200,8 +196,7 @@ def test_api_teams_update_existing_slug_should_return_error():
     Updating a team's name to an existing slug should return a bad request,
     instead of creating a duplicate.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

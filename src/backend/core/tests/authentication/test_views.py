@@ -38,8 +38,7 @@ def test_view_logout_anonymous():
 def test_view_logout(mocked_oidc_logout_url):
     """Authenticated users should be redirected to OIDC provider for logout."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -60,8 +59,7 @@ def test_view_logout(mocked_oidc_logout_url):
 def test_view_logout_no_oidc_provider(mocked_oidc_logout_url):
     """Authenticated users should be logged out when no OIDC provider is available."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -96,8 +94,7 @@ def test_view_logout_callback_anonymous():
 def test_view_logout_persist_state(initial_oidc_states):
     """State value should be persisted in session's data."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     request = RequestFactory().request()
     request.user = user
@@ -128,8 +125,7 @@ def test_view_logout_construct_oidc_logout_url(
 ):
     """Should construct the logout URL to initiate the logout flow with the OIDC provider."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     request = RequestFactory().request()
     request.user = user
@@ -159,8 +155,7 @@ def test_view_logout_construct_oidc_logout_url_none_id_token():
     """If no ID token is available in the session,
     the user should be redirected to the final URL."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     request = RequestFactory().request()
     request.user = user
@@ -180,8 +175,7 @@ def test_view_logout_construct_oidc_logout_url_none_id_token():
 def test_view_logout_callback_wrong_state(initial_state):
     """Should raise an error if OIDC state doesn't match session data."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     request = RequestFactory().request()
     request.user = user
@@ -207,8 +201,7 @@ def test_view_logout_callback_wrong_state(initial_state):
 def test_view_logout_callback():
     """If state matches, callback should clear OIDC state and redirects."""
 
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     request = RequestFactory().get("/logout-callback/", data={"state": "mocked_state"})
     request.user = user

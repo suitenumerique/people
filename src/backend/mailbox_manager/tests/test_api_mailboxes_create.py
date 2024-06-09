@@ -36,8 +36,7 @@ def test_api_mailboxes__create_authenticated_missing_fields():
     Authenticated users should not be able to create mailboxes
     without local part or secondary mail.
     """
-    user = core_factories.UserFactory(admin_email="tester@ministry.fr")
-    core_factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = core_factories.UserFactory(email="tester@ministry.fr", name="john doe")
 
     client = APIClient()
     client.force_login(user)
@@ -74,8 +73,7 @@ def test_api_mailboxes__create_authenticated_missing_fields():
 
 def test_api_mailboxes__create_authenticated_successful():
     """Authenticated users should be able to create mailbox."""
-    user = core_factories.UserFactory(admin_email="tester@ministry.fr")
-    core_factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = core_factories.UserFactory(email="tester@ministry.fr", name="john doe")
 
     client = APIClient()
     client.force_login(user)

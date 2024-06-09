@@ -30,10 +30,10 @@ def test_api_mail_domains__retrieve_authenticated_unrelated():
     Authenticated users should not be allowed to retrieve a domain
     to which they have access.
     """
-    identity = core_factories.IdentityFactory()
+    user = core_factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     domain = factories.MailDomainFactory()
 
@@ -49,8 +49,7 @@ def test_api_mail_domains__retrieve_authenticated_related():
     Authenticated users should be allowed to retrieve a domain
     to which they have access.
     """
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

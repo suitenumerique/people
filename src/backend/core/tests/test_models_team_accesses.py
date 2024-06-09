@@ -77,7 +77,7 @@ def test_models_team_accesses_create_webhook():
                     "value": [
                         {
                             "value": str(user.id),
-                            "email": None,
+                            "email": user.email,
                             "type": "User",
                         }
                     ],
@@ -120,7 +120,7 @@ def test_models_team_accesses_delete_webhook():
                     "value": [
                         {
                             "value": str(access.user.id),
-                            "email": None,
+                            "email": access.user.email,
                             "type": "User",
                         }
                     ],

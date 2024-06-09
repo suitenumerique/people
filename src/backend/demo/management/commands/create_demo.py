@@ -115,7 +115,9 @@ def create_demo(stdout):
         for i in range(defaults.NB_OBJECTS["users"]):
             queue.push(
                 models.User(
-                    admin_email=f"user{i:d}@example.com",
+                    sub=uuid4(),
+                    email=f"user{i:d}@example.com" if random.random() < 0.97 else None,
+                    name=fake.name() if random.random() < 0.97 else None,
                     password="!",
                     is_superuser=False,
                     is_active=True,
@@ -123,27 +125,6 @@ def create_demo(stdout):
                     language=random.choice(settings.LANGUAGES)[0],
                 )
             )
-        queue.flush()
-
-    with Timeit(stdout, "Creating identities"):
-        users_values = list(models.User.objects.values("id", "admin_email"))
-        for user_dict in users_values:
-            for i in range(
-                random.choices(range(5), weights=[5, 50, 30, 10, 5], k=1)[0]
-            ):
-                user_email = user_dict["admin_email"]
-                queue.push(
-                    models.Identity(
-                        user_id=user_dict["id"],
-                        sub=uuid4(),
-                        is_main=(i == 0),
-                        # Leave 3% of emails and names empty
-                        email=f"identity{i:d}{user_email:s}"
-                        if random.random() < 0.97
-                        else None,
-                        name=fake.name() if random.random() < 0.97 else None,
-                    )
-                )
         queue.flush()
 
     with Timeit(stdout, "Creating teams"):

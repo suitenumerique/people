@@ -34,15 +34,15 @@ def test_api_team_invitations__create__anonymous():
 
 def test_api_team_invitations__create__authenticated_outsider():
     """Users outside of team should not be permitted to invite to team."""
-    identity = factories.IdentityFactory()
-
+    user = factories.UserFactory()
     team = factories.TeamFactory()
     invitation_values = serializers.InvitationSerializer(
         factories.InvitationFactory.build()
     ).data
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
+
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         invitation_values,
@@ -57,16 +57,16 @@ def test_api_team_invitations__create__authenticated_outsider():
 )
 def test_api_team_invitations__create__privileged_members(role):
     """Owners and administrators should be able to invite new members."""
-    identity = factories.IdentityFactory()
-
-    team = factories.TeamFactory(users=[(identity.user, role)])
+    user = factories.UserFactory()
+    team = factories.TeamFactory(users=[(user, role)])
 
     invitation_values = serializers.InvitationSerializer(
         factories.InvitationFactory.build()
     ).data
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
+
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         invitation_values,
@@ -79,16 +79,16 @@ def test_api_team_invitations__create__members():
     """
     Members should not be able to invite new members.
     """
-    identity = factories.IdentityFactory()
-
-    team = factories.TeamFactory(users=[(identity.user, "member")])
+    user = factories.UserFactory()
+    team = factories.TeamFactory(users=[(user, "member")])
 
     invitation_values = serializers.InvitationSerializer(
         factories.InvitationFactory.build()
     ).data
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
+
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         invitation_values,
@@ -102,16 +102,16 @@ def test_api_team_invitations__create__members():
 
 def test_api_team_invitations__create__issuer_and_team_automatically_added():
     """Team and issuer fields should auto-complete."""
-    identity = factories.IdentityFactory()
-
-    team = factories.TeamFactory(users=[(identity.user, "owner")])
+    user = factories.UserFactory()
+    team = factories.TeamFactory(users=[(user, "owner")])
 
     # Generate a random invitation
     invitation = factories.InvitationFactory.build()
     invitation_data = {"email": invitation.email, "role": invitation.role}
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
+
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         invitation_data,
@@ -120,7 +120,7 @@ def test_api_team_invitations__create__issuer_and_team_automatically_added():
     assert response.status_code == status.HTTP_201_CREATED
     # team and issuer automatically set
     assert response.json()["team"] == str(team.id)
-    assert response.json()["issuer"] == str(identity.user.id)
+    assert response.json()["issuer"] == str(user.id)
 
 
 def test_api_team_invitations__create__cannot_duplicate_invitation():
@@ -129,8 +129,8 @@ def test_api_team_invitations__create__cannot_duplicate_invitation():
     team = existing_invitation.team
 
     # Grant privileged role on the Team to the user
-    identity = factories.IdentityFactory()
-    factories.TeamAccessFactory(team=team, user=identity.user, role="administrator")
+    user = factories.UserFactory()
+    factories.TeamAccessFactory(team=team, user=user, role="administrator")
 
     # Create a new invitation to the same team with the exact same email address
     duplicated_invitation = serializers.InvitationSerializer(
@@ -138,7 +138,7 @@ def test_api_team_invitations__create__cannot_duplicate_invitation():
     ).data
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         duplicated_invitation,
@@ -154,10 +154,8 @@ def test_api_team_invitations__create__cannot_invite_existing_users():
     """
     Should not be able to invite already existing users.
     """
-    user = factories.UserFactory()
+    user, existing_user = factories.UserFactory.create_batch(2)
     team = factories.TeamFactory(users=[(user, "administrator")])
-
-    existing_user = factories.IdentityFactory(is_main=True)
 
     # Build an invitation to the email of an exising identity in the db
     invitation_values = serializers.InvitationSerializer(
@@ -166,6 +164,7 @@ def test_api_team_invitations__create__cannot_invite_existing_users():
 
     client = APIClient()
     client.force_login(user)
+
     response = client.post(
         f"/api/v1.0/teams/{team.id}/invitations/",
         invitation_values,
@@ -190,14 +189,10 @@ def test_api_team_invitations__list__authenticated():
     Authenticated user should be able to list invitations
     in teams they belong to, including from other issuers.
     """
-    identity = factories.IdentityFactory()
-    other_user = factories.UserFactory()
-
-    team = factories.TeamFactory(
-        users=[(identity.user, "administrator"), (other_user, "owner")]
-    )
+    user, other_user = factories.UserFactory.create_batch(2)
+    team = factories.TeamFactory(users=[(user, "administrator"), (other_user, "owner")])
     invitation = factories.InvitationFactory(
-        team=team, role="administrator", issuer=identity.user
+        team=team, role="administrator", issuer=user
     )
     other_invitations = factories.InvitationFactory.create_batch(
         2, team=team, role="member", issuer=other_user
@@ -208,7 +203,7 @@ def test_api_team_invitations__list__authenticated():
     factories.InvitationFactory.create_batch(2, team=other_team, role="member")
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.get(
         f"/api/v1.0/teams/{team.id}/invitations/",
     )
@@ -235,24 +230,22 @@ def test_api_team_invitations__list__expired_invitations_still_listed(settings):
     """
     Expired invitations are still listed.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
     other_user = factories.UserFactory()
 
-    team = factories.TeamFactory(
-        users=[(identity.user, "administrator"), (other_user, "owner")]
-    )
+    team = factories.TeamFactory(users=[(user, "administrator"), (other_user, "owner")])
 
     # override settings to accelerate validation expiration
     settings.INVITATION_VALIDITY_DURATION = 1  # second
     expired_invitation = factories.InvitationFactory(
         team=team,
         role="member",
-        issuer=identity.user,
+        issuer=user,
     )
     time.sleep(1)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.get(
         f"/api/v1.0/teams/{team.id}/invitations/",
     )
@@ -293,12 +286,12 @@ def test_api_team_invitations__retrieve__unrelated_user():
     """
     Authenticated unrelated users should not be able to retrieve invitations.
     """
-    user = factories.IdentityFactory(user=factories.UserFactory()).user
-
+    user = factories.UserFactory()
     invitation = factories.InvitationFactory()
 
     client = APIClient()
     client.force_login(user)
+
     response = client.get(
         f"/api/v1.0/teams/{invitation.team.id}/invitations/{invitation.id}/",
     )
@@ -311,8 +304,7 @@ def test_api_team_invitations__retrieve__team_member():
     Authenticated team members should be able to retrieve invitations
     whatever their role in the team.
     """
-    user = factories.IdentityFactory(user=factories.UserFactory()).user
-
+    user = factories.UserFactory()
     invitation = factories.InvitationFactory()
     factories.TeamAccessFactory(team=invitation.team, user=user, role="member")
 
@@ -342,8 +334,7 @@ def test_api_team_invitations__update__forbidden(method):
     """
     Update of invitations is currently forbidden.
     """
-    user = factories.IdentityFactory(user=factories.UserFactory()).user
-
+    user = factories.UserFactory()
     invitation = factories.InvitationFactory()
     factories.TeamAccessFactory(team=invitation.team, user=user, role="owner")
 
@@ -376,13 +367,12 @@ def test_api_team_invitations__delete__anonymous():
 
 def test_api_team_invitations__delete__authenticated_outsider():
     """Members outside of team should not cancel invitations."""
-    identity = factories.IdentityFactory()
-
+    user = factories.UserFactory()
     team = factories.TeamFactory()
     invitation = factories.InvitationFactory(team=team)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.delete(
         f"/api/v1.0/teams/{team.id}/invitations/{invitation.id}/",
     )
@@ -392,13 +382,12 @@ def test_api_team_invitations__delete__authenticated_outsider():
 @pytest.mark.parametrize("role", ["owner", "administrator"])
 def test_api_team_invitations__delete__privileged_members(role):
     """Privileged member should be able to cancel invitation."""
-    identity = factories.IdentityFactory()
-
-    team = factories.TeamFactory(users=[(identity.user, role)])
+    user = factories.UserFactory()
+    team = factories.TeamFactory(users=[(user, role)])
     invitation = factories.InvitationFactory(team=team)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.delete(
         f"/api/v1.0/teams/{team.id}/invitations/{invitation.id}/",
     )
@@ -407,13 +396,12 @@ def test_api_team_invitations__delete__privileged_members(role):
 
 def test_api_team_invitations__delete__members():
     """Member should not be able to cancel invitation."""
-    identity = factories.IdentityFactory()
-
-    team = factories.TeamFactory(users=[(identity.user, "member")])
+    user = factories.UserFactory()
+    team = factories.TeamFactory(users=[(user, "member")])
     invitation = factories.InvitationFactory(team=team)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.delete(
         f"/api/v1.0/teams/{team.id}/invitations/{invitation.id}/",
     )

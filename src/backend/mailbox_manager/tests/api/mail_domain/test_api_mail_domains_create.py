@@ -31,10 +31,10 @@ def test_api_mail_domains__create_name_unique():
     Creating domain should raise an error if already existing name.
     """
     factories.MailDomainFactory(name="existing_domain.com")
-    identity = core_factories.IdentityFactory()
+    user = core_factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/mail-domains/",
@@ -53,11 +53,10 @@ def test_api_mail_domains__create_authenticated():
     and should automatically be added as owner of the newly created domain.
     """
 
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/mail-domains/",

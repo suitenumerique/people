@@ -32,8 +32,7 @@ def test_api_mail_domains__list_authenticated():
     to which they have access.
     """
 
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

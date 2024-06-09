@@ -16,8 +16,7 @@ def test_throttle():
     """
     Throttle protection should block requests if too many.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

@@ -33,10 +33,10 @@ def test_api_teams_delete_authenticated_unrelated():
     Authenticated users should not be allowed to delete a team to which they are not
     related.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     team = factories.TeamFactory()
 
@@ -54,8 +54,7 @@ def test_api_teams_delete_authenticated_member():
     Authenticated users should not be allowed to delete a team for which they are
     only a member.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -78,8 +77,7 @@ def test_api_teams_delete_authenticated_administrator():
     Authenticated users should not be allowed to delete a team for which they are
     administrator.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -102,8 +100,7 @@ def test_api_teams_delete_authenticated_owner():
     Authenticated users should be able to delete a team for which they are directly
     owner.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

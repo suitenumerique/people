@@ -161,9 +161,25 @@ class Contact(BaseModel):
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
 
-    admin_email = models.EmailField(
-        _("admin email address"), unique=True, null=True, blank=True
+    sub_validator = validators.RegexValidator(
+        regex=r"^[\w.@+-]+\Z",
+        message=_(
+            "Enter a valid sub. This value may contain only letters, "
+            "numbers, and @/./+/-/_ characters."
+        ),
     )
+
+    sub = models.CharField(
+        _("sub"),
+        help_text=_(
+            "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
+        ),
+        max_length=255,
+        unique=True,
+        validators=[sub_validator],
+    )
+    email = models.EmailField(_("email address"), null=True, blank=True)
+    name = models.CharField(_("name"), max_length=100, null=True, blank=True)
     profile_contact = models.OneToOneField(
         Contact,
         on_delete=models.SET_NULL,
@@ -205,7 +221,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     objects = auth_models.UserManager()
 
-    USERNAME_FIELD = "admin_email"
+    USERNAME_FIELD = "sub"
     REQUIRED_FIELDS = []
 
     class Meta:
@@ -217,113 +233,12 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         return (
             str(self.profile_contact)
             if self.profile_contact
-            else self.admin_email or str(self.id)
+            else self.email or str(self.sub)
         )
-
-    def _get_identities_main(self):
-        """Return a list with the main identity or an empty list."""
-        try:
-            return self._identities_main
-        except AttributeError:
-            return self.identities.filter(is_main=True)
-
-    @property
-    def name(self):
-        """Return main identity's name."""
-        try:
-            return self._get_identities_main()[0].name
-        except IndexError:
-            return None
-
-    @property
-    def email(self):
-        """Return main identity's email."""
-        try:
-            return self._get_identities_main()[0].email
-        except IndexError:
-            return None
-
-    def clean(self):
-        """Validate fields."""
-        super().clean()
-
-        if self.profile_contact_id and not self.profile_contact.owner == self:
-            raise exceptions.ValidationError(
-                "Users can only declare as profile a contact they own."
-            )
-
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """Email this user."""
-        email = self.email or self.admin_email
-        if not email:
-            raise ValueError("You must first set an email for the user.")
-        mail.send_mail(subject, message, from_email, [email], **kwargs)
-
-    @classmethod
-    def get_email_field_name(cls):
-        """
-        Raise error when trying to get email field name from the user as we are using
-        a separate Email model to allow several emails per user.
-        """
-        raise NotImplementedError(
-            "This feature is deactivated to allow several emails per user."
-        )
-
-
-class Identity(BaseModel):
-    """User identity"""
-
-    sub_validator = validators.RegexValidator(
-        regex=r"^[\w.@+-]+\Z",
-        message=_(
-            "Enter a valid sub. This value may contain only letters, "
-            "numbers, and @/./+/-/_ characters."
-        ),
-    )
-
-    user = models.ForeignKey(User, related_name="identities", on_delete=models.CASCADE)
-    sub = models.CharField(
-        _("sub"),
-        help_text=_(
-            "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
-        ),
-        max_length=255,
-        unique=True,
-        validators=[sub_validator],
-    )
-    email = models.EmailField(_("email address"), null=True, blank=True)
-    name = models.CharField(_("name"), max_length=100, null=True, blank=True)
-    is_main = models.BooleanField(
-        _("main"),
-        default=False,
-        help_text=_("Designates whether the email is the main one."),
-    )
-
-    class Meta:
-        db_table = "people_identity"
-        ordering = ("-is_main", "email")
-        verbose_name = _("identity")
-        verbose_name_plural = _("identities")
-        constraints = [
-            # Uniqueness
-            models.UniqueConstraint(
-                fields=["user", "email"],
-                name="unique_user_email",
-                violation_error_message=_(
-                    "This email address is already declared for this user."
-                ),
-            ),
-        ]
-
-    def __str__(self):
-        main_str = "[main]" if self.is_main else ""
-        id_str = self.email or self.sub
-        return f"{id_str:s}{main_str:s}"
 
     def save(self, *args, **kwargs):
         """
-        Saves identity, ensuring users always have exactly one main identity.
-        If it's a new identity, give its user access to the relevant teams.
+        If it's a new user, give her access to the relevant teams.
         """
 
         if self._state.adding:
@@ -331,9 +246,16 @@ class Identity(BaseModel):
 
         super().save(*args, **kwargs)
 
-        # Ensure users always have one and only one main identity.
-        if self.is_main is True:
-            self.user.identities.exclude(id=self.id).update(is_main=False)
+    def clean(self):
+        """Validate fields."""
+        super().clean()
+        if self.email:
+            self.email = User.objects.normalize_email(self.email)
+
+        if self.profile_contact_id and not self.profile_contact.owner == self:
+            raise exceptions.ValidationError(
+                "Users can only declare as profile a contact they own."
+            )
 
     def _convert_valid_invitations(self):
         """
@@ -354,24 +276,17 @@ class Identity(BaseModel):
 
         TeamAccess.objects.bulk_create(
             [
-                TeamAccess(user=self.user, team=invitation.team, role=invitation.role)
+                TeamAccess(user=self, team=invitation.team, role=invitation.role)
                 for invitation in valid_invitations
             ]
         )
         valid_invitations.delete()
 
-    def clean(self):
-        """Normalize the email field and clean the 'is_main' field."""
-        if self.email:
-            self.email = User.objects.normalize_email(self.email)
-        if not self.user.identities.exclude(pk=self.pk).filter(is_main=True).exists():
-            if not self.created_at:
-                self.is_main = True
-            elif not self.is_main:
-                raise exceptions.ValidationError(
-                    {"is_main": "A user should have one and only one main identity."}
-                )
-        super().clean()
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Email this user."""
+        if not self.email:
+            raise ValueError("You must first set an email for the user.")
+        mail.send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
 class Team(BaseModel):
@@ -615,8 +530,8 @@ class Invitation(BaseModel):
         """Validate fields."""
         super().clean()
 
-        # Check if an identity already exists for the provided email
-        if Identity.objects.filter(email=self.email).exists():
+        # Check if a user already exists for the provided email
+        if User.objects.filter(email=self.email).exists():
             raise exceptions.ValidationError(
                 {"email": _("This email is already associated to a registered user.")}
             )

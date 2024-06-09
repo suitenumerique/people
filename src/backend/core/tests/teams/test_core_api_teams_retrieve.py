@@ -27,10 +27,10 @@ def test_api_teams_retrieve_authenticated_unrelated():
     Authenticated users should not be allowed to retrieve a team to which they are
     not related.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     team = factories.TeamFactory()
 
@@ -46,8 +46,7 @@ def test_api_teams_retrieve_authenticated_related():
     Authenticated users should be allowed to retrieve a team to which they
     are related whatever the role.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)

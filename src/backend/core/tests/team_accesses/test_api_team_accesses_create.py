@@ -41,9 +41,7 @@ def test_api_team_accesses_create_authenticated_unrelated():
     Authenticated users should not be allowed to create team accesses for a team to
     which they are not related.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     other_user = factories.UserFactory()
     team = factories.TeamFactory()
 
@@ -66,9 +64,7 @@ def test_api_team_accesses_create_authenticated_unrelated():
 
 def test_api_team_accesses_create_authenticated_member():
     """Members of a team should not be allowed to create team accesses."""
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "member")])
     other_user = factories.UserFactory()
 
@@ -96,9 +92,7 @@ def test_api_team_accesses_create_authenticated_administrator():
     """
     Administrators of a team should be able to create team accesses except for the "owner" role.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
 
@@ -149,9 +143,7 @@ def test_api_team_accesses_create_authenticated_owner():
     """
     Owners of a team should be able to create team accesses whatever the role.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "owner")])
     other_user = factories.UserFactory()
 
@@ -227,7 +219,7 @@ def test_api_team_accesses_create_webhook():
                     "value": [
                         {
                             "value": str(other_user.id),
-                            "email": None,
+                            "email": other_user.email,
                             "type": "User",
                         }
                     ],

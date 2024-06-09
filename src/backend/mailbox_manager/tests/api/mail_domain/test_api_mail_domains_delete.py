@@ -30,11 +30,11 @@ def test_api_mail_domains__delete_authenticated_unrelated():
     Authenticated users should not be allowed to delete a domain to which they are not
     related.
     """
-    identity = core_factories.IdentityFactory()
+    user = core_factories.UserFactory()
     domain = factories.MailDomainFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
     response = client.delete(
         f"/api/v1.0/mail-domains/{domain.slug}/",
     )
@@ -49,12 +49,12 @@ def test_api_mail_domains__delete_authenticated_member():
     Authenticated users should not be allowed to delete a domain
     to which they are only a member.
     """
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
     domain = factories.MailDomainFactory(users=[(user, "member")])
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
         f"/api/v1.0/mail-domains/{domain.slug}/",
     )
@@ -71,12 +71,12 @@ def test_api_mail_domains__delete_authenticated_administrator():
     Authenticated users should not be allowed to delete a domain
     for which they are administrator.
     """
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
     domain = factories.MailDomainFactory(users=[(user, "administrator")])
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
         f"/api/v1.0/mail-domains/{domain.slug}/",
     )
@@ -93,12 +93,12 @@ def test_api_mail_domains__delete_authenticated_owner():
     Authenticated users should be able to delete a domain
     for which they are directly owner.
     """
-    identity = core_factories.IdentityFactory()
-    user = identity.user
+    user = core_factories.UserFactory()
     domain = factories.MailDomainFactory(users=[(user, "owner")])
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
         f"/api/v1.0/mail-domains/{domain.slug}/",
     )

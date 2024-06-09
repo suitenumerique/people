@@ -35,10 +35,10 @@ def test_api_users_list_authenticated():
     """
     Authenticated users should be able to list all users.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     factories.UserFactory.create_batch(2)
     response = client.get(
@@ -53,22 +53,14 @@ def test_api_users_authenticated_list_by_email():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the email.
     """
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    dave = factories.UserFactory(email="david.bowman@work.com", name=None)
+    nicole = factories.UserFactory(email="nicole_foole@work.com", name=None)
+    frank = factories.UserFactory(email="frank_poole@work.com", name=None)
+    factories.UserFactory(email="heywood_floyd@work.com", name=None)
 
     client = APIClient()
     client.force_login(user)
-
-    dave = factories.IdentityFactory(
-        email="david.bowman@work.com", name=None, is_main=True
-    )
-    nicole = factories.IdentityFactory(
-        email="nicole_foole@work.com", name=None, is_main=True
-    )
-    frank = factories.IdentityFactory(
-        email="frank_poole@work.com", name=None, is_main=True
-    )
-    factories.IdentityFactory(email="heywood_floyd@work.com", name=None, is_main=True)
 
     # Full query should work
     response = client.get(
@@ -77,14 +69,14 @@ def test_api_users_authenticated_list_by_email():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(dave.user.id)
+    assert user_ids[0] == str(dave.id)
 
     # Partial query should work
     response = client.get("/api/v1.0/users/?q=fran")
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(frank.user.id)
+    assert user_ids[0] == str(frank.id)
 
     # Result that matches a trigram twice ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
@@ -92,7 +84,7 @@ def test_api_users_authenticated_list_by_email():
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
     # "Nicole Foole" matches twice on "ole"
-    assert user_ids == [str(nicole.user.id), str(frank.user.id)]
+    assert user_ids == [str(nicole.id), str(frank.id)]
 
     # Even with a low similarity threshold, query should match expected emails
     response = client.get("/api/v1.0/users/?q=ool")
@@ -100,22 +92,22 @@ def test_api_users_authenticated_list_by_email():
     assert response.status_code == HTTP_200_OK
     assert response.json()["results"] == [
         {
-            "id": str(nicole.user.id),
+            "id": str(nicole.id),
             "email": nicole.email,
             "name": nicole.name,
-            "is_device": nicole.user.is_device,
-            "is_staff": nicole.user.is_staff,
-            "language": nicole.user.language,
-            "timezone": str(nicole.user.timezone),
+            "is_device": nicole.is_device,
+            "is_staff": nicole.is_staff,
+            "language": nicole.language,
+            "timezone": str(nicole.timezone),
         },
         {
-            "id": str(frank.user.id),
+            "id": str(frank.id),
             "email": frank.email,
             "name": frank.name,
-            "is_device": frank.user.is_device,
-            "is_staff": frank.user.is_staff,
-            "language": frank.user.language,
-            "timezone": str(frank.user.timezone),
+            "is_device": frank.is_device,
+            "is_staff": frank.is_staff,
+            "language": frank.language,
+            "timezone": str(frank.timezone),
         },
     ]
 
@@ -125,16 +117,14 @@ def test_api_users_authenticated_list_by_name():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the name.
     """
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    dave = factories.UserFactory(name="dave bowman", email=None)
+    nicole = factories.UserFactory(name="nicole foole", email=None)
+    frank = factories.UserFactory(name="frank poole", email=None)
+    factories.UserFactory(name="heywood floyd", email=None)
 
     client = APIClient()
     client.force_login(user)
-
-    dave = factories.IdentityFactory(name="dave bowman", email=None, is_main=True)
-    nicole = factories.IdentityFactory(name="nicole foole", email=None, is_main=True)
-    frank = factories.IdentityFactory(name="frank poole", email=None, is_main=True)
-    factories.IdentityFactory(name="heywood floyd", email=None, is_main=True)
 
     # Full query should work
     response = client.get(
@@ -143,14 +133,14 @@ def test_api_users_authenticated_list_by_name():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(dave.user.id)
+    assert user_ids[0] == str(dave.id)
 
     # Partial query should work
     response = client.get("/api/v1.0/users/?q=fran")
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids[0] == str(frank.user.id)
+    assert user_ids[0] == str(frank.id)
 
     # Result that matches a trigram twice ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
@@ -158,7 +148,7 @@ def test_api_users_authenticated_list_by_name():
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
     # "Nicole Foole" matches twice on "ole"
-    assert user_ids == [str(nicole.user.id), str(frank.user.id)]
+    assert user_ids == [str(nicole.id), str(frank.id)]
 
     # Even with a low similarity threshold, query should match expected user
     response = client.get("/api/v1.0/users/?q=ool")
@@ -166,22 +156,22 @@ def test_api_users_authenticated_list_by_name():
     assert response.status_code == HTTP_200_OK
     assert response.json()["results"] == [
         {
-            "id": str(nicole.user.id),
+            "id": str(nicole.id),
             "email": nicole.email,
             "name": nicole.name,
-            "is_device": nicole.user.is_device,
-            "is_staff": nicole.user.is_staff,
-            "language": nicole.user.language,
-            "timezone": str(nicole.user.timezone),
+            "is_device": nicole.is_device,
+            "is_staff": nicole.is_staff,
+            "language": nicole.language,
+            "timezone": str(nicole.timezone),
         },
         {
-            "id": str(frank.user.id),
+            "id": str(frank.id),
             "email": frank.email,
             "name": frank.name,
-            "is_device": frank.user.is_device,
-            "is_staff": frank.user.is_staff,
-            "language": frank.user.language,
-            "timezone": str(frank.user.timezone),
+            "is_device": frank.is_device,
+            "is_staff": frank.is_staff,
+            "language": frank.language,
+            "timezone": str(frank.timezone),
         },
     ]
 
@@ -192,19 +182,13 @@ def test_api_users_authenticated_list_by_name_and_email():
     partial query on the name and email.
     """
 
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    nicole = factories.UserFactory(email="nicole_foole@work.com", name="nicole foole")
+    frank = factories.UserFactory(email="oleg_poole@work.com", name=None)
+    david = factories.UserFactory(email=None, name="david role")
 
     client = APIClient()
     client.force_login(user)
-
-    nicole = factories.IdentityFactory(
-        email="nicole_foole@work.com", name="nicole foole", is_main=True
-    )
-    frank = factories.IdentityFactory(
-        email="oleg_poole@work.com", name=None, is_main=True
-    )
-    david = factories.IdentityFactory(email=None, name="david role", is_main=True)
 
     # Result that matches a trigram in name and email ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
@@ -215,7 +199,7 @@ def test_api_users_authenticated_list_by_name_and_email():
     # "Nicole Foole" matches twice on "ole" in her name and twice on "ole" in her email
     # "Oleg poole" matches twice on "ole" in her email
     # "David role" matches once on "ole" in his name
-    assert user_ids == [str(nicole.user.id), str(frank.user.id), str(david.user.id)]
+    assert user_ids == [str(nicole.id), str(frank.id), str(david.id)]
 
 
 def test_api_users_authenticated_list_exclude_users_already_in_team(
@@ -225,27 +209,26 @@ def test_api_users_authenticated_list_exclude_users_already_in_team(
     Authenticated users should be able to search users
     but the result should exclude all users already in the given team.
     """
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.email, name="john doe")
+    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    dave = factories.UserFactory(name="dave bowman", email=None)
+    nicole = factories.UserFactory(name="nicole foole", email=None)
+    frank = factories.UserFactory(name="frank poole", email=None)
+    mary = factories.UserFactory(name="mary poole", email=None)
+    factories.UserFactory(name="heywood floyd", email=None)
+    factories.UserFactory(name="Andrei Smyslov", email=None)
+    factories.TeamFactory.create_batch(10)
+
     client = APIClient()
     client.force_login(user)
-
-    dave = factories.IdentityFactory(name="dave bowman", email=None, is_main=True)
-    nicole = factories.IdentityFactory(name="nicole foole", email=None, is_main=True)
-    frank = factories.IdentityFactory(name="frank poole", email=None, is_main=True)
-    mary = factories.IdentityFactory(name="mary poole", email=None, is_main=True)
-    factories.IdentityFactory(name="heywood floyd", email=None, is_main=True)
-    factories.IdentityFactory(name="Andrei Smyslov", email=None, is_main=True)
-    factories.TeamFactory.create_batch(10)
 
     # Add Dave and Frank in the same team
     team = factories.TeamFactory(
         users=[
-            (dave.user, models.RoleChoices.MEMBER),
-            (frank.user, models.RoleChoices.MEMBER),
+            (dave, models.RoleChoices.MEMBER),
+            (frank, models.RoleChoices.MEMBER),
         ]
     )
-    factories.TeamFactory(users=[(nicole.user, models.RoleChoices.MEMBER)])
+    factories.TeamFactory(users=[(nicole, models.RoleChoices.MEMBER)])
 
     # Search user to add him/her to a team, we give a team id to the request
     # to exclude all users already in the team
@@ -266,117 +249,24 @@ def test_api_users_authenticated_list_exclude_users_already_in_team(
     # - user authenticated
     # - search user query
     # - User
-    # - Identity
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(3):
         response = client.get(
             f"/api/v1.0/users/?q=ool&team_id={team.id}",
         )
     assert response.status_code == HTTP_200_OK
     user_ids = sorted([user["id"] for user in response.json()["results"]])
-    assert user_ids == sorted([str(mary.user.id), str(nicole.user.id)])
-
-
-def test_api_users_authenticated_list_multiple_identities_single_user():
-    """
-    User with multiple identities should appear only once in results.
-    """
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
-
-    client = APIClient()
-    client.force_login(user)
-
-    dave = factories.UserFactory()
-    factories.IdentityFactory(
-        user=dave, email="dave.bowman@work.com", name="dave bowman"
-    )
-    factories.IdentityFactory(user=dave, email="dave.bowman@fun.fr", name="dave bowman")
-
-    # Full query should work
-    response = client.get(
-        "/api/v1.0/users/?q=david.bowman@work.com",
-    )
-
-    assert response.status_code == HTTP_200_OK
-    # A single user is returned, despite similarity matching both emails
-    assert response.json()["count"] == 1
-    assert response.json()["results"][0]["id"] == str(dave.id)
-
-
-def test_api_users_authenticated_list_multiple_identities_multiple_users():
-    """
-    User with multiple identities should be ranked
-    on their best matching identity.
-    """
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
-
-    client = APIClient()
-    client.force_login(user)
-
-    dave = factories.UserFactory()
-    dave_identity = factories.IdentityFactory(
-        user=dave, email="dave.bowman@work.com", is_main=True, name="dave bowman"
-    )
-    factories.IdentityFactory(user=dave, email="babibou@ehehe.com", name="babihou")
-    davina_identity = factories.IdentityFactory(
-        user=factories.UserFactory(), email="davina.bowan@work.com", name="davina"
-    )
-    prue_identity = factories.IdentityFactory(
-        user=factories.UserFactory(),
-        email="prudence.crandall@work.com",
-        name="prudence",
-    )
-
-    # Full query should work
-    response = client.get(
-        "/api/v1.0/users/?q=david.bowman@work.com",
-    )
-
-    assert response.status_code == HTTP_200_OK
-    assert response.json()["count"] == 3
-    assert response.json()["results"] == [
-        {
-            "id": str(dave.id),
-            "email": dave_identity.email,
-            "name": dave_identity.name,
-            "is_device": dave_identity.user.is_device,
-            "is_staff": dave_identity.user.is_staff,
-            "language": dave_identity.user.language,
-            "timezone": str(dave_identity.user.timezone),
-        },
-        {
-            "id": str(davina_identity.user.id),
-            "email": davina_identity.email,
-            "name": davina_identity.name,
-            "is_device": davina_identity.user.is_device,
-            "is_staff": davina_identity.user.is_staff,
-            "language": davina_identity.user.language,
-            "timezone": str(davina_identity.user.timezone),
-        },
-        {
-            "id": str(prue_identity.user.id),
-            "email": prue_identity.email,
-            "name": prue_identity.name,
-            "is_device": prue_identity.user.is_device,
-            "is_staff": prue_identity.user.is_staff,
-            "language": prue_identity.user.language,
-            "timezone": str(prue_identity.user.timezone),
-        },
-    ]
+    assert user_ids == sorted([str(mary.id), str(nicole.id)])
 
 
 def test_api_users_authenticated_list_uppercase_content():
     """Upper case content should be found by lower case query."""
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
+    user = factories.UserFactory(email="tester@ministry.fr", name="eva karl")
+    dave = factories.UserFactory(
+        email="DAVID.BOWMAN@INTENSEWORK.COM", name="DAVID BOWMAN"
+    )
 
     client = APIClient()
     client.force_login(user)
-
-    dave = factories.IdentityFactory(
-        email="DAVID.BOWMAN@INTENSEWORK.COM", name="DAVID BOWMAN"
-    )
 
     # Unaccented full address
     response = client.get(
@@ -385,7 +275,7 @@ def test_api_users_authenticated_list_uppercase_content():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.user.id)]
+    assert user_ids == [str(dave.id)]
 
     # Partial query
     response = client.get(
@@ -394,18 +284,16 @@ def test_api_users_authenticated_list_uppercase_content():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.user.id)]
+    assert user_ids == [str(dave.id)]
 
 
 def test_api_users_list_authenticated_capital_query():
     """Upper case query should find lower case content."""
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="eva karl")
+    user = factories.UserFactory(email="tester@ministry.fr", name="eva karl")
+    dave = factories.UserFactory(email="david.bowman@work.com", name="david bowman")
 
     client = APIClient()
     client.force_login(user)
-
-    dave = factories.IdentityFactory(email="david.bowman@work.com", name="david bowman")
 
     # Full uppercase query
     response = client.get(
@@ -414,7 +302,7 @@ def test_api_users_list_authenticated_capital_query():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.user.id)]
+    assert user_ids == [str(dave.id)]
 
     # Partial uppercase email
     response = client.get(
@@ -423,20 +311,16 @@ def test_api_users_list_authenticated_capital_query():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(dave.user.id)]
+    assert user_ids == [str(dave.id)]
 
 
 def test_api_contacts_list_authenticated_accented_query():
     """Accented content should be found by unaccented query."""
-    user = factories.UserFactory(admin_email="tester@ministry.fr")
-    factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
+    helene = factories.UserFactory(email="helene.bowman@work.com", name="helene bowman")
 
     client = APIClient()
     client.force_login(user)
-
-    helene = factories.IdentityFactory(
-        email="helene.bowman@work.com", name="helene bowman"
-    )
 
     # Accented full query
     response = client.get(
@@ -445,7 +329,7 @@ def test_api_contacts_list_authenticated_accented_query():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(helene.user.id)]
+    assert user_ids == [str(helene.id)]
 
     # Unaccented partial email
     response = client.get(
@@ -454,7 +338,7 @@ def test_api_contacts_list_authenticated_accented_query():
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    assert user_ids == [str(helene.user.id)]
+    assert user_ids == [str(helene.id)]
 
 
 @mock.patch.object(Pagination, "get_page_size", return_value=3)
@@ -462,8 +346,7 @@ def test_api_users_list_pagination(
     _mock_page_size,
 ):
     """Pagination should work as expected."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -503,14 +386,13 @@ def test_api_users_list_pagination_page_size(
     page_size,
 ):
     """Page's size on pagination should work as expected."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
     for i in range(page_size):
-        factories.UserFactory.create(admin_email=f"user-{i}@people.com")
+        factories.UserFactory.create(email=f"user-{i}@people.com")
 
     response = client.get(
         f"/api/v1.0/users/?page_size={page_size}",
@@ -528,14 +410,13 @@ def test_api_users_list_pagination_wrong_page_size(
     page_size,
 ):
     """Page's size on pagination should be limited to "max_page_size"."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
     for i in range(page_size):
-        factories.UserFactory.create(admin_email=f"user-{i}@people.com")
+        factories.UserFactory.create(email=f"user-{i}@people.com")
 
     response = client.get(
         f"/api/v1.0/users/?page_size={page_size}",
@@ -563,8 +444,7 @@ def test_api_users_retrieve_me_anonymous():
 
 def test_api_users_retrieve_me_authenticated():
     """Authenticated users should be able to retrieve their own user via the "/users/me" path."""
-    identity = factories.IdentityFactory(is_main=True)
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -582,8 +462,8 @@ def test_api_users_retrieve_me_authenticated():
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "id": str(user.id),
-        "name": str(identity.name),
-        "email": str(identity.email),
+        "name": str(user.name),
+        "email": str(user.email),
         "language": user.language,
         "timezone": str(user.timezone),
         "is_device": False,
@@ -608,8 +488,7 @@ def test_api_users_retrieve_authenticated_self():
     Authenticated users should be allowed to retrieve their own user.
     The returned object should not contain the password.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -626,12 +505,10 @@ def test_api_users_retrieve_authenticated_other():
     Authenticated users should be able to retrieve another user's detail view with
     limited information.
     """
-    identity = factories.IdentityFactory()
+    user, other_user = factories.UserFactory.create_batch(2)
 
     client = APIClient()
-    client.force_login(identity.user)
-
-    other_user = factories.UserFactory()
+    client.force_login(user)
 
     response = client.get(
         f"/api/v1.0/users/{other_user.id!s}/",
@@ -658,8 +535,7 @@ def test_api_users_create_anonymous():
 
 def test_api_users_create_authenticated():
     """Authenticated users should not be able to create users via the API."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -706,8 +582,7 @@ def test_api_users_update_authenticated_self():
     Authenticated users should be able to update their own user but only "language"
     and "timezone" fields.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -735,10 +610,10 @@ def test_api_users_update_authenticated_self():
 
 def test_api_users_update_authenticated_other():
     """Authenticated users should not be allowed to update other users."""
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     user = factories.UserFactory()
     old_user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -788,8 +663,7 @@ def test_api_users_patch_authenticated_self():
     Authenticated users should be able to patch their own user but only "language"
     and "timezone" fields.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -818,27 +692,27 @@ def test_api_users_patch_authenticated_self():
 
 def test_api_users_patch_authenticated_other():
     """Authenticated users should not be allowed to patch other users."""
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
-    user = factories.UserFactory()
-    old_user_values = dict(serializers.UserSerializer(instance=user).data)
+    other_user = factories.UserFactory()
+    old_user_values = dict(serializers.UserSerializer(instance=other_user).data)
     new_user_values = dict(
         serializers.UserSerializer(instance=factories.UserFactory()).data
     )
 
     for key, new_value in new_user_values.items():
         response = client.put(
-            f"/api/v1.0/users/{user.id!s}/",
+            f"/api/v1.0/users/{other_user.id!s}/",
             {key: new_value},
             format="json",
         )
         assert response.status_code == HTTP_403_FORBIDDEN
 
-    user.refresh_from_db()
-    user_values = dict(serializers.UserSerializer(instance=user).data)
+    other_user.refresh_from_db()
+    user_values = dict(serializers.UserSerializer(instance=other_user).data)
     for key, value in user_values.items():
         assert value == old_user_values[key]
 
@@ -856,11 +730,11 @@ def test_api_users_delete_list_anonymous():
 
 def test_api_users_delete_list_authenticated():
     """Authenticated users should not be allowed to delete a list of users."""
+    user = factories.UserFactory()
     factories.UserFactory.create_batch(2)
-    identity = factories.IdentityFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.delete(
         "/api/v1.0/users/",
@@ -884,11 +758,10 @@ def test_api_users_delete_authenticated():
     """
     Authenticated users should not be allowed to delete a user other than themselves.
     """
-    identity = factories.IdentityFactory()
-    other_user = factories.UserFactory()
+    user, other_user = factories.UserFactory.create_batch(2)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.delete(f"/api/v1.0/users/{other_user.id!s}/")
 
@@ -898,13 +771,13 @@ def test_api_users_delete_authenticated():
 
 def test_api_users_delete_self():
     """Authenticated users should not be able to delete their own user."""
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.delete(
-        f"/api/v1.0/users/{identity.user.id!s}/",
+        f"/api/v1.0/users/{user.id!s}/",
     )
 
     assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED

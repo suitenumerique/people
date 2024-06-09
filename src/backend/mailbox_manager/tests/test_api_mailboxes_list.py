@@ -27,8 +27,7 @@ def test_api_mailboxes__list_anonymous():
 
 def test_api_mailboxes__list_authenticated_no_query():
     """Authenticated users should be able to list mailboxes without applying a query."""
-    user = core_factories.UserFactory(admin_email="tester@ministry.fr")
-    core_factories.IdentityFactory(user=user, email=user.admin_email, name="john doe")
+    user = core_factories.UserFactory(email="tester@ministry.fr", name="john doe")
 
     client = APIClient()
     client.force_login(user)

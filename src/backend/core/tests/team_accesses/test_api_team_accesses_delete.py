@@ -32,9 +32,7 @@ def test_api_team_accesses_delete_authenticated():
     Authenticated users should not be allowed to delete a team access for a
     team to which they are not related.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     access = factories.TeamAccessFactory()
 
     client = APIClient()
@@ -52,9 +50,7 @@ def test_api_team_accesses_delete_member():
     Authenticated users should not be allowed to delete a team access for a
     team in which they are a simple member.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "member")])
     access = factories.TeamAccessFactory(team=team)
 
@@ -76,9 +72,7 @@ def test_api_team_accesses_delete_administrators():
     Users who are administrators in a team should be allowed to delete an access
     from the team provided it is not ownership.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
     access = factories.TeamAccessFactory(
         team=team, role=random.choice(["member", "administrator"])
@@ -102,9 +96,7 @@ def test_api_team_accesses_delete_owners_except_owners():
     Users should be able to delete the team access of another user
     for a team of which they are owner provided it is not an owner access.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(
         team=team, role=random.choice(["member", "administrator"])
@@ -128,9 +120,7 @@ def test_api_team_accesses_delete_owners_for_owners():
     Users should not be allowed to delete the team access of another owner
     even for a team in which they are direct owner.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "owner")])
     access = factories.TeamAccessFactory(team=team, role="owner")
 
@@ -152,7 +142,6 @@ def test_api_team_accesses_delete_owners_last_owner():
     It should not be possible to delete the last owner access from a team
     """
     user = factories.UserFactory()
-
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team, user=user, role="owner")
     assert models.TeamAccess.objects.count() == 1
@@ -173,7 +162,6 @@ def test_api_team_accesses_delete_webhook():
     When the team has a webhook, deleting a team access should fire a call.
     """
     user = factories.UserFactory()
-
     team = factories.TeamFactory(users=[(user, "administrator")])
     webhook = factories.TeamWebhookFactory(team=team)
     access = factories.TeamAccessFactory(
@@ -215,7 +203,7 @@ def test_api_team_accesses_delete_webhook():
                     "value": [
                         {
                             "value": str(access.user.id),
-                            "email": None,
+                            "email": access.user.email,
                             "type": "User",
                         }
                     ],

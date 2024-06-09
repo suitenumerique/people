@@ -28,7 +28,6 @@ def test_commands_create_demo():
     call_command("create_demo")
 
     assert models.User.objects.count() == 5
-    assert models.Identity.objects.exists()
     assert models.Team.objects.count() == 3
     assert models.TeamAccess.objects.count() >= 3
 
@@ -39,6 +38,8 @@ def test_commands_createsuperuser():
     with superuser permissions.
     """
 
-    call_command("createsuperuser")
+    call_command("createsuperuser", username="admin", password="admin")
 
     assert models.User.objects.count() == 1
+    user = models.User.objects.get()
+    assert user.sub == "admin"

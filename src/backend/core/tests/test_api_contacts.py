@@ -69,8 +69,7 @@ def test_api_contacts_list_authenticated_no_query():
     Authenticated users should be able to list contacts without applying a query.
     Profile and base contacts should be excluded.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     contact = factories.ContactFactory(owner=user)
     user.profile_contact = contact
     user.save()
@@ -108,8 +107,7 @@ def test_api_contacts_list_authenticated_by_full_name():
     Authenticated users should be able to search users with a case insensitive and
     partial query on the full name.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     dave = factories.BaseContactFactory(full_name="David Bowman")
     nicole = factories.BaseContactFactory(full_name="Nicole Foole")
@@ -150,8 +148,7 @@ def test_api_contacts_list_authenticated_by_full_name():
 
 def test_api_contacts_list_authenticated_uppercase_content():
     """Upper case content should be found by lower case query."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     dave = factories.BaseContactFactory(full_name="EEE", short_name="AAA")
 
@@ -175,8 +172,7 @@ def test_api_contacts_list_authenticated_uppercase_content():
 
 def test_api_contacts_list_authenticated_capital_query():
     """Upper case query should find lower case content."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     dave = factories.BaseContactFactory(full_name="eee", short_name="aaa")
 
@@ -200,8 +196,7 @@ def test_api_contacts_list_authenticated_capital_query():
 
 def test_api_contacts_list_authenticated_accented_content():
     """Accented content should be found by unaccented query."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     dave = factories.BaseContactFactory(full_name="ééé", short_name="ààà")
 
@@ -225,8 +220,7 @@ def test_api_contacts_list_authenticated_accented_content():
 
 def test_api_contacts_list_authenticated_accented_query():
     """Accented query should find unaccented content."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     dave = factories.BaseContactFactory(full_name="eee", short_name="aaa")
 
@@ -264,9 +258,7 @@ def test_api_contacts_retrieve_authenticated_owned():
     """
     Authenticated users should be allowed to retrieve a contact they own.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     contact = factories.ContactFactory(owner=user)
 
     client = APIClient()
@@ -289,11 +281,11 @@ def test_api_contacts_retrieve_authenticated_public():
     """
     Authenticated users should be able to retrieve public contacts.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
     contact = factories.BaseContactFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.get(f"/api/v1.0/contacts/{contact.id!s}/")
     assert response.status_code == 200
@@ -311,11 +303,11 @@ def test_api_contacts_retrieve_authenticated_other():
     """
     Authenticated users should not be allowed to retrieve another user's contacts.
     """
-    identity = factories.IdentityFactory()
+    user = factories.UserFactory()
     contact = factories.ContactFactory()
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.get(f"/api/v1.0/contacts/{contact.id!s}/")
     assert response.status_code == 403
@@ -339,10 +331,10 @@ def test_api_contacts_create_anonymous_forbidden():
 
 def test_api_contacts_create_authenticated_missing_base():
     """Anonymous users should be able to create users."""
-    identity = factories.IdentityFactory(user__profile_contact=None)
+    user = factories.UserFactory(profile_contact=None)
 
     client = APIClient()
-    client.force_login(identity.user)
+    client.force_login(user)
 
     response = client.post(
         "/api/v1.0/contacts/",
@@ -360,8 +352,7 @@ def test_api_contacts_create_authenticated_missing_base():
 
 def test_api_contacts_create_authenticated_successful():
     """Authenticated users should be able to create contacts."""
-    identity = factories.IdentityFactory(user__profile_contact=None)
-    user = identity.user
+    user = factories.UserFactory(profile_contact=None)
     base_contact = factories.BaseContactFactory()
 
     client = APIClient()
@@ -407,9 +398,7 @@ def test_api_contacts_create_authenticated_existing_override():
     Trying to create a contact for base contact that is already overriden by the user
     should receive a 400 error.
     """
-    identity = factories.IdentityFactory(user__profile_contact=None)
-    user = identity.user
-
+    user = factories.UserFactory(profile_contact=None)
     base_contact = factories.BaseContactFactory()
     factories.ContactFactory(base=base_contact, owner=user)
 
@@ -463,8 +452,7 @@ def test_api_contacts_update_authenticated_owned():
     """
     Authenticated users should be allowed to update their own contacts.
     """
-    identity = factories.IdentityFactory(user__profile_contact=None)
-    user = identity.user
+    user = factories.UserFactory(profile_contact=None)
 
     client = APIClient()
     client.force_login(user)
@@ -498,8 +486,7 @@ def test_api_contacts_update_authenticated_profile():
     """
     Authenticated users should be allowed to update their profile contact.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -534,8 +521,7 @@ def test_api_contacts_update_authenticated_other():
     """
     Authenticated users should not be allowed to update contacts owned by other users.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -573,8 +559,7 @@ def test_api_contacts_delete_list_anonymous():
 
 def test_api_contacts_delete_list_authenticated():
     """Authenticated users should not be allowed to delete a list of contacts."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -602,8 +587,7 @@ def test_api_contacts_delete_authenticated_public():
     """
     Authenticated users should not be allowed to delete a public contact.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -622,8 +606,7 @@ def test_api_contacts_delete_authenticated_owner():
     """
     Authenticated users should be allowed to delete a contact they own.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     contact = factories.ContactFactory(owner=user)
 
     client = APIClient()
@@ -642,8 +625,7 @@ def test_api_contacts_delete_authenticated_profile():
     """
     Authenticated users should be allowed to delete their profile contact.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     contact = factories.ContactFactory(owner=user, base=None)
     user.profile_contact = contact
     user.save()
@@ -663,8 +645,7 @@ def test_api_contacts_delete_authenticated_other():
     """
     Authenticated users should not be allowed to delete a contact they don't own.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     contact = factories.ContactFactory()
 
     client = APIClient()

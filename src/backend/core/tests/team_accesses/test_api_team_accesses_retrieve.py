@@ -31,9 +31,7 @@ def test_api_team_accesses_retrieve_authenticated_unrelated():
     Authenticated users should not be allowed to retrieve a team access for
     a team to which they are not related.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
-
+    user = factories.UserFactory()
     access = factories.TeamAccessFactory(team=factories.TeamFactory())
 
     client = APIClient()
@@ -62,9 +60,7 @@ def test_api_team_accesses_retrieve_authenticated_related():
     A user who is related to a team should be allowed to retrieve the
     associated team user accesses.
     """
-    identity = factories.IdentityFactory(is_main=True)
-    user = identity.user
-
+    user = factories.UserFactory()
     team = factories.TeamFactory()
     access = factories.TeamAccessFactory(team=team, user=user)
 
@@ -79,8 +75,8 @@ def test_api_team_accesses_retrieve_authenticated_related():
         "id": str(access.id),
         "user": {
             "id": str(access.user.id),
-            "email": str(identity.email),
-            "name": str(identity.name),
+            "email": str(user.email),
+            "name": str(user.name),
         },
         "role": str(access.role),
         "abilities": access.get_abilities(user),
