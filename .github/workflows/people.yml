@@ -347,7 +347,7 @@ jobs:
         name: Load sops secrets
         uses: rouja/actions-sops@main
         with:
-          secret-file: .github/workflows/secrets/numerique-gouv/people/secrets.enc.env
+          secret-file: secrets/numerique-gouv/people/secrets.enc.env
           age-key: ${{ secrets.SOPS_PRIVATE }}
       
       - name: Setup Node.js
