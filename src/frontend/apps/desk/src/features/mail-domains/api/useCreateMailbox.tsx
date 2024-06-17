@@ -1,5 +1,3 @@
-import { UUID } from 'crypto';
-
 import {
   UseMutationOptions,
   useMutation,
@@ -16,14 +14,14 @@ export interface CreateMailboxParams {
   local_part: string;
   secondary_email: string;
   phone_number: string;
-  mailDomainId: UUID;
+  mailDomainSlug: string;
 }
 
 export const createMailbox = async ({
-  mailDomainId,
+  mailDomainSlug,
   ...data
 }: CreateMailboxParams): Promise<void> => {
-  const response = await fetchAPI(`mail-domains/${mailDomainId}/mailboxes/`, {
+  const response = await fetchAPI(`mail-domains/${mailDomainSlug}/mailboxes/`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -37,7 +35,7 @@ export const createMailbox = async ({
   }
 };
 
-type UseCreateMailboxParams = { domainId: UUID } & UseMutationOptions<
+type UseCreateMailboxParams = { mailDomainSlug: string } & UseMutationOptions<
   void,
   APIError,
   CreateMailboxParams
@@ -49,7 +47,10 @@ export function useCreateMailbox(options: UseCreateMailboxParams) {
     mutationFn: createMailbox,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
-        queryKey: [KEY_LIST_MAILBOX, { id: variables.mailDomainId }],
+        queryKey: [
+          KEY_LIST_MAILBOX,
+          { mailDomainSlug: variables.mailDomainSlug },
+        ],
       });
       if (options?.onSuccess) {
         options.onSuccess(data, variables, context);

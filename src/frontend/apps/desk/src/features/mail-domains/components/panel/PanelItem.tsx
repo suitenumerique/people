@@ -15,10 +15,10 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const {
-    query: { id },
+    query: { slug },
   } = useRouter();
 
-  const isActive = mailDomain.id === id;
+  const isActive = mailDomain.slug === slug;
 
   const activeStyle = `
     border-right: 4px solid ${colorsTokens()['primary-600']};
@@ -51,7 +51,7 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
     >
       <StyledLink
         className="p-s pt-t pb-t"
-        href={`/mail-domains/${mailDomain.id}`}
+        href={`/mail-domains/${mailDomain.slug}`}
       >
         <Box $align="center" $direction="row" $gap="0.5rem">
           <IconMailDomains

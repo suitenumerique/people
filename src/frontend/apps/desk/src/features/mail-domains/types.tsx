@@ -5,6 +5,7 @@ export interface MailDomain {
   name: string;
   created_at: string;
   updated_at: string;
+  slug: string;
 }
 
 export interface MailDomainMailbox {

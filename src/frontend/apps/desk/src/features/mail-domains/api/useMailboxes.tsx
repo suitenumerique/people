@@ -5,7 +5,7 @@ import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 import { MailDomainMailbox } from '../types';
 
 export type MailDomainMailboxesParams = {
-  id: string;
+  mailDomainSlug: string;
   page: number;
   ordering?: string;
 };
@@ -13,11 +13,11 @@ export type MailDomainMailboxesParams = {
 type MailDomainMailboxesResponse = APIList<MailDomainMailbox>;
 
 export const getMailDomainMailboxes = async ({
-  id,
+  mailDomainSlug,
   page,
   ordering,
 }: MailDomainMailboxesParams): Promise<MailDomainMailboxesResponse> => {
-  let url = `mail-domains/${id}/mailboxes/?page=${page}`;
+  let url = `mail-domains/${mailDomainSlug}/mailboxes/?page=${page}`;
 
   if (ordering) {
     url += '&ordering=' + ordering;
@@ -27,7 +27,7 @@ export const getMailDomainMailboxes = async ({
 
   if (!response.ok) {
     throw new APIError(
-      `Failed to get the mailboxes of mail domain ${id}`,
+      `Failed to get the mailboxes of mail domain ${mailDomainSlug}`,
       await errorCauses(response),
     );
   }

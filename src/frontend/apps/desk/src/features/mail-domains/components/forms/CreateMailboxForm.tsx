@@ -60,7 +60,7 @@ export const CreateMailboxForm = ({
   });
 
   const { mutate: createMailbox, ...queryState } = useCreateMailbox({
-    domainId: mailDomain.id,
+    mailDomainSlug: mailDomain.slug,
     onSuccess: () => {
       toast(t('Mailbox created!'), VariantType.SUCCESS, {
         duration: 4000,
@@ -75,7 +75,7 @@ export const CreateMailboxForm = ({
   const onSubmitCallback = (event: React.FormEvent) => {
     event.preventDefault();
     void methods.handleSubmit((data) =>
-      createMailbox({ ...data, mailDomainId: mailDomain.id }),
+      createMailbox({ ...data, mailDomainSlug: mailDomain.slug }),
     )();
   };
 

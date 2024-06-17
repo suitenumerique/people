@@ -12,11 +12,11 @@ import { NextPageWithLayout } from '@/types/next';
 const Page: NextPageWithLayout = () => {
   const router = useRouter();
 
-  if (router?.query?.id && typeof router.query.id !== 'string') {
-    throw new Error('Invalid mail domain id');
+  if (router?.query?.slug && typeof router.query.slug !== 'string') {
+    throw new Error('Invalid mail domain slug');
   }
 
-  const { id } = router.query;
+  const { slug } = router.query;
 
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ const Page: NextPageWithLayout = () => {
     error: error,
     isError,
     isLoading: isLoading,
-  } = useMailDomain({ id: String(id) });
+  } = useMailDomain({ slug: String(slug) });
 
   if (error?.status === 404) {
     navigate.replace(`/404`);

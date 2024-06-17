@@ -5,19 +5,19 @@ import { APIError, errorCauses, fetchAPI } from '@/api';
 import { MailDomain } from '../types';
 
 export type MailDomainParams = {
-  id: string;
+  slug: string;
 };
 
 type MailDomainResponse = MailDomain;
 
 export const getMailDomain = async ({
-  id,
+  slug,
 }: MailDomainParams): Promise<MailDomainResponse> => {
-  const response = await fetchAPI(`mail-domains/${id}`);
+  const response = await fetchAPI(`mail-domains/${slug}`);
 
   if (!response.ok) {
     throw new APIError(
-      `Failed to get the mail domain ${id}`,
+      `Failed to get the mail domain ${slug}`,
       await errorCauses(response),
     );
   }

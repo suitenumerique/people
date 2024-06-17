@@ -46,9 +46,10 @@ function formatSortModel(
 
 export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   const [sortModel, setSortModel] = useState<SortModel>([]);
-  const { t } = useTranslation();
   const [isCreateMailboxFormVisible, setIsCreateMailboxFormVisible] =
     useState(false);
+
+  const { t } = useTranslation();
 
   const pagination = usePagination({
     defaultPage: 1,
@@ -59,7 +60,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
 
   const { data, isLoading, error } = useMailboxes({
-    id: mailDomain.id,
+    mailDomainSlug: mailDomain.slug,
     page,
     ordering,
   });
