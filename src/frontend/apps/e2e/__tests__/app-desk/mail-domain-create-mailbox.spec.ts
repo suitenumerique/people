@@ -14,24 +14,28 @@ const mailDomainsFixtures: MailDomain[] = [
     id: '456ac6ca-0402-4615-8005-69bc1efde43f',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'domainfr',
   },
   {
     name: 'mails.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43e',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'mailsfr',
   },
   {
     name: 'versailles.net',
     id: '456ac6ca-0402-4615-8005-69bc1efde43g',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'versaillesnet',
   },
   {
     name: 'paris.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43h',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'parisfr',
   },
 ];
 
@@ -77,16 +81,13 @@ test.describe('Mail domain create mailbox', () => {
           },
         });
       });
+      await page.route('**/api/v1.0/mail-domains/domainfr', async (route) => {
+        await route.fulfill({
+          json: mailDomainDomainFrFixture,
+        });
+      });
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f',
-        async (route) => {
-          await route.fulfill({
-            json: mailDomainDomainFrFixture,
-          });
-        },
-      );
-      await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1**',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
         async (route) => {
           await route.fulfill({
             json: {
@@ -101,7 +102,7 @@ test.describe('Mail domain create mailbox', () => {
       );
 
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1**',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
         async (route) => {
           await route.fulfill({
             json: {
@@ -115,7 +116,7 @@ test.describe('Mail domain create mailbox', () => {
       );
 
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/',
         (route) => {
           if (route.request().method() === 'POST') {
             void route.fulfill({
@@ -131,11 +132,7 @@ test.describe('Mail domain create mailbox', () => {
     let isCreateMailboxRequestSentWithExpectedPayload = false;
     page.on('request', (request) => {
       if (
-        request
-          .url()
-          .includes(
-            '/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/',
-          ) &&
+        request.url().includes('/mail-domains/domainfr/mailboxes/') &&
         request.method() === 'POST'
       ) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -221,16 +218,13 @@ test.describe('Mail domain create mailbox', () => {
           },
         });
       });
+      await page.route('**/api/v1.0/mail-domains/domainfr', async (route) => {
+        await route.fulfill({
+          json: mailDomainDomainFrFixture,
+        });
+      });
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f',
-        async (route) => {
-          await route.fulfill({
-            json: mailDomainDomainFrFixture,
-          });
-        },
-      );
-      await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1**',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
         async (route) => {
           await route.fulfill({
             json: {
@@ -248,11 +242,7 @@ test.describe('Mail domain create mailbox', () => {
     let isCreateMailboxRequestSent = false;
     page.on('request', (request) => {
       if (
-        request
-          .url()
-          .includes(
-            '/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/',
-          ) &&
+        request.url().includes('/mail-domains/domainfr/mailboxes/') &&
         request.method() === 'POST'
       ) {
         isCreateMailboxRequestSent = true;

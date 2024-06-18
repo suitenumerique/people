@@ -10,24 +10,28 @@ const mailDomainsFixtures: MailDomain[] = [
     id: '456ac6ca-0402-4615-8005-69bc1efde43f',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'domainfr',
   },
   {
     name: 'mails.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43e',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'mailsfr',
   },
   {
     name: 'versailles.net',
     id: '456ac6ca-0402-4615-8005-69bc1efde43g',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'versaillesnet',
   },
   {
     name: 'paris.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43h',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'parisfr',
   },
 ];
 

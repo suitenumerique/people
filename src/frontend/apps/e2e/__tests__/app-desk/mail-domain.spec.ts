@@ -11,24 +11,28 @@ const mailDomainsFixtures: MailDomain[] = [
     id: '456ac6ca-0402-4615-8005-69bc1efde43f',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'domainfr',
   },
   {
     name: 'mails.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43e',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'mailsfr',
   },
   {
     name: 'versailles.net',
     id: '456ac6ca-0402-4615-8005-69bc1efde43g',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'versaillesnet',
   },
   {
     name: 'paris.fr',
     id: '456ac6ca-0402-4615-8005-69bc1efde43h',
     created_at: currentDateIso,
     updated_at: currentDateIso,
+    slug: 'parisfr',
   },
 ];
 
@@ -72,7 +76,7 @@ test.describe('Mail domain', () => {
   }) => {
     const interceptApiCalls = async () => {
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1',
         async (route) => {
           await route.fulfill({
             json: {
@@ -85,14 +89,11 @@ test.describe('Mail domain', () => {
         },
       );
 
-      await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f**',
-        async (route) => {
-          await route.fulfill({
-            json: mailDomainDomainFrFixture,
-          });
-        },
-      );
+      await page.route('**/api/v1.0/mail-domains/domainfr**', async (route) => {
+        await route.fulfill({
+          json: mailDomainDomainFrFixture,
+        });
+      });
       await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
         await route.fulfill({
           json: {
@@ -112,9 +113,7 @@ test.describe('Mail domain', () => {
     await expect(page).toHaveURL(/mail-domains/);
 
     await page.getByRole('listbox').first().getByText('domain.fr').click();
-    await expect(page).toHaveURL(
-      /mail-domains\/456ac6ca-0402-4615-8005-69bc1efde43f/,
-    );
+    await expect(page).toHaveURL(/mail-domains\/domainfr/);
 
     await expect(
       page.getByRole('heading', { name: /domain\.fr/ }).first(),
@@ -151,23 +150,20 @@ test.describe('Mail domain', () => {
           },
         });
       });
+      await page.route('**/api/v1.0/mail-domains/domainfr', async (route) => {
+        await route.fulfill({
+          json: mailDomainDomainFrFixture,
+        });
+      });
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f',
-        async (route) => {
-          await route.fulfill({
-            json: mailDomainDomainFrFixture,
-          });
-        },
-      );
-      await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1**',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
         async (route) => {
           await route.fulfill({
             json: {
               count:
                 mailboxesFixtures.domainFr.page1.length +
                 mailboxesFixtures.domainFr.page2.length,
-              next: 'http://localhost:8071/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=2',
+              next: 'http://localhost:8071/api/v1.0/mail-domains/domainfr/mailboxes/?page=2',
               previous: null,
               results: mailboxesFixtures.domainFr.page1,
             },
@@ -175,7 +171,7 @@ test.describe('Mail domain', () => {
         },
       );
       await page.route(
-        '**/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=2**',
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=2**',
         async (route) => {
           await route.fulfill({
             json: {
@@ -184,7 +180,7 @@ test.describe('Mail domain', () => {
                 mailboxesFixtures.domainFr.page2.length,
               next: null,
               previous:
-                'http://localhost:8071/api/v1.0/mail-domains/456ac6ca-0402-4615-8005-69bc1efde43f/mailboxes/?page=1',
+                'http://localhost:8071/api/v1.0/mail-domains/domainfr/mailboxes/?page=1',
               results: mailboxesFixtures.domainFr.page2,
             },
           });
@@ -199,9 +195,7 @@ test.describe('Mail domain', () => {
     await expect(page).toHaveURL(/mail-domains/);
 
     await page.getByRole('listbox').first().getByText('domain.fr').click();
-    await expect(page).toHaveURL(
-      /mail-domains\/456ac6ca-0402-4615-8005-69bc1efde43f/,
-    );
+    await expect(page).toHaveURL(/mail-domains\/domainfr/);
 
     await expect(
       page.getByRole('heading', { name: 'domain.fr' }),
