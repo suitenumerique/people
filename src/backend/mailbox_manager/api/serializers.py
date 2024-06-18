@@ -22,6 +22,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "slug",
             "created_at",
             "updated_at",
         ]
