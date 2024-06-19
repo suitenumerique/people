@@ -60,3 +60,8 @@ environments:
       - version: 0.0.1
     secrets:
       - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+  production:
+    values:
+      - version: 0.0.1
+    secrets:
+      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
