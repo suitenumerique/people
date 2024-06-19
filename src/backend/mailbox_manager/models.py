@@ -28,9 +28,13 @@ class MailDomain(BaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        """Override save function to compute the slug."""
+        self.slug = self.get_slug()
         return super().save(*args, **kwargs)
+
+    def get_slug(self):
+        """Compute slug value from name."""
+        return slugify(self.name)
 
     def get_abilities(self, user):
         """

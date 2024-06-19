@@ -66,6 +66,7 @@ def test_api_mail_domains__retrieve_authenticated_related():
     assert response.json() == {
         "id": str(domain.id),
         "name": domain.name,
+        "slug": domain.slug,
         "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
     }

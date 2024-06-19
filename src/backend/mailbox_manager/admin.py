@@ -14,9 +14,10 @@ class MailDomainAdmin(admin.ModelAdmin):
         "name",
         "created_at",
         "updated_at",
+        "slug",
     )
     search_fields = ("name",)
-    readonly_fields = ["created_at"]
+    readonly_fields = ["created_at", "slug"]
 
 
 @admin.register(models.MailDomainAccess)
