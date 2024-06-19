@@ -16,6 +16,10 @@ backend:
         name: backend
         key: DJANGO_SECRET_KEY
     DJANGO_SETTINGS_MODULE: people.settings
+    DJANGO_SUPERUSER_EMAIL:
+      secretKeyRef:
+        name: backend
+        key: DJANGO_SUPERUSER_EMAIL
     DJANGO_SUPERUSER_PASSWORD:
       secretKeyRef:
         name: backend
@@ -80,6 +84,13 @@ backend:
       secretKeyRef:
         name: redis.redis.libre.sh
         key: url
+
+  createsuperuser:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - python manage.py createsuperuser --admin_email $DJANGO_SUPERUSER_EMAIL --password $DJANGO_SUPERUSER_PASSWORD
+    restartPolicy: Never
 
 frontend:
   image:

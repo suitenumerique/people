@@ -57,6 +57,13 @@ backend:
     - "people.wsgi:application"
     - "--reload"
 
+  createsuperuser:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - python manage.py createsuperuser --admin_email admin@example.com --password admin
+    restartPolicy: Never
+
 frontend:
   envVars:
     PORT: 8080
