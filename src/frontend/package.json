@@ -19,8 +19,8 @@
     "ci:build": "yarn APP_DESK run build:ci",
     "e2e:test": "yarn APP_E2E run test",
     "lint": "yarn APP_DESK run lint && yarn APP_E2E run lint && yarn workspace eslint-config-people run lint && yarn I18N run lint",
-    "i18n:extract": "yarn I18N run extract-translation && yarn APP_DESK prettier",
-    "i18n:deploy": "yarn I18N run format-deploy",
+    "i18n:extract": "yarn I18N run extract-translation",
+    "i18n:deploy": "yarn I18N run format-deploy && yarn APP_DESK prettier",
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
