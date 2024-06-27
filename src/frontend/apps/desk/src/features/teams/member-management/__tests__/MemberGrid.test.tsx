@@ -221,10 +221,10 @@ describe('MemberGrid', () => {
   });
 
   it.each([
-    ['name', 'Names'],
-    ['email', 'Emails'],
-    ['role', 'Roles'],
-  ])('checks the sorting', async (ordering, header_name) => {
+    ['Names', 'user__name'],
+    ['Emails', 'user__email'],
+    ['Roles', 'role'],
+  ])('checks the sorting of %s', async (header_name, ordering) => {
     const mockedData = [
       {
         id: '123',

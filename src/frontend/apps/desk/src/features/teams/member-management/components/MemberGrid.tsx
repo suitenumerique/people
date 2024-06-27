@@ -30,8 +30,8 @@ type SortModelItem = {
 };
 
 const defaultOrderingMapping: Record<string, string> = {
-  'user.name': 'name',
-  'user.email': 'email',
+  'user.name': 'user__name',
+  'user.email': 'user__email',
   localizedRole: 'role',
 };
 
