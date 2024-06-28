@@ -89,7 +89,7 @@ backend:
     command:
       - "/bin/sh"
       - "-c"
-      - python manage.py createsuperuser --admin_email $DJANGO_SUPERUSER_EMAIL --password $DJANGO_SUPERUSER_PASSWORD
+      - python manage.py createsuperuser --username $DJANGO_SUPERUSER_EMAIL --password $DJANGO_SUPERUSER_PASSWORD
     restartPolicy: Never
 
 frontend:

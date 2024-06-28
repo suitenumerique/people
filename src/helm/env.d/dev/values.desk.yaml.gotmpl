@@ -61,7 +61,7 @@ backend:
     command:
       - "/bin/sh"
       - "-c"
-      - python manage.py createsuperuser --admin_email admin@example.com --password admin
+      - python manage.py createsuperuser --username admin@example.com --password admin
     restartPolicy: Never
 
 frontend:
