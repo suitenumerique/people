@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink } from '@/components';
-import { TeamLayout } from '@/features/teams/';
+import { TeamLayout } from '@/features/teams/team-management';
 import { NextPageWithLayout } from '@/types/next';
 
 const StyledButton = styled(Button)`

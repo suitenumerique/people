@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { TeamLayout } from '@/features/teams/';
+import { TeamLayout } from '@/features/teams/team-management';
 import { NextPageWithLayout } from '@/types/next';
 
 import Teams from './teams/';

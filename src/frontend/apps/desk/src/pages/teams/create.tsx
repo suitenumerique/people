@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
 import { Box } from '@/components';
-import { CardCreateTeam, TeamLayout } from '@/features/teams/';
+import { CardCreateTeam, TeamLayout } from '@/features/teams/team-management';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {

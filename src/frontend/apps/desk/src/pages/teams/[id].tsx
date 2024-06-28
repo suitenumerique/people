@@ -5,8 +5,13 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MemberGrid } from '@/features/members';
-import { Role, TeamInfo, TeamLayout, useTeam } from '@/features/teams/';
+import { MemberGrid } from '@/features/teams/member-management';
+import {
+  Role,
+  TeamInfo,
+  TeamLayout,
+  useTeam,
+} from '@/features/teams/team-management';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
