@@ -3,9 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
-import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
-import { Box, StyledLink, Text } from '@/components/';
+import { Box, LogoGouv, StyledLink, Text } from '@/components/';
 import { LaGaufre } from '@/features/header/LaGaufre';
 
 import { LanguagePicker } from '../language/';
@@ -36,9 +34,6 @@ export const Header = () => {
       $css="box-shadow: 0 1px 4px #00000040;"
     >
       <RedStripe />
-      <Box $margin={{ horizontal: 'xbig' }}>
-        <Image priority src={IconMarianne} alt={t('Marianne Logo')} />
-      </Box>
       <Box
         $margin={{ horizontal: 'xbig' }}
         $align="center"
@@ -46,11 +41,19 @@ export const Header = () => {
         $direction="row"
       >
         <Box $align="center" $gap="6rem" $direction="row">
-          <Image
-            priority
-            src={IconGouv}
-            alt={t('Freedom Equality Fraternity Logo')}
-          />
+          <LogoGouv
+            textProps={{
+              $size: 't',
+              $css: `
+                line-height:11px;
+                text-transform: uppercase;
+              `,
+              $margin: { vertical: '3px' },
+              $maxWidth: '100px',
+            }}
+          >
+            République Française
+          </LogoGouv>
           <StyledLink href="/">
             <Box $align="center" $gap="1rem" $direction="row">
               <Image priority src={IconApplication} alt={t('Equipes Logo')} />

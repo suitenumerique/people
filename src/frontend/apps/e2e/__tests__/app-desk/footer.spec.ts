@@ -13,6 +13,8 @@ test.describe('Footer', () => {
 
     await expect(footer.getByAltText('Marianne Logo')).toBeVisible();
 
+    await expect(footer.getByText(/République Française/i)).toBeVisible();
+
     await expect(
       footer.getByAltText('Freedom Equality Fraternity Logo'),
     ).toBeVisible();

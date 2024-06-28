@@ -1,11 +1,8 @@
-import Image from 'next/image';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
-import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
-import { Box, StyledLink, Text } from '@/components/';
+import { Box, LogoGouv, StyledLink, Text } from '@/components';
 
 import IconLink from './assets/external-link.svg';
 
@@ -24,14 +21,6 @@ export const Footer = () => {
     <Box $position="relative" as="footer">
       <BlueStripe />
       <Box $padding={{ top: 'large', horizontal: 'big', bottom: 'small' }}>
-        <Box>
-          <Image
-            priority
-            src={IconMarianne}
-            alt={t('Marianne Logo')}
-            width={70}
-          />
-        </Box>
         <Box
           $direction="row"
           $gap="1.5rem"
@@ -40,14 +29,20 @@ export const Footer = () => {
           $css="flex-wrap: wrap;"
         >
           <Box>
-            <Box $align="center" $gap="6rem" $direction="row">
-              <Image
-                width={100}
-                priority
-                src={IconGouv}
-                alt={t('Freedom Equality Fraternity Logo')}
-              />
-            </Box>
+            <LogoGouv
+              textProps={{
+                $size: '1.2rem',
+                $margin: { vertical: '0.3rem' },
+                $css: `
+                  line-height:18px;
+                  text-transform: uppercase;
+                `,
+                $maxWidth: '100px',
+              }}
+              imagesWidth={66}
+            >
+              République Française
+            </LogoGouv>
           </Box>
           <Box
             $direction="row"

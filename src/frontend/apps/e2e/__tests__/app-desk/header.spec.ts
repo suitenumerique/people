@@ -13,6 +13,8 @@ test.describe('Header', () => {
 
     await expect(header.getByAltText('Marianne Logo')).toBeVisible();
 
+    await expect(header.getByText(/République Française/i)).toBeVisible();
+
     await expect(
       header.getByAltText('Freedom Equality Fraternity Logo'),
     ).toBeVisible();
