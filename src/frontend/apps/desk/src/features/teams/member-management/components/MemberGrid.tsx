@@ -15,6 +15,7 @@ import { Role, Team } from '@/features/teams/team-management';
 
 import { useTeamAccesses } from '../api';
 import { PAGE_SIZE } from '../conf';
+import { Access } from '../types';
 
 import { MemberAction } from './MemberAction';
 
@@ -23,7 +24,6 @@ interface MemberGridProps {
   currentRole: Role;
 }
 
-// FIXME : ask Cunningham to export this type
 type SortModelItem = {
   field: string;
   sort: 'asc' | 'desc' | null;
@@ -58,6 +58,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
     pageSize: PAGE_SIZE,
   });
   const [sortModel, setSortModel] = useState<SortModel>([]);
+  const [accesses, setAccesses] = useState<Access[]>([]);
   const { page, pageSize, setPagesCount } = pagination;
 
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
@@ -68,26 +69,34 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
     ordering,
   });
 
-  const localizedRoles = {
-    [Role.ADMIN]: t('Administration'),
-    [Role.MEMBER]: t('Member'),
-    [Role.OWNER]: t('Owner'),
-  };
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
 
-  /*
-   * Bug occurs from the Cunningham Datagrid component, when applying sorting
-   * on null values. Sanitize empty values to ensure consistent sorting functionality.
-   */
-  const accesses =
-    data?.results?.map((access) => ({
-      ...access,
-      localizedRole: localizedRoles[access.role],
-      user: {
-        ...access.user,
-        name: access.user.name || '',
-        email: access.user.email || '',
-      },
-    })) || [];
+    const localizedRoles = {
+      [Role.ADMIN]: t('Administration'),
+      [Role.MEMBER]: t('Member'),
+      [Role.OWNER]: t('Owner'),
+    };
+
+    /*
+     * Bug occurs from the Cunningham Datagrid component, when applying sorting
+     * on null values. Sanitize empty values to ensure consistent sorting functionality.
+     */
+    const accesses =
+      data?.results?.map((access) => ({
+        ...access,
+        localizedRole: localizedRoles[access.role],
+        user: {
+          ...access.user,
+          name: access.user.name || '',
+          email: access.user.email || '',
+        },
+      })) || [];
+
+    setAccesses(accesses);
+  }, [data?.results, t, isLoading]);
 
   useEffect(() => {
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
