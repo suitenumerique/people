@@ -18,8 +18,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <Head>
-        <title>{t('Equipes')}</title>
-        <meta name="description" content={t('Equipes Description')} />
+        <title>{t('Régie')}</title>
+        <meta
+          name="description"
+          content={t(
+            'La Suite administration interface: management of users and rights on the various tools (messaging, storage, etc.)',
+          )}
+        />
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </Head>
       <AppProvider>{getLayout(<Component {...pageProps} />)}</AppProvider>
