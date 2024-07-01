@@ -16,6 +16,11 @@ i18n
     preload: LANGUAGES_ALLOWED,
     nsSeparator: '||',
   })
+  .then(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.lang = i18n.language;
+    }
+  })
   .catch(() => {
     throw new Error('i18n initialization failed');
   });
@@ -24,6 +29,7 @@ i18n
 i18n.on('languageChanged', (lng) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(LANGUAGE_LOCAL_STORAGE, lng);
+    document.documentElement.lang = lng;
   }
 });
 
