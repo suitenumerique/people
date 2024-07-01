@@ -1,13 +1,14 @@
-import { expect, test } from '@playwright/test';
+import { BrowserContext, Page, expect, test } from '@playwright/test';
+import { LANGUAGES_ALLOWED } from 'app-desk/src/i18n/conf';
 
 import { keyCloakSignIn } from './common';
 
-test.beforeEach(async ({ page, browserName }) => {
-  await page.goto('/');
-  await keyCloakSignIn(page, browserName);
-});
-
 test.describe('Language', () => {
+  test.beforeEach(async ({ page, browserName }) => {
+    await page.goto('/');
+    await keyCloakSignIn(page, browserName);
+  });
+
   test('checks the language picker', async ({ page }) => {
     await expect(
       page.getByRole('button', {
@@ -27,7 +28,6 @@ test.describe('Language', () => {
     ).toBeVisible();
   });
 
-  // test('checks lang attribute of html tag has same default value as defined');
   test('checks lang attribute of html tag updates when user changes language', async ({
     page,
   }) => {
@@ -41,5 +41,25 @@ test.describe('Language', () => {
     await header.getByRole('option', { name: 'FR' }).click();
 
     await expect(html).toHaveAttribute('lang', 'fr');
+  });
+});
+
+test.describe('Default language', () => {
+  LANGUAGES_ALLOWED.forEach((language) => {
+    test(`checks lang attribute of html tag has right value by default for ${language} language`, async ({
+      browser,
+      browserName,
+    }) => {
+      const context: BrowserContext = await browser.newContext({
+        locale: language,
+      });
+
+      const page: Page = await context.newPage();
+
+      await page.goto('/');
+      await keyCloakSignIn(page, browserName);
+
+      await expect(page.locator('html')).toHaveAttribute('lang', language);
+    });
   });
 });
