@@ -26,4 +26,20 @@ test.describe('Language', () => {
       }),
     ).toBeVisible();
   });
+
+  // test('checks lang attribute of html tag has same default value as defined');
+  test('checks lang attribute of html tag updates when user changes language', async ({
+    page,
+  }) => {
+    const header = page.locator('header').first();
+
+    await header.getByRole('combobox').getByText('EN').click();
+    const html = page.locator('html');
+
+    await expect(html).toHaveAttribute('lang', 'en');
+
+    await header.getByRole('option', { name: 'FR' }).click();
+
+    await expect(html).toHaveAttribute('lang', 'fr');
+  });
 });
