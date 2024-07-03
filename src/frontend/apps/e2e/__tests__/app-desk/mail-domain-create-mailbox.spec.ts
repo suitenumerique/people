@@ -144,8 +144,7 @@ test.describe('Mail domain create mailbox', () => {
             payload.first_name === 'John' &&
             payload.last_name === 'Doe' &&
             payload.local_part === 'john.doe' &&
-            payload.secondary_email === 'john.doe@mail.com' &&
-            payload.phone_number === '003371020304050';
+            payload.secondary_email === 'john.doe@mail.com';
         }
       }
     });
@@ -173,7 +172,6 @@ test.describe('Mail domain create mailbox', () => {
     await page.getByLabel('Main email address').fill('john.doe');
     await expect(page.locator('span').getByText('@domain.fr')).toBeVisible();
     await page.getByLabel('Secondary email address').fill('john.doe@mail.com');
-    await page.getByLabel('Phone number').fill('003371020304050');
 
     await page.getByRole('button', { name: 'Submit' }).click();
 
@@ -240,14 +238,13 @@ test.describe('Mail domain create mailbox', () => {
     };
 
     let isCreateMailboxRequestSent = false;
-    page.on('request', (request) => {
-      if (
-        request.url().includes('/mail-domains/domainfr/mailboxes/') &&
-        request.method() === 'POST'
-      ) {
-        isCreateMailboxRequestSent = true;
-      }
-    });
+    page.on(
+      'request',
+      (request) =>
+        (isCreateMailboxRequestSent =
+          request.url().includes('/mail-domains/domainfr/mailboxes/') &&
+          request.method() === 'POST'),
+    );
 
     await interceptApiCalls();
 
@@ -268,9 +265,6 @@ test.describe('Mail domain create mailbox', () => {
     ).toBeVisible();
     await expect(
       page.getByText('Please enter your secondary email address'),
-    ).toBeVisible();
-    await expect(
-      page.getByText('Please enter your phone number'),
     ).toBeVisible();
 
     expect(isCreateMailboxRequestSent).toBeFalsy();

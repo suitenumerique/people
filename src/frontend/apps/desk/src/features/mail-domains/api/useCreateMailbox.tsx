@@ -13,7 +13,6 @@ export interface CreateMailboxParams {
   last_name: string;
   local_part: string;
   secondary_email: string;
-  phone_number: string;
   mailDomainSlug: string;
 }
 

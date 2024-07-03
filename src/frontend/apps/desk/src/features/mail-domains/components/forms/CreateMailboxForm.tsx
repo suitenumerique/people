@@ -31,7 +31,6 @@ const createMailboxValidationSchema = z.object({
   last_name: z.string().min(1),
   local_part: z.string().min(1),
   secondary_email: z.string().min(1),
-  phone_number: z.string().min(1),
 });
 
 export const CreateMailboxForm = ({
@@ -52,7 +51,6 @@ export const CreateMailboxForm = ({
       last_name: '',
       local_part: '',
       secondary_email: '',
-      phone_number: '',
     },
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -246,26 +244,6 @@ const Form = ({
                     : undefined
                 }
                 {...methods.register('secondary_email')}
-              />
-            )}
-          />
-        </Box>
-
-        <Box $margin={{ horizontal: 'none' }}>
-          <Controller
-            control={methods.control}
-            name="phone_number"
-            render={({ fieldState }) => (
-              <Input
-                aria-invalid={!!fieldState.error}
-                label={t('Phone number')}
-                state={fieldState.error ? 'error' : 'default'}
-                text={
-                  fieldState.error
-                    ? t('Please enter your phone number')
-                    : undefined
-                }
-                {...methods.register('phone_number')}
               />
             )}
           />
