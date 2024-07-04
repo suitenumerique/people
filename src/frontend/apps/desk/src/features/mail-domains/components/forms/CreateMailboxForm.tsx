@@ -15,6 +15,7 @@ import {
   useForm,
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { createGlobalStyle } from 'styled-components';
 import { z } from 'zod';
 
 import { Box, Text, TextErrors } from '@/components';
@@ -26,23 +27,52 @@ import { MailDomain } from '../../types';
 
 const FORM_ID: string = 'form-create-mailbox';
 
-const createMailboxValidationSchema = z.object({
-  first_name: z.string().min(1),
-  last_name: z.string().min(1),
-  local_part: z.string().min(1),
-  secondary_email: z.string().min(1),
-});
+const GlobalStyle = createGlobalStyle`
+  .c__field__footer__top > .c__field__text {
+    white-space: pre-line;
+  }
+`;
 
 export const CreateMailboxForm = ({
   mailDomain,
-  setIsFormVisible,
+  closeModal,
 }: {
   mailDomain: MailDomain;
-  setIsFormVisible: (value: boolean) => void;
+  closeModal: () => void;
 }) => {
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const { colorsTokens } = useCunninghamTheme();
+
+  const messageInvalidMinChar = t('You must have minimum 1 character');
+
+  const createMailboxValidationSchema = z.object({
+    first_name: z
+      .string()
+      .min(
+        1,
+        t('Please enter {{fieldName}}', { fieldName: 'your first name' }),
+      ),
+    last_name: z
+      .string()
+      .min(1, t('Please enter {{fieldName}}', { fieldName: 'your last name' })),
+    local_part: z
+      .string()
+      .regex(
+        /^((?!@|\s)([a-zA-Z0-9.\-]))*$/,
+        t(
+          'It must not contain spaces, accents or special characters (except "." or "-"). E.g.: jean.dupont',
+        ),
+      )
+      .min(1, messageInvalidMinChar),
+    secondary_email: z
+      .string()
+      .regex(
+        /[^@\s]+@[^@\s]+\.[^@\s]+/,
+        t('Please enter a valid email address.\nE.g. : jean.dupont@mail.fr'),
+      )
+      .min(1, messageInvalidMinChar),
+  });
 
   const methods = useForm<CreateMailboxParams>({
     delayError: 0,
@@ -57,18 +87,16 @@ export const CreateMailboxForm = ({
     resolver: zodResolver(createMailboxValidationSchema),
   });
 
-  const { mutate: createMailbox, ...queryState } = useCreateMailbox({
+  const { mutate: createMailbox, error } = useCreateMailbox({
     mailDomainSlug: mailDomain.slug,
     onSuccess: () => {
       toast(t('Mailbox created!'), VariantType.SUCCESS, {
         duration: 4000,
       });
 
-      setIsFormVisible(false);
+      closeModal();
     },
   });
-
-  const closeModal = () => setIsFormVisible(false);
 
   const onSubmitCallback = (event: React.FormEvent) => {
     event.preventDefault();
@@ -76,6 +104,20 @@ export const CreateMailboxForm = ({
       createMailbox({ ...data, mailDomainSlug: mailDomain.slug }),
     )();
   };
+
+  const causes = error?.cause?.filter((cause) => {
+    const isFound =
+      cause === 'Mailbox with this Local_part and Domain already exists.';
+
+    if (isFound) {
+      methods.setError('local_part', {
+        type: 'manual',
+        message: t('This email prefix is already used.'),
+      });
+    }
+
+    return !isFound;
+  });
 
   return (
     <FormProvider {...methods}>
@@ -102,7 +144,7 @@ export const CreateMailboxForm = ({
             form={FORM_ID}
             disabled={methods.formState.isSubmitting}
           >
-            {t('Submit')}
+            {t('Create the mailbox')}
           </Button>
         }
         size={ModalSize.MEDIUM}
@@ -113,15 +155,22 @@ export const CreateMailboxForm = ({
               color={colorsTokens()['primary-text']}
               title={t('Mailbox creation form')}
             />
-            <Text $size="h3" $margin="none" role="heading" aria-level={3}>
+            <Text
+              $size="h3"
+              $margin="none"
+              role="heading"
+              aria-level={3}
+              title={t('Create a mailbox')}
+            >
               {t('Create a mailbox')}
             </Text>
           </Box>
         }
       >
-        <Box $width="100%" $margin={{ top: 'large', bottom: 'xl' }}>
-          {queryState.isError && (
-            <TextErrors className="mb-s" causes={queryState.error.cause} />
+        <GlobalStyle />
+        <Box $width="100%" $margin={{ top: 'none', bottom: 'xl' }}>
+          {!!causes?.length && (
+            <TextErrors $margin={{ bottom: 'small' }} causes={causes} />
           )}
           {methods ? (
             <Form
@@ -151,76 +200,39 @@ const Form = ({
     <form onSubmit={onSubmitCallback} id={FORM_ID}>
       <Box $direction="column" $width="100%" $gap="2rem" $margin="auto">
         <Box $margin={{ horizontal: 'none' }}>
-          <Controller
-            control={methods.control}
+          <FieldMailBox
             name="first_name"
-            render={({ fieldState }) => (
-              <Input
-                aria-invalid={!!fieldState.error}
-                label={t('First name')}
-                state={fieldState.error ? 'error' : 'default'}
-                text={
-                  fieldState.error
-                    ? t('Please enter your first name')
-                    : undefined
-                }
-                {...methods.register('first_name')}
-              />
-            )}
+            label={t('First name')}
+            methods={methods}
           />
         </Box>
 
         <Box $margin={{ horizontal: 'none' }}>
-          <Controller
-            control={methods.control}
+          <FieldMailBox
             name="last_name"
-            render={({ fieldState }) => (
-              <Input
-                aria-invalid={!!fieldState.error}
-                label={t('Last name')}
-                state={fieldState.error ? 'error' : 'default'}
-                text={
-                  fieldState.error
-                    ? t('Please enter your last name')
-                    : undefined
-                }
-                {...methods.register('last_name')}
-              />
-            )}
+            label={t('Last name')}
+            methods={methods}
           />
         </Box>
 
         <Box $margin={{ horizontal: 'none' }} $direction="row">
           <Box $width="65%">
-            <Controller
-              control={methods.control}
+            <FieldMailBox
               name="local_part"
-              render={({ fieldState }) => (
-                <Input
-                  aria-invalid={!!fieldState.error}
-                  label={t('Main email address')}
-                  state={fieldState.error ? 'error' : 'default'}
-                  text={
-                    fieldState.error
-                      ? t(
-                          'Please enter the first part of the email address, without including "@" in it',
-                        )
-                      : undefined
-                  }
-                  {...methods.register('local_part')}
-                />
+              label={t('Email address prefix')}
+              methods={methods}
+              text={t(
+                'It must not contain spaces, accents or special characters (except "." or "-"). E.g.: jean.dupont',
               )}
             />
           </Box>
 
           <Text
-            as="span"
             $theme="primary"
             $size="1rem"
             $display="inline-block"
             $css={`
               position: relative; 
-              display: inline-block;
               left: 1rem;
               top: 1rem;
             `}
@@ -230,25 +242,41 @@ const Form = ({
         </Box>
 
         <Box $margin={{ horizontal: 'none' }}>
-          <Controller
-            control={methods.control}
+          <FieldMailBox
             name="secondary_email"
-            render={({ fieldState }) => (
-              <Input
-                aria-invalid={!!fieldState.error}
-                label={t('Secondary email address')}
-                state={fieldState.error ? 'error' : 'default'}
-                text={
-                  fieldState.error
-                    ? t('Please enter your secondary email address')
-                    : undefined
-                }
-                {...methods.register('secondary_email')}
-              />
-            )}
+            label={t('Secondary email address')}
+            methods={methods}
+            text={t('E.g. : jean.dupont@mail.fr')}
           />
         </Box>
       </Box>
     </form>
+  );
+};
+
+interface FieldMailBoxProps {
+  name: 'first_name' | 'last_name' | 'local_part' | 'secondary_email';
+  label: string;
+  methods: UseFormReturn<CreateMailboxParams>;
+  text?: string;
+}
+
+const FieldMailBox = ({ name, label, methods, text }: FieldMailBoxProps) => {
+  return (
+    <Controller
+      control={methods.control}
+      name={name}
+      render={({ fieldState }) => (
+        <Input
+          aria-invalid={!!fieldState.error}
+          aria-required
+          required
+          label={label}
+          state={fieldState.error ? 'error' : 'default'}
+          text={fieldState?.error?.message ? fieldState.error.message : text}
+          {...methods.register(name)}
+        />
+      )}
+    />
   );
 };

@@ -85,7 +85,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
       {isCreateMailboxFormVisible && mailDomain ? (
         <CreateMailboxForm
           mailDomain={mailDomain}
-          setIsFormVisible={setIsCreateMailboxFormVisible}
+          closeModal={() => setIsCreateMailboxFormVisible(false)}
         />
       ) : null}
       <TopBanner
