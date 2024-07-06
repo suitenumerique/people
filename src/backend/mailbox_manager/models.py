@@ -4,11 +4,14 @@ Declare and configure the models for the People additional application : mailbox
 
 from django.conf import settings
 from django.core import validators
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel, RoleChoices
+
+from mailbox_manager.enums import MailDomainStatusChoices
 
 
 class MailDomain(BaseModel):
@@ -18,6 +21,11 @@ class MailDomain(BaseModel):
         _("name"), max_length=150, null=False, blank=False, unique=True
     )
     slug = models.SlugField(null=False, blank=False, unique=True, max_length=80)
+    status = models.CharField(
+        max_length=10,
+        default=MailDomainStatusChoices.PENDING,
+        choices=MailDomainStatusChoices.choices,
+    )
 
     class Meta:
         db_table = "people_mail_domain"
@@ -120,3 +128,9 @@ class Mailbox(BaseModel):
 
     def __str__(self):
         return f"{self.local_part!s}@{self.domain.name:s}"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if self.domain.status != MailDomainStatusChoices.ENABLED:
+            raise ValidationError("You can create mailbox only for a domain enabled")
+        super().save(*args, **kwargs)

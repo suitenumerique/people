@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 def test_api_mailboxes__create_anonymous_forbidden():
     """Anonymous users should not be able to create a new mailbox via the API."""
-    mail_domain = factories.MailDomainFactory()
+    mail_domain = factories.MailDomainEnabledFactory()
 
     response = APIClient().post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
@@ -41,7 +41,7 @@ def test_api_mailboxes__create_authenticated_missing_fields():
     client = APIClient()
     client.force_login(user)
 
-    mail_domain = factories.MailDomainFactory()
+    mail_domain = factories.MailDomainEnabledFactory()
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {
@@ -78,7 +78,7 @@ def test_api_mailboxes__create_authenticated_successful():
     client = APIClient()
     client.force_login(user)
 
-    mail_domain = factories.MailDomainFactory(name="saint-jean.collectivite.fr")
+    mail_domain = factories.MailDomainEnabledFactory(name="saint-jean.collectivite.fr")
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         {

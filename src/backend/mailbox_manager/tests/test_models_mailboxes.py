@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 import pytest
 
-from mailbox_manager import factories
+from mailbox_manager import enums, factories
 
 pytestmark = pytest.mark.django_db
 
@@ -89,3 +89,40 @@ def test_models_mailboxes__secondary_email_cannot_be_null():
     """The "secondary_email" field should not be null."""
     with pytest.raises(ValidationError, match="This field cannot be null"):
         factories.MailboxFactory(secondary_email=None)
+
+
+def test_models_mailboxes__cannot_be_created_for_disabled_maildomain():
+    """Mailbox creation is allowed only for a domain enabled.
+    A disabled status for the mail domain raises an error."""
+    with pytest.raises(
+        ValidationError, match="You can create mailbox only for a domain enabled"
+    ):
+        factories.MailboxFactory(
+            domain=factories.MailDomainFactory(
+                status=enums.MailDomainStatusChoices.DISABLED
+            )
+        )
+
+
+def test_models_mailboxes__cannot_be_created_for_failed_maildomain():
+    """Mailbox creation is allowed only for a domain enabled.
+    A failed status for the mail domain raises an error."""
+    with pytest.raises(
+        ValidationError, match="You can create mailbox only for a domain enabled"
+    ):
+        factories.MailboxFactory(
+            domain=factories.MailDomainFactory(
+                status=enums.MailDomainStatusChoices.FAILED
+            )
+        )
+
+
+def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
+    """Mailbox creation is allowed only for a domain enabled.
+    A pending status for the mail domain raises an error."""
+    with pytest.raises(
+        ValidationError, match="You can create mailbox only for a domain enabled"
+    ):
+        # MailDomainFactory initializes a mail domain with default values,
+        # so mail domain status is pending!
+        factories.MailboxFactory(domain=factories.MailDomainFactory())

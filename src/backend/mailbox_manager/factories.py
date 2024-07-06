@@ -10,13 +10,15 @@ from faker import Faker
 from core import factories as core_factories
 from core import models as core_models
 
-from mailbox_manager import models
+from mailbox_manager import enums, models
 
 fake = Faker()
 
 
 class MailDomainFactory(factory.django.DjangoModelFactory):
-    """A factory to create mail domain."""
+    """A factory to create mail domain. Please not this is a factory to create mail domain with
+    default values. So the status is pending and no mailbox can be created from it,
+    until the mail domain is enabled."""
 
     class Meta:
         model = models.MailDomain
@@ -38,6 +40,12 @@ class MailDomainFactory(factory.django.DjangoModelFactory):
                 MailDomainAccessFactory(
                     domain=self, user=user_entry[0], role=user_entry[1]
                 )
+
+
+class MailDomainEnabledFactory(MailDomainFactory):
+    """A factory to create mail domain enabled."""
+
+    status = enums.MailDomainStatusChoices.ENABLED
 
 
 class MailDomainAccessFactory(factory.django.DjangoModelFactory):
@@ -63,5 +71,5 @@ class MailboxFactory(factory.django.DjangoModelFactory):
         full_name = factory.Faker("name")
 
     local_part = factory.LazyAttribute(lambda a: a.full_name.lower().replace(" ", "."))
-    domain = factory.SubFactory(MailDomainFactory)
+    domain = factory.SubFactory(MailDomainEnabledFactory)
     secondary_email = factory.Faker("email")

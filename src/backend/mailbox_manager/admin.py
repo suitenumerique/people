@@ -15,6 +15,7 @@ class MailDomainAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
         "slug",
+        "status",
     )
     search_fields = ("name",)
     readonly_fields = ["created_at", "slug"]
