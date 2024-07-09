@@ -19,16 +19,15 @@ import { createGlobalStyle } from 'styled-components';
 import { z } from 'zod';
 
 import { Box, Text, TextErrors } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
 
 import { CreateMailboxParams, useCreateMailbox } from '../../api';
-import IconCreateMailbox from '../../assets/create-mailbox.svg';
 import { MailDomain } from '../../types';
 
 const FORM_ID: string = 'form-create-mailbox';
 
 const GlobalStyle = createGlobalStyle`
   .c__field__footer__top > .c__field__text {
+    text-align: left;
     white-space: pre-line;
   }
 `;
@@ -42,20 +41,12 @@ export const CreateMailboxForm = ({
 }) => {
   const { t } = useTranslation();
   const { toast } = useToastProvider();
-  const { colorsTokens } = useCunninghamTheme();
 
   const messageInvalidMinChar = t('You must have minimum 1 character');
 
   const createMailboxValidationSchema = z.object({
-    first_name: z
-      .string()
-      .min(
-        1,
-        t('Please enter {{fieldName}}', { fieldName: 'your first name' }),
-      ),
-    last_name: z
-      .string()
-      .min(1, t('Please enter {{fieldName}}', { fieldName: 'your last name' })),
+    first_name: z.string().min(1, t('Please enter your first name')),
+    last_name: z.string().min(1, t('Please enter your last name')),
     local_part: z
       .string()
       .regex(
@@ -70,8 +61,7 @@ export const CreateMailboxForm = ({
       .regex(
         /[^@\s]+@[^@\s]+\.[^@\s]+/,
         t('Please enter a valid email address.\nE.g. : jean.dupont@mail.fr'),
-      )
-      .min(1, messageInvalidMinChar),
+      ),
   });
 
   const methods = useForm<CreateMailboxParams>({
@@ -149,22 +139,15 @@ export const CreateMailboxForm = ({
         }
         size={ModalSize.MEDIUM}
         title={
-          <Box $align="center" $gap="1rem">
-            <IconCreateMailbox
-              width={48}
-              color={colorsTokens()['primary-text']}
-              title={t('Mailbox creation form')}
-            />
-            <Text
-              $size="h3"
-              $margin="none"
-              role="heading"
-              aria-level={3}
-              title={t('Create a mailbox')}
-            >
-              {t('Create a mailbox')}
-            </Text>
-          </Box>
+          <Text
+            $size="h3"
+            $margin="none"
+            role="heading"
+            aria-level={3}
+            title={t('Create a mailbox')}
+          >
+            {t('Create a mailbox')}
+          </Text>
         }
       >
         <GlobalStyle />
@@ -172,6 +155,14 @@ export const CreateMailboxForm = ({
           {!!causes?.length && (
             <TextErrors $margin={{ bottom: 'small' }} causes={causes} />
           )}
+          <Text
+            $margin={{ horizontal: 'none', vertical: 'big' }}
+            $size="m"
+            $display="inline-block"
+            $textAlign="left"
+          >
+            {t('All fields are mandatory.')}
+          </Text>
           {methods ? (
             <Form
               methods={methods}

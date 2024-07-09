@@ -166,11 +166,11 @@ test.describe('Mail domain create mailbox', () => {
 
     await page.getByRole('button', { name: 'Cancel' }).click();
 
-    await expect(page.getByTitle('Mailbox creation form')).toBeHidden();
+    await expect(page.getByTitle('Create a mailbox')).toBeHidden();
 
     await page.getByRole('button', { name: 'Create a mailbox' }).click();
 
-    await expect(page.getByTitle('Mailbox creation form')).toBeVisible();
+    await expect(page.getByTitle('Create a mailbox')).toBeVisible();
     await expect(
       page.getByRole('heading', { name: 'Create a mailbox' }),
     ).toBeVisible();
@@ -208,7 +208,7 @@ test.describe('Mail domain create mailbox', () => {
     await page.getByRole('button', { name: 'Create the mailbox' }).click();
 
     expect(isCreateMailboxRequestSentWithExpectedPayload).toBeTruthy();
-    await expect(page.getByAltText('Mailbox creation form')).toBeHidden();
+    await expect(page.getByTitle('Create a mailbox')).toBeHidden();
     await expect(page.getByText('Mailbox created!')).toBeVisible({
       timeout: 1500,
     });
