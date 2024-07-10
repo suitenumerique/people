@@ -102,6 +102,19 @@ class TeamAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+@admin.register(models.TeamAccess)
+class TeamAccessAdmin(admin.ModelAdmin):
+    """Team access admin interface declaration."""
+
+    list_display = (
+        "user",
+        "team",
+        "role",
+        "created_at",
+        "updated_at",
+    )
+
+
 @admin.register(models.Invitation)
 class InvitationAdmin(admin.ModelAdmin):
     """Admin interface to handle invitations."""
