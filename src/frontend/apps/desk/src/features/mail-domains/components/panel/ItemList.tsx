@@ -44,7 +44,7 @@ export const ItemList = () => {
         scrollContainer={containerRef.current}
         as="ul"
         $margin={{ top: 'none' }}
-        $padding={{ all: 'none' }}
+        $padding="none"
         role="listbox"
       >
         <ItemListState
@@ -76,7 +76,7 @@ const ItemListState = ({
 
   if (isLoading) {
     return (
-      <Box $align="center" $margin={{ all: 'large' }}>
+      <Box $align="center" $margin="large">
         <Loader aria-label={t('mail domains list loading')} />
       </Box>
     );
@@ -84,13 +84,8 @@ const ItemListState = ({
 
   if (!mailDomains?.length) {
     return (
-      <Box $justify="center" $margin={{ all: 'small' }}>
-        <Text
-          as="p"
-          $margin={{ vertical: 'none' }}
-          $theme="greyscale"
-          $variation="500"
-        >
+      <Box $justify="center" $margin="small">
+        <Text as="p" $margin={{ vertical: 'none' }}>
           {t(`0 mail domain to display.`)}
         </Text>
       </Box>

@@ -40,15 +40,10 @@ const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
   if (!teams?.length) {
     return (
       <Box $justify="center" $margin="small">
-        <Text
-          as="p"
-          $margin={{ vertical: 'none' }}
-          $theme="greyscale"
-          $variation="500"
-        >
+        <Text as="p" $margin={{ vertical: 'none' }}>
           {t('0 group to display.')}
         </Text>
-        <Text as="p" $theme="greyscale" $variation="500">
+        <Text as="p">
           {t(
             'Create your first team by clicking on the "Create a new team" button.',
           )}
