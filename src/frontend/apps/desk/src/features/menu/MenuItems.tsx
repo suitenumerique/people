@@ -50,6 +50,10 @@ const MenuItem = ({ Icon, label, href, alias }: MenuItemProps) => {
       onMouseOver={() => setIsTooltipOpen(true)}
       onMouseLeave={() => setIsTooltipOpen(false)}
       style={{ display: 'block' }}
+      $css={`
+        &:focus-visible {
+          outline: #fff solid 2px;
+        }`}
     >
       <Box
         $margin="xtiny"
@@ -63,7 +67,11 @@ const MenuItem = ({ Icon, label, href, alias }: MenuItemProps) => {
         $background={background}
         $radius="10px"
       >
-        <BoxButton aria-label={t(`{{label}} button`, { label })} $color={color}>
+        <BoxButton
+          aria-label={t(`{{label}} button`, { label })}
+          $color={color}
+          tabIndex={-1}
+        >
           <Icon
             width="2.375rem"
             aria-label={t(`{{label}} icon`, { label })}

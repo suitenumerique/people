@@ -41,7 +41,7 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
 
   return (
     <Box
-      $margin={{ all: 'none' }}
+      $margin="none"
       as="li"
       $css={`
         transition: all 0.2s ease-in; 

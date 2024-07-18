@@ -55,7 +55,9 @@ export const CardCreateTeam = () => {
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
-          <Button color="secondary">{t('Cancel')}</Button>
+          <Button color="secondary" tabIndex={-1}>
+            {t('Cancel')}
+          </Button>
         </StyledLink>
         <Button
           onClick={() => createTeam(teamName)}

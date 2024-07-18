@@ -5,6 +5,15 @@
 @import url('./cunningham-custom-tokens.css');
 @import url('../assets/fonts/Marianne/Marianne-font.css');
 
+a:focus-visible,
+button:focus-visible,
+.c__button:focus-visible,
+.c__select__wrapper:focus-visible,
+.c__datagrid__header:focus-visible {
+  outline: var(--c--theme--colors--primary-600) solid 2px;
+  border-radius: var(--c--components--button--border-radius--focus);
+}
+
 .c__input,
 .c__field,
 .c__select,
@@ -314,6 +323,10 @@ input:-webkit-autofill:focus {
   transition: all 0.8s ease-in-out;
 }
 
+.c__radio input:focus-visible {
+  outline: var(--c--theme--colors--primary-600) solid 2px;
+}
+
 /**
  * Button
 */
@@ -340,7 +353,8 @@ input:-webkit-autofill:focus {
     var(--c--theme--spacings--s);
 }
 
-.c__button--primary {
+.c__button--primary,
+.c__button--primary:focus-visible {
   background-color: var(--c--components--button--primary--background--color);
   color: var(--c--components--button--primary--color);
 }
@@ -470,6 +484,11 @@ input:-webkit-autofill:focus {
 /**
  * Modal
 */
+.c__modal:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .c__modal__backdrop {
   z-index: 1000;
 }

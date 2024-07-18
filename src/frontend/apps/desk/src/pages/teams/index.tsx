@@ -17,7 +17,7 @@ const Page: NextPageWithLayout = () => {
   return (
     <Box $align="center" $justify="center" $height="inherit">
       <StyledLink href="/teams/create">
-        <StyledButton>{t('Create a new team')}</StyledButton>
+        <StyledButton tabIndex={-1}>{t('Create a new team')}</StyledButton>
       </StyledLink>
     </Box>
   );

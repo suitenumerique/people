@@ -47,6 +47,7 @@ export const PanelActions = () => {
         <BoxButton
           aria-label={t('Add a team')}
           $color={colorsTokens()['primary-600']}
+          tabIndex={-1}
         >
           <IconAdd width={30} height={30} aria-label={t('Add team icon')} />
         </BoxButton>

@@ -2,10 +2,11 @@ import React, {
   PropsWithChildren,
   ReactNode,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { Button, DialogTrigger, Popover } from 'react-aria-components';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 const StyledPopover = styled(Popover)`
   background-color: white;
@@ -29,6 +30,12 @@ const StyledButton = styled(Button)`
   text-wrap: nowrap;
 `;
 
+const GlobalStyle = createGlobalStyle`
+  &:focus-visible {
+    outline: none;
+  }
+`;
+
 interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
@@ -44,9 +51,17 @@ export const DropButton = ({
   const [opacity, setOpacity] = useState(false);
   const [isLocalOpen, setIsLocalOpen] = useState(isOpen);
 
+  const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setIsLocalOpen(isOpen);
   }, [isOpen]);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current[isLocalOpen ? 'focus' : 'blur']();
+    }
+  }, [isLocalOpen]);
 
   const onOpenChangeHandler = (isOpen: boolean) => {
     setIsLocalOpen(isOpen);
@@ -57,15 +72,20 @@ export const DropButton = ({
   };
 
   return (
-    <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
-      <StyledButton>{button}</StyledButton>
-      <StyledPopover
-        style={{ opacity: opacity ? 1 : 0 }}
-        isOpen={isLocalOpen}
-        onOpenChange={onOpenChangeHandler}
-      >
-        {children}
-      </StyledPopover>
-    </DialogTrigger>
+    <>
+      <GlobalStyle />
+      <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
+        <StyledButton>{button}</StyledButton>
+        <StyledPopover
+          style={{ opacity: opacity ? 1 : 0 }}
+          isOpen={isLocalOpen}
+          onOpenChange={onOpenChangeHandler}
+        >
+          <div ref={ref} tabIndex={-1}>
+            {children}
+          </div>
+        </StyledPopover>
+      </DialogTrigger>
+    </>
   );
 };

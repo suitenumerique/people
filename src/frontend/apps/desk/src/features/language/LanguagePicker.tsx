@@ -30,6 +30,11 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
     &:hover {
       border-color: var(--c--theme--colors--primary-500);
     }
+
+    .c__button--tertiary-text:focus-visible {
+      outline: var(--c--theme--colors--primary-600) solid 2px;
+      border-radius: var(--c--components--button--border-radius--focus);
+    }
   }
 `;
 
