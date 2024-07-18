@@ -119,7 +119,9 @@ test.describe('Mail domain', () => {
       page.getByRole('heading', { name: /domain\.fr/ }).first(),
     ).toBeVisible();
 
-    await expect(page.getByText('This table is empty')).toBeVisible();
+    await expect(
+      page.getByText('No mail box was created with this mail domain.'),
+    ).toBeVisible();
   });
 
   test('checks all the elements are visible when domain exists and contains 2 pages of mailboxes', async ({

@@ -158,7 +158,7 @@ export const ModalAddMembers = ({
           disabled={!selectedMembers.length || isPending}
           onClick={() => void handleValidate()}
         >
-          {t('Validate')}
+          {t('Add to group')}
         </Button>
       }
       size={ModalSize.MEDIUM}

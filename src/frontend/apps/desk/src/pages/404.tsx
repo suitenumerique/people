@@ -22,7 +22,7 @@ const Page: NextPageWithLayout = () => {
       <Icon404 aria-label="Image 404" role="img" />
 
       <Text $size="h2" $weight="700" $theme="greyscale" $variation="900">
-        {t('Ouch !')}
+        {t('Ouch!')}
       </Text>
 
       <Text as="p" $textAlign="center" $maxWidth="400px" $size="m">

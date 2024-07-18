@@ -17,6 +17,7 @@ test.describe('Team', () => {
     ).shift();
 
     await expect(page.getByLabel('icon group')).toBeVisible();
+
     await expect(
       page.getByRole('heading', {
         name: teamName,

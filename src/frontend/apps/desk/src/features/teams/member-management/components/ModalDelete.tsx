@@ -75,7 +75,7 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
           }}
           disabled={isNotAllowed}
         >
-          {t('Validate')}
+          {t('Remove from the group')}
         </Button>
       }
       size={ModalSize.MEDIUM}

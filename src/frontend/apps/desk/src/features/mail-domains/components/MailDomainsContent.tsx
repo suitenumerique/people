@@ -114,6 +114,10 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
             displayGoto: false,
           }}
           aria-label={t('Mailboxes list')}
+          hideEmptyPlaceholderImage={true}
+          emptyPlaceholderLabel={t(
+            'No mail box was created with this mail domain.',
+          )}
         />
       </Card>
     </>
