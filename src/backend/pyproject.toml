@@ -48,7 +48,7 @@ dependencies = [
     "psycopg[binary]==3.1.19",
     "PyJWT==2.8.0",
     "requests==2.32.2",
-    "sentry-sdk==2.7.1",
+    "sentry-sdk==2.8.0",
     "url-normalize==1.4.3",
     "whitenoise==6.7.0",
     "mozilla-django-oidc==4.0.1",
