@@ -10,12 +10,13 @@ import pytest
 from core import models
 
 from demo import defaults
+from mailbox_manager import models as mailbox_models
 
 TEST_NB_OBJECTS = {
     "users": 5,
     "teams": 3,
-    "max_identities_per_user": 3,
     "max_users_per_team": 5,
+    "domains": 2,
 }
 
 pytestmark = pytest.mark.django_db
@@ -27,9 +28,11 @@ def test_commands_create_demo():
     """The create_demo management command should create objects as expected."""
     call_command("create_demo")
 
-    assert models.User.objects.count() == 5
-    assert models.Team.objects.count() == 3
-    assert models.TeamAccess.objects.count() >= 3
+    assert models.User.objects.count() == TEST_NB_OBJECTS["users"]
+    assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
+    assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
+    assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"]
+    assert mailbox_models.MailDomainAccess.objects.count() == TEST_NB_OBJECTS["domains"]
 
 
 def test_commands_createsuperuser():

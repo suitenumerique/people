@@ -10,12 +10,15 @@ from uuid import uuid4
 from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.text import slugify
 
 from faker import Faker
 
 from core import models
 
 from demo import defaults
+from mailbox_manager import models as mailbox_models
+from mailbox_manager.enums import MailDomainStatusChoices
 
 fake = Faker()
 
@@ -150,6 +153,35 @@ def create_demo(stdout):
                 queue.push(
                     models.TeamAccess(team_id=team_id, user_id=user_id, role=role[0])
                 )
+        queue.flush()
+
+    with Timeit(stdout, "Creating domains"):
+        for _i in range(defaults.NB_OBJECTS["domains"]):
+            name = fake.domain_name()
+            slug = slugify(name)
+
+            queue.push(
+                mailbox_models.MailDomain(
+                    name=name,
+                    # slug should be automatic but bulk_create doesn't use save
+                    slug=slug,
+                    status=random.choice(MailDomainStatusChoices.choices)[0],
+                )
+            )
+        queue.flush()
+
+    with Timeit(stdout, "Creating accesses to domains"):
+        domains_ids = list(
+            mailbox_models.MailDomain.objects.values_list("id", flat=True)
+        )
+        for domain_id in domains_ids:
+            queue.push(
+                mailbox_models.MailDomainAccess(
+                    domain_id=domain_id,
+                    user_id=random.choice(users_ids),
+                    role=models.RoleChoices.OWNER,
+                )
+            )
         queue.flush()
 
 
