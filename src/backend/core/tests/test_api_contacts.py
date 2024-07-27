@@ -76,7 +76,7 @@ def test_api_contacts_list_authenticated_no_query():
 
     # Let's have 5 contacts in database:
     assert user.profile_contact is not None  # Excluded because profile contact
-    base_contact = factories.BaseContactFactory()  # Excluded because overriden
+    base_contact = factories.BaseContactFactory()  # Excluded because overridden
     factories.ContactFactory(
         base=base_contact
     )  # Excluded because belongs to other user
@@ -395,7 +395,7 @@ def test_api_contacts_create_authenticated_successful():
 @override_settings(ALLOW_API_USER_CREATE=True)
 def test_api_contacts_create_authenticated_existing_override():
     """
-    Trying to create a contact for base contact that is already overriden by the user
+    Trying to create a contact for base contact that is already overridden by the user
     should receive a 400 error.
     """
     user = factories.UserFactory(profile_contact=None)
