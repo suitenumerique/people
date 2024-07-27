@@ -7,6 +7,7 @@ from rest_framework.routers import DefaultRouter
 
 from core.api import viewsets
 from core.authentication.urls import urlpatterns as oidc_urls
+from core.resource_server.urls import urlpatterns as resource_server_urls
 
 # - Main endpoints
 router = DefaultRouter()
@@ -36,6 +37,7 @@ urlpatterns = [
             [
                 *router.urls,
                 *oidc_urls,
+                *resource_server_urls,
                 re_path(
                     r"^teams/(?P<team_id>[0-9a-z-]*)/",
                     include(team_related_router.urls),

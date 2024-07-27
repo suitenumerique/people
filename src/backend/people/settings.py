@@ -358,6 +358,26 @@ class Base(Configuration):
     ALLOW_LOGOUT_GET_METHOD = values.BooleanValue(
         default=True, environ_name="ALLOW_LOGOUT_GET_METHOD", environ_prefix=None
     )
+    OIDC_RS_PRIVATE_KEY_STR = values.Value(
+        default=None,
+        environ_name="OIDC_RS_PRIVATE_KEY_STR",
+        environ_prefix=None,
+    )
+    OIDC_RS_ENCRYPTION_KEY_TYPE = values.Value(
+        default="RSA",
+        environ_name="OIDC_RS_ENCRYPTION_KEY_TYPE",
+        environ_prefix=None,
+    )
+    OIDC_RS_ENCRYPTION_ALGO = values.Value(
+        default="RSA-OAEP",
+        environ_name="OIDC_RS_ENCRYPTION_ALGO",
+        environ_prefix=None,
+    )
+    OIDC_RS_ENCRYPTION_ENCODING = values.Value(
+        default="A256GCM",
+        environ_name="OIDC_RS_ENCRYPTION_ENCODING",
+        environ_prefix=None,
+    )
 
     USER_OIDC_FIELDS_TO_NAME = values.ListValue(
         default=["first_name", "last_name"],
