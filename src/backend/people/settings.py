@@ -316,6 +316,9 @@ class Base(Configuration):
     OIDC_OP_JWKS_ENDPOINT = values.Value(
         environ_name="OIDC_OP_JWKS_ENDPOINT", environ_prefix=None
     )
+    OIDC_OP_INTROSPECTION_ENDPOINT = values.Value(
+        environ_name="OIDC_OP_INTROSPECTION_ENDPOINT", environ_prefix=None
+    )
     OIDC_OP_AUTHORIZATION_ENDPOINT = values.Value(
         environ_name="OIDC_OP_AUTHORIZATION_ENDPOINT", environ_prefix=None
     )
