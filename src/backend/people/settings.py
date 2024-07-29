@@ -388,6 +388,32 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT = values.Value(
+        None, environ_name="OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT", environ_prefix=None
+    )
+    OIDC_OP_URL = values.Value(None, environ_name="OIDC_OP_URL", environ_prefix=None)
+    OIDC_RS_CLIENT_ID = values.Value(
+        None, environ_name="OIDC_RS_CLIENT_ID", environ_prefix=None
+    )
+    OIDC_RS_CLIENT_SECRET = values.Value(
+        None,
+        environ_name="OIDC_RS_CLIENT_SECRET",
+        environ_prefix=None,
+    )
+    OIDC_RS_SIGNING_ALGO = values.Value(
+        default="ES256", environ_name="OIDC_RS_SIGNING_ALG0", environ_prefix=None
+    )
+    OIDC_RS_SCOPES = values.ListValue(
+        ["groups"], environ_name="OIDC_RS_SCOPES", environ_prefix=None
+    )
+    OIDC_PROXY = values.Value(None, environ_name="OIDC_PROXY", environ_prefix=None)
+
+    OIDC_VERIFY_SSL = values.BooleanValue(
+        True, environ_name="OIDC_VERIFY_SSL", environ_prefix=None
+    )
+
+    OIDC_TIMEOUT = values.Value(None, environ_name="OIDC_TIMEOUT", environ_prefix=None)
+
     # mailboxes provisioning API
     MAIL_PROVISIONING_API_URL = values.Value(
         default="https://api.dev.ox.numerique.gouv.fr",

@@ -79,7 +79,7 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             )
 
         try:
-            user = self.UserModel.objects.get(sub=sub)
+            user = self.UserModel.objects.get(sub=sub, is_active=True)
         except self.UserModel.DoesNotExist:
             if self.get_settings("OIDC_CREATE_USER", True):
                 user = self.create_user(user_info)
