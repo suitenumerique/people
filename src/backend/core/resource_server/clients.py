@@ -1,5 +1,7 @@
 """Resource Server Clients classes"""
 
+from django.core.exceptions import ImproperlyConfigured
+
 import requests
 from joserfc.jwk import KeySet
 
@@ -28,6 +30,11 @@ class AuthorizationServerClient:
         timeout,
         proxy,
     ):
+        if not url or not url_jwks or not url_introspection:
+            raise ImproperlyConfigured(
+                "Could not instantiate AuthorizationServerClient, some parameters are missing."
+            )
+
         self.url = url
         self._url_introspection = url_introspection
         self._url_jwks = url_jwks

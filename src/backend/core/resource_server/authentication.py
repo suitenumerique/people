@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from mozilla_django_oidc.contrib.drf import OIDCAuthentication
 
-from .backend import ResourceServerBackend
+from .backend import ResourceServerBackend, ResourceServerImproperlyConfiguredBackend
 from .clients import AuthorizationServerClient
 
 logger = logging.getLogger(__name__)
@@ -21,16 +21,21 @@ class ResourceServerAuthentication(OIDCAuthentication):
     def __init__(self):
         super().__init__()
 
-        authorization_server_client = AuthorizationServerClient(
-            url=settings.OIDC_OP_URL,
-            verify_ssl=settings.OIDC_VERIFY_SSL,
-            timeout=settings.OIDC_TIMEOUT,
-            proxy=settings.OIDC_PROXY,
-            url_jwks=settings.OIDC_OP_JWKS_ENDPOINT,
-            url_introspection=settings.OIDC_OP_INTROSPECTION_ENDPOINT,
-        )
+        try:
+            authorization_server_client = AuthorizationServerClient(
+                url=settings.OIDC_OP_URL,
+                verify_ssl=settings.OIDC_VERIFY_SSL,
+                timeout=settings.OIDC_TIMEOUT,
+                proxy=settings.OIDC_PROXY,
+                url_jwks=settings.OIDC_OP_JWKS_ENDPOINT,
+                url_introspection=settings.OIDC_OP_INTROSPECTION_ENDPOINT,
+            )
+            self.backend = ResourceServerBackend(authorization_server_client)
 
-        self.backend = ResourceServerBackend(authorization_server_client)
+        except ImproperlyConfigured as err:
+            message = "Resource Server authentication is disabled"
+            logger.debug("%s. Exception: %s", message, err)
+            self.backend = ResourceServerImproperlyConfiguredBackend()
 
     def get_access_token(self, request):
         """Retrieve and decode the access token from the request.

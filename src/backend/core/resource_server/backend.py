@@ -4,12 +4,13 @@ import logging
 
 from django.conf import settings
 from django.contrib import auth
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 
 from joserfc import jwe as jose_jwe
 from joserfc import jwt as jose_jwt
 from joserfc.errors import InvalidClaimError, InvalidTokenError
 from requests.exceptions import HTTPError
+from rest_framework.exceptions import AuthenticationFailed
 
 from . import utils
 
@@ -41,6 +42,16 @@ class ResourceServerBackend:
         self._encryption_algorithm = settings.OIDC_RS_ENCRYPTION_ALGO
         self._signing_algorithm = settings.OIDC_RS_SIGNING_ALGO
         self._scopes = settings.OIDC_RS_SCOPES
+
+        if (
+            not self._client_id
+            or not self._client_secret
+            or not authorization_server_client
+        ):
+            raise ImproperlyConfigured(
+                "Could not instantiate ResourceServerBackend, some parameters are missing."
+            )
+
         self._authorization_server_client = authorization_server_client
 
         self._claims_registry = jose_jwt.JWTClaimsRegistry(
@@ -56,6 +67,7 @@ class ResourceServerBackend:
         Params 'id_token', 'payload' won't be used, and our implementation will only
         support 'get_user', not 'get_or_create_user'.
         """
+
         return self.get_user(access_token)
 
     def get_user(self, access_token):
@@ -201,3 +213,11 @@ class ResourceServerBackend:
             raise SuspiciousOperation(message) from err
 
         return token.claims
+
+
+class ResourceServerImproperlyConfiguredBackend:
+    """Fallback backend for improperly configured Resource Servers."""
+
+    def get_or_create_user(self, access_token, id_token, payload):
+        """Indicate that the Resource Server is improperly configured."""
+        raise AuthenticationFailed("Resource Server is improperly configured")
