@@ -69,7 +69,7 @@ You first need to create a superuser account:
 $ make superuser
 ```
 
-You can then login with credentials `admin@example` / `admin`.
+You can then login with sub `admin` and password `admin`.
 
 ### Run frontend
 
