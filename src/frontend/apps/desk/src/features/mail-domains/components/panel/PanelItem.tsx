@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -13,7 +12,6 @@ interface MailDomainProps {
 
 export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
   const { colorsTokens } = useCunninghamTheme();
-  const { t } = useTranslation();
   const {
     query: { slug },
   } = useRouter();
@@ -55,7 +53,7 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
       >
         <Box $align="center" $direction="row" $gap="0.5rem">
           <IconMailDomains
-            aria-label={t(`Mail Domains icon`)}
+            aria-hidden="true"
             color={colorsTokens()['primary-500']}
             className="p-t"
             width="52"

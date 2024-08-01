@@ -56,7 +56,7 @@ export const Header = () => {
           </LogoGouv>
           <StyledLink href="/">
             <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconApplication} alt={t('Régie Logo')} />
+              <Image priority src={IconApplication} alt="" />
               <Text $margin="none" as="h2" $theme="primary">
                 {t('Régie')}
               </Text>

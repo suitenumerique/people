@@ -74,7 +74,7 @@ export const addNewMember = async (
   // Choose a role
   await page.getByRole('radio', { name: role }).click();
 
-  await page.getByRole('button', { name: 'Validate' }).click();
+  await page.getByRole('button', { name: 'Add to group' }).click();
 
   const table = page.getByLabel('List members card').getByRole('table');
 

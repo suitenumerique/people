@@ -141,7 +141,7 @@ const TopBanner = ({
         $margin={{ all: 'big', vertical: 'xbig' }}
         $gap="2.25rem"
       >
-        <MailDomainsLogo aria-label={t('Mail Domains icon')} />
+        <MailDomainsLogo aria-hidden="true" />
         <Text $margin="none" as="h3" $size="h3">
           {name}
         </Text>

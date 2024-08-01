@@ -41,7 +41,7 @@ export const PanelActions = () => {
         $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
         $color={colorsTokens()['primary-600']}
       >
-        <IconSort width={30} height={30} aria-label={t('Sort teams icon')} />
+        <IconSort width={30} height={30} aria-hidden="true" />
       </BoxButton>
       <StyledLink href="/teams/create">
         <BoxButton
@@ -49,7 +49,7 @@ export const PanelActions = () => {
           $color={colorsTokens()['primary-600']}
           tabIndex={-1}
         >
-          <IconAdd width={30} height={30} aria-label={t('Add team icon')} />
+          <IconAdd width={30} height={30} aria-hidden="true" />
         </BoxButton>
       </StyledLink>
     </Box>

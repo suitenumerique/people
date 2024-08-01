@@ -43,7 +43,11 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
               setIsDropOpen(false);
             }}
             color="primary-text"
-            icon={<span className="material-icons">edit</span>}
+            icon={
+              <span className="material-icons" aria-hidden="true">
+                edit
+              </span>
+            }
           >
             <Text $theme="primary">{t('Update the team')}</Text>
           </Button>
@@ -54,7 +58,11 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
                 setIsDropOpen(false);
               }}
               color="primary-text"
-              icon={<span className="material-icons">delete</span>}
+              icon={
+                <span className="material-icons" aria-hidden="true">
+                  delete
+                </span>
+              }
             >
               <Text $theme="primary">{t('Delete the team')}</Text>
             </Button>

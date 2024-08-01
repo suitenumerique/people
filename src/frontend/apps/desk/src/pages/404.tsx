@@ -19,7 +19,7 @@ const Page: NextPageWithLayout = () => {
 
   return (
     <Box $align="center" $margin="auto" $height="70vh" $gap="2rem">
-      <Icon404 aria-label="Image 404" role="img" />
+      <Icon404 role="img" aria-label={t('Image 404 page not found')} />
 
       <Text $size="h2" $weight="700" $theme="greyscale" $variation="900">
         {t('Ouch!')}

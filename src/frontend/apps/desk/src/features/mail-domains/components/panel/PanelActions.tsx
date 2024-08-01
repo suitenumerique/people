@@ -40,11 +40,7 @@ export const PanelActions = () => {
         $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
         $color={colorsTokens()['primary-600']}
       >
-        <IconSort
-          width={30}
-          height={30}
-          aria-label={t('Sort domain names icon')}
-        />
+        <IconSort width={30} height={30} aria-hidden="true" />
       </BoxButton>
     </Box>
   );

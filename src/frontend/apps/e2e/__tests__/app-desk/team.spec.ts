@@ -16,8 +16,6 @@ test.describe('Team', () => {
       await createTeam(page, 'team-top-box', browserName, 1)
     ).shift();
 
-    await expect(page.getByLabel('icon group')).toBeVisible();
-
     await expect(
       page.getByRole('heading', {
         name: teamName,

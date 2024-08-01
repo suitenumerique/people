@@ -53,7 +53,11 @@ export const MemberAction = ({
               setIsDropOpen(false);
             }}
             color="primary-text"
-            icon={<span className="material-icons">edit</span>}
+            icon={
+              <span className="material-icons" aria-hidden="true">
+                edit
+              </span>
+            }
           >
             <Text $theme="primary">{t('Update role')}</Text>
           </Button>
@@ -64,7 +68,11 @@ export const MemberAction = ({
               setIsDropOpen(false);
             }}
             color="primary-text"
-            icon={<span className="material-icons">delete</span>}
+            icon={
+              <span className="material-icons" aria-hidden="true">
+                delete
+              </span>
+            }
           >
             <Text $theme="primary">{t('Remove from group')}</Text>
           </Button>

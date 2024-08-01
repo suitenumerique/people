@@ -74,7 +74,7 @@ const MenuItem = ({ Icon, label, href, alias }: MenuItemProps) => {
         >
           <Icon
             width="2.375rem"
-            aria-label={t(`{{label}} icon`, { label })}
+            aria-hidden="true"
             style={{
               transition: 'color 0.2s ease-in-out',
             }}

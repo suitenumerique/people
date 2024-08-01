@@ -128,7 +128,7 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
           $background={colorsTokens()['primary-150']}
           $theme="primary"
         >
-          <IconUser width={20} height={20} />
+          <IconUser width={20} height={20} aria-hidden="true" />
           <Text>{access.user.name}</Text>
         </Text>
       </Box>

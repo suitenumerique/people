@@ -19,8 +19,6 @@ test.describe('Teams Create', () => {
 
     await expect(card.getByLabel('Team name')).toBeVisible();
 
-    await expect(card.getByLabel('icon group')).toBeVisible();
-
     await expect(
       card.getByRole('heading', {
         name: 'Create a new group',

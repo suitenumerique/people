@@ -44,9 +44,9 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
         </Box>
         <Box $margin="big" $direction="row" $align="center" $gap="1.5rem">
           <IconGroup
+            aria-hidden="true"
             width={44}
             color={colorsTokens()['primary-text']}
-            aria-label={t('icon group')}
             style={{
               flexShrink: 0,
               alignSelf: 'start',

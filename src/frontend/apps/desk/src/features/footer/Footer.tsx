@@ -83,7 +83,7 @@ export const Footer = () => {
                 `}
               >
                 <Text $weight="bold">{label}</Text>
-                <IconLink width={18} />
+                <IconLink width={18} aria-hidden="true" />
               </StyledLink>
             ))}
           </Box>
@@ -157,7 +157,7 @@ export const Footer = () => {
               `}
             >
               <Text $variation="600">licence etalab-2.0</Text>
-              <IconLink width={18} />
+              <IconLink width={18} aria-hidden="true" />
             </StyledLink>
           </Trans>
         </Text>

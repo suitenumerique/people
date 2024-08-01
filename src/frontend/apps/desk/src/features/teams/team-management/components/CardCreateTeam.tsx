@@ -40,9 +40,9 @@ export const CardCreateTeam = () => {
       <Box $gap="1rem">
         <Box $align="center">
           <IconGroup
+            aria-hidden="true"
             width={44}
             color={colorsTokens()['primary-text']}
-            aria-label={t('icon group')}
           />
           <Text as="h3" $textAlign="center">
             {t('Create a new group')}

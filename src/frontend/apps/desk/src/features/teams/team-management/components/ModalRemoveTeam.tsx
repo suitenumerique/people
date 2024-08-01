@@ -72,7 +72,11 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <IconRemove width={48} color={colorsTokens()['primary-text']} />
+          <IconRemove
+            width={48}
+            color={colorsTokens()['primary-text']}
+            aria-hidden="true"
+          />
           <Text $size="h3" $margin="none">
             {t('Deleting the {{teamName}} team', { teamName: team.name })}
           </Text>
@@ -105,7 +109,7 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
         >
           <IconGroup
             className="p-t"
-            aria-label={t(`Teams icon`)}
+            aria-hidden="true"
             color={colorsTokens()['primary-500']}
             width={58}
             style={{

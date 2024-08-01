@@ -15,7 +15,7 @@ export const AccountDropdown = () => {
       button={
         <Box $flex $direction="row" $align="center">
           <Text $theme="primary">{t('My account')}</Text>
-          <Text className="material-icons" $theme="primary">
+          <Text className="material-icons" $theme="primary" aria-hidden="true">
             arrow_drop_down
           </Text>
         </Box>
@@ -24,7 +24,11 @@ export const AccountDropdown = () => {
       <Button
         onClick={logout}
         color="primary-text"
-        icon={<span className="material-icons">logout</span>}
+        icon={
+          <span className="material-icons" aria-hidden="true">
+            logout
+          </span>
+        }
         aria-label={t('Logout')}
       >
         <Text $weight="normal">{t('Logout')}</Text>

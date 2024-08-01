@@ -164,7 +164,11 @@ export const ModalAddMembers = ({
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <IconAddMember width={48} color={colorsTokens()['primary-text']} />
+          <IconAddMember
+            width={48}
+            color={colorsTokens()['primary-text']}
+            aria-hidden="true"
+          />
           <Text $size="h3" $margin="none">
             {t('Add a member')}
           </Text>

@@ -53,7 +53,7 @@ export const Panel = () => {
         `}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <IconOpenClose width={24} height={24} />
+        <IconOpenClose width={24} height={24} aria-hidden="true" />
       </BoxButton>
       <Box
         $css={`

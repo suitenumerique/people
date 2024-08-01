@@ -75,7 +75,11 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <IconEdit width={48} color={colorsTokens()['primary-text']} />
+          <IconEdit
+            width={48}
+            color={colorsTokens()['primary-text']}
+            aria-hidden="true"
+          />
           <Text $size="h3" $margin="none">
             {t('Update team {{teamName}}', { teamName: team.name })}
           </Text>

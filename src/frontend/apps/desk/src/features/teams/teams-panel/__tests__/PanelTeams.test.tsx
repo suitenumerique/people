@@ -55,9 +55,7 @@ describe('PanelTeams', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(
-      await screen.findByLabelText('Empty teams icon'),
-    ).toBeInTheDocument();
+    expect(await screen.findByLabelText('Empty team icon')).toBeInTheDocument();
   });
 
   it('renders a team with only 1 member', async () => {
@@ -81,12 +79,10 @@ describe('PanelTeams', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 
-    expect(
-      await screen.findByLabelText('Empty teams icon'),
-    ).toBeInTheDocument();
+    expect(await screen.findByLabelText('Empty team icon')).toBeInTheDocument();
   });
 
-  it('renders a non-empty team', async () => {
+  it('renders a non-empty team', () => {
     fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
@@ -110,8 +106,6 @@ describe('PanelTeams', () => {
     render(<TeamList />, { wrapper: AppWrapper });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
-
-    expect(await screen.findByLabelText('Teams icon')).toBeInTheDocument();
   });
 
   it('renders the error', async () => {

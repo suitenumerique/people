@@ -40,7 +40,6 @@ export const InputTeamName = ({
           setTeamName(e.target.value);
           setIsInputError(false);
         }}
-        rightIcon={<span className="material-icons">edit</span>}
         state={isInputError ? 'error' : 'default'}
       />
       {isError && error && <TextErrors causes={error.cause} />}

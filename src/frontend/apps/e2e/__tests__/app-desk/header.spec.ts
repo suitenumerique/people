@@ -19,7 +19,8 @@ test.describe('Header', () => {
       header.getByAltText('Freedom Equality Fraternity Logo'),
     ).toBeVisible();
 
-    await expect(header.getByAltText('Régie Logo')).toBeVisible();
+    await expect(header.getByRole('link', { name: 'Régie' })).toBeVisible();
+
     await expect(header.locator('h2').getByText('Régie')).toHaveCSS(
       'color',
       'rgb(0, 0, 145)',
@@ -35,7 +36,7 @@ test.describe('Header', () => {
       }),
     ).toBeVisible();
 
-    await expect(header.getByAltText('Language Icon')).toBeVisible();
+    await expect(header.getByRole('combobox').getByText('EN')).toBeVisible();
     await expect(header.getByText('My account')).toBeVisible();
   });
 

@@ -28,7 +28,9 @@ test.describe('Members Delete', () => {
         'You are the last owner, you cannot be removed from your team.',
       ),
     ).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Validate' })).toBeDisabled();
+    await expect(
+      page.getByRole('button', { name: 'Remove from the group' }),
+    ).toBeDisabled();
   });
 
   test('it deletes himself when it is not the last owner', async ({
@@ -49,7 +51,7 @@ test.describe('Members Delete', () => {
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Remove from the group' }).click();
     await expect(
       page.getByText(`The member has been removed from the team`),
     ).toBeVisible();
@@ -76,7 +78,9 @@ test.describe('Members Delete', () => {
     await expect(
       page.getByText(`You cannot remove other owner.`),
     ).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Validate' })).toBeDisabled();
+    await expect(
+      page.getByRole('button', { name: 'Remove from the group' }),
+    ).toBeDisabled();
   });
 
   test('it deletes admin member', async ({ page, browserName }) => {
@@ -94,7 +98,7 @@ test.describe('Members Delete', () => {
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Remove from the group' }).click();
     await expect(
       page.getByText(`The member has been removed from the team`),
     ).toBeVisible();
@@ -161,7 +165,7 @@ test.describe('Members Delete', () => {
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Remove from the group' }).click();
     await expect(
       page.getByText(`The member has been removed from the team`),
     ).toBeVisible();

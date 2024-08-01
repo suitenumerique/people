@@ -23,7 +23,9 @@ test.describe('Members Create', () => {
       page.getByLabel(/Find a member to add to the team/),
     ).toBeVisible();
 
-    await expect(page.getByRole('button', { name: 'Validate' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Add to group' }),
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
   });
 
@@ -124,7 +126,7 @@ test.describe('Members Create', () => {
         response.url().includes('/accesses/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Add to group' }).click();
 
     // Check invitation sent
     await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
@@ -169,7 +171,7 @@ test.describe('Members Create', () => {
         response.url().includes('/accesses/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Add to group' }).click();
 
     await expect(
       page.getByText(`Member ${users[0].name} added to the team`),
@@ -207,7 +209,7 @@ test.describe('Members Create', () => {
         response.url().includes('/invitations/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Validate' }).click();
+    await page.getByRole('button', { name: 'Add to group' }).click();
 
     // Check invitation sent
     await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();

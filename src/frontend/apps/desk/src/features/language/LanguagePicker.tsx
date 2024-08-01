@@ -53,12 +53,12 @@ export const LanguagePicker = () => {
           $gap="0.7rem"
           $align="center"
         >
-          <Image priority src={IconLanguage} alt={t('Language Icon')} />
+          <Image priority src={IconLanguage} alt="" />
           <Text $theme="primary">{lang.toUpperCase()}</Text>
         </Box>
       ),
     }));
-  }, [languages, t]);
+  }, [languages]);
 
   return (
     <SelectStyled
