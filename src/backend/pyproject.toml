@@ -137,3 +137,22 @@ python_files = [
     "test_*.py",
     "tests.py",
 ]
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "*/admin.py", 
+    "*/migrations/*", 
+    "*/tests/*",
+    "*/urls.py",
+    "manage.py",
+    "celery_app.py",
+    "wsgi.py",
+    ]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
+[tool.coverage.json]
+pretty_print = true

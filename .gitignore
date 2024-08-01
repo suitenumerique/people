@@ -66,6 +66,7 @@ src/frontend/tsclient
 
 # Test & lint
 .coverage
+coverage.json
 .pylint.d
 .pytest_cache
 db.sqlite3

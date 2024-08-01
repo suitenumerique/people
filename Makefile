@@ -166,6 +166,10 @@ test-back-parallel: ## run all back-end tests in parallel
 	bin/pytest -n auto $${args:-${1}}
 .PHONY: test-back-parallel
 
+test-coverage: ## compute, display and save test coverage
+	bin/pytest --cov=. --cov-report json .
+.PHONY: test-coverage
+
 makemigrations:  ## run django makemigrations for the people project.
 	@echo "$(BOLD)Running makemigrations$(RESET)"
 	@$(COMPOSE) up -d postgresql
