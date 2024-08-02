@@ -8,7 +8,7 @@ from rest_framework.test import APIClient
 
 from core import factories as core_factories
 
-from mailbox_manager import factories, models
+from mailbox_manager import enums, factories, models
 
 pytestmark = pytest.mark.django_db
 
@@ -67,6 +67,8 @@ def test_api_mail_domains__create_authenticated():
     )
 
     assert response.status_code == status.HTTP_201_CREATED
+    # a new domain pending is created and the authenticated user is the owner
     domain = models.MailDomain.objects.get()
+    assert domain.status == enums.MailDomainStatusChoices.PENDING
     assert domain.name == "mydomain.com"
     assert domain.accesses.filter(role="owner", user=user).exists()

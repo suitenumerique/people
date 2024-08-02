@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_api_mail_domains__delete_anonymous():
-    """Anonymous users should not be allowed to destroy a team."""
+    """Anonymous users should not be allowed to destroy a domain."""
     domain = factories.MailDomainFactory()
 
     response = APIClient().delete(
