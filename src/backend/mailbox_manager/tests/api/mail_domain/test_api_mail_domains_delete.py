@@ -25,10 +25,9 @@ def test_api_mail_domains__delete_anonymous():
     assert models.MailDomain.objects.count() == 1
 
 
-def test_api_mail_domains__delete_authenticated_unrelated():
+def test_api_mail_domains__delete_authenticated():
     """
-    Authenticated users should not be allowed to delete a domain to which they are not
-    related.
+    Delete a domain is not allowed.
     """
     user = core_factories.UserFactory()
     domain = factories.MailDomainFactory()
@@ -39,69 +38,5 @@ def test_api_mail_domains__delete_authenticated_unrelated():
         f"/api/v1.0/mail-domains/{domain.slug}/",
     )
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "No MailDomain matches the given query."}
+    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
     assert models.MailDomain.objects.count() == 1
-
-
-def test_api_mail_domains__delete_authenticated_member():
-    """
-    Authenticated users should not be allowed to delete a domain
-    to which they are only a member.
-    """
-    user = core_factories.UserFactory()
-    domain = factories.MailDomainFactory(users=[(user, "member")])
-
-    client = APIClient()
-    client.force_login(user)
-
-    response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.slug}/",
-    )
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
-    assert models.MailDomain.objects.count() == 1
-
-
-def test_api_mail_domains__delete_authenticated_administrator():
-    """
-    Authenticated users should not be allowed to delete a domain
-    for which they are administrator.
-    """
-    user = core_factories.UserFactory()
-    domain = factories.MailDomainFactory(users=[(user, "administrator")])
-
-    client = APIClient()
-    client.force_login(user)
-
-    response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.slug}/",
-    )
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
-    assert models.MailDomain.objects.count() == 1
-
-
-def test_api_mail_domains__delete_authenticated_owner():
-    """
-    Authenticated users should be able to delete a domain
-    for which they are directly owner.
-    """
-    user = core_factories.UserFactory()
-    domain = factories.MailDomainFactory(users=[(user, "owner")])
-
-    client = APIClient()
-    client.force_login(user)
-
-    response = client.delete(
-        f"/api/v1.0/mail-domains/{domain.slug}/",
-    )
-
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-    assert models.MailDomain.objects.exists() is False

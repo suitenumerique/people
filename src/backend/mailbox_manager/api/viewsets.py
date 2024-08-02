@@ -14,7 +14,6 @@ class MailDomainViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """
@@ -29,9 +28,6 @@ class MailDomainViewSet(
     POST /api/<version>/mail-domains/ with expected data:
         - name: str
         Return newly created domain
-
-    DELETE /api/<version>/mail-domains/<domain-slug>/
-        Delete targeted team access
     """
 
     permission_classes = [permissions.AccessPermission]
