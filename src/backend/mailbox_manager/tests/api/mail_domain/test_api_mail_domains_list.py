@@ -41,8 +41,8 @@ def test_api_mail_domains__list_authenticated():
         str(access.domain.id)
         for access in factories.MailDomainAccessFactory.create_batch(5, user=user)
     }
-    factories.MailDomainFactory.create_batch(2)  # Other teams
-    factories.MailDomainAccessFactory.create_batch(2)  # Other teams and accesses
+    factories.MailDomainFactory.create_batch(2)  # Other domains
+    factories.MailDomainAccessFactory.create_batch(2)  # Other domains and accesses
 
     response = client.get(
         "/api/v1.0/mail-domains/",

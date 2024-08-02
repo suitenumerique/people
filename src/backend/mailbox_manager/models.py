@@ -9,9 +9,9 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel, RoleChoices
+from core.models import BaseModel
 
-from mailbox_manager.enums import MailDomainStatusChoices
+from mailbox_manager.enums import MailDomainRoleChoices, MailDomainStatusChoices
 
 
 class MailDomain(BaseModel):
@@ -57,13 +57,16 @@ class MailDomain(BaseModel):
             except (MailDomainAccess.DoesNotExist, IndexError):
                 role = None
 
-        is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
+        is_owner_or_admin = role in [
+            MailDomainRoleChoices.OWNER,
+            MailDomainRoleChoices.ADMIN,
+        ]
 
         return {
             "get": bool(role),
             "patch": is_owner_or_admin,
             "put": is_owner_or_admin,
-            "delete": role == RoleChoices.OWNER,
+            "delete": role == MailDomainRoleChoices.OWNER,
             "manage_accesses": is_owner_or_admin,
         }
 
@@ -86,7 +89,9 @@ class MailDomainAccess(BaseModel):
         blank=False,
     )
     role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+        max_length=20,
+        choices=MailDomainRoleChoices.choices,
+        default=MailDomainRoleChoices.VIEWER,
     )
 
     class Meta:

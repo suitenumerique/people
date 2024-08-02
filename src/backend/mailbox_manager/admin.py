@@ -25,7 +25,13 @@ class MailDomainAdmin(admin.ModelAdmin):
 class MailDomainAccessAdmin(admin.ModelAdmin):
     """Admin for mail domain accesses model."""
 
-    list_display = ("user", "domain")
+    list_display = (
+        "user",
+        "domain",
+        "role",
+        "created_at",
+        "updated_at",
+    )
 
 
 @admin.register(models.Mailbox)
