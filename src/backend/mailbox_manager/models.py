@@ -26,6 +26,7 @@ class MailDomain(BaseModel):
         default=MailDomainStatusChoices.PENDING,
         choices=MailDomainStatusChoices.choices,
     )
+    secret = models.CharField(_("secret"), max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = "people_mail_domain"
