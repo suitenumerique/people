@@ -68,4 +68,5 @@ def test_api_mail_domains__retrieve_authenticated_related():
         "slug": domain.slug,
         "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
+        "abilities": domain.get_abilities(user),
     }

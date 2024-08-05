@@ -8,7 +8,8 @@ from rest_framework.test import APIClient
 
 from core import factories as core_factories
 
-from mailbox_manager import factories, models
+from mailbox_manager import enums, factories, models
+from mailbox_manager.api import serializers
 
 pytestmark = pytest.mark.django_db
 
@@ -16,86 +17,132 @@ pytestmark = pytest.mark.django_db
 def test_api_mailboxes__create_anonymous_forbidden():
     """Anonymous users should not be able to create a new mailbox via the API."""
     mail_domain = factories.MailDomainEnabledFactory()
-
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
     response = APIClient().post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        {
-            "first_name": "jean",
-            "last_name": "doe",
-            "local_part": "jean.doe",
-            "secondary_email": "jean.doe@gmail.com",
-            "phone_number": "+33150142700",
-        },
+        mailbox_values,
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert not models.Mailbox.objects.exists()
 
 
-def test_api_mailboxes__create_authenticated_missing_fields():
-    """
-    Authenticated users should not be able to create mailboxes
-    without local part or secondary mail.
-    """
-    user = core_factories.UserFactory(email="tester@ministry.fr", name="john doe")
+def test_api_mailboxes__create_authenticated_failure():
+    """Authenticated users should not be able to create mailbox
+    without specific role on mail domain."""
+    user = core_factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
     mail_domain = factories.MailDomainEnabledFactory()
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        {
-            "first_name": "jean",
-            "last_name": "doe",
-            "secondary_email": "jean.doe@gmail.com",
-            "phone_number": "+33150142700",
-        },
+        mailbox_values,
         format="json",
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert models.Mailbox.objects.exists() is False
-    assert response.json() == {"local_part": ["This field is required."]}
 
-    response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        {
-            "first_name": "jean",
-            "last_name": "doe",
-            "local_part": "jean.doe",
-            "phone_number": "+33150142700",
-        },
-        format="json",
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert not models.Mailbox.objects.exists()
+
+
+def test_api_mailboxes__create_viewer_failure():
+    """Users with viewer role should not be able to create mailbox on the mail domain."""
+    mail_domain = factories.MailDomainEnabledFactory()
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.VIEWER, domain=mail_domain
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert models.Mailbox.objects.exists() is False
-    assert response.json() == {"secondary_email": ["This field is required."]}
-
-
-def test_api_mailboxes__create_authenticated_successful():
-    """Authenticated users should be able to create mailbox."""
-    user = core_factories.UserFactory(email="tester@ministry.fr", name="john doe")
 
     client = APIClient()
-    client.force_login(user)
+    client.force_login(access.user)
 
-    mail_domain = factories.MailDomainEnabledFactory(name="saint-jean.collectivite.fr")
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        {
-            "first_name": "jean",
-            "last_name": "doe",
-            "local_part": "jean.doe",
-            "secondary_email": "jean.doe@gmail.com",
-            "phone_number": "+33150142700",
-        },
+        mailbox_values,
         format="json",
     )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert not models.Mailbox.objects.exists()
+
+
+@pytest.mark.parametrize(
+    "role",
+    [
+        enums.MailDomainRoleChoices.OWNER,
+        enums.MailDomainRoleChoices.ADMIN,
+    ],
+)
+def test_api_mailboxes__create_roles_success(role):
+    """Users with owner or admin role should be able to create mailbox on the mail domain."""
+    mail_domain = factories.MailDomainEnabledFactory()
+    access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
+
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
-    assert mailbox.local_part == "jean.doe"
-    assert mailbox.secondary_email == "jean.doe@gmail.com"
+
+    assert mailbox.local_part == mailbox_values["local_part"]
+    assert mailbox.secondary_email == mailbox_values["secondary_email"]
     assert response.json() == {
         "id": str(mailbox.id),
         "local_part": str(mailbox.local_part),
         "secondary_email": str(mailbox.secondary_email),
     }
+
+
+def test_api_mailboxes__create_administrator_missing_fields():
+    """
+    Administrator users should not be able to create mailboxes
+    without local part or secondary mail.
+    """
+    mail_domain = factories.MailDomainEnabledFactory()
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN, domain=mail_domain
+    )
+    client = APIClient()
+    client.force_login(access.user)
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
+    del mailbox_values["local_part"]
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not models.Mailbox.objects.exists()
+    assert response.json() == {"local_part": ["This field is required."]}
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
+    del mailbox_values["secondary_email"]
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not models.Mailbox.objects.exists()
+    assert response.json() == {"secondary_email": ["This field is required."]}

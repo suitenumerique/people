@@ -66,6 +66,7 @@ class MailDomain(BaseModel):
             "get": bool(role),
             "patch": is_owner_or_admin,
             "put": is_owner_or_admin,
+            "post": is_owner_or_admin,
             "delete": role == MailDomainRoleChoices.OWNER,
             "manage_accesses": is_owner_or_admin,
         }

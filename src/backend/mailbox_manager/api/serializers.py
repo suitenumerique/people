@@ -16,6 +16,8 @@ class MailboxSerializer(serializers.ModelSerializer):
 class MailDomainSerializer(serializers.ModelSerializer):
     """Serialize mail domain."""
 
+    abilities = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = models.MailDomain
         lookup_field = "slug"
@@ -23,15 +25,24 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "slug",
+            "abilities",
             "created_at",
             "updated_at",
         ]
         read_only_fields = [
             "id",
             "slug",
+            "abilities",
             "created_at",
             "updated_at",
         ]
+
+    def get_abilities(self, domain) -> dict:
+        """Return abilities of the logged-in user on the instance."""
+        request = self.context.get("request")
+        if request:
+            return domain.get_abilities(request.user)
+        return {}
 
 
 class MailDomainAccessSerializer(serializers.ModelSerializer):

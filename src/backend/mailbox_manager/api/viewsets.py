@@ -76,8 +76,10 @@ class MailBoxViewSet(
 ):
     """MailBox ViewSet"""
 
-    permission_classes = [drf_permissions.IsAuthenticated]
+    permission_classes = [permissions.MailBoxPermission]
     serializer_class = serializers.MailboxSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering = ["-created_at"]
     queryset = models.Mailbox.objects.all()
 
     def get_queryset(self):
