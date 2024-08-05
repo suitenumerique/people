@@ -3,15 +3,15 @@ Declare and configure the models for the People additional application : mailbox
 """
 
 from django.conf import settings
-from django.core import validators
-from django.core.exceptions import ValidationError
-from django.db import models
+from django.core import exceptions, validators
+from django.db import models, transaction
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel
 
 from mailbox_manager.enums import MailDomainRoleChoices, MailDomainStatusChoices
+from mailbox_manager.utils.dimail import DimailAPIClient
 
 
 class MailDomain(BaseModel):
@@ -138,8 +138,30 @@ class Mailbox(BaseModel):
     def __str__(self):
         return f"{self.local_part!s}@{self.domain.name:s}"
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
+    def clean(self):
+        """Mailboxes can be created only on enabled domains, with a set secret."""
         if self.domain.status != MailDomainStatusChoices.ENABLED:
-            raise ValidationError("You can create mailbox only for a domain enabled")
-        super().save(*args, **kwargs)
+            raise exceptions.ValidationError(
+                "You can create mailbox only for a domain enabled"
+            )
+
+        if not self.domain.secret:
+            raise exceptions.ValidationError(
+                "Please configure your domain's secret before creating any mailbox."
+            )
+
+    def save(self, *args, **kwargs):
+        """
+        Override save function to fire a request on mailbox creation.
+        Modification is forbidden for now.
+        """
+        self.full_clean()
+
+        if self._state.adding:
+            with transaction.atomic():
+                client = DimailAPIClient()
+                client.send_mailbox_request(self)
+                return super().save(*args, **kwargs)
+
+        # Update is not implemented for now
+        raise NotImplementedError()

@@ -364,6 +364,13 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    # mailboxes provisioning API
+    MAIL_PROVISIONING_API_URL = values.Value(
+        default="https://main.dev.ox.numerique.gouv.fr",
+        environ_name="MAIL_PROVISIONING_API_URL",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):

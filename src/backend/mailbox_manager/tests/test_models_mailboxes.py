@@ -2,14 +2,35 @@
 Unit tests for the mailbox model
 """
 
+import json
+import logging
+import re
+from logging import Logger
+from unittest import mock
+
 from django.core.exceptions import ValidationError
 
 import pytest
+import requests
+import responses
+from rest_framework import status
+from urllib3.util import Retry
 
-from mailbox_manager import enums, factories
+from mailbox_manager import enums, factories, models
+from mailbox_manager.api import serializers
 
 pytestmark = pytest.mark.django_db
 
+logger = logging.getLogger(__name__)
+
+adapter = requests.adapters.HTTPAdapter(
+    max_retries=Retry(
+        total=4,
+        backoff_factor=0.1,
+        status_forcelist=[500, 502],
+        allowed_methods=["PATCH"],
+    )
+)
 
 # LOCAL PART FIELD
 
@@ -33,11 +54,13 @@ def test_models_mailboxes__local_part_matches_expected_format():
     """
     factories.MailboxFactory(local_part="Marie-Jose.Perec+JO_2024")
 
+    # other special characters (such as "@" or "!") should raise a validation error
     with pytest.raises(ValidationError, match="Enter a valid value"):
         factories.MailboxFactory(local_part="mariejo@unnecessarydomain.com")
 
-    with pytest.raises(ValidationError, match="Enter a valid value"):
-        factories.MailboxFactory(local_part="!")
+    for character in ["!", "$", "%"]:
+        with pytest.raises(ValidationError, match="Enter a valid value"):
+            factories.MailboxFactory(local_part=f"marie{character}jo")
 
 
 def test_models_mailboxes__local_part_unique_per_domain():
@@ -59,6 +82,9 @@ def test_models_mailboxes__local_part_unique_per_domain():
 
 # DOMAIN FIELD
 
+session = requests.Session()
+session.mount("http://", adapter)
+
 
 def test_models_mailboxes__domain_must_be_a_maildomain_instance():
     """The "domain" field should be an instance of MailDomain."""
@@ -72,7 +98,7 @@ def test_models_mailboxes__domain_must_be_a_maildomain_instance():
 
 def test_models_mailboxes__domain_cannot_be_null():
     """The "domain" field should not be null."""
-    with pytest.raises(ValidationError, match="This field cannot be null"):
+    with pytest.raises(models.MailDomain.DoesNotExist, match="Mailbox has no domain."):
         factories.MailboxFactory(domain=None)
 
 
@@ -126,3 +152,125 @@ def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
         # MailDomainFactory initializes a mail domain with default values,
         # so mail domain status is pending!
         factories.MailboxFactory(domain=factories.MailDomainFactory())
+
+
+### SYNC TO DIMAIL-API
+
+
+def test_models_mailboxes__no_secret():
+    """If no secret is declared on the domain, the function should raise an error."""
+    domain = factories.MailDomainEnabledFactory(secret=None)
+
+    with pytest.raises(
+        ValidationError,
+        match="Please configure your domain's secret before creating any mailbox.",
+    ):
+        factories.MailboxFactory(domain=domain)
+
+
+def test_models_mailboxes__wrong_secret():
+    """If domain secret is inaccurate, the function should raise an error."""
+
+    domain = factories.MailDomainEnabledFactory()
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"detail": "Permission denied"}',
+            status=status.HTTP_401_UNAUTHORIZED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+            body='{"detail": "Permission denied"}',
+            status=status.HTTP_401_UNAUTHORIZED,
+            content_type="application/json",
+        )
+
+        mailbox = factories.MailboxFactory(domain=domain)
+
+        # Payload sent to mailbox provider
+        payload = json.loads(rsps.calls[1].request.body)
+        assert payload == {
+            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+            "email": f"{mailbox.local_part}@{domain.name}",
+            "givenName": mailbox.first_name,
+            "surName": mailbox.last_name,
+        }
+
+
+@mock.patch.object(Logger, "error")
+@mock.patch.object(Logger, "info")
+def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
+    """Creating a mailbox sends the expected information and get expected response before saving."""
+    domain = factories.MailDomainEnabledFactory()
+
+    # generate mailbox data before mailbox, to mock responses
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_data['local_part']}@{domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+
+        mailbox = factories.MailboxFactory(
+            local_part=mailbox_data["local_part"], domain=domain
+        )
+
+        # Check headers
+        headers = rsps.calls[1].request.headers
+        # assert "Authorization" not in headers
+        assert headers["Content-Type"] == "application/json"
+
+        # Payload sent to mailbox provider
+        payload = json.loads(rsps.calls[1].request.body)
+        assert payload == {
+            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+            "email": f"{mailbox.local_part}@{domain.name}",
+            "givenName": mailbox.first_name,
+            "surName": mailbox.last_name,
+        }
+
+    # Logger
+    assert not mock_error.called
+    assert mock_info.call_count == 1
+    assert mock_info.call_args_list[0][0] == (
+        "Mailbox successfully created on domain %s",
+        domain.name,
+    )
+    assert mock_info.call_args_list[0][1] == (
+        {
+            "extra": {
+                "response": str(
+                    {
+                        "email": f"{mailbox.local_part}@{domain.name}",
+                        "password": "newpass",
+                        "uuid": "uuid",
+                    }
+                )
+            }
+        }
+    )

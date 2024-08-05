@@ -74,7 +74,18 @@ class MailBoxViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """MailBox ViewSet"""
+    """MailBox ViewSet
+
+    GET /api/<version>/mail-domains/<domain-slug>/mailboxes/
+        Return a list of mailboxes on the domain
+
+    POST /api/<version>/mail-domains/<domain-slug>/mailboxes/ with expected data:
+        - first_name: str
+        - last_name: str
+        - local_part: str
+        - secondary_email: str
+        Sends request to email provisioning API and returns newly created mailbox
+    """
 
     permission_classes = [permissions.MailBoxPermission]
     serializer_class = serializers.MailboxSerializer

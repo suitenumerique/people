@@ -50,6 +50,7 @@ backend:
     POSTGRES_USER: dinum
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
+    MAIL_PROVISIONING_API_URL: "http://host.docker.internal:8000"
   command:
     - "gunicorn"
     - "-c"

@@ -11,6 +11,8 @@ class MailboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Mailbox
         fields = ["id", "first_name", "last_name", "local_part", "secondary_email"]
+        # everything is actually read-only as we do not allow update for now
+        read_only_fields = ["id"]
 
 
 class MailDomainSerializer(serializers.ModelSerializer):
