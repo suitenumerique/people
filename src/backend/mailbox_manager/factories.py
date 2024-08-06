@@ -55,7 +55,7 @@ class MailDomainAccessFactory(factory.django.DjangoModelFactory):
         model = models.MailDomainAccess
 
     user = factory.SubFactory(core_factories.UserFactory)
-    domain = factory.SubFactory(MailDomainFactory)
+    domain = factory.SubFactory(MailDomainEnabledFactory)
     role = factory.fuzzy.FuzzyChoice(
         [r[0] for r in enums.MailDomainRoleChoices.choices]
     )

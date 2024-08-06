@@ -16,13 +16,28 @@ pytestmark = pytest.mark.django_db
 def test_api_mail_domains__retrieve_anonymous():
     """Anonymous users should not be allowed to retrieve a domain."""
 
-    domain = factories.MailDomainFactory()
+    domain = factories.MailDomainEnabledFactory()
     response = APIClient().get(f"/api/v1.0/mail-domains/{domain.slug}/")
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {
         "detail": "Authentication credentials were not provided."
     }
+
+
+def test_api_domains__retrieve_non_existing():
+    """
+    Authenticated users should have an explicit error when trying to retrive
+    a domain that doesn't exist.
+    """
+    client = APIClient()
+    client.force_login(core_factories.UserFactory())
+
+    response = client.get(
+        "/api/v1.0/mail-domains/nonexistent.domain/",
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Not found."}
 
 
 def test_api_mail_domains__retrieve_authenticated_unrelated():
@@ -35,7 +50,7 @@ def test_api_mail_domains__retrieve_authenticated_unrelated():
     client = APIClient()
     client.force_login(user)
 
-    domain = factories.MailDomainFactory()
+    domain = factories.MailDomainEnabledFactory()
 
     response = client.get(
         f"/api/v1.0/mail-domains/{domain.slug}/",
@@ -54,7 +69,7 @@ def test_api_mail_domains__retrieve_authenticated_related():
     client = APIClient()
     client.force_login(user)
 
-    domain = factories.MailDomainFactory()
+    domain = factories.MailDomainEnabledFactory()
     factories.MailDomainAccessFactory(domain=domain, user=user)
 
     response = client.get(
