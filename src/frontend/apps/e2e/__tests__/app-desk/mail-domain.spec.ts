@@ -12,6 +12,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'domainfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'mails.fr',
@@ -19,6 +27,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'mailsfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'versailles.net',
@@ -26,6 +42,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'versaillesnet',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'paris.fr',
@@ -33,6 +57,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'parisfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
 ];
 

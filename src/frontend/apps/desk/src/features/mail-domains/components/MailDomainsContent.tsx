@@ -91,6 +91,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
       <TopBanner
         name={mailDomain.name}
         setIsFormVisible={setIsCreateMailboxFormVisible}
+        abilities={mailDomain.abilities}
       />
       <Card
         $padding={{ bottom: 'small' }}
@@ -127,9 +128,11 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
 const TopBanner = ({
   name,
   setIsFormVisible,
+  abilities,
 }: {
   name: string;
   setIsFormVisible: (value: boolean) => void;
+  abilities: MailDomain['abilities'];
 }) => {
   const { t } = useTranslation();
 
@@ -147,12 +150,14 @@ const TopBanner = ({
         </Text>
       </Box>
       <Box $margin={{ all: 'big', bottom: 'small' }} $align="flex-end">
-        <Button
-          aria-label={t(`Create a mailbox in {{name}} domain`, { name })}
-          onClick={() => setIsFormVisible(true)}
-        >
-          {t('Create a mailbox')}
-        </Button>
+        {abilities.post ? (
+          <Button
+            aria-label={t(`Create a mailbox in {{name}} domain`, { name })}
+            onClick={() => setIsFormVisible(true)}
+          >
+            {t('Create a mailbox')}
+          </Button>
+        ) : null}
       </Box>
     </>
   );

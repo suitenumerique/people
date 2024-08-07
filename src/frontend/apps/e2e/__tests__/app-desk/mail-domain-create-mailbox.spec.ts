@@ -15,6 +15,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'domainfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'mails.fr',
@@ -22,6 +30,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'mailsfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'versailles.net',
@@ -29,6 +45,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'versaillesnet',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
   {
     name: 'paris.fr',
@@ -36,6 +60,14 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'parisfr',
+    abilities: {
+      get: true,
+      patch: true,
+      put: true,
+      post: true,
+      delete: true,
+      manage_accesses: true,
+    },
   },
 ];
 
@@ -99,8 +131,7 @@ test.describe('Mail domain create mailbox', () => {
     await keyCloakSignIn(page, browserName);
   });
 
-  // user should have administrator or owner role on this domain to be able perform this action
-  test('checks user can create a mailbox for a mail domain', async ({
+  test('checks user can create a mailbox when he has post ability', async ({
     page,
   }) => {
     const newMailbox = {
@@ -222,6 +253,62 @@ test.describe('Mail domain create mailbox', () => {
         ).toBeVisible(),
       ),
     );
+  });
+
+  test('checks user is not allowed to create a mailbox when he is missing post ability', async ({
+    page,
+  }) => {
+    const localMailDomainsFixtures = [...mailDomainsFixtures];
+    localMailDomainsFixtures[0].abilities.post = false;
+    const localMailDomainDomainFr = localMailDomainsFixtures[0];
+    const localMailboxFixtures = { ...mailboxesFixtures };
+
+    const interceptRequests = (page: Page) => {
+      void page.route('**/api/v1.0/mail-domains/?page=*', (route) => {
+        void route.fulfill({
+          json: {
+            count: localMailDomainsFixtures.length,
+            next: null,
+            previous: null,
+            results: localMailDomainsFixtures,
+          },
+        });
+      });
+
+      void page.route('**/api/v1.0/mail-domains/domainfr', (route) => {
+        void route.fulfill({
+          json: localMailDomainDomainFr,
+        });
+      });
+
+      void page.route(
+        '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
+        (route) => {
+          void route.fulfill({
+            json: {
+              count: localMailboxFixtures.domainFr.page1.length,
+              next: null,
+              previous: null,
+              results: localMailboxFixtures.domainFr.page1,
+            },
+          });
+        },
+        { times: 1 },
+      );
+    };
+
+    void interceptRequests(page);
+
+    await page
+      .locator('menu')
+      .first()
+      .getByLabel(`Mail Domains button`)
+      .click();
+    await page.getByRole('listbox').first().getByText('domain.fr').click();
+
+    await expect(
+      page.getByRole('button', { name: 'Create a mailbox' }),
+    ).not.toBeInViewport();
   });
 
   test('checks client invalidation messages are displayed and no mailbox creation request is sent when fields are not properly filled', async ({
