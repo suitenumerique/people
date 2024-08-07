@@ -10,7 +10,7 @@ class MailboxSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Mailbox
-        fields = ["id", "local_part", "secondary_email"]
+        fields = ["id", "first_name", "last_name", "local_part", "secondary_email"]
 
 
 class MailDomainSerializer(serializers.ModelSerializer):

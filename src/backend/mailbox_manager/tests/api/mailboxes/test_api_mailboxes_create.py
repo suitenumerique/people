@@ -104,6 +104,47 @@ def test_api_mailboxes__create_roles_success(role):
     assert mailbox.secondary_email == mailbox_values["secondary_email"]
     assert response.json() == {
         "id": str(mailbox.id),
+        "first_name": str(mailbox.first_name),
+        "last_name": str(mailbox.last_name),
+        "local_part": str(mailbox.local_part),
+        "secondary_email": str(mailbox.secondary_email),
+    }
+
+
+@pytest.mark.parametrize(
+    "role",
+    [
+        enums.MailDomainRoleChoices.OWNER,
+        enums.MailDomainRoleChoices.ADMIN,
+    ],
+)
+def test_api_mailboxes__create_with_accent_success(role):
+    """Users with proper abilities should be able to create mailbox on the mail domain with a
+    first_name accentuated."""
+    mail_domain = factories.MailDomainEnabledFactory()
+    access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(first_name="Aimé")
+    ).data
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    mailbox = models.Mailbox.objects.get()
+
+    assert mailbox.local_part == mailbox_values["local_part"]
+    assert mailbox.secondary_email == mailbox_values["secondary_email"]
+    assert response.json() == {
+        "id": str(mailbox.id),
+        "first_name": str(mailbox.first_name),
+        "last_name": str(mailbox.last_name),
         "local_part": str(mailbox.local_part),
         "secondary_email": str(mailbox.secondary_email),
     }

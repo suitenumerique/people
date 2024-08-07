@@ -65,11 +65,15 @@ def test_api_mailboxes__list_roles(role):
     assert response.json()["results"] == [
         {
             "id": str(mailbox2.id),
+            "first_name": str(mailbox2.first_name),
+            "last_name": str(mailbox2.last_name),
             "local_part": str(mailbox2.local_part),
             "secondary_email": str(mailbox2.secondary_email),
         },
         {
             "id": str(mailbox1.id),
+            "first_name": str(mailbox1.first_name),
+            "last_name": str(mailbox1.last_name),
             "local_part": str(mailbox1.local_part),
             "secondary_email": str(mailbox1.secondary_email),
         },

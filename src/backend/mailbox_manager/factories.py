@@ -62,16 +62,16 @@ class MailDomainAccessFactory(factory.django.DjangoModelFactory):
 
 
 class MailboxFactory(factory.django.DjangoModelFactory):
-    """A factory to create mailboxes for mail domain members."""
+    """A factory to create mailboxes for a mail domain."""
 
     class Meta:
         model = models.Mailbox
 
-    class Params:
-        """Parameters for fields."""
+    first_name = factory.Faker("first_name", locale="fr_FR")
+    last_name = factory.Faker("last_name", locale="de_DE")
 
-        full_name = factory.Faker("name")
-
-    local_part = factory.LazyAttribute(lambda a: a.full_name.lower().replace(" ", "."))
+    local_part = factory.LazyAttribute(
+        lambda a: f"{slugify(a.first_name)}.{slugify(a.last_name)}"
+    )
     domain = factory.SubFactory(MailDomainEnabledFactory)
     secondary_email = factory.Faker("email")

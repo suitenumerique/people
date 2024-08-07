@@ -108,6 +108,8 @@ class MailDomainAccess(BaseModel):
 class Mailbox(BaseModel):
     """Mailboxes for users from mail domain."""
 
+    first_name = models.CharField(max_length=200, blank=False)
+    last_name = models.CharField(max_length=200, blank=False)
     local_part = models.CharField(
         _("local_part"),
         max_length=150,

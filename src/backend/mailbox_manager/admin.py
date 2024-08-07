@@ -38,4 +38,4 @@ class MailDomainAccessAdmin(admin.ModelAdmin):
 class MailboxAdmin(admin.ModelAdmin):
     """Admin for mailbox model."""
 
-    list_display = ("__str__", "domain")
+    list_display = ("__str__", "first_name", "last_name")
