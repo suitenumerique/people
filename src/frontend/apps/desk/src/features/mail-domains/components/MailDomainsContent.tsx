@@ -1,3 +1,5 @@
+import { UUID } from 'crypto';
+
 import {
   Button,
   DataGrid,
@@ -17,7 +19,11 @@ import { MailDomain, MailDomainMailbox } from '../types';
 
 import { CreateMailboxForm } from './forms/CreateMailboxForm';
 
-export type ViewMailbox = { email: string; id: string };
+export type ViewMailbox = {
+  name: string;
+  email: string;
+  id: UUID;
+};
 
 // FIXME : ask Cunningham to export this type
 type SortModelItem = {
@@ -69,6 +75,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
     mailDomain && data?.results?.length
       ? data.results.map((mailbox: MailDomainMailbox) => ({
           email: `${mailbox.local_part}@${mailDomain.name}`,
+          name: `${mailbox.first_name} ${mailbox.last_name}`,
           id: mailbox.id,
         }))
       : [];
@@ -76,6 +83,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   useEffect(() => {
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
   }, [data?.count, pageSize, setPagesCount]);
+
   return isLoading ? (
     <Box $align="center" $justify="center" $height="100%">
       <Loader />
@@ -88,19 +96,35 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
           closeModal={() => setIsCreateMailboxFormVisible(false)}
         />
       ) : null}
+
       <TopBanner
         name={mailDomain.name}
         setIsFormVisible={setIsCreateMailboxFormVisible}
-        abilities={mailDomain.abilities}
+        abilities={mailDomain?.abilities}
       />
+
       <Card
         $padding={{ bottom: 'small' }}
         $margin={{ all: 'big', top: 'none' }}
         $overflow="auto"
       >
         {error && <TextErrors causes={error.cause} />}
+
         <DataGrid
           columns={[
+            {
+              field: 'name',
+              headerName: t('Names'),
+              renderCell: ({ row }) => (
+                <Text
+                  $weight="bold"
+                  $theme="primary"
+                  $css="text-transform: capitalize;"
+                >
+                  {row.name}
+                </Text>
+              ),
+            },
             {
               field: 'email',
               headerName: t('Emails'),

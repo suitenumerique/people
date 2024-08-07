@@ -163,11 +163,15 @@ test.describe('Mail domain', () => {
       domainFr: {
         page1: Array.from({ length: 20 }, (_, i) => ({
           id: `456ac6ca-0402-4615-8005-69bc1efde${i}f`,
+          first_name: 'john',
+          last_name: 'doe',
           local_part: `local_part-${i}`,
           secondary_email: `secondary_email-${i}`,
         })),
         page2: Array.from({ length: 2 }, (_, i) => ({
           id: `456ac6ca-0402-4615-8005-69bc1efde${i}d`,
+          first_name: 'john',
+          last_name: 'doe',
           local_part: `local_part-${i}`,
           secondary_email: `secondary_email-${i}`,
         })),
@@ -236,6 +240,10 @@ test.describe('Mail domain', () => {
     ).toBeVisible();
 
     await expect(
+      page.getByRole('button', { name: /Names/ }).first(),
+    ).toBeVisible();
+
+    await expect(
       page.getByRole('button', { name: /Emails/ }).first(),
     ).toBeVisible();
 
@@ -248,6 +256,12 @@ test.describe('Mail domain', () => {
         ).toBeVisible(),
       ),
     );
+
+    const table = page.locator('table');
+    await expect(table).toBeVisible();
+
+    const tdNames = await table.getByText('John Doe').all();
+    expect(tdNames.length).toEqual(20);
 
     await expect(
       page.locator('.c__pagination__list').getByRole('button', { name: '1' }),
