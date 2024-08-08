@@ -78,3 +78,17 @@ def test_api_mailboxes__list_roles(role):
             "secondary_email": str(mailbox1.secondary_email),
         },
     ]
+
+
+def test_api_mailboxes__list_non_existing():
+    """
+    User gets a 404 when trying to list mailboxes of a domain which does not exist.
+    """
+    user = core_factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.MailboxFactory.create_batch(5)
+
+    response = client.get("/api/v1.0/mail-domains/nonexistent.domain/mailboxes/")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
