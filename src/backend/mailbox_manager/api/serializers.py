@@ -25,6 +25,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "slug",
+            "status",
             "abilities",
             "created_at",
             "updated_at",
@@ -32,6 +33,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "slug",
+            "status",
             "abilities",
             "created_at",
             "updated_at",

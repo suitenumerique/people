@@ -52,12 +52,10 @@ def test_api_mail_domains__create_authenticated():
     Authenticated users should be able to create mail domains
     and should automatically be added as owner of the newly created domain.
     """
-
     user = core_factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
-
     response = client.post(
         "/api/v1.0/mail-domains/",
         {
@@ -65,10 +63,21 @@ def test_api_mail_domains__create_authenticated():
         },
         format="json",
     )
-
     assert response.status_code == status.HTTP_201_CREATED
-    # a new domain pending is created and the authenticated user is the owner
     domain = models.MailDomain.objects.get()
+
+    # response is as expected
+    assert response.json() == {
+        "id": str(domain.id),
+        "name": domain.name,
+        "slug": domain.slug,
+        "status": enums.MailDomainStatusChoices.PENDING,
+        "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
+        "abilities": domain.get_abilities(user),
+    }
+
+    # a new domain with status "pending" is created and authenticated user is the owner
     assert domain.status == enums.MailDomainStatusChoices.PENDING
     assert domain.name == "mydomain.com"
     assert domain.accesses.filter(role="owner", user=user).exists()
