@@ -1,16 +1,6 @@
-import type { ReactElement } from 'react';
+import MailDomains from './mail-domains';
+import Teams from './teams';
 
-import { TeamLayout } from '@/features/teams/team-management';
-import { NextPageWithLayout } from '@/types/next';
-
-import Teams from './teams/';
-
-const Page: NextPageWithLayout = () => {
-  return <Teams />;
-};
-
-Page.getLayout = function getLayout(page: ReactElement) {
-  return <TeamLayout>{page}</TeamLayout>;
-};
-
-export default Page;
+export default process.env.NEXT_PUBLIC_FEATURE_TEAM === 'true'
+  ? Teams
+  : MailDomains;

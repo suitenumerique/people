@@ -21,6 +21,11 @@ export const Panel = () => {
     $minWidth: '0',
   };
 
+  const styleNoTeam = process.env.NEXT_PUBLIC_FEATURE_TEAM !== 'true' && {
+    $display: 'none',
+    tabIndex: -1,
+  };
+
   const transition = 'all 0.5s ease-in-out';
 
   return (
@@ -52,6 +57,7 @@ export const Panel = () => {
           transition: ${transition};
         `}
         onClick={() => setIsOpen(!isOpen)}
+        {...styleNoTeam}
       >
         <IconOpenClose width={24} height={24} aria-hidden="true" />
       </BoxButton>
