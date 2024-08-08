@@ -95,11 +95,33 @@ def test_api_mailboxes__create_roles_success(role):
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build()
     ).data
-    response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        mailbox_values,
-        format="json",
-    )
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_values['local_part']}@{mail_domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        response = client.post(
+            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+            mailbox_values,
+            format="json",
+        )
 
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
@@ -134,12 +156,33 @@ def test_api_mailboxes__create_with_accent_success(role):
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build(first_name="Aimé")
     ).data
-
-    response = client.post(
-        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-        mailbox_values,
-        format="json",
-    )
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_values['local_part']}@{mail_domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        response = client.post(
+            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+            mailbox_values,
+            format="json",
+        )
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
 

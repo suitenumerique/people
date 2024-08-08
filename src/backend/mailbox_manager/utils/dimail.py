@@ -84,5 +84,12 @@ class DimailAPIClient:
                 mailbox.domain.name,
                 extra=extra,
             )
-
+        elif response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
+                mailbox.domain.name,
+            )
+            raise exceptions.PermissionDenied(
+                f"Please check secret of the mail domain {mailbox.domain.name}"
+            )
         return response

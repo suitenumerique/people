@@ -3,47 +3,33 @@ Unit tests for the mailbox model
 """
 
 import json
-import logging
 import re
 from logging import Logger
 from unittest import mock
 
-from django.core.exceptions import ValidationError
+from django.core import exceptions
 
 import pytest
-import requests
 import responses
 from rest_framework import status
-from urllib3.util import Retry
 
 from mailbox_manager import enums, factories, models
 from mailbox_manager.api import serializers
 
 pytestmark = pytest.mark.django_db
 
-logger = logging.getLogger(__name__)
-
-adapter = requests.adapters.HTTPAdapter(
-    max_retries=Retry(
-        total=4,
-        backoff_factor=0.1,
-        status_forcelist=[500, 502],
-        allowed_methods=["PATCH"],
-    )
-)
-
 # LOCAL PART FIELD
 
 
 def test_models_mailboxes__local_part_cannot_be_empty():
     """The "local_part" field should not be empty."""
-    with pytest.raises(ValidationError, match="This field cannot be blank"):
+    with pytest.raises(exceptions.ValidationError, match="This field cannot be blank"):
         factories.MailboxFactory(local_part="")
 
 
 def test_models_mailboxes__local_part_cannot_be_null():
     """The "local_part" field should not be null."""
-    with pytest.raises(ValidationError, match="This field cannot be null"):
+    with pytest.raises(exceptions.ValidationError, match="This field cannot be null"):
         factories.MailboxFactory(local_part=None)
 
 
@@ -55,11 +41,11 @@ def test_models_mailboxes__local_part_matches_expected_format():
     factories.MailboxFactory(local_part="Marie-Jose.Perec+JO_2024")
 
     # other special characters (such as "@" or "!") should raise a validation error
-    with pytest.raises(ValidationError, match="Enter a valid value"):
+    with pytest.raises(exceptions.ValidationError, match="Enter a valid value"):
         factories.MailboxFactory(local_part="mariejo@unnecessarydomain.com")
 
     for character in ["!", "$", "%"]:
-        with pytest.raises(ValidationError, match="Enter a valid value"):
+        with pytest.raises(exceptions.ValidationError, match="Enter a valid value"):
             factories.MailboxFactory(local_part=f"marie{character}jo")
 
 
@@ -73,7 +59,8 @@ def test_models_mailboxes__local_part_unique_per_domain():
 
     # same local part on the same domain should not be possible
     with pytest.raises(
-        ValidationError, match="Mailbox with this Local_part and Domain already exists."
+        exceptions.ValidationError,
+        match="Mailbox with this Local_part and Domain already exists.",
     ):
         factories.MailboxFactory(
             local_part=existing_mailbox.local_part, domain=existing_mailbox.domain
@@ -81,9 +68,6 @@ def test_models_mailboxes__local_part_unique_per_domain():
 
 
 # DOMAIN FIELD
-
-session = requests.Session()
-session.mount("http://", adapter)
 
 
 def test_models_mailboxes__domain_must_be_a_maildomain_instance():
@@ -107,13 +91,13 @@ def test_models_mailboxes__domain_cannot_be_null():
 
 def test_models_mailboxes__secondary_email_cannot_be_empty():
     """The "secondary_email" field should not be empty."""
-    with pytest.raises(ValidationError, match="This field cannot be blank"):
+    with pytest.raises(exceptions.ValidationError, match="This field cannot be blank"):
         factories.MailboxFactory(secondary_email="")
 
 
 def test_models_mailboxes__secondary_email_cannot_be_null():
     """The "secondary_email" field should not be null."""
-    with pytest.raises(ValidationError, match="This field cannot be null"):
+    with pytest.raises(exceptions.ValidationError, match="This field cannot be null"):
         factories.MailboxFactory(secondary_email=None)
 
 
@@ -121,7 +105,8 @@ def test_models_mailboxes__cannot_be_created_for_disabled_maildomain():
     """Mailbox creation is allowed only for a domain enabled.
     A disabled status for the mail domain raises an error."""
     with pytest.raises(
-        ValidationError, match="You can create mailbox only for a domain enabled"
+        exceptions.ValidationError,
+        match="You can create mailbox only for a domain enabled",
     ):
         factories.MailboxFactory(
             domain=factories.MailDomainFactory(
@@ -134,7 +119,8 @@ def test_models_mailboxes__cannot_be_created_for_failed_maildomain():
     """Mailbox creation is allowed only for a domain enabled.
     A failed status for the mail domain raises an error."""
     with pytest.raises(
-        ValidationError, match="You can create mailbox only for a domain enabled"
+        exceptions.ValidationError,
+        match="You can create mailbox only for a domain enabled",
     ):
         factories.MailboxFactory(
             domain=factories.MailDomainFactory(
@@ -147,7 +133,8 @@ def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
     """Mailbox creation is allowed only for a domain enabled.
     A pending status for the mail domain raises an error."""
     with pytest.raises(
-        ValidationError, match="You can create mailbox only for a domain enabled"
+        exceptions.ValidationError,
+        match="You can create mailbox only for a domain enabled",
     ):
         # MailDomainFactory initializes a mail domain with default values,
         # so mail domain status is pending!
@@ -162,7 +149,7 @@ def test_models_mailboxes__no_secret():
     domain = factories.MailDomainEnabledFactory(secret=None)
 
     with pytest.raises(
-        ValidationError,
+        exceptions.ValidationError,
         match="Please configure your domain's secret before creating any mailbox.",
     ):
         factories.MailboxFactory(domain=domain)
@@ -179,27 +166,30 @@ def test_models_mailboxes__wrong_secret():
             rsps.GET,
             re.compile(r".*/token/"),
             body='{"detail": "Permission denied"}',
-            status=status.HTTP_401_UNAUTHORIZED,
+            status=status.HTTP_403_FORBIDDEN,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
             body='{"detail": "Permission denied"}',
-            status=status.HTTP_401_UNAUTHORIZED,
+            status=status.HTTP_403_FORBIDDEN,
             content_type="application/json",
         )
 
-        mailbox = factories.MailboxFactory(domain=domain)
-
-        # Payload sent to mailbox provider
-        payload = json.loads(rsps.calls[1].request.body)
-        assert payload == {
-            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-            "email": f"{mailbox.local_part}@{domain.name}",
-            "givenName": mailbox.first_name,
-            "surName": mailbox.last_name,
-        }
+        with pytest.raises(
+            exceptions.PermissionDenied,
+            match=f"Please check secret of the mail domain {domain.name}",
+        ):
+            mailbox = factories.MailboxFactory(use_mock=False, domain=domain)
+            # Payload sent to mailbox provider
+            payload = json.loads(rsps.calls[1].request.body)
+            assert payload == {
+                "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+                "email": f"{mailbox.local_part}@{domain.name}",
+                "givenName": mailbox.first_name,
+                "surName": mailbox.last_name,
+            }
 
 
 @mock.patch.object(Logger, "error")
@@ -237,7 +227,7 @@ def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
         )
 
         mailbox = factories.MailboxFactory(
-            local_part=mailbox_data["local_part"], domain=domain
+            use_mock=False, local_part=mailbox_data["local_part"], domain=domain
         )
 
         # Check headers
