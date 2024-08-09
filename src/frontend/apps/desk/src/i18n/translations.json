@@ -9,7 +9,6 @@
   "fr": {
     "translation": {
       "0 group to display.": "0 groupe à afficher.",
-      "0 mail domain to display.": "0 domaine de mail à afficher.",
       "Accessibility statement": "Déclaration d'accessibilité",
       "Accessibility: non-compliant": "Accessibilité : non conforme",
       "Add a member": "Ajouter un membre",
@@ -89,6 +88,7 @@
       "My account": "Mon compte",
       "Names": "Noms",
       "New name...": "Nouveau nom...",
+      "No domains exist.": "Aucun domaine existant.",
       "No mail box was created with this mail domain.": "Aucune boîte mail n'a été créée avec ce nom de domaine.",
       "Nothing exceptional, no special privileges related to a .gouv.fr.": "Rien d'exceptionnel, pas de privilèges spéciaux liés à un .gouv.fr.",
       "Open the mail domains panel": "Ouvrir le panneau des domaines de messagerie",

@@ -141,7 +141,7 @@ test.describe('Mail domains', () => {
       await expect(
         page.getByLabel('mail domains panel', { exact: true }),
       ).toBeVisible();
-      await expect(page.getByText('0 mail domain to display.')).toBeVisible();
+      await expect(page.getByText('No domains exist.')).toBeVisible();
     });
 
     test('when 4 mail domains exist', async ({ page }) => {
@@ -165,7 +165,7 @@ test.describe('Mail domains', () => {
       await expect(
         page.getByLabel('mail domains panel', { exact: true }),
       ).toBeVisible();
-      await expect(page.getByText('0 mail domain to display.')).toHaveCount(0);
+      await expect(page.getByText('No domains exist.')).toHaveCount(0);
       await expect(page.getByText('domain.fr')).toBeVisible();
       await expect(page.getByText('mails.fr')).toBeVisible();
       await expect(page.getByText('versailles.net')).toBeVisible();

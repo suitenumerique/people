@@ -86,7 +86,7 @@ const ItemListState = ({
     return (
       <Box $justify="center" $margin="small">
         <Text as="p" $margin={{ vertical: 'none' }}>
-          {t(`0 mail domain to display.`)}
+          {t(`No domains exist.`)}
         </Text>
       </Box>
     );
