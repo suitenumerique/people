@@ -7,3 +7,13 @@ and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.0] - 2024-08-09
+
+### Added
+
+- ✨(domains) create and manage domains on admin + API
+- ✨(domains) mailbox creation + link to email provisioning API
+
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.0...main
+[1.0.0]: https://github.com/numerique-gouv/people/releases/v1.0.0
