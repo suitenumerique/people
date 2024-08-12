@@ -45,11 +45,13 @@ export const PanelActions = () => {
       </BoxButton>
       <StyledLink href="/teams/create">
         <BoxButton
+          as="span"
+          $margin={{ all: 'auto' }}
           aria-label={t('Add a team')}
           $color={colorsTokens()['primary-600']}
           tabIndex={-1}
         >
-          <IconAdd width={30} height={30} aria-hidden="true" />
+          <IconAdd width={27} height={27} aria-hidden="true" />
         </BoxButton>
       </StyledLink>
     </Box>

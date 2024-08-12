@@ -1,9 +1,10 @@
 import { Button } from '@openfun/cunningham-react';
+import { useRouter as useNavigate } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { Box, StyledLink } from '@/components';
+import { Box } from '@/components';
 import { TeamLayout } from '@/features/teams/team-management';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -13,12 +14,13 @@ const StyledButton = styled(Button)`
 
 const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
+  const router = useNavigate();
 
   return (
     <Box $align="center" $justify="center" $height="inherit">
-      <StyledLink href="/teams/create">
-        <StyledButton tabIndex={-1}>{t('Create a new team')}</StyledButton>
-      </StyledLink>
+      <StyledButton onClick={() => void router.push('/teams/create')}>
+        {t('Create a new team')}
+      </StyledButton>
     </Box>
   );
 };

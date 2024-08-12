@@ -22,7 +22,7 @@ test.describe('Teams Panel', () => {
     ).toBeVisible();
 
     await expect(
-      panel.getByRole('button', {
+      panel.getByRole('link', {
         name: 'Add a team',
       }),
     ).toBeVisible();

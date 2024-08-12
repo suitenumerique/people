@@ -15,13 +15,13 @@ describe('MainLayout', () => {
     render(<MainLayout />, { wrapper: AppWrapper });
 
     expect(
-      screen.getByRole('button', {
+      screen.getByRole('link', {
         name: /Teams button/i,
       }),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('button', {
+      screen.getByRole('link', {
         name: /Mail Domains button/i,
       }),
     ).toBeInTheDocument();

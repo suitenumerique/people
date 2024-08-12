@@ -70,7 +70,7 @@ const MenuItem = ({ Icon, label, href, alias }: MenuItemProps) => {
         <BoxButton
           aria-label={t(`{{label}} button`, { label })}
           $color={color}
-          tabIndex={-1}
+          as="span"
         >
           <Icon
             width="2.375rem"
