@@ -15,6 +15,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'domainfr',
+    status: 'enabled',
     abilities: {
       get: true,
       patch: true,
@@ -30,6 +31,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'mailsfr',
+    status: 'enabled',
     abilities: {
       get: true,
       patch: true,
@@ -45,6 +47,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'versaillesnet',
+    status: 'enabled',
     abilities: {
       get: true,
       patch: true,
@@ -60,6 +63,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'parisfr',
+    status: 'enabled',
     abilities: {
       get: true,
       patch: true,
@@ -95,7 +99,7 @@ const interceptCommonApiRequests = (page: Page) => {
     });
   });
 
-  void page.route('**/api/v1.0/mail-domains/domainfr', (route) => {
+  void page.route('**/api/v1.0/mail-domains/domainfr/', (route) => {
     void route.fulfill({
       json: mailDomainDomainFrFixture,
     });
@@ -275,7 +279,7 @@ test.describe('Mail domain create mailbox', () => {
         });
       });
 
-      void page.route('**/api/v1.0/mail-domains/domainfr', (route) => {
+      void page.route('**/api/v1.0/mail-domains/domainfr/', (route) => {
         void route.fulfill({
           json: localMailDomainDomainFr,
         });

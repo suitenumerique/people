@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, BoxButton } from '@/components';
+import IconAdd from '@/assets/icons/icon-add.svg';
+import IconSort from '@/assets/icons/icon-sort.svg';
+import { Box, BoxButton, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { EnumMailDomainsOrdering } from '@/features/mail-domains';
 import { useMailDomainsStore } from '@/features/mail-domains/store/useMailDomainsStore';
-
-import IconSort from '../../assets/icon-sort.svg';
 
 export const PanelActions = () => {
   const { t } = useTranslation();
@@ -42,6 +42,16 @@ export const PanelActions = () => {
       >
         <IconSort width={30} height={30} aria-hidden="true" />
       </BoxButton>
+
+      <StyledLink href="/mail-domains/add/">
+        <Text
+          $margin="auto"
+          aria-label={t('Add your mail domain')}
+          $theme="primary"
+        >
+          <IconAdd width={27} height={27} aria-hidden="true" />
+        </Text>
+      </StyledLink>
     </Box>
   );
 };

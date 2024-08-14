@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IconOpenClose from '@/assets/icons/icon-open-close.svg';
 import { Box, BoxButton, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-
-import IconOpenClose from '../assets/icon-open-close.svg';
 
 import { PanelActions } from './PanelActions';
 import { TeamList } from './TeamList';

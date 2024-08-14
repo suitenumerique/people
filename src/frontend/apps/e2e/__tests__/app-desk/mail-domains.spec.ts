@@ -11,6 +11,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'domainfr',
+    status: 'pending',
     abilities: {
       get: true,
       patch: true,
@@ -26,6 +27,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'mailsfr',
+    status: 'enabled',
     abilities: {
       get: true,
       patch: true,
@@ -41,6 +43,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'versaillesnet',
+    status: 'disabled',
     abilities: {
       get: true,
       patch: true,
@@ -56,6 +59,7 @@ const mailDomainsFixtures: MailDomain[] = [
     created_at: currentDateIso,
     updated_at: currentDateIso,
     slug: 'parisfr',
+    status: 'failed',
     abilities: {
       get: true,
       patch: true,
@@ -99,7 +103,7 @@ test.describe('Mail domains', () => {
           response.status() === 200,
       );
 
-      const panel = page.getByLabel('mail domains panel').first();
+      const panel = page.getByLabel('Mail domains panel').first();
 
       await panel
         .getByRole('button', {
@@ -139,7 +143,7 @@ test.describe('Mail domains', () => {
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
       await expect(
-        page.getByLabel('mail domains panel', { exact: true }),
+        page.getByLabel('Mail domains panel', { exact: true }),
       ).toBeVisible();
       await expect(page.getByText('No domains exist.')).toBeVisible();
     });
@@ -163,13 +167,17 @@ test.describe('Mail domains', () => {
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
       await expect(
-        page.getByLabel('mail domains panel', { exact: true }),
+        page.getByLabel('Mail domains panel', { exact: true }),
       ).toBeVisible();
       await expect(page.getByText('No domains exist.')).toHaveCount(0);
-      await expect(page.getByText('domain.fr')).toBeVisible();
-      await expect(page.getByText('mails.fr')).toBeVisible();
-      await expect(page.getByText('versailles.net')).toBeVisible();
-      await expect(page.getByText('paris.fr')).toBeVisible();
+
+      await Promise.all(
+        mailDomainsFixtures.map(async ({ name, status }) => {
+          const linkName = page.getByRole('link', { name });
+          await expect(linkName).toBeVisible();
+          await expect(linkName.getByText(`[${status}]`)).toBeVisible();
+        }),
+      );
     });
   });
 });

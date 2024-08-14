@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(frontend) user can add mail domains
+
 ## [1.0.0] - 2024-08-09
 
 ### Added

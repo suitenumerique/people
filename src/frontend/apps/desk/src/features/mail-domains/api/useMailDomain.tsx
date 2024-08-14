@@ -13,7 +13,7 @@ type MailDomainResponse = MailDomain;
 export const getMailDomain = async ({
   slug,
 }: MailDomainParams): Promise<MailDomainResponse> => {
-  const response = await fetchAPI(`mail-domains/${slug}`);
+  const response = await fetchAPI(`mail-domains/${slug}/`);
 
   if (!response.ok) {
     throw new APIError(

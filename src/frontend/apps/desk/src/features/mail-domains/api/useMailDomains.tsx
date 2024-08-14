@@ -40,7 +40,7 @@ export const getMailDomains = async ({
   return response.json() as Promise<MailDomainsResponse>;
 };
 
-export const KEY_LIST_MAIL_DOMAINS = 'mail-domains';
+export const KEY_LIST_MAIL_DOMAIN = 'mail-domains';
 
 export function useMailDomains(
   param: MailDomainsParams,
@@ -60,7 +60,7 @@ export function useMailDomains(
     number
   >({
     initialPageParam: 1,
-    queryKey: [KEY_LIST_MAIL_DOMAINS, param],
+    queryKey: [KEY_LIST_MAIL_DOMAIN, param],
     queryFn: ({ pageParam }) => getMailDomains({ ...param, page: pageParam }),
     getNextPageParam(lastPage, allPages) {
       return lastPage.next ? allPages.length + 1 : undefined;

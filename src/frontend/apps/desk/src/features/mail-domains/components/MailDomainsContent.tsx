@@ -1,16 +1,18 @@
 import { UUID } from 'crypto';
 
 import {
+  Alert,
   Button,
   DataGrid,
   Loader,
   SortModel,
+  VariantType,
   usePagination,
 } from '@openfun/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Card, Text, TextErrors } from '@/components';
+import { Box, Card, Text, TextErrors, TextStyled } from '@/components';
 
 import { useMailboxes } from '../api/useMailboxes';
 import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
@@ -35,12 +37,6 @@ const defaultOrderingMapping: Record<string, string> = {
   email: 'local_part',
 };
 
-/**
- * Formats the sorting model based on a given mapping.
- * @param {SortModelItem} sortModel The sorting model item containing field and sort direction.
- * @param {Record<string, string>} mapping The mapping object to map field names.
- * @returns {string} The formatted sorting string.
- */
 function formatSortModel(
   sortModel: SortModelItem,
   mapping = defaultOrderingMapping,
@@ -98,9 +94,8 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
       ) : null}
 
       <TopBanner
-        name={mailDomain.name}
-        setIsFormVisible={setIsCreateMailboxFormVisible}
-        abilities={mailDomain?.abilities}
+        mailDomain={mailDomain}
+        showMailBoxCreationForm={setIsCreateMailboxFormVisible}
       />
 
       <Card
@@ -150,39 +145,111 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
 }
 
 const TopBanner = ({
-  name,
-  setIsFormVisible,
-  abilities,
+  mailDomain,
+  showMailBoxCreationForm,
 }: {
-  name: string;
-  setIsFormVisible: (value: boolean) => void;
-  abilities: MailDomain['abilities'];
+  mailDomain: MailDomain;
+  showMailBoxCreationForm: (value: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
   return (
-    <>
+    <Box
+      $direction="column"
+      $margin={{ all: 'big', bottom: 'tiny' }}
+      $gap="1rem"
+    >
       <Box
         $direction="row"
         $align="center"
-        $margin={{ all: 'big', vertical: 'xbig' }}
         $gap="2.25rem"
+        $justify="space-between"
       >
-        <MailDomainsLogo aria-hidden="true" />
-        <Text $margin="none" as="h3" $size="h3">
-          {name}
-        </Text>
+        <Box $direction="row" $margin="none" $gap="2.25rem">
+          <MailDomainsLogo aria-hidden="true" />
+          <Text $margin="none" as="h3" $size="h3">
+            {mailDomain?.name}
+          </Text>
+        </Box>
       </Box>
-      <Box $margin={{ all: 'big', bottom: 'small' }} $align="flex-end">
-        {abilities.post ? (
-          <Button
-            aria-label={t(`Create a mailbox in {{name}} domain`, { name })}
-            onClick={() => setIsFormVisible(true)}
-          >
-            {t('Create a mailbox')}
-          </Button>
-        ) : null}
+
+      <Box $direction="row" $justify="space-between">
+        <AlertStatus status={mailDomain.status} />
       </Box>
-    </>
+      {mailDomain?.abilities.post && (
+        <Box $direction="row-reverse">
+          <Box $display="inline">
+            <Button
+              aria-label={t('Create a mailbox in {{name}} domain', {
+                name: mailDomain?.name,
+              })}
+              disabled={mailDomain?.status !== 'enabled'}
+              onClick={() => showMailBoxCreationForm(true)}
+            >
+              {t('Create a mailbox')}
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
+  const { t } = useTranslation();
+
+  const getStatusAlertProps = (status?: string) => {
+    switch (status) {
+      case 'pending':
+        return {
+          variant: VariantType.WARNING,
+          message: t(
+            'Your domain name is being validated.  ' +
+              'You will not be able to create mailboxes until your domain name has been validated by our team.',
+          ),
+        };
+      case 'disabled':
+        return {
+          variant: VariantType.NEUTRAL,
+          message: t(
+            'This domain name is deactivated. No new mailboxes can be created.',
+          ),
+        };
+      case 'failed':
+        return {
+          variant: VariantType.ERROR,
+          message: (
+            <Text $display="inline">
+              {t(
+                'The domain name encounters an error. Please contact our support team to solve the problem:',
+              )}{' '}
+              <TextStyled
+                as="a"
+                target="_blank"
+                $display="inline"
+                href="mailto:suiteterritoriale@anct.gouv.fr"
+                aria-label={t(
+                  'Contact our support at "suiteterritoriale@anct.gouv.fr"',
+                )}
+              >
+                suiteterritoriale@anct.gouv.fr
+              </TextStyled>
+              .
+            </Text>
+          ),
+        };
+    }
+  };
+
+  const alertStatusProps = getStatusAlertProps(status);
+
+  if (!alertStatusProps) {
+    return null;
+  }
+
+  return (
+    <Alert canClose={false} type={alertStatusProps.variant}>
+      <Text $display="inline">{alertStatusProps.message}</Text>
+    </Alert>
   );
 };

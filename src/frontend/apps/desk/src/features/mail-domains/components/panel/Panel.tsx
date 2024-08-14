@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IconOpenClose from '@/assets/icons/icon-open-close.svg';
 import { Box, BoxButton, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-
-import IconOpenClose from '../../assets/icon-open-close.svg';
 
 import { ItemList } from './ItemList';
 import { PanelActions } from './PanelActions';
@@ -39,7 +38,7 @@ export const Panel = () => {
         transition: ${transition};
       `}
       $height="inherit"
-      aria-label="mail domains panel"
+      aria-label={t('Mail domains panel')}
       {...closedOverridingStyles}
     >
       <BoxButton

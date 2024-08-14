@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IconAdd from '@/assets/icons/icon-add.svg';
+import IconSort from '@/assets/icons/icon-sort.svg';
 import { Box, BoxButton, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { TeamsOrdering } from '@/features/teams/team-management/api';
 
-import IconAdd from '../assets/icon-add.svg';
-import IconSort from '../assets/icon-sort.svg';
 import { useTeamStore } from '../store/useTeamsStore';
 
 export const PanelActions = () => {
