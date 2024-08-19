@@ -8,7 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
-### Added
+## [1.0.1] - 2024-08-19
+
+### Fixed
 
 - ✨(frontend) user can add mail domains
 
@@ -19,5 +21,6 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.0...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.1...main
+[1.0.1]: https://github.com/numerique-gouv/people/releases/v1.0.1
 [1.0.0]: https://github.com/numerique-gouv/people/releases/v1.0.0
