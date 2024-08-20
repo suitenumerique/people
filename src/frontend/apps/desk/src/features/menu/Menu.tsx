@@ -25,7 +25,7 @@ export const Menu = () => {
         <MenuItem
           Icon={IconGroup}
           label={t('Teams')}
-          href="/"
+          href="/teams"
           alias={['/teams']}
         />
         <MenuItem

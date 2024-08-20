@@ -24,6 +24,6 @@ test.describe('404', () => {
     page,
   }) => {
     await page.getByText('Back to home page').click();
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/teams/');
   });
 });

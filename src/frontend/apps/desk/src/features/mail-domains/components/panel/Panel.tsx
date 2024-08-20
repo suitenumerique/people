@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import IconOpenClose from '@/assets/icons/icon-open-close.svg';
 import { Box, BoxButton, Text } from '@/components';
+import { useConfigStore } from '@/core/';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { ItemList } from './ItemList';
@@ -11,6 +12,7 @@ import { PanelActions } from './PanelActions';
 export const Panel = () => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
+  const { config } = useConfigStore();
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -20,7 +22,7 @@ export const Panel = () => {
     $minWidth: '0',
   };
 
-  const styleNoTeam = process.env.NEXT_PUBLIC_FEATURE_TEAM !== 'true' && {
+  const styleNoTeam = !config?.FEATURES.TEAMS && {
     $display: 'none',
     tabIndex: -1,
   };

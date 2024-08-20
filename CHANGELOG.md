@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+🔧Runtime config for the frontend #345
+
 ## [1.0.1] - 2024-08-19
 
 ### Fixed

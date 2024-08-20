@@ -11,7 +11,7 @@ const Page: NextPageWithLayout = () => {
   useEffect(() => {
     config?.FEATURES.TEAMS
       ? router.push('/teams/')
-      : router.push('mail-domains/');
+      : router.push('/mail-domains/');
   }, [config?.FEATURES.TEAMS, router]);
 
   return null;

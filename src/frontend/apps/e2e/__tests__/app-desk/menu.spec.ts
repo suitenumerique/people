@@ -12,7 +12,7 @@ test.describe('Menu', () => {
     {
       name: 'Teams',
       isDefault: true,
-      expectedUrl: '',
+      expectedUrl: '/teams/',
       expectedText: 'Create a new team',
     },
     {
