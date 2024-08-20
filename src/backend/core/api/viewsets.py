@@ -1,5 +1,6 @@
 """API endpoints"""
 
+from django.conf import settings
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce
@@ -12,8 +13,10 @@ from rest_framework import (
     pagination,
     response,
     throttling,
+    views,
     viewsets,
 )
+from rest_framework.permissions import AllowAny
 
 from core import models
 
@@ -491,3 +494,21 @@ class InvitationViewset(
                 .distinct()
             )
         return queryset
+
+
+class ConfigView(views.APIView):
+    """API ViewSet for sharing some public settings."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """
+        GET /api/v1.0/config/
+            Return a dictionary of public settings.
+        """
+        array_settings = ["LANGUAGES", "FEATURES"]
+        dict_settings = {}
+        for setting in array_settings:
+            dict_settings[setting] = getattr(settings, setting)
+
+        return response.Response(dict_settings)

@@ -371,6 +371,12 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    FEATURES = {
+        "TEAMS": values.BooleanValue(
+            default=True, environ_name="FEATURE_TEAMS", environ_prefix=None
+        ),
+    }
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
