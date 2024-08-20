@@ -6,6 +6,7 @@ import { useCunninghamTheme } from '@/cunningham';
 import '@/i18n/initI18n';
 
 import { Auth } from './auth/Auth';
+import { ConfigProvider } from './config';
 
 /**
  * QueryClient:
@@ -29,7 +30,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools />
       <CunninghamProvider theme={theme}>
-        <Auth>{children}</Auth>
+        <ConfigProvider>
+          <Auth>{children}</Auth>
+        </ConfigProvider>
       </CunninghamProvider>
     </QueryClientProvider>
   );
