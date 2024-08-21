@@ -30,6 +30,10 @@ and this project adheres to
 
 - 👽️(mailboxes) fix mailbox creation after dimail api improvement (#360)
 
+### Fixed
+
+- 🐛(frontend) user can submit form to add mail domain by pressing "Enter" key
+
 ## [1.0.1] - 2024-08-19
 
 ### Fixed
