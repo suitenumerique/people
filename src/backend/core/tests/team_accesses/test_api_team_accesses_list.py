@@ -223,7 +223,7 @@ def test_api_team_accesses__list_find_members_by_email():
     Authenticated users should be able to search users access with a case-insensitive and
     partial query on the email.
     """
-    user = factories.UserFactory(name=None)
+    user = factories.UserFactory(name=None, email="alicia@example.com")
 
     # set all names to None to match only on emails
     colleague1 = factories.UserFactory(name=None, email="prudence_crandall@edu.us")
