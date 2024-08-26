@@ -1,19 +1,22 @@
 import {
   Button,
   DataGrid,
+  Input,
   SortModel,
   usePagination,
 } from '@openfun/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDebounce } from '@/api';
 import IconUser from '@/assets/icons/icon-user.svg';
-import { Box, Card, TextErrors } from '@/components';
+import { Box, Card, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { ModalAddMembers } from '@/features/teams/member-add';
 import { Role, Team } from '@/features/teams/team-management';
 
 import { useTeamAccesses } from '../api';
+import IconMagnifyingGlass from '../assets/icon-magnifying-glass.svg';
 import { PAGE_SIZE } from '../conf';
 import { Access } from '../types';
 
@@ -43,8 +46,8 @@ const defaultOrderingMapping: Record<string, string> = {
  */
 function formatSortModel(
   sortModel: SortModelItem,
-  mapping = defaultOrderingMapping,
-) {
+  mapping: Record<string, string> = defaultOrderingMapping,
+): string {
   const { field, sort } = sortModel;
   const orderingField = mapping[field] || field;
   return sort === 'desc' ? `-${orderingField}` : orderingField;
@@ -53,20 +56,24 @@ function formatSortModel(
 export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   const [isModalMemberOpen, setIsModalMemberOpen] = useState(false);
   const { t } = useTranslation();
+  const [queryValue, setQueryValue] = useState<string>('');
   const { colorsTokens } = useCunninghamTheme();
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
+
   const [sortModel, setSortModel] = useState<SortModel>([]);
   const [accesses, setAccesses] = useState<Access[]>([]);
   const { page, pageSize, setPagesCount } = pagination;
 
+  const membersQuery = useDebounce(queryValue);
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
 
   const { data, isLoading, error } = useTeamAccesses({
     teamId: team.id,
     page,
     ordering,
+    query: membersQuery,
   });
 
   useEffect(() => {
@@ -104,21 +111,46 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
 
   return (
     <>
-      {currentRole !== Role.MEMBER && (
-        <Box $margin={{ all: 'big', bottom: 'small' }} $align="flex-end">
-          <Button
-            aria-label={t('Add members to the team')}
-            style={{
-              width: 'fit-content',
-              minWidth: '8rem',
-              justifyContent: 'center',
-            }}
-            onClick={() => setIsModalMemberOpen(true)}
-          >
-            {t('Add a member')}
-          </Button>
+      <Box $margin={{ horizontal: 'big', bottom: 'small' }}>
+        <Text
+          $theme="primary"
+          $weight="bold"
+          $size="h3"
+          $margin={{ bottom: 'big' }}
+        >
+          {t('Group members')}
+        </Text>
+        <Box
+          $display="flex"
+          $direction="row"
+          $justify="space-between"
+          $align="center"
+          $gap="1rem"
+          $css={`
+            & > * {
+              flex: 0.23 0 auto;
+            }
+          `}
+        >
+          <Input
+            label={t('Filter member list')}
+            rightIcon={<IconMagnifyingGlass />}
+            onChange={(event) => setQueryValue(event.target.value)}
+          />
+          {currentRole !== Role.MEMBER && (
+            <Button
+              aria-label={t('Add members to the team')}
+              style={{
+                minWidth: '8rem',
+                maxWidth: 'fit-content',
+              }}
+              onClick={() => setIsModalMemberOpen(true)}
+            >
+              {t('Add a member')}
+            </Button>
+          )}
         </Box>
-      )}
+      </Box>
       <Card
         $padding={{ bottom: 'small' }}
         $margin={{ all: 'big', top: 'none' }}

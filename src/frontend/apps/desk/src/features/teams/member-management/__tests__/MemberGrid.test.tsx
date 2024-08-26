@@ -347,4 +347,146 @@ describe('MemberGrid', () => {
     expect(screen.queryByLabelText('arrow_drop_down')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('arrow_drop_up')).not.toBeInTheDocument();
   });
+
+  it('filters members based on the query', async () => {
+    const accesses: Access[] = [
+      {
+        id: '1',
+        role: Role.OWNER,
+        user: {
+          id: '11',
+          name: 'albert',
+          email: 'albert@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '2',
+        role: Role.MEMBER,
+        user: {
+          id: '22',
+          name: 'bob',
+          email: 'bob@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '3',
+        role: Role.ADMIN,
+        user: {
+          id: '33',
+          name: 'charlie',
+          email: 'charlie@test.com',
+        },
+        abilities: {} as any,
+      },
+    ];
+
+    // Mocking initial load of all members
+    fetchMock.get(`end:/teams/123456/accesses/?page=1`, {
+      count: 3,
+      results: accesses,
+    });
+
+    // Mocking filtered results for 'bob'
+    fetchMock.get(`end:/teams/123456/accesses/?q=bob`, {
+      count: 1,
+      results: [
+        {
+          id: '2',
+          role: Role.MEMBER,
+          user: {
+            id: '22',
+            name: 'bob',
+            email: 'bob@test.com',
+          },
+          abilities: {} as any,
+        },
+      ],
+    });
+
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
+      wrapper: AppWrapper,
+    });
+
+    expect(await screen.findByText('albert')).toBeInTheDocument();
+    expect(screen.getByText('bob')).toBeInTheDocument();
+    expect(screen.getByText('charlie')).toBeInTheDocument();
+
+    const searchInput = screen.getByLabelText('Filter member list');
+    await userEvent.type(searchInput, 'bob');
+
+    await waitFor(() => {
+      expect(screen.queryByText('albert')).not.toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('charlie')).not.toBeInTheDocument();
+    expect(screen.getByText('bob')).toBeInTheDocument();
+  });
+
+  it('displays "No members found" when filter returns no results', async () => {
+    const accesses: Access[] = [
+      {
+        id: '1',
+        role: Role.OWNER,
+        user: {
+          id: '11',
+          name: 'albert',
+          email: 'albert@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '2',
+        role: Role.MEMBER,
+        user: {
+          id: '22',
+          name: 'bob',
+          email: 'bob@test.com',
+        },
+        abilities: {} as any,
+      },
+      {
+        id: '3',
+        role: Role.ADMIN,
+        user: {
+          id: '33',
+          name: 'charlie',
+          email: 'charlie@test.com',
+        },
+        abilities: {} as any,
+      },
+    ];
+
+    // Mocking initial load of all members
+    fetchMock.get(`end:/teams/123456/accesses/?page=1`, {
+      count: 3,
+      results: accesses,
+    });
+
+    // Mocking empty filtered results
+    fetchMock.get(`end:/teams/123456/accesses/?q=nonexistent`, {
+      count: 0,
+      results: [],
+    });
+
+    render(<MemberGrid team={team} currentRole={Role.ADMIN} />, {
+      wrapper: AppWrapper,
+    });
+
+    expect(await screen.findByText('albert')).toBeInTheDocument();
+    expect(screen.getByText('bob')).toBeInTheDocument();
+    expect(screen.getByText('charlie')).toBeInTheDocument();
+
+    const searchInput = screen.getByLabelText('Filter member list');
+    await userEvent.type(searchInput, 'nonexistent');
+
+    await waitFor(() => {
+      expect(screen.queryByText('albert')).not.toBeInTheDocument();
+    });
+    expect(screen.queryByText('bob')).not.toBeInTheDocument();
+    expect(screen.queryByText('charlie')).not.toBeInTheDocument();
+
+    expect(screen.getByText('This table is empty')).toBeInTheDocument();
+  });
 });

@@ -16,6 +16,9 @@ test.describe('Team', () => {
       await createTeam(page, 'team-top-box', browserName, 1)
     ).shift();
 
+    await expect(page.getByText('Group members')).toBeVisible();
+    await expect(page.getByLabel('Filter member list')).toBeVisible();
+
     await expect(
       page.getByRole('heading', {
         name: teamName,
@@ -53,5 +56,20 @@ test.describe('Team', () => {
 
     await expect(page.getByText('The team has been updated.')).toBeVisible();
     await expect(page.getByText(`Group details`)).toBeVisible();
+  });
+
+  test('sorts group members by search term', async ({
+    page,
+    browserName,
+    request,
+  }) => {
+    await createTeam(page, 'team-to-sort', browserName, 1);
+
+    await page.getByLabel(`Open the team options`).click();
+    await page.getByLabel('Filter member list').fill('term-to-search');
+
+    const response = await request.get('teams/?page=1&q=term-to-search');
+
+    expect(response.ok()).toBeTruthy();
   });
 });

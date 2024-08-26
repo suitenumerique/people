@@ -16,6 +16,7 @@ and this project adheres to
 - ✨(dimail) allow la regie to request a token for another user #416
 - ✨(frontend) show username on AccountDropDown #412
 - 🥅(frontend) improve add & update group forms error handling #387
+- ✨(frontend) allow group members filtering #363
 
 ### Changed
 
