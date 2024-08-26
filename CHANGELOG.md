@@ -10,7 +10,11 @@ and this project adheres to
 
 ### Added
 
-🔧Runtime config for the frontend #345
+- 🔧Runtime config for the frontend (#345)
+
+### Fixed 
+
+- 👽️(mailboxes) fix mailbox creation after dimail api improvement (#360)
 
 ## [1.0.1] - 2024-08-19
 

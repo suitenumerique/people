@@ -246,12 +246,15 @@ def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
 
     # Logger
     assert not mock_error.called
-    assert mock_info.call_count == 1
+    assert mock_info.call_count == 2
     assert mock_info.call_args_list[0][0] == (
+        "Token succesfully granted by mail-provisioning API.",
+    )
+    assert mock_info.call_args_list[1][0] == (
         "Mailbox successfully created on domain %s",
         domain.name,
     )
-    assert mock_info.call_args_list[0][1] == (
+    assert mock_info.call_args_list[1][1] == (
         {
             "extra": {
                 "response": str(

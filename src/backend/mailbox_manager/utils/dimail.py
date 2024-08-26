@@ -28,13 +28,15 @@ session.mount("https://", adapter)
 class DimailAPIClient:
     """A dimail-API client."""
 
+    API_URL = settings.MAIL_PROVISIONING_API_URL
+
     def get_headers(self, domain):
         """Build header dict from domain object."""
         # self.secret is the encoded basic auth, to request a new token from dimail-api
         headers = {"Content-Type": "application/json"}
 
         response = requests.get(
-            f"{settings.MAIL_PROVISIONING_API_URL}/token/",
+            f"{self.API_URL}/token/",
             headers={"Authorization": f"Basic {domain.secret}"},
             timeout=status.HTTP_200_OK,
         )
@@ -46,6 +48,7 @@ class DimailAPIClient:
 
         if "access_token" in response.json():
             headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+            logger.info("Token succesfully granted by mail-provisioning API.")
 
         return headers
 
@@ -53,7 +56,6 @@ class DimailAPIClient:
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
-            "email": f"{mailbox.local_part}@{mailbox.domain}",
             "givenName": mailbox.first_name,
             "surName": mailbox.last_name,
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
@@ -61,18 +63,19 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{settings.MAIL_PROVISIONING_API_URL}/domains/{mailbox.domain}/mailboxes/",
+                f"{self.API_URL}/domains/{mailbox.domain}/mailboxes/{mailbox.local_part}/",
                 json=payload,
                 headers=self.get_headers(mailbox.domain),
                 verify=True,
                 timeout=10,
             )
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                settings.MAIL_PROVISIONING_API_URL,
-                exc_info=e,
+                self.API_URL,
+                exc_info=error,
             )
+            raise error
 
         if response.status_code == status.HTTP_201_CREATED:
             extra = {"response": response.content.decode("utf-8")}
@@ -92,4 +95,10 @@ class DimailAPIClient:
             raise exceptions.PermissionDenied(
                 f"Please check secret of the mail domain {mailbox.domain.name}"
             )
+        else:
+            logger.error(
+                "Unexpected response: %s",
+                response.content.decode("utf-8"),
+            )
+
         return response

@@ -366,7 +366,7 @@ class Base(Configuration):
 
     # mailboxes provisioning API
     MAIL_PROVISIONING_API_URL = values.Value(
-        default="https://main.dev.ox.numerique.gouv.fr",
+        default="https://api.dev.ox.numerique.gouv.fr",
         environ_name="MAIL_PROVISIONING_API_URL",
         environ_prefix=None,
     )

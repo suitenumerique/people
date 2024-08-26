@@ -96,7 +96,9 @@ class MailboxFactory(factory.django.DjangoModelFactory):
                 )
                 rsps.add(
                     rsps.POST,
-                    re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+                    re.compile(
+                        rf".*/domains/{domain.name}/mailboxes/{kwargs['local_part']}"
+                    ),
                     body=str(
                         {
                             "email": f"{kwargs['local_part']}@{domain.name}",

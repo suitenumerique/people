@@ -79,10 +79,7 @@ def test_api_mailboxes__create_viewer_failure():
 
 @pytest.mark.parametrize(
     "role",
-    [
-        enums.MailDomainRoleChoices.OWNER,
-        enums.MailDomainRoleChoices.ADMIN,
-    ],
+    [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
 )
 def test_api_mailboxes__create_roles_success(role):
     """Users with owner or admin role should be able to create mailbox on the mail domain."""
@@ -139,10 +136,7 @@ def test_api_mailboxes__create_roles_success(role):
 
 @pytest.mark.parametrize(
     "role",
-    [
-        enums.MailDomainRoleChoices.OWNER,
-        enums.MailDomainRoleChoices.ADMIN,
-    ],
+    [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
 )
 def test_api_mailboxes__create_with_accent_success(role):
     """Users with proper abilities should be able to create mailbox on the mail domain with a
@@ -345,7 +339,6 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
         payload = json.loads(rsps.calls[1].request.body)
         assert payload == {
             "displayName": f"{mailbox_data['first_name']} {mailbox_data['last_name']}",
-            "email": f"{mailbox_data['local_part']}@{access.domain.name}",
             "givenName": mailbox_data["first_name"],
             "surName": mailbox_data["last_name"],
         }
