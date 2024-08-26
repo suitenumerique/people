@@ -515,6 +515,24 @@ class Development(Base):
 
     USE_SWAGGER = True
 
+    LOGGING = values.DictValue(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                },
+            },
+            "loggers": {
+                "core": {
+                    "handlers": ["console"],
+                    "level": "DEBUG",
+                },
+            },
+        }
+    )
+
     def __init__(self):
         # pylint: disable=invalid-name
         self.INSTALLED_APPS += ["django_extensions", "drf_spectacular_sidecar"]
