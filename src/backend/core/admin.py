@@ -42,7 +42,7 @@ class UserAdmin(auth_admin.UserAdmin):
                 )
             },
         ),
-        (_("Personal info"), {"fields": ("email", "language", "timezone")}),
+        (_("Personal info"), {"fields": ("name", "email", "language", "timezone")}),
         (
             _("Permissions"),
             {
@@ -69,8 +69,7 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     inlines = (TeamAccessInline, MailDomainAccessInline)
     list_display = (
-        "sub",
-        "email",
+        "get_user",
         "created_at",
         "updated_at",
         "is_active",
@@ -81,13 +80,21 @@ class UserAdmin(auth_admin.UserAdmin):
     list_filter = ("is_staff", "is_superuser", "is_device", "is_active")
     ordering = ("is_active", "-is_superuser", "-is_staff", "-is_device", "-updated_at")
     readonly_fields = ["id", "created_at", "updated_at"]
-    search_fields = ("id", "email", "sub")
+    search_fields = ("id", "email", "sub", "name")
 
     def get_readonly_fields(self, request, obj=None):
         """The sub should only be editable for a create, not for updates."""
         if obj:
             return self.readonly_fields + ["sub"]
         return self.readonly_fields
+
+    def get_user(self, obj):
+        """Provide a nice display for user"""
+        return (
+            obj.name if obj.name else (obj.email if obj.email else f"[sub] {obj.sub}")
+        )
+
+    get_user.short_description = _("User")
 
 
 @admin.register(models.Team)
