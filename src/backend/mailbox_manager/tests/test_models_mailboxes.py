@@ -38,13 +38,12 @@ def test_models_mailboxes__local_part_matches_expected_format():
     The local part should contain alpha-numeric caracters
     and a limited set of special caracters ("+", "-", ".", "_").
     """
-    factories.MailboxFactory(local_part="Marie-Jose.Perec+JO_2024")
+    # "-", ".", "_" are allowed
+    factories.MailboxFactory(local_part="Marie-Jose.Perec_2024")
 
-    # other special characters (such as "@" or "!") should raise a validation error
-    with pytest.raises(exceptions.ValidationError, match="Enter a valid value"):
-        factories.MailboxFactory(local_part="mariejo@unnecessarydomain.com")
-
-    for character in ["!", "$", "%"]:
+    # other special characters should raise a validation error
+    # "+" included, as this test is about mail creation
+    for character in ["+", "@", "!", "$", "%", " "]:
         with pytest.raises(exceptions.ValidationError, match="Enter a valid value"):
             factories.MailboxFactory(local_part=f"marie{character}jo")
 
@@ -186,7 +185,6 @@ def test_models_mailboxes__wrong_secret():
             payload = json.loads(rsps.calls[1].request.body)
             assert payload == {
                 "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-                "email": f"{mailbox.local_part}@{domain.name}",
                 "givenName": mailbox.first_name,
                 "surName": mailbox.last_name,
             }
@@ -239,7 +237,6 @@ def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
         payload = json.loads(rsps.calls[1].request.body)
         assert payload == {
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-            "email": f"{mailbox.local_part}@{domain.name}",
             "givenName": mailbox.first_name,
             "surName": mailbox.last_name,
         }

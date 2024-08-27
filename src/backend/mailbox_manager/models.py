@@ -116,7 +116,7 @@ class Mailbox(BaseModel):
         max_length=150,
         null=False,
         blank=False,
-        validators=[validators.RegexValidator(regex="^[a-zA-Z0-9_.+-]+$")],
+        validators=[validators.RegexValidator(regex="^[a-zA-Z0-9_.-]+$")],
     )
     domain = models.ForeignKey(
         MailDomain,
