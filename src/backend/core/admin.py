@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
 
+from mailbox_manager.admin import MailDomainAccessInline
+
 from . import models
 
 
@@ -65,7 +67,7 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
     )
-    inlines = (TeamAccessInline,)
+    inlines = (TeamAccessInline, MailDomainAccessInline)
     list_display = (
         "sub",
         "email",

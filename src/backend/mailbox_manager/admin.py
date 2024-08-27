@@ -34,6 +34,15 @@ class MailDomainAccessAdmin(admin.ModelAdmin):
     )
 
 
+class MailDomainAccessInline(admin.TabularInline):
+    """Inline admin class for mail domain accesses."""
+
+    extra = 0
+    autocomplete_fields = ["user", "domain"]
+    model = models.MailDomainAccess
+    readonly_fields = ("created_at", "updated_at")
+
+
 @admin.register(models.Mailbox)
 class MailboxAdmin(admin.ModelAdmin):
     """Admin for mailbox model."""
