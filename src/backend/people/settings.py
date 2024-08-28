@@ -286,6 +286,7 @@ class Base(Configuration):
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
     THUMBNAIL_TRANSPARENCY_EXTENSION = "webp"
+    THUMBNAIL_DEFAULT_STORAGE_ALIAS = "default"
     THUMBNAIL_ALIASES = {}
 
     # Celery
