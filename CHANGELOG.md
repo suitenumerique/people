@@ -8,9 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.0.2] - 2024-08-30
+
 ### Added
 
 - 🔧Runtime config for the frontend (#345)
+- 🔧(helm) configure resource server in staging
 
 ### Fixed 
 
@@ -29,6 +32,7 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.1...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.2...main
+[1.0.2]: https://github.com/numerique-gouv/people/releases/v1.0.2
 [1.0.1]: https://github.com/numerique-gouv/people/releases/v1.0.1
 [1.0.0]: https://github.com/numerique-gouv/people/releases/v1.0.0
