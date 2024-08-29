@@ -33,6 +33,8 @@ backend:
     OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
     OIDC_OP_USER_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/userinfo
     OIDC_OP_LOGOUT_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/session/end
+    OIDC_OP_INTROSPECTION_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/checktoken
+    OIDC_OP_URL: https://fca.integ01.dev-agentconnect.fr/api/v2
     OIDC_RP_CLIENT_ID:
       secretKeyRef:
         name: backend
@@ -41,6 +43,18 @@ backend:
       secretKeyRef:
         name: backend
         key: OIDC_RP_CLIENT_SECRET
+    OIDC_RS_CLIENT_ID:
+      secretKeyRef:
+        name: backend
+        key: OIDC_RS_CLIENT_ID
+    OIDC_RS_CLIENT_SECRET:
+      secretKeyRef:
+        name: backend
+        key: OIDC_RS_CLIENT_SECRET
+    OIDC_RS_PRIVATE_KEY_STR:
+      secretKeyRef:
+        name: backend
+        key: OIDC_RS_PRIVATE_KEY_STR
     OIDC_RP_SIGN_ALGO: RS256
     OIDC_RP_SCOPES: "openid email"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://desk-staging.beta.numerique.gouv.fr
