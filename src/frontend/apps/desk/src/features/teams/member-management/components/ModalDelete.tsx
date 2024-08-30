@@ -48,7 +48,11 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
 
       // If we remove ourselves, we redirect to the home page
       // because we are no longer part of the team
-      isMyself ? router.push('/') : onClose();
+      if (isMyself) {
+        router.push('/');
+      } else {
+        onClose();
+      }
     },
   });
 
