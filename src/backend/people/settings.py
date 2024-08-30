@@ -581,7 +581,7 @@ class Test(Base):
     CELERY_TASK_ALWAYS_EAGER = values.BooleanValue(True)
 
     # this is a dev credentials for mail provisioning API
-    MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ"
+    MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
 
 
 class ContinuousIntegration(Test):

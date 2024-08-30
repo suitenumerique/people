@@ -438,7 +438,7 @@ def test_api_mailboxes__secret_unrelated_to_domain():
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": f"Secret not valid for this domain {access.domain.name}"
+            "detail": "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
         }
         assert not models.Mailbox.objects.exists()
 

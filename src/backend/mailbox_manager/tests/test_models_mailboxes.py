@@ -8,6 +8,7 @@ from logging import Logger
 from unittest import mock
 
 from django.core import exceptions
+from django.test.utils import override_settings
 
 import pytest
 import responses
@@ -143,13 +144,17 @@ def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
 ### SYNC TO DIMAIL-API
 
 
+@override_settings(MAIL_PROVISIONING_API_CREDENTIALS=None)
 def test_models_mailboxes__no_secret():
-    """If no secret is declared on the domain, the function should raise an error."""
-    domain = factories.MailDomainEnabledFactory(secret=None)
+    """
+    If MAIL_PROVISIONING_API_CREDENTIALS setting is not configured,
+    trying to create a mailbox should raise an error.
+    """
+    domain = factories.MailDomainEnabledFactory()
 
     with pytest.raises(
         exceptions.ValidationError,
-        match="Please configure your domain's secret before creating any mailbox.",
+        match="Please configure MAIL_PROVISIONING_API_CREDENTIALS before creating any mailbox.",
     ):
         factories.MailboxFactory(domain=domain)
 
