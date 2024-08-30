@@ -30,14 +30,16 @@ class DimailAPIClient:
 
     API_URL = settings.MAIL_PROVISIONING_API_URL
 
-    def get_headers(self, domain):
+    def get_headers(self):
         """Build header dict from domain object."""
         # self.secret is the encoded basic auth, to request a new token from dimail-api
         headers = {"Content-Type": "application/json"}
 
         response = requests.get(
             f"{self.API_URL}/token/",
-            headers={"Authorization": f"Basic {domain.secret}"},
+            headers={
+                "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+            },
             timeout=20,
         )
 
@@ -48,8 +50,8 @@ class DimailAPIClient:
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
             logger.error(
-                "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
-                domain.name,
+                "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
+                please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting.",
             )
             raise exceptions.PermissionDenied
 
@@ -68,7 +70,7 @@ class DimailAPIClient:
             response = session.post(
                 f"{self.API_URL}/domains/{mailbox.domain}/mailboxes/{mailbox.local_part}/",
                 json=payload,
-                headers=self.get_headers(mailbox.domain),
+                headers=self.get_headers(),
                 verify=True,
                 timeout=10,
             )
@@ -98,7 +100,7 @@ class DimailAPIClient:
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
             raise exceptions.PermissionDenied(
-                f"Secret not valid for this domain {mailbox.domain.name}"
+                "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
         return self.pass_dimail_unexpected_response(response)

@@ -26,7 +26,6 @@ class MailDomain(BaseModel):
         default=MailDomainStatusChoices.PENDING,
         choices=MailDomainStatusChoices.choices,
     )
-    secret = models.CharField(_("secret"), max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = "people_mail_domain"
@@ -139,15 +138,19 @@ class Mailbox(BaseModel):
         return f"{self.local_part!s}@{self.domain.name:s}"
 
     def clean(self):
-        """Mailboxes can be created only on enabled domains, with a set secret."""
+        """
+        Mailboxes can only be created on enabled domains.
+        Also, mail-provisioning API credentials must be set for dimail to allow auth.
+        """
         if self.domain.status != MailDomainStatusChoices.ENABLED:
             raise exceptions.ValidationError(
                 "You can create mailbox only for a domain enabled"
             )
 
-        if not self.domain.secret:
+        # Won't be able to query user token if MAIL_PROVISIONING_API_CREDENTIALS are not set
+        if not settings.MAIL_PROVISIONING_API_CREDENTIALS:
             raise exceptions.ValidationError(
-                "Please configure your domain's secret before creating any mailbox."
+                "Please configure MAIL_PROVISIONING_API_CREDENTIALS before creating any mailbox."
             )
 
     def save(self, *args, **kwargs):

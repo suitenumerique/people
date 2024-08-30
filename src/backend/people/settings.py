@@ -415,10 +415,15 @@ class Base(Configuration):
 
     OIDC_TIMEOUT = values.Value(None, environ_name="OIDC_TIMEOUT", environ_prefix=None)
 
-    # mailboxes provisioning API
+    # MAILBOX-PROVISIONING API
     MAIL_PROVISIONING_API_URL = values.Value(
         default="https://api.dev.ox.numerique.gouv.fr",
         environ_name="MAIL_PROVISIONING_API_URL",
+        environ_prefix=None,
+    )
+    MAIL_PROVISIONING_API_CREDENTIALS = values.Value(
+        default=None,
+        environ_name="MAIL_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
 
@@ -574,6 +579,9 @@ class Test(Base):
     }
 
     CELERY_TASK_ALWAYS_EAGER = values.BooleanValue(True)
+
+    # this is a dev credentials for mail provisioning API
+    MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ"
 
 
 class ContinuousIntegration(Test):

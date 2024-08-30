@@ -13,11 +13,15 @@ and this project adheres to
 - 📈(monitoring) configure sentry monitoring #378
 - 🥅(frontend) improve api error handling #355
 
+### Changed
+
+- 🗃️(models) move dimail 'secret' to settings #372 
+
 ### Fixed
 
 - 🐛(dimail) improve handling of dimail errors on failed mailbox creation #377
--  💬(frontend) fix group member removal text #382
--  💬(frontend) fix add mail domain text #382
+- 💬(frontend) fix group member removal text #382
+- 💬(frontend) fix add mail domain text #382
 - 🐛(frontend) fix keyboard navigation #379
 - 🐛(frontend) fix add mail domain form submission #355
 
