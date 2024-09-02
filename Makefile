@@ -343,3 +343,7 @@ start-kind: ## Create the kubernetes cluster
 tilt-up: ## start tilt - k8s local development
 	tilt up -f ./bin/Tiltfile
 .PHONY: tilt-up
+
+release:  ## helper for release and deployment
+	python scripts/release.py
+.PHONY: release
