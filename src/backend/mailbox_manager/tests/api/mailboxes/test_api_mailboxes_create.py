@@ -359,3 +359,128 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     assert mailbox.last_name == mailbox_data["last_name"]
     assert mailbox.local_part == mailbox_data["local_part"]
     assert mailbox.secondary_email == mailbox_data["secondary_email"]
+
+
+def test_api_mailboxes__wrong_secret_no_token_error():
+    """
+    API should raise a clear "permission denied" error
+    when receiving a 403_forbidden from dimail.
+    """
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+    access.domain.secret = "nottherealsecret"
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"details": "Permission denied"}',
+            status=status.HTTP_403_FORBIDDEN,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": f"Token denied - Wrong secret on mail domain {access.domain.name}"
+        }
+        assert not models.Mailbox.objects.exists()
+
+
+def test_api_mailboxes__secret_unrelated_to_domain():
+    """
+    API should raise a clear "permission denied"
+    when secret allows for a token but is not linked to queried domain on dimail-api.
+    """
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body='{"details": "Permission denied"}',
+            status=status.HTTP_403_FORBIDDEN,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": f"Secret not valid for this domain {access.domain.name}"
+        }
+        assert not models.Mailbox.objects.exists()
+
+
+def test_api_mailboxes__handling_dimail_unexpected_error():
+    """
+    API should raise a clear error when dimail gives an unexpected response.
+    """
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body='{"details": "Internal server error"}',
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content_type="application/json",
+        )
+
+        with pytest.raises(SystemError):
+            response = client.post(
+                f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+                mailbox_data,
+                format="json",
+            )
+            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+            assert response.json() == {
+                "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
+            }
+        assert not models.Mailbox.objects.exists()

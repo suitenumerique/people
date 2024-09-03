@@ -168,17 +168,10 @@ def test_models_mailboxes__wrong_secret():
             status=status.HTTP_403_FORBIDDEN,
             content_type="application/json",
         )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body='{"detail": "Permission denied"}',
-            status=status.HTTP_403_FORBIDDEN,
-            content_type="application/json",
-        )
 
         with pytest.raises(
             exceptions.PermissionDenied,
-            match=f"Please check secret of the mail domain {domain.name}",
+            match=f"Token denied - Wrong secret on mail domain {domain.name}",
         ):
             mailbox = factories.MailboxFactory(use_mock=False, domain=domain)
             # Payload sent to mailbox provider

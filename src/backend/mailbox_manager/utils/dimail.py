@@ -38,13 +38,15 @@ class DimailAPIClient:
         response = requests.get(
             f"{self.API_URL}/token/",
             headers={"Authorization": f"Basic {domain.secret}"},
-            timeout=status.HTTP_200_OK,
+            timeout=20,
         )
 
-        if response.json() == "{'detail': 'Permission denied'}":
-            raise exceptions.PermissionDenied(
-                "This secret does not allow for a new token."
+        if response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
+                domain.name,
             )
+            raise exceptions.PermissionDenied
 
         if "access_token" in response.json():
             headers["Authorization"] = f"Bearer {response.json()['access_token']}"
@@ -76,6 +78,10 @@ class DimailAPIClient:
                 exc_info=error,
             )
             raise error
+        except exceptions.PermissionDenied as error:
+            raise exceptions.PermissionDenied(
+                f"Token denied - Wrong secret on mail domain {mailbox.domain.name}"
+            ) from error
 
         if response.status_code == status.HTTP_201_CREATED:
             extra = {"response": response.content.decode("utf-8")}
@@ -87,18 +93,18 @@ class DimailAPIClient:
                 mailbox.domain.name,
                 extra=extra,
             )
-        elif response.status_code == status.HTTP_403_FORBIDDEN:
-            logger.error(
-                "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
-                mailbox.domain.name,
-            )
+            return response
+
+        if response.status_code == status.HTTP_403_FORBIDDEN:
             raise exceptions.PermissionDenied(
-                f"Please check secret of the mail domain {mailbox.domain.name}"
-            )
-        else:
-            logger.error(
-                "Unexpected response: %s",
-                response.content.decode("utf-8"),
+                f"Secret not valid for this domain {mailbox.domain.name}"
             )
 
-        return response
+        # All other errors are considered 'unexpected'
+        logger.error(
+            "Unexpected response: %s",
+            response.content.decode("utf-8"),
+        )
+        raise SystemError(
+            f"Unexpected response from dimail: {response.content.decode('utf-8')}"
+        )

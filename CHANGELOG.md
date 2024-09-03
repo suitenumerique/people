@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(dimail) improve handling of dimail errors on failed mailbox creation #377 
+
 ## [1.0.2] - 2024-08-30
 
 ### Added
