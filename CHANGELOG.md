@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 📈(monitoring) configure sentry monitoring #378
+
 ### Fixed
 
 - 🐛(dimail) improve handling of dimail errors on failed mailbox creation #377 

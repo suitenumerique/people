@@ -49,7 +49,7 @@ dependencies = [
     "PyJWT==2.9.0",
     "joserfc==1.0.0",
     "requests==2.32.3",
-    "sentry-sdk==2.13.0",
+    "sentry-sdk[django]==2.13.0",
     "url-normalize==1.4.3",
     "whitenoise==6.7.0",
     "mozilla-django-oidc==4.0.1",

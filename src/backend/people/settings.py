@@ -473,6 +473,7 @@ class Base(Configuration):
                 environment=cls.__name__.lower(),
                 release=get_release(),
                 integrations=[DjangoIntegration()],
+                traces_sample_rate=1.0,
             )
             with sentry_sdk.configure_scope() as scope:
                 scope.set_extra("application", "backend")
@@ -654,6 +655,10 @@ class Production(Base):
             },
         },
     }
+    SENTRY_DSN = values.Value(
+        "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171",
+        environ_name="SENTRY_DSN",
+    )
 
 
 class Feature(Production):
