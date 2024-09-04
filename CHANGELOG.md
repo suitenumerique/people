@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 
 - 📈(monitoring) configure sentry monitoring #378
+- 🥅(frontend) improve api error handling #355
 
 ### Fixed
 
@@ -18,6 +19,7 @@ and this project adheres to
 -  💬(frontend) fix group member removal text #382
 -  💬(frontend) fix add mail domain text #382
 - 🐛(frontend) fix keyboard navigation #379
+- 🐛(frontend) fix add mail domain form submission #355
 
 ## [1.0.2] - 2024-08-30
 
@@ -29,10 +31,6 @@ and this project adheres to
 ### Fixed 
 
 - 👽️(mailboxes) fix mailbox creation after dimail api improvement (#360)
-
-### Fixed
-
-- 🐛(frontend) user can submit form to add mail domain by pressing "Enter" key
 
 ## [1.0.1] - 2024-08-19
 

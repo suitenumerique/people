@@ -48,7 +48,9 @@ export const parseAPIErrorCause = ({
 }): string[] =>
   causes.reduce((arrayCauses, cause) => {
     const foundErrorParams = Object.values(errorParams).find((params) =>
-      params.causes.find((knownCause) => knownCause.match(cause)),
+      params.causes.find((knownCause) =>
+        new RegExp(knownCause, 'i').test(cause),
+      ),
     );
 
     if (!foundErrorParams) {

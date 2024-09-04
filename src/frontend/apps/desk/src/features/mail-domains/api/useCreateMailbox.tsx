@@ -26,7 +26,6 @@ export const createMailbox = async ({
   });
 
   if (!response.ok) {
-    // TODO: extend errorCauses to return the name of the invalid field names to highlight in the form?
     throw new APIError(
       'Failed to create the mailbox',
       await errorCauses(response),
@@ -40,7 +39,7 @@ type UseCreateMailboxParams = { mailDomainSlug: string } & UseMutationOptions<
   CreateMailboxParams
 >;
 
-export function useCreateMailbox(options: UseCreateMailboxParams) {
+export const useCreateMailbox = (options: UseCreateMailboxParams) => {
   const queryClient = useQueryClient();
   return useMutation<void, APIError, CreateMailboxParams>({
     mutationFn: createMailbox,
@@ -61,4 +60,4 @@ export function useCreateMailbox(options: UseCreateMailboxParams) {
       }
     },
   });
-}
+};

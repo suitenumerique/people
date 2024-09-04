@@ -6,7 +6,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Controller,
   FormProvider,
@@ -17,11 +17,12 @@ import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 import { z } from 'zod';
 
+import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Text, TextErrors } from '@/components';
 import { Modal } from '@/components/Modal';
 
-import { CreateMailboxParams, useCreateMailbox } from '../../api';
-import { MailDomain } from '../../types';
+import { CreateMailboxParams, useCreateMailbox } from '../api';
+import { MailDomain } from '../types';
 
 const FORM_ID: string = 'form-create-mailbox';
 
@@ -32,7 +33,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export const CreateMailboxForm = ({
+export const ModalCreateMailbox = ({
   mailDomain,
   closeModal,
 }: {
@@ -41,6 +42,8 @@ export const CreateMailboxForm = ({
 }) => {
   const { t } = useTranslation();
   const { toast } = useToastProvider();
+
+  const [errorCauses, setErrorCauses] = useState<string[]>([]);
 
   const messageInvalidMinChar = t('You must have minimum 1 character');
 
@@ -77,7 +80,7 @@ export const CreateMailboxForm = ({
     resolver: zodResolver(createMailboxValidationSchema),
   });
 
-  const { mutate: createMailbox, error } = useCreateMailbox({
+  const { mutate: createMailbox, isPending } = useCreateMailbox({
     mailDomainSlug: mailDomain.slug,
     onSuccess: () => {
       toast(t('Mailbox created!'), VariantType.SUCCESS, {
@@ -85,6 +88,52 @@ export const CreateMailboxForm = ({
       });
 
       closeModal();
+    },
+    onError: (error) => {
+      const unhandledCauses = parseAPIError({
+        error,
+        errorParams: {
+          local_part: {
+            causes: ['Mailbox with this Local_part and Domain already exists.'],
+            handleError: () => {
+              methods.setError('local_part', {
+                type: 'manual',
+                message: t('This email prefix is already used.'),
+              });
+              methods.setFocus('local_part');
+            },
+          },
+          secret: {
+            causes: [
+              "Please configure your domain's secret before creating any mailbox.",
+              `Secret not valid for this domain`,
+            ],
+            causeShown: t(
+              'The mail domain secret is misconfigured. Please, contact ' +
+                'our support team to solve the issue: suiteterritoriale@anct.gouv.fr',
+            ),
+            handleError: () => {
+              methods.setFocus('first_name');
+            },
+          },
+        },
+        serverErrorParams: {
+          handleError: () => {
+            methods.setFocus('first_name');
+          },
+          defaultMessage: t(
+            'Your request cannot be processed because the server is experiencing an error. If the problem ' +
+              'persists, please contact our support to resolve the issue: suiteterritoriale@anct.gouv.fr',
+          ),
+        },
+      });
+
+      setErrorCauses((prevState) =>
+        unhandledCauses &&
+        JSON.stringify(unhandledCauses) !== JSON.stringify(prevState)
+          ? unhandledCauses
+          : prevState,
+      );
     },
   });
 
@@ -94,20 +143,6 @@ export const CreateMailboxForm = ({
       createMailbox({ ...data, mailDomainSlug: mailDomain.slug }),
     )();
   };
-
-  const causes = error?.cause?.filter((cause) => {
-    const isFound =
-      cause === 'Mailbox with this Local_part and Domain already exists.';
-
-    if (isFound) {
-      methods.setError('local_part', {
-        type: 'manual',
-        message: t('This email prefix is already used.'),
-      });
-    }
-
-    return !isFound;
-  });
 
   return (
     <FormProvider {...methods}>
@@ -132,7 +167,11 @@ export const CreateMailboxForm = ({
             fullWidth
             type="submit"
             form={FORM_ID}
-            disabled={methods.formState.isSubmitting}
+            disabled={
+              methods.formState.isSubmitting ||
+              !methods.formState.isValid ||
+              isPending
+            }
           >
             {t('Create the mailbox')}
           </Button>
@@ -152,8 +191,12 @@ export const CreateMailboxForm = ({
       >
         <GlobalStyle />
         <Box $width="100%" $margin={{ top: 'none', bottom: 'xl' }}>
-          {!!causes?.length && (
-            <TextErrors $margin={{ bottom: 'small' }} causes={causes} />
+          {!!errorCauses?.length && (
+            <TextErrors
+              $margin={{ bottom: 'small' }}
+              causes={errorCauses}
+              $textAlign="left"
+            />
           )}
           <Text
             $margin={{ horizontal: 'none', vertical: 'big' }}
@@ -188,7 +231,11 @@ const Form = ({
   const { t } = useTranslation();
 
   return (
-    <form onSubmit={onSubmitCallback} id={FORM_ID}>
+    <form
+      onSubmit={onSubmitCallback}
+      id={FORM_ID}
+      title={t('Mailbox creation form')}
+    >
       <Box $direction="column" $width="100%" $gap="2rem" $margin="auto">
         <Box $margin={{ horizontal: 'none' }}>
           <FieldMailBox

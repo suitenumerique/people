@@ -19,7 +19,7 @@ import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
 import { PAGE_SIZE } from '../conf';
 import { MailDomain, MailDomainMailbox } from '../types';
 
-import { CreateMailboxForm } from './forms/CreateMailboxForm';
+import { ModalCreateMailbox } from './ModalCreateMailbox';
 
 export type ViewMailbox = {
   name: string;
@@ -87,7 +87,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
   ) : (
     <>
       {isCreateMailboxFormVisible && mailDomain ? (
-        <CreateMailboxForm
+        <ModalCreateMailbox
           mailDomain={mailDomain}
           closeModal={() => setIsCreateMailboxFormVisible(false)}
         />
