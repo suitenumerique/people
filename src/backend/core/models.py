@@ -124,12 +124,12 @@ class Contact(BaseModel):
         unique_together = ("owner", "base")
         constraints = [
             models.CheckConstraint(
-                check=~models.Q(base__isnull=False, owner__isnull=True),
+                condition=~models.Q(base__isnull=False, owner__isnull=True),
                 name="base_owner_constraint",
                 violation_error_message="A contact overriding a base contact must be owned.",
             ),
             models.CheckConstraint(
-                check=~models.Q(base=models.F("id")),
+                condition=~models.Q(base=models.F("id")),
                 name="base_not_self",
                 violation_error_message="A contact cannot be based on itself.",
             ),

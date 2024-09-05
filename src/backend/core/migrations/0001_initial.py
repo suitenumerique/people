@@ -146,11 +146,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='contact',
-            constraint=models.CheckConstraint(check=models.Q(('base__isnull', False), ('owner__isnull', True), _negated=True), name='base_owner_constraint', violation_error_message='A contact overriding a base contact must be owned.'),
+            constraint=models.CheckConstraint(condition=models.Q(('base__isnull', False), ('owner__isnull', True), _negated=True), name='base_owner_constraint', violation_error_message='A contact overriding a base contact must be owned.'),
         ),
         migrations.AddConstraint(
             model_name='contact',
-            constraint=models.CheckConstraint(check=models.Q(('base', models.F('id')), _negated=True), name='base_not_self', violation_error_message='A contact cannot be based on itself.'),
+            constraint=models.CheckConstraint(condition=models.Q(('base', models.F('id')), _negated=True), name='base_not_self', violation_error_message='A contact cannot be based on itself.'),
         ),
         migrations.AlterUniqueTogether(
             name='contact',
