@@ -12,7 +12,7 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { Box, StyledLink, Text, TextErrors } from '@/components';
+import { Box, Text, TextErrors } from '@/components';
 import { useCreateMailDomain } from '@/features/mail-domains';
 
 import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
@@ -77,16 +77,14 @@ export const ModalCreateMailDomain = () => {
     <Modal
       isOpen
       leftActions={
-        <StyledLink href="/mail-domains">
-          <Button color="secondary" tabIndex={-1}>
-            {t('Cancel')}
-          </Button>
-        </StyledLink>
+        <Button color="secondary" onClick={() => router.push('/mail-domains/')}>
+          {t('Cancel')}
+        </Button>
       }
       hideCloseButton
       closeOnClickOutside
       closeOnEsc
-      onClose={() => router.push('/mail-domains')}
+      onClose={() => router.push('/mail-domains/')}
       rightActions={
         <Button
           onClick={onSubmitCallback}
