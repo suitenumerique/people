@@ -56,7 +56,7 @@ test.describe('Config', () => {
 
     await expect(
       page.getByRole('button', {
-        name: 'Add your mail domain',
+        name: 'Add a mail domain',
       }),
     ).toBeVisible();
   });

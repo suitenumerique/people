@@ -20,7 +20,7 @@ const Page: NextPageWithLayout = () => {
   return (
     <Box $align="center" $justify="center" $height="inherit">
       <StyledButton onClick={() => void router.push('/mail-domains/add')}>
-        {t('Add your mail domain')}
+        {t('Add a mail domain')}
       </StyledButton>
     </Box>
   );

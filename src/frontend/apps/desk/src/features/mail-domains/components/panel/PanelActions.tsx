@@ -46,7 +46,7 @@ export const PanelActions = () => {
       <StyledLink href="/mail-domains/add/">
         <Text
           $margin="auto"
-          aria-label={t('Add your mail domain')}
+          aria-label={t('Add a mail domain')}
           $theme="primary"
         >
           <IconAdd width={27} height={27} aria-hidden="true" />

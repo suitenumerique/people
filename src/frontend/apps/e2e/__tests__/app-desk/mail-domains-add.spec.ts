@@ -12,7 +12,7 @@ test.describe('Add Mail Domains', () => {
     await page.goto('/mail-domains');
 
     const buttonFromHomePage = page.getByRole('button', {
-      name: 'Add your mail domain',
+      name: 'Add a mail domain',
     });
 
     await expect(buttonFromHomePage).toBeVisible();
@@ -22,7 +22,7 @@ test.describe('Add Mail Domains', () => {
 
     await expect(
       page.getByRole('heading', {
-        name: 'Add your mail domain',
+        name: 'Add a mail domain',
         level: 3,
       }),
     ).toBeVisible();
@@ -49,7 +49,7 @@ test.describe('Add Mail Domains', () => {
     await page.goto('/mail-domains');
 
     const buttonFromHomePage = page.getByRole('button', {
-      name: 'Add your mail domain',
+      name: 'Add a mail domain',
     });
     await buttonFromHomePage.click();
 
@@ -68,7 +68,7 @@ test.describe('Add Mail Domains', () => {
     await page.goto('/mail-domains');
 
     const buttonFromHomePage = page.getByRole('button', {
-      name: 'Add your mail domain',
+      name: 'Add a mail domain',
     });
     await buttonFromHomePage.click();
 
@@ -109,7 +109,7 @@ test.describe('Add Mail Domains', () => {
 
     const panel = page.getByLabel('Mail domains panel').first();
 
-    await panel.getByRole('link', { name: 'Add your mail domain' }).click();
+    await panel.getByRole('link', { name: 'Add a mail domain' }).click();
 
     const form = page.locator('form');
 
@@ -133,7 +133,7 @@ test.describe('Add Mail Domains', () => {
 
     const panel = page.getByLabel('Mail domains panel').first();
     const additionLink = panel.getByRole('link', {
-      name: 'Add your mail domain',
+      name: 'Add a mail domain',
     });
     const form = page.locator('form');
     const inputName = form.getByLabel('Domain name');

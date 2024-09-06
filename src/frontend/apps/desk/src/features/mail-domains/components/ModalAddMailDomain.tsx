@@ -100,7 +100,7 @@ export const ModalCreateMailDomain = () => {
         <>
           <MailDomainsLogo aria-hidden="true" />
           <Text as="h3" $textAlign="center">
-            {t('Add your mail domain')}
+            {t('Add a mail domain')}
           </Text>
         </>
       }
