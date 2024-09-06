@@ -65,21 +65,10 @@ test.describe('Keyboard navigation', () => {
       )
       .all();
 
-    expect(focusableElements.length).toEqual(20);
+    expect(focusableElements.length).toEqual(19);
 
     for (let i = 0; i < focusableElements.length; i++) {
       await page.keyboard.press('Tab');
-
-      // check language picker language option navigation. 4th element is inner language picker arrow button
-      // eslint-disable-next-line playwright/no-conditional-in-test
-      if (i === 3) {
-        await page.keyboard.press('Enter');
-
-        // eslint-disable-next-line playwright/no-conditional-expect
-        await expect(focusableElements[i]).toBeFocused();
-        continue;
-      }
-
       await expect(focusableElements[i]).toBeFocused();
     }
   });

@@ -1,6 +1,6 @@
 import { Select } from '@openfun/cunningham-react';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -60,6 +60,21 @@ export const LanguagePicker = () => {
     }));
   }, [languages]);
 
+  useEffect(() => {
+    if (!document) {
+      return;
+    }
+    const languagePickerDom = document.querySelector(
+      '.c__select-language-picker',
+    );
+
+    if (!languagePickerDom?.firstChild?.firstChild) {
+      return;
+    }
+
+    (languagePickerDom.firstChild.firstChild as HTMLElement).tabIndex = -1;
+  }, []);
+
   return (
     <SelectStyled
       label={t('Language')}
@@ -67,7 +82,7 @@ export const LanguagePicker = () => {
       clearable={false}
       hideLabel
       defaultValue={i18n.language}
-      className="c_select__no_bg"
+      className="c_select__no_bg c__select-language-picker"
       options={optionsPicker}
       onChange={(e) => {
         i18n.changeLanguage(e.target.value as string).catch((err) => {
