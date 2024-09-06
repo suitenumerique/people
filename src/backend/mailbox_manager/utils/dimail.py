@@ -41,6 +41,11 @@ class DimailAPIClient:
             timeout=20,
         )
 
+        if response.status_code == status.HTTP_200_OK:
+            headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+            logger.info("Token succesfully granted by mail-provisioning API.")
+            return headers
+
         if response.status_code == status.HTTP_403_FORBIDDEN:
             logger.error(
                 "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
@@ -48,11 +53,7 @@ class DimailAPIClient:
             )
             raise exceptions.PermissionDenied
 
-        if "access_token" in response.json():
-            headers["Authorization"] = f"Bearer {response.json()['access_token']}"
-            logger.info("Token succesfully granted by mail-provisioning API.")
-
-        return headers
+        return self.pass_dimail_unexpected_response(response)
 
     def send_mailbox_request(self, mailbox):
         """Send a CREATE mailbox request to mail provisioning API."""
@@ -100,11 +101,11 @@ class DimailAPIClient:
                 f"Secret not valid for this domain {mailbox.domain.name}"
             )
 
-        # All other errors are considered 'unexpected'
-        logger.error(
-            "Unexpected response: %s",
-            response.content.decode("utf-8"),
-        )
-        raise SystemError(
-            f"Unexpected response from dimail: {response.content.decode('utf-8')}"
-        )
+        return self.pass_dimail_unexpected_response(response)
+
+    def pass_dimail_unexpected_response(self, response):
+        """Raise error when encountering an unexpected error in dimail."""
+        error_content = response.content.decode("utf-8")
+
+        logger.error("[DIMAIL] unexpected error : %s", error_content)
+        raise SystemError(f"Unexpected response from dimail: {error_content}")
