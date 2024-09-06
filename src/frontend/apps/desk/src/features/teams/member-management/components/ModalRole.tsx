@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -9,6 +8,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
+import { Modal } from '@/components/Modal';
 import { Role } from '@/features/teams/team-management';
 
 import { useUpdateTeamAccess } from '../api/useUpdateTeamAccess';

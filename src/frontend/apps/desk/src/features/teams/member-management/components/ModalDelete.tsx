@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -10,6 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Text, TextErrors } from '@/components';
+import { Modal } from '@/components/Modal';
 import { useCunninghamTheme } from '@/cunningham';
 import { Role, Team } from '@/features/teams/team-management';
 

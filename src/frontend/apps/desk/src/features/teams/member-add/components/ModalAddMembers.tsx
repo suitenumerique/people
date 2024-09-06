@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -11,6 +10,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
+import { Modal } from '@/components/Modal';
 import { useCunninghamTheme } from '@/cunningham';
 import { ChooseRole } from '@/features/teams/member-management';
 import { Role, Team } from '@/features/teams/team-management';

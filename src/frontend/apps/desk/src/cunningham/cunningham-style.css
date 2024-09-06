@@ -484,11 +484,6 @@ input:-webkit-autofill:focus {
 /**
  * Modal
 */
-.c__modal:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
 .c__modal__backdrop {
   z-index: 1000;
 }

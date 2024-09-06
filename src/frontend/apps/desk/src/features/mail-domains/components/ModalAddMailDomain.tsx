@@ -1,11 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Button,
-  Input,
-  Loader,
-  Modal,
-  ModalSize,
-} from '@openfun/cunningham-react';
+import { Button, Input, Loader, ModalSize } from '@openfun/cunningham-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -13,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Box, Text, TextErrors } from '@/components';
+import { Modal } from '@/components/Modal';
 import { useCreateMailDomain } from '@/features/mail-domains';
 
 import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';

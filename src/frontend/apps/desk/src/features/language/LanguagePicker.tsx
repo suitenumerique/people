@@ -60,19 +60,17 @@ export const LanguagePicker = () => {
     }));
   }, [languages]);
 
+  /**
+   * @description prevent select div to receive focus on keyboard navigation so the focus goes directly to inner button
+   * @see https://github.com/numerique-gouv/people/pull/379
+   */
   useEffect(() => {
     if (!document) {
       return;
     }
-    const languagePickerDom = document.querySelector(
-      '.c__select-language-picker',
-    );
-
-    if (!languagePickerDom?.firstChild?.firstChild) {
-      return;
-    }
-
-    (languagePickerDom.firstChild.firstChild as HTMLElement).tabIndex = -1;
+    document
+      .querySelector('.c__select-language-picker .c__select__wrapper')
+      ?.setAttribute('tabindex', '-1');
   }, []);
 
   return (

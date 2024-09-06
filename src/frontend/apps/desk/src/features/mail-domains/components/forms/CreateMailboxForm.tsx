@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Input,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -19,6 +18,7 @@ import { createGlobalStyle } from 'styled-components';
 import { z } from 'zod';
 
 import { Box, Text, TextErrors } from '@/components';
+import { Modal } from '@/components/Modal';
 
 import { CreateMailboxParams, useCreateMailbox } from '../../api';
 import { MailDomain } from '../../types';

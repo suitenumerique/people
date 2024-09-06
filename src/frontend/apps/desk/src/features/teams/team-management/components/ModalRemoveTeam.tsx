@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -10,6 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box, Text, TextErrors } from '@/components';
+import { Modal } from '@/components/Modal';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import { useRemoveTeam } from '../api/useRemoveTeam';

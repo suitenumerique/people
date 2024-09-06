@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalSize,
   VariantType,
   useToastProvider,
@@ -9,6 +8,7 @@ import { t } from 'i18next';
 import { useState } from 'react';
 
 import { Box, Text } from '@/components';
+import { Modal } from '@/components/Modal';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import { useUpdateTeam } from '../api';
