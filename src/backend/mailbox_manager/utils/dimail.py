@@ -29,17 +29,18 @@ class DimailAPIClient:
     """A dimail-API client."""
 
     API_URL = settings.MAIL_PROVISIONING_API_URL
+    API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
 
     def get_headers(self):
-        """Build header dict from domain object."""
-        # self.secret is the encoded basic auth, to request a new token from dimail-api
+        """
+        Build headers dictionary. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
+        to get a token from dimail /token/ endpoint.
+        """
         headers = {"Content-Type": "application/json"}
 
         response = requests.get(
             f"{self.API_URL}/token/",
-            headers={
-                "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
-            },
+            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
             timeout=20,
         )
 
@@ -53,7 +54,9 @@ class DimailAPIClient:
                 "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
                 please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting.",
             )
-            raise exceptions.PermissionDenied
+            raise exceptions.PermissionDenied(
+                "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+            )
 
         return self.pass_dimail_unexpected_response(response)
 
@@ -65,12 +68,13 @@ class DimailAPIClient:
             "surName": mailbox.last_name,
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
+        headers = self.get_headers()
 
         try:
             response = session.post(
                 f"{self.API_URL}/domains/{mailbox.domain}/mailboxes/{mailbox.local_part}/",
                 json=payload,
-                headers=self.get_headers(),
+                headers=headers,
                 verify=True,
                 timeout=10,
             )
@@ -81,10 +85,6 @@ class DimailAPIClient:
                 exc_info=error,
             )
             raise error
-        except exceptions.PermissionDenied as error:
-            raise exceptions.PermissionDenied(
-                f"Token denied - Wrong secret on mail domain {mailbox.domain.name}"
-            ) from error
 
         if response.status_code == status.HTTP_201_CREATED:
             extra = {"response": response.content.decode("utf-8")}
