@@ -145,7 +145,7 @@ def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
 
 
 @override_settings(MAIL_PROVISIONING_API_CREDENTIALS=None)
-def test_models_mailboxes__no_secret():
+def test_models_mailboxes__dimail_no_credentials():
     """
     If MAIL_PROVISIONING_API_CREDENTIALS setting is not configured,
     trying to create a mailbox should raise an error.
@@ -159,8 +159,12 @@ def test_models_mailboxes__no_secret():
         factories.MailboxFactory(domain=domain)
 
 
-def test_models_mailboxes__wrong_secret():
-    """If domain secret is inaccurate, the function should raise an error."""
+@override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
+def test_models_mailboxes__dimail_token_permissions_denied():
+    """
+    Our API should raise a clear "Permission denied" error
+    if dimail returns a permission denied on /token/ endpoint.
+    """
 
     domain = factories.MailDomainEnabledFactory()
 
@@ -176,7 +180,7 @@ def test_models_mailboxes__wrong_secret():
 
         with pytest.raises(
             exceptions.PermissionDenied,
-            match=f"Token denied - Wrong secret on mail domain {domain.name}",
+            match="Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS.",
         ):
             mailbox = factories.MailboxFactory(use_mock=False, domain=domain)
             # Payload sent to mailbox provider

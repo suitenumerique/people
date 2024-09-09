@@ -5,6 +5,8 @@ Unit tests for the mailbox API
 import json
 import re
 
+from django.test.utils import override_settings
+
 import pytest
 import responses
 from rest_framework import status
@@ -361,14 +363,14 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     assert mailbox.secondary_email == mailbox_data["secondary_email"]
 
 
-def test_api_mailboxes__wrong_secret_no_token_error():
+@override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
+def test_api_mailboxes__dimail_token_permission_denied():
     """
     API should raise a clear "permission denied" error
     when receiving a 403_forbidden from dimail.
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
-    access.domain.secret = "nottherealsecret"
 
     client = APIClient()
     client.force_login(access.user)
@@ -394,15 +396,16 @@ def test_api_mailboxes__wrong_secret_no_token_error():
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": f"Token denied - Wrong secret on mail domain {access.domain.name}"
+            "detail": "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
         }
         assert not models.Mailbox.objects.exists()
 
 
-def test_api_mailboxes__secret_unrelated_to_domain():
+def test_api_mailboxes__user_unrelated_to_domain():
     """
-    API should raise a clear "permission denied"
-    when secret allows for a token but is not linked to queried domain on dimail-api.
+    API should raise a clear "permission denied" when dimail returns a permission denied
+    on mailbox creation. This means token was granted for this user
+    but user is not allowed to modify this domain (i.e. not owner)
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
