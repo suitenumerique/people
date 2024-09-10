@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-09-10
+
 ### Added
 
 - 📈(monitoring) configure sentry monitoring #378
@@ -49,7 +51,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.0.2...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.1.0...main
+[1.1.0]: https://github.com/numerique-gouv/people/releases/v1.1.0
 [1.0.2]: https://github.com/numerique-gouv/people/releases/v1.0.2
 [1.0.1]: https://github.com/numerique-gouv/people/releases/v1.0.1
 [1.0.0]: https://github.com/numerique-gouv/people/releases/v1.0.0
