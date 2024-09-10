@@ -21,6 +21,7 @@ and this project adheres to
 - ✨(mailbox) send new mailbox confirmation email #397
 - ✨(domains) domain accesses update API #423
 - ✨(backend) domain accesses create API #428
+- 🥅(frontend) catch new errors on mailbox creation #392
 
 ### Fixed
 
