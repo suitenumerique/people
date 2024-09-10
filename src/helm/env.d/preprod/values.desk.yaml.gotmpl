@@ -85,6 +85,10 @@ backend:
         name: redis.redis.libre.sh
         key: url
     MAIL_PROVISIONING_API_URL: "https://api.dev.ox.numerique.gouv.fr"
+    MAIL_PROVISIONING_API_CREDENTIALS:
+      secretKeyRef:
+        name: backend
+        key: MAIL_PROVISIONING_API_CREDENTIALS
     FEATURE_TEAMS: False
     SENTRY_DSN: "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171"
 
