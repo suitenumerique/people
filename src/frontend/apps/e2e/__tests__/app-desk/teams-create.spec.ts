@@ -108,7 +108,9 @@ test.describe('Teams Create', () => {
     await page.getByRole('button', { name: 'Create the team' }).click();
 
     await expect(
-      page.getByText('Team with this Slug already exists.'),
+      page.getByText(
+        'This name is already used for another group. Please enter another one.',
+      ),
     ).toBeVisible();
   });
 

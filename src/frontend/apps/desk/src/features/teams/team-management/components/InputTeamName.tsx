@@ -1,7 +1,9 @@
 import { Input, Loader } from '@openfun/cunningham-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
+import { parseAPIError } from '@/api/parseAPIError';
 import { Box, TextErrors } from '@/components';
 
 interface InputTeamNameProps {
@@ -21,6 +23,7 @@ export const InputTeamName = ({
   label,
   setTeamName,
 }: InputTeamNameProps) => {
+  const { t } = useTranslation();
   const [isInputError, setIsInputError] = useState(isError);
 
   useEffect(() => {
@@ -28,6 +31,28 @@ export const InputTeamName = ({
       setIsInputError(true);
     }
   }, [isError]);
+
+  const causes = error
+    ? parseAPIError({
+        error,
+        errorParams: [
+          [
+            ['Team with this Slug already exists.'],
+            t(
+              'This name is already used for another group. Please enter another one.',
+            ),
+            undefined,
+          ],
+        ],
+        serverErrorParams: [
+          t(
+            'Your request cannot be processed because the server is experiencing an error. If the problem ' +
+              'persists, please contact our support to resolve the issue: suiteterritoriale@anct.gouv.fr',
+          ),
+          undefined,
+        ],
+      })
+    : undefined;
 
   return (
     <>
@@ -42,7 +67,7 @@ export const InputTeamName = ({
         }}
         state={isInputError ? 'error' : 'default'}
       />
-      {isError && error && <TextErrors causes={error.cause} />}
+      {isError && causes && <TextErrors causes={causes} />}
       {isPending && (
         <Box $align="center">
           <Loader />

@@ -14,6 +14,7 @@ import { InputTeamName } from './InputTeamName';
 export const CardCreateTeam = () => {
   const { t } = useTranslation();
   const router = useRouter();
+
   const {
     mutate: createTeam,
     isError,
@@ -24,6 +25,7 @@ export const CardCreateTeam = () => {
       router.push(`/teams/${team.id}`);
     },
   });
+
   const [teamName, setTeamName] = useState('');
   const { colorsTokens } = useCunninghamTheme();
 

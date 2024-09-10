@@ -13,8 +13,9 @@ and this project adheres to
 
 - ✨(domains) add endpoint to list and retrieve domain accesses #404
 - 🍱(dev) embark dimail-api as container #366
-- ✨(dimail) allow la regie to request a token for another user #416 
-- ⚗️(frontend) show username on AccountDropDown #412
+- ✨(dimail) allow la regie to request a token for another user #416
+- ✨(frontend) show username on AccountDropDown #412
+- 🥅(frontend) improve add & update group forms error handling #387
 
 ### Changed
 

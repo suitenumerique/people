@@ -90,48 +90,44 @@ export const ModalCreateMailbox = ({
       closeModal();
     },
     onError: (error) => {
-      const unhandledCauses = parseAPIError({
+      const causes = parseAPIError({
         error,
-        errorParams: {
-          local_part: {
-            causes: ['Mailbox with this Local_part and Domain already exists.'],
-            handleError: () => {
+        errorParams: [
+          [
+            ['Mailbox with this Local_part and Domain already exists.'],
+            '',
+            () => {
               methods.setError('local_part', {
                 type: 'manual',
                 message: t('This email prefix is already used.'),
               });
               methods.setFocus('local_part');
             },
-          },
-          secret: {
-            causes: [
+          ],
+          [
+            [
               "Please configure your domain's secret before creating any mailbox.",
-              `Secret not valid for this domain`,
+              'Secret not valid for this domain',
             ],
-            causeShown: t(
+            t(
               'The mail domain secret is misconfigured. Please, contact ' +
                 'our support team to solve the issue: suiteterritoriale@anct.gouv.fr',
             ),
-            handleError: () => {
-              methods.setFocus('first_name');
-            },
-          },
-        },
-        serverErrorParams: {
-          handleError: () => {
-            methods.setFocus('first_name');
-          },
-          defaultMessage: t(
+            () => methods.setFocus('first_name'),
+          ],
+        ],
+        serverErrorParams: [
+          t(
             'Your request cannot be processed because the server is experiencing an error. If the problem ' +
               'persists, please contact our support to resolve the issue: suiteterritoriale@anct.gouv.fr',
           ),
-        },
+          () => methods.setFocus('first_name'),
+        ],
       });
 
       setErrorCauses((prevState) =>
-        unhandledCauses &&
-        JSON.stringify(unhandledCauses) !== JSON.stringify(prevState)
-          ? unhandledCauses
+        causes && JSON.stringify(causes) !== JSON.stringify(prevState)
+          ? causes
           : prevState,
       );
     },

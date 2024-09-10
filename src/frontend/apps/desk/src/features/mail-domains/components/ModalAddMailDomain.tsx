@@ -42,13 +42,14 @@ export const ModalAddMailDomain = () => {
     onError: (error) => {
       const unhandledCauses = parseAPIError({
         error,
-        errorParams: {
-          name: {
-            causes: [
+        errorParams: [
+          [
+            [
               'Mail domain with this name already exists.',
               'Mail domain with this Slug already exists.',
             ],
-            handleError: () => {
+            '',
+            () => {
               if (methods.formState.errors.name) {
                 return;
               }
@@ -61,17 +62,17 @@ export const ModalAddMailDomain = () => {
               });
               methods.setFocus('name');
             },
-          },
-        },
-        serverErrorParams: {
-          handleError: () => {
-            methods.setFocus('name');
-          },
-          defaultMessage: t(
+          ],
+        ],
+        serverErrorParams: [
+          t(
             'Your request cannot be processed because the server is experiencing an error. If the problem ' +
               'persists, please contact our support to resolve the issue: suiteterritoriale@anct.gouv.fr',
           ),
-        },
+          () => {
+            methods.setFocus('name');
+          },
+        ],
       });
 
       setErrorCauses((prevState) =>
