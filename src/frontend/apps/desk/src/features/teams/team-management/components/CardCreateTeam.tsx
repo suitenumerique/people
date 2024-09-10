@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group2.svg';
-import { Box, Card, StyledLink, Text } from '@/components';
+import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { useCreateTeam } from '../api';
@@ -56,11 +56,10 @@ export const CardCreateTeam = () => {
         />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
-        <StyledLink href="/">
-          <Button color="secondary" tabIndex={-1}>
-            {t('Cancel')}
-          </Button>
-        </StyledLink>
+        <Button color="secondary" onClick={() => router.push('/')}>
+          {t('Cancel')}
+        </Button>
+
         <Button
           onClick={() => createTeam(teamName)}
           disabled={!teamName || isPending}
