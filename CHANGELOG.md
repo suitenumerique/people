@@ -19,6 +19,10 @@ and this project adheres to
 - ✨(frontend) allow group members filtering #363
 - ✨(mailbox) send new mailbox confirmation email #397
 
+### Fixed
+
+- ♿️(frontend) fix left nav panel #396
+
 ### Changed
 
 - ♻️(serializers) move business logic to serializers #414 
