@@ -1,5 +1,7 @@
 """API endpoints"""
 
+from django.db.models import Subquery
+
 from rest_framework import filters, mixins, viewsets
 from rest_framework import permissions as drf_permissions
 
@@ -54,19 +56,67 @@ class MailDomainViewSet(
 
 # pylint: disable=too-many-ancestors
 class MailDomainAccessViewSet(
-    mixins.ListModelMixin,
     viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
 ):
     """
-    MailDomainAccess viewset.
+    API ViewSet for all interactions with mail domain accesses.
+
+    GET /api/v1.0/mail-domains/<domain_slug>/accesses/:<domain_access_id>
+        Return list of all domain accesses related to the logged-in user and one
+        domain access if an id is provided.
     """
 
     permission_classes = [drf_permissions.IsAuthenticated]
     serializer_class = serializers.MailDomainAccessSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ["created_at", "user", "domain", "role"]
+    ordering_fields = ["role", "user__email", "user__name"]
     ordering = ["-created_at"]
-    queryset = models.MailDomainAccess.objects.all()
+    queryset = (
+        models.MailDomainAccess.objects.all()
+        .select_related("user")
+        .order_by("-created_at")
+    )
+    list_serializer_class = serializers.MailDomainAccessReadOnlySerializer
+    detail_serializer_class = serializers.MailDomainAccessSerializer
+
+    def get_serializer_class(self):
+        if self.action in {"list", "retrieve"}:
+            return self.list_serializer_class
+        return self.detail_serializer_class
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(domain__slug=self.kwargs["domain_slug"])
+
+        if self.action in {"list", "retrieve"}:
+            # Determine which role the logged-in user has in the domain
+            user_role_query = models.MailDomainAccess.objects.filter(
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
+            ).values("role")[:1]
+
+            queryset = (
+                # The logged-in user should be part of a domain to see its accesses
+                queryset.filter(
+                    domain__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each domain access
+                .annotate(
+                    user_role=Subquery(user_role_query),
+                )
+                .select_related("user")
+                .distinct()
+            )
+        return queryset
 
 
 class MailBoxViewSet(

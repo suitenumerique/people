@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+✨(domains) add endpoint API to list all accesses created for a domain
+
+
 ## [1.1.0] - 2024-09-10
 
 ### Added

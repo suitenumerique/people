@@ -2,7 +2,9 @@
 
 from rest_framework import serializers
 
-from mailbox_manager import models
+from core.api.serializers import UserSerializer
+
+from mailbox_manager import enums, models
 
 
 class MailboxSerializer(serializers.ModelSerializer):
@@ -50,7 +52,10 @@ class MailDomainSerializer(serializers.ModelSerializer):
 
 
 class MailDomainAccessSerializer(serializers.ModelSerializer):
-    """Serialize mail domain accesses."""
+    """Serialize mail domain access."""
+
+    user = UserSerializer(read_only=True, fields=["id", "name", "email"])
+    can_set_role_to = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.MailDomainAccess
@@ -58,7 +63,44 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "role",
-            "created_at",
-            "updated_at",
+            "can_set_role_to",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "user", "can_set_role_to"]
+
+    def get_can_set_role_to(self, access):
+        """Return roles available to set"""
+        roles = list(enums.MailDomainRoleChoices)
+        # get role of authenticated user
+        authenticated_user_role = access.user_role
+        if authenticated_user_role != enums.MailDomainRoleChoices.OWNER:
+            roles.remove(enums.MailDomainRoleChoices.OWNER)
+        # if the user authenticated is a viewer, they can't modify role
+        # and only an owner can change role of an owner
+        if authenticated_user_role == enums.MailDomainRoleChoices.VIEWER or (
+            authenticated_user_role != enums.MailDomainRoleChoices.OWNER
+            and access.role == enums.MailDomainRoleChoices.OWNER
+        ):
+            return []
+        # we only want to return other roles available to change,
+        # so we remove the current role of current access.
+        roles.remove(access.role)
+        return sorted(roles)
+
+
+class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):
+    """Serialize mail domain access for list and retrieve actions."""
+
+    class Meta:
+        model = models.MailDomainAccess
+        fields = [
+            "id",
+            "user",
+            "role",
+            "can_set_role_to",
+        ]
+        read_only_fields = [
+            "id",
+            "user",
+            "role",
+            "can_set_role_to",
+        ]
