@@ -50,7 +50,7 @@ backend:
     POSTGRES_USER: dinum
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
-    MAIL_PROVISIONING_API_URL: "http://host.docker.internal:8000"
+    MAIL_PROVISIONING_API_URL: "http://host.docker.internal:8001"
     MAIL_PROVISIONING_API_CREDENTIALS:
       secretKeyRef:
         name: backend

@@ -166,3 +166,11 @@ services:
       - "8080:8080"
     depends_on:
       - kc_postgresql
+
+  dimail: 
+    image: registry.mim-libre.fr/dimail/dimail-api:latest
+    environment:
+      DIMAIL_MODE: FAKE
+      DIMAIL_JWT_SECRET: fake_jwt_secret
+    ports:
+      - "8001:8000"

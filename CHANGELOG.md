@@ -8,8 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
-✨(domains) add endpoint API to list all accesses created for a domain
 
+### Added
+
+- ✨(domains) add endpoint to list and retrieve domain accesses @sdemagny #404
+- 🍱(dev) embark dimail-api as container by @mjeammet #366
 
 ## [1.1.0] - 2024-09-10
 

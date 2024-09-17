@@ -417,7 +417,7 @@ class Base(Configuration):
 
     # MAILBOX-PROVISIONING API
     MAIL_PROVISIONING_API_URL = values.Value(
-        default="https://api.dev.ox.numerique.gouv.fr",
+        default="http://host.docker.internal:8001",
         environ_name="MAIL_PROVISIONING_API_URL",
         environ_prefix=None,
     )

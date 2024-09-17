@@ -232,7 +232,8 @@ def test_api_mailboxes__create_administrator_missing_fields():
     assert response.json() == {"secondary_email": ["This field is required."]}
 
 
-### SYNC TO PROVISIONING API
+### REACTING TO DIMAIL-API
+### We mock dimail's responses to avoid testing dimail's container too
 
 
 def test_api_mailboxes__unrelated_user_provisioning_api_not_called():
@@ -297,7 +298,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     """
     Domain owner/admin should be able to create mailboxes.
     Provisioning API should be called when owner/admin makes a call.
-    Expected response contains new email and password.
+    Succesfull 201 response from dimail should trigger mailbox creation on our side.
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=role)
@@ -367,7 +368,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
 def test_api_mailboxes__dimail_token_permission_denied():
     """
     API should raise a clear "permission denied" error
-    when receiving a 403_forbidden from dimail.
+    when receiving a permission denied from dimail upon requesting token.
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
@@ -448,7 +449,7 @@ def test_api_mailboxes__user_unrelated_to_domain():
 
 def test_api_mailboxes__handling_dimail_unexpected_error():
     """
-    API should raise a clear error when dimail gives an unexpected response.
+    API should raise a clear error when dimail returns an unexpected response.
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)

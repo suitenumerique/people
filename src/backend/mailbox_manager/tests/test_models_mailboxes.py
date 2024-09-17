@@ -141,7 +141,8 @@ def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
         factories.MailboxFactory(domain=factories.MailDomainFactory())
 
 
-### SYNC TO DIMAIL-API
+### REACTING TO DIMAIL-API
+### We mock dimail's responses to avoid testing dimail's container too
 
 
 @override_settings(MAIL_PROVISIONING_API_CREDENTIALS=None)
@@ -232,7 +233,6 @@ def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
 
         # Check headers
         headers = rsps.calls[1].request.headers
-        # assert "Authorization" not in headers
         assert headers["Content-Type"] == "application/json"
 
         # Payload sent to mailbox provider
