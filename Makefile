@@ -88,6 +88,7 @@ bootstrap: \
 	back-i18n-compile \
 	mails-install \
 	mails-build \
+	setup_dimail_db \
 	install-front-desk
 .PHONY: bootstrap
 
@@ -109,6 +110,7 @@ run: ## start the wsgi (production) and development server
 	@$(COMPOSE) up --force-recreate -d app-dev
 	@$(COMPOSE) up --force-recreate -d celery-dev
 	@$(COMPOSE) up --force-recreate -d keycloak
+	@$(COMPOSE) up -d dimail
 	@echo "Wait for postgresql to be up..."
 	@$(WAIT_KC_DB)
 	@$(WAIT_DB)
@@ -128,6 +130,12 @@ demo: ## flush db then create a demo for load testing purpose
 	@$(MAKE) resetdb
 	@$(MANAGE) create_demo
 .PHONY: demo
+
+reset-dimail-container:
+	@$(COMPOSE) up --force-recreate -d dimail
+	@$(MAKE) setup-dimail-db
+.PHONY: reset-dimail-container
+
 
 # Nota bene: Black should come after isort just in case they don't agree...
 lint: ## lint back-end python sources
@@ -272,6 +280,13 @@ i18n-generate-and-upload: \
   crowdin-upload
 .PHONY: i18n-generate-and-upload
 
+# -- INTEROPERABILTY
+# -- Dimail configuration
+
+setup-dimail-db:
+	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"
+	@$(MANAGE) setup_dimail_db
+.PHONY: setup-dimail-db
 
 # -- Mail generator
 
