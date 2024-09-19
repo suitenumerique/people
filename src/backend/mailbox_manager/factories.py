@@ -2,14 +2,10 @@
 Mailbox manager application factories
 """
 
-import re
-
 from django.utils.text import slugify
 
 import factory.fuzzy
-import responses
 from faker import Faker
-from rest_framework import status
 
 from core import factories as core_factories
 from core import models as core_models
@@ -79,37 +75,3 @@ class MailboxFactory(factory.django.DjangoModelFactory):
     )
     domain = factory.SubFactory(MailDomainEnabledFactory)
     secondary_email = factory.Faker("email")
-
-    @classmethod
-    def _create(cls, model_class, *args, use_mock=True, **kwargs):
-        domain = kwargs["domain"]
-        if use_mock and isinstance(domain, models.MailDomain):
-            with responses.RequestsMock() as rsps:
-                # Ensure successful response using "responses":
-                rsps.add(
-                    rsps.GET,
-                    re.compile(r".*/token/"),
-                    body='{"access_token": "domain_owner_token"}',
-                    status=status.HTTP_200_OK,
-                    content_type="application/json",
-                )
-                rsps.add(
-                    rsps.POST,
-                    re.compile(
-                        rf".*/domains/{domain.name}/mailboxes/{kwargs['local_part']}"
-                    ),
-                    body=str(
-                        {
-                            "email": f"{kwargs['local_part']}@{domain.name}",
-                            "password": "newpass",
-                            "uuid": "uuid",
-                        }
-                    ),
-                    status=status.HTTP_201_CREATED,
-                    content_type="application/json",
-                )
-
-                result = super()._create(model_class, *args, **kwargs)
-        else:
-            result = super()._create(model_class, *args, **kwargs)
-        return result

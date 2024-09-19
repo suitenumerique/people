@@ -4,14 +4,13 @@ Declare and configure the models for the People additional application : mailbox
 
 from django.conf import settings
 from django.core import exceptions, validators
-from django.db import models, transaction
+from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel
 
 from mailbox_manager.enums import MailDomainRoleChoices, MailDomainStatusChoices
-from mailbox_manager.utils.dimail import DimailAPIClient
 
 
 class MailDomain(BaseModel):
@@ -155,16 +154,12 @@ class Mailbox(BaseModel):
 
     def save(self, *args, **kwargs):
         """
-        Override save function to fire a request on mailbox creation.
         Modification is forbidden for now.
         """
         self.full_clean()
 
         if self._state.adding:
-            with transaction.atomic():
-                client = DimailAPIClient()
-                client.send_mailbox_request(self)
-                return super().save(*args, **kwargs)
+            return super().save(*args, **kwargs)
 
         # Update is not implemented for now
         raise NotImplementedError()

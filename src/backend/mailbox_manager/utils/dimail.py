@@ -64,15 +64,15 @@ class DimailAPIClient:
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
-            "givenName": mailbox.first_name,
-            "surName": mailbox.last_name,
-            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+            "givenName": mailbox["first_name"],
+            "surName": mailbox["last_name"],
+            "displayName": f"{mailbox['first_name']} {mailbox['last_name']}",
         }
         headers = self.get_headers()
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox.domain}/mailboxes/{mailbox.local_part}/",
+                f"{self.API_URL}/domains/{mailbox['domain']}/mailboxes/{mailbox['local_part']}/",
                 json=payload,
                 headers=headers,
                 verify=True,
@@ -93,7 +93,7 @@ class DimailAPIClient:
             # In the meantime, we log mailbox info (including password !)
             logger.info(
                 "Mailbox successfully created on domain %s",
-                mailbox.domain.name,
+                str(mailbox["domain"]),
                 extra=extra,
             )
             return response

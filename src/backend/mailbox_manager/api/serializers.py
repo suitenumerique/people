@@ -5,6 +5,7 @@ from rest_framework import serializers
 from core.api.serializers import UserSerializer
 
 from mailbox_manager import enums, models
+from mailbox_manager.utils.dimail import DimailAPIClient
 
 
 class MailboxSerializer(serializers.ModelSerializer):
@@ -15,6 +16,14 @@ class MailboxSerializer(serializers.ModelSerializer):
         fields = ["id", "first_name", "last_name", "local_part", "secondary_email"]
         # everything is actually read-only as we do not allow update for now
         read_only_fields = ["id"]
+
+    def create(self, validated_data):
+        """
+        Override create function to fire a request on mailbox creation.
+        """
+        client = DimailAPIClient()
+        client.send_mailbox_request(validated_data)
+        return models.Mailbox.objects.create(**validated_data)
 
 
 class MailDomainSerializer(serializers.ModelSerializer):

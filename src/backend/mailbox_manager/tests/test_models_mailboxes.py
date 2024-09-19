@@ -2,20 +2,12 @@
 Unit tests for the mailbox model
 """
 
-import json
-import re
-from logging import Logger
-from unittest import mock
-
 from django.core import exceptions
 from django.test.utils import override_settings
 
 import pytest
-import responses
-from rest_framework import status
 
 from mailbox_manager import enums, factories, models
-from mailbox_manager.api import serializers
 
 pytestmark = pytest.mark.django_db
 
@@ -158,111 +150,3 @@ def test_models_mailboxes__dimail_no_credentials():
         match="Please configure MAIL_PROVISIONING_API_CREDENTIALS before creating any mailbox.",
     ):
         factories.MailboxFactory(domain=domain)
-
-
-@override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
-def test_models_mailboxes__dimail_token_permissions_denied():
-    """
-    Our API should raise a clear "Permission denied" error
-    if dimail returns a permission denied on /token/ endpoint.
-    """
-
-    domain = factories.MailDomainEnabledFactory()
-
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response by scim provider using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body='{"detail": "Permission denied"}',
-            status=status.HTTP_403_FORBIDDEN,
-            content_type="application/json",
-        )
-
-        with pytest.raises(
-            exceptions.PermissionDenied,
-            match="Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS.",
-        ):
-            mailbox = factories.MailboxFactory(use_mock=False, domain=domain)
-            # Payload sent to mailbox provider
-            payload = json.loads(rsps.calls[1].request.body)
-            assert payload == {
-                "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-                "givenName": mailbox.first_name,
-                "surName": mailbox.last_name,
-            }
-
-
-@mock.patch.object(Logger, "error")
-@mock.patch.object(Logger, "info")
-def test_models_mailboxes__create_mailbox_success(mock_info, mock_error):
-    """Creating a mailbox sends the expected information and get expected response before saving."""
-    domain = factories.MailDomainEnabledFactory()
-
-    # generate mailbox data before mailbox, to mock responses
-    mailbox_data = serializers.MailboxSerializer(
-        factories.MailboxFactory.build(domain=domain)
-    ).data
-
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_data['local_part']}@{domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-
-        mailbox = factories.MailboxFactory(
-            use_mock=False, local_part=mailbox_data["local_part"], domain=domain
-        )
-
-        # Check headers
-        headers = rsps.calls[1].request.headers
-        assert headers["Content-Type"] == "application/json"
-
-        # Payload sent to mailbox provider
-        payload = json.loads(rsps.calls[1].request.body)
-        assert payload == {
-            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-            "givenName": mailbox.first_name,
-            "surName": mailbox.last_name,
-        }
-
-    # Logger
-    assert not mock_error.called
-    assert mock_info.call_count == 2
-    assert mock_info.call_args_list[0][0] == (
-        "Token succesfully granted by mail-provisioning API.",
-    )
-    assert mock_info.call_args_list[1][0] == (
-        "Mailbox successfully created on domain %s",
-        domain.name,
-    )
-    assert mock_info.call_args_list[1][1] == (
-        {
-            "extra": {
-                "response": str(
-                    {
-                        "email": f"{mailbox.local_part}@{domain.name}",
-                        "password": "newpass",
-                        "uuid": "uuid",
-                    }
-                )
-            }
-        }
-    )

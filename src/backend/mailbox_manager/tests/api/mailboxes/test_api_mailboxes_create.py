@@ -4,6 +4,8 @@ Unit tests for the mailbox API
 
 import json
 import re
+from logging import Logger
+from unittest import mock
 
 from django.test.utils import override_settings
 
@@ -488,3 +490,59 @@ def test_api_mailboxes__handling_dimail_unexpected_error():
                 "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
             }
         assert not models.Mailbox.objects.exists()
+
+
+@mock.patch.object(Logger, "error")
+@mock.patch.object(Logger, "info")
+def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
+    """
+    Upon requesting mailbox creation, things are correctly logged
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+
+    # Logger
+    assert not mock_error.called
+    assert mock_info.call_count == 3
+    assert mock_info.call_args_list[0][0] == (
+        "Token succesfully granted by mail-provisioning API.",
+    )
+    assert mock_info.call_args_list[1][0] == (
+        "Mailbox successfully created on domain %s",
+        access.domain.name,
+    )

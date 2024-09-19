@@ -11,8 +11,13 @@ and this project adheres to
 
 ### Added
 
-- ✨(domains) add endpoint to list and retrieve domain accesses @sdemagny #404
-- 🍱(dev) embark dimail-api as container by @mjeammet #366
+- ✨(domains) add endpoint to list and retrieve domain accesses #404
+- 🍱(dev) embark dimail-api as container #366
+
+
+### Changed
+
+- ♻️(serializers) move business logic to serializers #414 
 
 ## [1.1.0] - 2024-09-10
 
