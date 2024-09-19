@@ -7,32 +7,35 @@ import { useAuthStore } from '@/core/auth';
 
 export const AccountDropdown = () => {
   const { t } = useTranslation();
-  const { logout } = useAuthStore();
+  const { userData, logout } = useAuthStore();
 
+  const userName = userData?.name || t('No Username');
   return (
     <DropButton
-      aria-label={t('My account')}
       button={
         <Box $flex $direction="row" $align="center">
-          <Text $theme="primary">{t('My account')}</Text>
+          <Text $theme="primary">{userName}</Text>
           <Text className="material-icons" $theme="primary" aria-hidden="true">
             arrow_drop_down
           </Text>
         </Box>
       }
     >
-      <Button
-        onClick={logout}
-        color="primary-text"
-        icon={
-          <span className="material-icons" aria-hidden="true">
-            logout
-          </span>
-        }
-        aria-label={t('Logout')}
-      >
-        <Text $weight="normal">{t('Logout')}</Text>
-      </Button>
+      <Box $css="display: flex; direction: column; gap: 0.5rem">
+        <Button
+          onClick={logout}
+          key="logout"
+          color="primary-text"
+          icon={
+            <span className="material-icons" aria-hidden="true">
+              logout
+            </span>
+          }
+          aria-label={t('Logout')}
+        >
+          <Text $weight="normal">{t('Logout')}</Text>
+        </Button>
+      </Box>
     </DropButton>
   );
 };
