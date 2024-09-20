@@ -22,7 +22,7 @@ class MailboxSerializer(serializers.ModelSerializer):
         Override create function to fire a request on mailbox creation.
         """
         client = DimailAPIClient()
-        client.send_mailbox_request(validated_data)
+        client.send_mailbox_request(validated_data, self.context["request"].user.sub)
         return models.Mailbox.objects.create(**validated_data)
 
 

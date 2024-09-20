@@ -31,16 +31,23 @@ class DimailAPIClient:
     API_URL = settings.MAIL_PROVISIONING_API_URL
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
 
-    def get_headers(self):
+    def get_headers(self, user_sub=None):
         """
         Build headers dictionary. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
         to get a token from dimail /token/ endpoint.
+        If provided, request user' sub is used for la regie to log in as this user,
+        thus allowing for more precise logs.
         """
         headers = {"Content-Type": "application/json"}
+        params = None
+
+        if user_sub:
+            params = {"username": str(user_sub)}
 
         response = requests.get(
             f"{self.API_URL}/token/",
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+            params=params,
             timeout=20,
         )
 
@@ -60,7 +67,7 @@ class DimailAPIClient:
 
         return self.pass_dimail_unexpected_response(response)
 
-    def send_mailbox_request(self, mailbox):
+    def send_mailbox_request(self, mailbox, user_sub=None):
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
@@ -68,7 +75,7 @@ class DimailAPIClient:
             "surName": mailbox["last_name"],
             "displayName": f"{mailbox['first_name']} {mailbox['last_name']}",
         }
-        headers = self.get_headers()
+        headers = self.get_headers(user_sub)
 
         try:
             response = session.post(
@@ -92,8 +99,9 @@ class DimailAPIClient:
             # from OX servers but their prod is not ready.
             # In the meantime, we log mailbox info (including password !)
             logger.info(
-                "Mailbox successfully created on domain %s",
+                "Mailbox successfully created on domain %s by user %s",
                 str(mailbox["domain"]),
+                user_sub,
                 extra=extra,
             )
             return response
