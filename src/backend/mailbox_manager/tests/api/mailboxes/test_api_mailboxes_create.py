@@ -8,6 +8,7 @@ from logging import Logger
 from unittest import mock
 
 from django.test.utils import override_settings
+from django.utils.translation import gettext_lazy as _
 
 import pytest
 import responses
@@ -290,6 +291,53 @@ def test_api_mailboxes__domain_viewer_provisioning_api_not_called():
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+@mock.patch.object(Logger, "error")
+def test_api_mailboxes__dimail_unauthorized(mock_error):
+    """
+    Wrong secret but a secret corresponding to another user/domain
+    i.e. secret from another domain/user on dimail API.
+    """
+
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsp = rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            status=status.HTTP_403_FORBIDDEN,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+
+    assert mock_error.call_count == 1
+    assert mock_error.call_args_list[0][0] == (
+        "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
+        access.domain.name,
+    )
+    assert rsp.call_count == 1
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 @pytest.mark.parametrize(
     "role",
     [enums.MailDomainRoleChoices.ADMIN, enums.MailDomainRoleChoices.OWNER],
@@ -542,7 +590,7 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
 
     # Logger
     assert not mock_error.called
-    assert mock_info.call_count == 3
+    assert mock_info.call_count == 4
     assert mock_info.call_args_list[0][0] == (
         "Token succesfully granted by mail-provisioning API.",
     )
@@ -550,4 +598,59 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
         "Mailbox successfully created on domain %s by user %s",
         str(access.domain),
         access.user.sub,
+    )
+
+
+@mock.patch.object(Logger, "info")
+def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
+    """
+    Creating a new mailbox should send confirmation email
+    to secondary email.
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        with mock.patch("django.core.mail.send_mail") as mock_send:
+            client.post(
+                f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+                mailbox_data,
+                format="json",
+            )
+
+        assert mock_send.call_count == 1
+        assert mock_send.mock_calls[0][1][0] == "Your new mailbox information"
+        assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
+
+    assert mock_info.call_count == 4
+    assert mock_info.call_args_list[2][0] == (
+        "Information for mailbox %s sent to %s.",
+        f"{mailbox_data['local_part']}@{access.domain.name}",
+        mailbox_data["secondary_email"],
     )

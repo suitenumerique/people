@@ -265,10 +265,7 @@ class Base(Configuration):
     # Mail
     EMAIL_BACKEND = values.Value("django.core.mail.backends.smtp.EmailBackend")
     EMAIL_HOST = values.Value(None)
-    EMAIL_HOST_USER = values.Value(None)
-    EMAIL_HOST_PASSWORD = values.Value(None)
     EMAIL_PORT = values.PositiveIntegerValue(None)
-    EMAIL_USE_TLS = values.BooleanValue(False)
     EMAIL_USE_SSL = values.BooleanValue(False)
     EMAIL_FROM = values.Value("from@example.com")
 
@@ -416,6 +413,11 @@ class Base(Configuration):
     OIDC_TIMEOUT = values.Value(None, environ_name="OIDC_TIMEOUT", environ_prefix=None)
 
     # MAILBOX-PROVISIONING API
+    WEBMAIL_URL = values.Value(
+        default=None,
+        environ_name="WEBMAIL_URL",
+        environ_prefix=None,
+    )
     MAIL_PROVISIONING_API_URL = values.Value(
         default="http://host.docker.internal:8001",
         environ_name="MAIL_PROVISIONING_API_URL",

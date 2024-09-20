@@ -1,9 +1,13 @@
 """A minimalist client to synchronize with mailbox provisioning API."""
 
+import smtplib
 from logging import getLogger
 
 from django.conf import settings
-from django.core import exceptions
+from django.contrib.sites.models import Site
+from django.core import exceptions, mail
+from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 import requests
 from rest_framework import status
@@ -94,15 +98,10 @@ class DimailAPIClient:
             raise error
 
         if response.status_code == status.HTTP_201_CREATED:
-            extra = {"response": response.content.decode("utf-8")}
-            # This a temporary broken solution. Password will soon be sent
-            # from OX servers but their prod is not ready.
-            # In the meantime, we log mailbox info (including password !)
             logger.info(
                 "Mailbox successfully created on domain %s by user %s",
                 str(mailbox["domain"]),
                 user_sub,
-                extra=extra,
             )
             return response
 
@@ -119,3 +118,40 @@ class DimailAPIClient:
 
         logger.error("[DIMAIL] unexpected error : %s", error_content)
         raise SystemError(f"Unexpected response from dimail: {error_content}")
+
+    def send_new_mailbox_notification(self, recipient, mailbox_data):
+        """
+        Send email to confirm mailbox creation
+        and send new mailbox information.
+        """
+
+        template_vars = {
+            "title": _("Your new mailbox information"),
+            "site": Site.objects.get_current(),
+            "webmail_url": settings.WEBMAIL_URL,
+            "mailbox_data": mailbox_data,
+        }
+
+        msg_html = render_to_string("mail/html/new_mailbox.html", template_vars)
+        msg_plain = render_to_string("mail/text/new_mailbox.txt", template_vars)
+
+        try:
+            mail.send_mail(
+                template_vars["title"],
+                msg_plain,
+                settings.EMAIL_FROM,
+                [recipient],
+                html_message=msg_html,
+                fail_silently=False,
+            )
+            logger.info(
+                "Information for mailbox %s sent to %s.",
+                mailbox_data["email"],
+                recipient,
+            )
+        except smtplib.SMTPException as exception:
+            logger.error(
+                "Mailbox confirmation email to %s was not sent: %s",
+                recipient,
+                exception,
+            )

@@ -17,6 +17,7 @@ and this project adheres to
 - ✨(frontend) show username on AccountDropDown #412
 - 🥅(frontend) improve add & update group forms error handling #387
 - ✨(frontend) allow group members filtering #363
+- ✨(mailbox) send new mailbox confirmation email #397
 
 ### Changed
 

@@ -1,5 +1,7 @@
 """Client serializers for People's mailbox manager app."""
 
+import json
+
 from rest_framework import serializers
 
 from core.api.serializers import UserSerializer
@@ -21,9 +23,24 @@ class MailboxSerializer(serializers.ModelSerializer):
         """
         Override create function to fire a request on mailbox creation.
         """
+        # send new mailbox request to dimail
         client = DimailAPIClient()
-        client.send_mailbox_request(validated_data, self.context["request"].user.sub)
-        return models.Mailbox.objects.create(**validated_data)
+        response = client.send_mailbox_request(
+            validated_data, self.context["request"].user.sub
+        )
+
+        # fix format to have actual json, and remove uuid
+        mailbox_data = json.loads(response.content.decode("utf-8").replace("'", '"'))
+        del mailbox_data["uuid"]
+
+        # actually save mailbox on our database
+        instance = models.Mailbox.objects.create(**validated_data)
+
+        # send confirmation email
+        client.send_new_mailbox_notification(
+            recipient=validated_data["secondary_email"], mailbox_data=mailbox_data
+        )
+        return instance
 
 
 class MailDomainSerializer(serializers.ModelSerializer):
