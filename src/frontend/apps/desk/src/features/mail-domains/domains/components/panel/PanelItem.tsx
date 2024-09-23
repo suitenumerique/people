@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { MailDomain } from '@/features/mail-domains';
 import IconMailDomains from '@/features/mail-domains/assets/icon-mail-domains.svg';
+
+import { MailDomain } from '../../index';
 
 interface MailDomainProps {
   mailDomain: MailDomain;

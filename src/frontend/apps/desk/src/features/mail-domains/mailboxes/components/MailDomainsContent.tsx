@@ -9,17 +9,18 @@ import {
   VariantType,
   usePagination,
 } from '@openfun/cunningham-react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors, TextStyled } from '@/components';
+import { ModalCreateMailbox } from '@/features/mail-domains/mailboxes';
 
+import { default as MailDomainsLogo } from '../../assets/mail-domains-logo.svg';
+import { PAGE_SIZE } from '../../conf';
+import { MailDomain } from '../../domains/types';
 import { useMailboxes } from '../api/useMailboxes';
-import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
-import { PAGE_SIZE } from '../conf';
-import { MailDomain, MailDomainMailbox } from '../types';
-
-import { ModalCreateMailbox } from './ModalCreateMailbox';
+import { MailDomainMailbox } from '../types';
 
 export type ViewMailbox = {
   name: string;
@@ -102,6 +103,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
         $padding={{ bottom: 'small' }}
         $margin={{ all: 'big', top: 'none' }}
         $overflow="auto"
+        aria-label={t('Mailboxes list card')}
       >
         {error && <TextErrors causes={error.cause} />}
 
@@ -151,6 +153,7 @@ const TopBanner = ({
   mailDomain: MailDomain;
   showMailBoxCreationForm: (value: boolean) => void;
 }) => {
+  const router = useRouter();
   const { t } = useTranslation();
 
   return (
@@ -165,7 +168,7 @@ const TopBanner = ({
         $gap="2.25rem"
         $justify="space-between"
       >
-        <Box $direction="row" $margin="none" $gap="2.25rem">
+        <Box $direction="row" $margin="none" $gap="0.5rem">
           <MailDomainsLogo aria-hidden="true" />
           <Text $margin="none" as="h3" $size="h3">
             {mailDomain?.name}
@@ -176,9 +179,22 @@ const TopBanner = ({
       <Box $direction="row" $justify="space-between">
         <AlertStatus status={mailDomain.status} />
       </Box>
-      {mailDomain?.abilities.post && (
-        <Box $direction="row-reverse">
-          <Box $display="inline">
+      <Box $direction="row" $justify="flex-end">
+        <Box $display="flex" $direction="row" $gap="0.5rem">
+          {mailDomain?.abilities?.manage_accesses && (
+            <Button
+              color="tertiary"
+              aria-label={t('Manage {{name}} domain members', {
+                name: mailDomain?.name,
+              })}
+              onClick={() =>
+                router.push(`/mail-domains/${mailDomain.slug}/accesses/`)
+              }
+            >
+              {t('Manage accesses')}
+            </Button>
+          )}
+          {mailDomain?.abilities.post && (
             <Button
               aria-label={t('Create a mailbox in {{name}} domain', {
                 name: mailDomain?.name,
@@ -188,9 +204,9 @@ const TopBanner = ({
             >
               {t('Create a mailbox')}
             </Button>
-          </Box>
+          )}
         </Box>
-      )}
+      </Box>
     </Box>
   );
 };
@@ -204,7 +220,7 @@ const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
         return {
           variant: VariantType.WARNING,
           message: t(
-            'Your domain name is being validated.  ' +
+            'Your domain name is being validated. ' +
               'You will not be able to create mailboxes until your domain name has been validated by our team.',
           ),
         };

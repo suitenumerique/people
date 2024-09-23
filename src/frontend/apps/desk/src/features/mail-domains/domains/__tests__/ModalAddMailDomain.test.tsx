@@ -5,7 +5,7 @@ import React from 'react';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { ModalAddMailDomain } from '../ModalAddMailDomain';
+import { ModalAddMailDomain } from '../components';
 
 const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({

@@ -25,7 +25,7 @@ export const getMailDomain = async ({
   return response.json() as Promise<MailDomainResponse>;
 };
 
-const KEY_MAIL_DOMAIN = 'mail-domain';
+export const KEY_MAIL_DOMAIN = 'mail-domain';
 
 export function useMailDomain(
   param: MailDomainParams,

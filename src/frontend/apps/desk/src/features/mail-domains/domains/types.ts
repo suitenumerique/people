@@ -1,5 +1,4 @@
 import { UUID } from 'crypto';
-
 export interface MailDomain {
   id: UUID;
   name: string;
@@ -17,10 +16,8 @@ export interface MailDomain {
   };
 }
 
-export interface MailDomainMailbox {
-  id: UUID;
-  local_part: string;
-  first_name: string;
-  last_name: string;
-  secondary_email: string;
+export enum Role {
+  ADMIN = 'administrator',
+  OWNER = 'owner',
+  VIEWER = 'viewer',
 }

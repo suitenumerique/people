@@ -5,8 +5,10 @@ import IconAdd from '@/assets/icons/icon-add.svg';
 import IconSort from '@/assets/icons/icon-sort.svg';
 import { Box, BoxButton, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { EnumMailDomainsOrdering } from '@/features/mail-domains';
-import { useMailDomainsStore } from '@/features/mail-domains/store/useMailDomainsStore';
+import {
+  EnumMailDomainsOrdering,
+  useMailDomainsStore,
+} from '@/features/mail-domains/domains';
 
 export const PanelActions = () => {
   const { t } = useTranslation();

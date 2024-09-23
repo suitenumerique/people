@@ -6,7 +6,8 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
-import { MailDomain } from '@/features/mail-domains/types';
+
+import { MailDomain } from '../types';
 
 type MailDomainsResponse = APIList<MailDomain>;
 

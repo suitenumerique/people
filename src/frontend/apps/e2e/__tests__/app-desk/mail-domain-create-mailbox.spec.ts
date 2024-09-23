@@ -1,8 +1,6 @@
 import { Page, expect, test } from '@playwright/test';
-import {
-  CreateMailboxParams,
-  MailDomain,
-} from 'app-desk/src/features/mail-domains';
+import { MailDomain } from 'app-desk/src/features/mail-domains/domains';
+import { CreateMailboxParams } from 'app-desk/src/features/mail-domains/mailboxes';
 
 import { keyCloakSignIn } from './common';
 
@@ -181,9 +179,10 @@ test.describe('Mail domain create mailbox', () => {
         request.url().includes('/mail-domains/domainfr/mailboxes/') &&
         request.method() === 'POST'
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const payload: Omit<CreateMailboxParams, 'mailDomainId'> =
-          request.postDataJSON();
+        const payload = request.postDataJSON() as Omit<
+          CreateMailboxParams,
+          'mailDomainId'
+        >;
 
         if (payload) {
           isCreateMailboxRequestSentWithExpectedPayload =

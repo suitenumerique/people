@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
-import { MailDomain } from '@/features/mail-domains';
-import { useMailDomains } from '@/features/mail-domains/api/useMailDomains';
-import { useMailDomainsStore } from '@/features/mail-domains/store/useMailDomainsStore';
+import {
+  MailDomain,
+  useMailDomains,
+  useMailDomainsStore,
+} from '@/features/mail-domains/domains';
 
 import { PanelMailDomains } from './PanelItem';
 

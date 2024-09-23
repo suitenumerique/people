@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box } from '@/components';
-import { MailDomainsLayout } from '@/features/mail-domains';
+import { MailDomainsLayout } from '@/features/mail-domains/domains';
 import { NextPageWithLayout } from '@/types/next';
 
 const StyledButton = styled(Button)`

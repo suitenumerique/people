@@ -4,7 +4,7 @@ import fetchMock from 'fetch-mock';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { MailDomain } from '../../types';
+import { MailDomain } from '../../../domains/types';
 import { ModalCreateMailbox } from '../ModalCreateMailbox';
 
 const mockMailDomain: MailDomain = {
@@ -64,9 +64,8 @@ describe('ModalCreateMailbox', () => {
     fetchMock.restore();
   });
 
-  it('renders the modal with all fields and buttons', () => {
+  it('renders all the elements', () => {
     renderModalCreateMailbox();
-
     const {
       formTag,
       inputFirstName,

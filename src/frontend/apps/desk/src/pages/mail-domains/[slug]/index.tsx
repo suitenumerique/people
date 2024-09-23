@@ -5,11 +5,14 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MailDomainsContent, MailDomainsLayout } from '@/features/mail-domains';
-import { useMailDomain } from '@/features/mail-domains/api/useMailDomain';
+import {
+  MailDomainsLayout,
+  useMailDomain,
+} from '@/features/mail-domains/domains';
+import { MailDomainsContent } from '@/features/mail-domains/mailboxes';
 import { NextPageWithLayout } from '@/types/next';
 
-const Page: NextPageWithLayout = () => {
+const MailboxesPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   if (router?.query?.slug && typeof router.query.slug !== 'string') {
@@ -22,9 +25,9 @@ const Page: NextPageWithLayout = () => {
 
   const {
     data: mailDomain,
-    error: error,
+    error,
     isError,
-    isLoading: isLoading,
+    isLoading,
   } = useMailDomain({ slug: String(slug) });
 
   if (error?.status === 404) {
@@ -47,8 +50,8 @@ const Page: NextPageWithLayout = () => {
   }
 };
 
-Page.getLayout = function getLayout(page: ReactElement) {
+MailboxesPage.getLayout = function getLayout(page: ReactElement) {
   return <MailDomainsLayout>{page}</MailDomainsLayout>;
 };
 
-export default Page;
+export default MailboxesPage;

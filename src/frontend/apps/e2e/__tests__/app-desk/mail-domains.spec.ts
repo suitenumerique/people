@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { MailDomain } from 'app-desk/src/features/mail-domains';
+import { MailDomain } from 'app-desk/src/features/mail-domains/domains';
 
 import { keyCloakSignIn } from './common';
 

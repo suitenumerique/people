@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { MailDomain } from '@/features/mail-domains';
+
+import { MailDomain } from '../types';
 
 import { KEY_LIST_MAIL_DOMAIN } from './useMailDomains';
 

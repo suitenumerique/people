@@ -9,9 +9,9 @@ import { z } from 'zod';
 import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Text, TextErrors } from '@/components';
 import { Modal } from '@/components/Modal';
-import { useAddMailDomain } from '@/features/mail-domains';
 
-import { default as MailDomainsLogo } from '../assets/mail-domains-logo.svg';
+import { default as MailDomainsLogo } from '../../assets/mail-domains-logo.svg';
+import { useAddMailDomain } from '../api';
 
 const FORM_ID = 'form-add-mail-domain';
 

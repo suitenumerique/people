@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { EnumMailDomainsOrdering } from '../api/useMailDomains';
+import { EnumMailDomainsOrdering } from '@/features/mail-domains/domains/api';
 
 interface MailDomainsStore {
   ordering: EnumMailDomainsOrdering;

@@ -1,2 +1,2 @@
+export * from './ModalCreateMailbox';
 export * from './MailDomainsContent';
-export * from './MailDomainsLayout';

@@ -21,8 +21,8 @@ import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Text, TextErrors } from '@/components';
 import { Modal } from '@/components/Modal';
 
+import { MailDomain } from '../../domains/types';
 import { CreateMailboxParams, useCreateMailbox } from '../api';
-import { MailDomain } from '../types';
 
 const FORM_ID: string = 'form-create-mailbox';
 
