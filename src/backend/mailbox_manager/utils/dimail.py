@@ -106,6 +106,10 @@ class DimailAPIClient:
             return response
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: you cannot access domain %s",
+                str(mailbox["domain"]),
+            )
             raise exceptions.PermissionDenied(
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )

@@ -292,13 +292,15 @@ def test_api_mailboxes__domain_viewer_provisioning_api_not_called():
 
 
 @mock.patch.object(Logger, "error")
-def test_api_mailboxes__dimail_unauthorized(mock_error):
+def test_api_mailboxes__async_dimail_unauthorized(mock_error):
     """
-    Wrong secret but a secret corresponding to another user/domain
-    i.e. secret from another domain/user on dimail API.
+    Dimail should raise an error if token has been successfully granted
+    but mailbox creation request returns a 403.
+    i.e. user exists on dimail-api but has no permission on that domain
     """
-
     # creating all needed objects
+
+    # this access somehow exists solely in our database but not in dimail
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
 
     client = APIClient()
@@ -313,12 +315,14 @@ def test_api_mailboxes__dimail_unauthorized(mock_error):
             rsps.GET,
             re.compile(r".*/token/"),
             body='{"access_token": "domain_owner_token"}',
-            status=status.HTTP_200_OK,
+            status=status.HTTP_200_OK,  # user is in dimail-api
             content_type="application/json",
         )
-        rsp = rsps.add(
+        rsps.add(
             rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            re.compile(
+                rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part']}"
+            ),
             status=status.HTTP_403_FORBIDDEN,
             content_type="application/json",
         )
@@ -328,14 +332,13 @@ def test_api_mailboxes__dimail_unauthorized(mock_error):
             mailbox_data,
             format="json",
         )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     assert mock_error.call_count == 1
     assert mock_error.call_args_list[0][0] == (
-        "[DIMAIL] 403 Forbidden: please check the mail domain secret of %s",
+        "[DIMAIL] 403 Forbidden: you cannot access domain %s",
         access.domain.name,
     )
-    assert rsp.call_count == 1
-    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize(
@@ -591,6 +594,7 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
     # Logger
     assert not mock_error.called
     assert mock_info.call_count == 4
+    # a new empty error has been added. To be investigated
     assert mock_info.call_args_list[0][0] == (
         "Token succesfully granted by mail-provisioning API.",
     )
