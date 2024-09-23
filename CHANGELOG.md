@@ -28,6 +28,7 @@ and this project adheres to
 - ✨(backend) domain accesses create API #428
 - 🥅(frontend) catch new errors on mailbox creation #392
 - ✨(api) domain accesses delete API #433
+- ✨(frontend) add mail domain access management #413
 
 ### Fixed
 
