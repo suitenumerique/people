@@ -83,7 +83,7 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox['domain']}/mailboxes/{mailbox['local_part']}/",
+                f"{self.API_URL}/domains/{mailbox['domain']}/mailboxes/{mailbox['local_part']}",
                 json=payload,
                 headers=headers,
                 verify=True,
