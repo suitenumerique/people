@@ -58,6 +58,7 @@ class MailDomainViewSet(
 class MailDomainAccessViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
+    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
 ):
@@ -67,6 +68,11 @@ class MailDomainAccessViewSet(
     GET /api/v1.0/mail-domains/<domain_slug>/accesses/:<domain_access_id>
         Return list of all domain accesses related to the logged-in user and one
         domain access if an id is provided.
+
+    POST /api/v1.0/mail-domains/<domain_slug>/accesses/ with expected data:
+        - user: str
+        - role: str [owner|admin|viewer]
+        Return newly created mail domain access
 
     PUT /api/v1.0/mail-domains/<domain_slug>/accesses/<domain_access_id>/ with expected data:
         - role: str [owner|admin|viewer]

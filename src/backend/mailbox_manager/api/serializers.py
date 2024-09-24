@@ -5,8 +5,9 @@ import json
 from rest_framework import exceptions, serializers
 
 from core.api.serializers import UserSerializer
+from core.models import User
 
-from mailbox_manager import models
+from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
 
@@ -85,13 +86,13 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.MailDomainAccess
-        fields = [
-            "id",
-            "user",
-            "role",
-            "can_set_role_to",
-        ]
-        read_only_fields = ["id", "user", "can_set_role_to"]
+        fields = ["id", "user", "role", "can_set_role_to"]
+        read_only_fields = ["id", "can_set_role_to"]
+
+    def update(self, instance, validated_data):
+        """Make "user" field is readonly but only on update."""
+        validated_data.pop("user", None)
+        return super().update(instance, validated_data)
 
     def get_can_set_role_to(self, access):
         """Return roles available to set for the authenticated user"""
@@ -99,8 +100,9 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """
-        Check access rights specific to writing (update)
+        Check access rights specific to writing (update/create)
         """
+
         request = self.context.get("request")
         authenticated_user = getattr(request, "user", None)
         role = attrs.get("role")
@@ -116,6 +118,45 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                     else "You are not allowed to modify role for this user."
                 )
                 raise exceptions.PermissionDenied(message)
+        # Create
+        else:
+            # A domain slug has to be set to create a new access
+            try:
+                domain_slug = self.context["domain_slug"]
+            except KeyError as exc:
+                raise exceptions.ValidationError(
+                    "You must set a domain slug in kwargs to create a new domain access."
+                ) from exc
+
+            try:
+                access = authenticated_user.mail_domain_accesses.get(
+                    domain__slug=domain_slug
+                )
+            except models.MailDomainAccess.DoesNotExist as exc:
+                raise exceptions.PermissionDenied(
+                    "You are not allowed to manage accesses for this domain."
+                ) from exc
+
+            # Authenticated user must be owner or admin of current domain to set new roles
+            if access.role not in [
+                enums.MailDomainRoleChoices.OWNER,
+                enums.MailDomainRoleChoices.ADMIN,
+            ]:
+                raise exceptions.PermissionDenied(
+                    "You are not allowed to manage accesses for this domain."
+                )
+            # only an owner can set an owner role to another user
+            if (
+                role == enums.MailDomainRoleChoices.OWNER
+                and access.role != enums.MailDomainRoleChoices.OWNER
+            ):
+                raise exceptions.PermissionDenied(
+                    "Only owners of a domain can assign other users as owners."
+                )
+            attrs["user"] = User.objects.get(pk=self.initial_data["user"])
+            attrs["domain"] = models.MailDomain.objects.get(
+                slug=self.context["domain_slug"]
+            )
         return attrs
 
 

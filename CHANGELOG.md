@@ -19,6 +19,7 @@ and this project adheres to
 - ✨(frontend) allow group members filtering #363
 - ✨(mailbox) send new mailbox confirmation email #397
 - ✨(domains) domain accesses update API #423
+- ✨(backend) domain accesses create API #428
 
 ### Fixed
 
