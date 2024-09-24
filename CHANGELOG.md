@@ -11,6 +11,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(ci) add helmfile linter and fix argocd sync #424 
 - ✨(domains) add endpoint to list and retrieve domain accesses #404
 - 🍱(dev) embark dimail-api as container #366
 - ✨(dimail) allow la regie to request a token for another user #416
