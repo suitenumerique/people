@@ -23,10 +23,10 @@
           <mj-image src="{% base64_static 'images/logo.png' %}" width="157px" align="left" alt="{% trans 'Logo' %}" />
 
           <!-- Main Message -->
-          <mj-text>{% trans "Here are your credentials ! " %}</mj-text>
+          <mj-text>{% trans "Here are your credentials for your new mailbox ! " %}</mj-text>
           <mj-text>{% trans "Email address : "%}{{ mailbox_data.email }}</mj-text>
           <mj-text>{% trans "Temporary password : "%}{{ mailbox_data.password }}</mj-text>
-          <mj-text>{% trans "You can access your mails on " %}<a href="//{{ webmail_url }}"</a>.</mj-text>
+          <mj-text>{% trans "You can access your mails on " %}<a href="//{{ webmail_url }}">{{ webmail_url }}</a>.</mj-text>
 
           <mj-button href="//{{ site.domain }}" background-color="#000091" color="white" padding-bottom="30px">
             {% trans "Visit La Régie" %}
