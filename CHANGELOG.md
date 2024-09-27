@@ -15,6 +15,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(ci) add security scan #429
 - ✨(teams) register contacts on admin views
 
 ### Fixed
