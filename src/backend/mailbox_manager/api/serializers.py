@@ -2,11 +2,11 @@
 
 import json
 
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
 
 from core.api.serializers import UserSerializer
 
-from mailbox_manager import enums, models
+from mailbox_manager import models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
 
@@ -94,23 +94,29 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "user", "can_set_role_to"]
 
     def get_can_set_role_to(self, access):
-        """Return roles available to set"""
-        roles = list(enums.MailDomainRoleChoices)
-        # get role of authenticated user
-        authenticated_user_role = access.user_role
-        if authenticated_user_role != enums.MailDomainRoleChoices.OWNER:
-            roles.remove(enums.MailDomainRoleChoices.OWNER)
-        # if the user authenticated is a viewer, they can't modify role
-        # and only an owner can change role of an owner
-        if authenticated_user_role == enums.MailDomainRoleChoices.VIEWER or (
-            authenticated_user_role != enums.MailDomainRoleChoices.OWNER
-            and access.role == enums.MailDomainRoleChoices.OWNER
-        ):
-            return []
-        # we only want to return other roles available to change,
-        # so we remove the current role of current access.
-        roles.remove(access.role)
-        return sorted(roles)
+        """Return roles available to set for the authenticated user"""
+        return access.get_can_set_role_to(self.context.get("request").user)
+
+    def validate(self, attrs):
+        """
+        Check access rights specific to writing (update)
+        """
+        request = self.context.get("request")
+        authenticated_user = getattr(request, "user", None)
+        role = attrs.get("role")
+
+        # Update
+        if self.instance:
+            can_set_role_to = self.instance.get_can_set_role_to(authenticated_user)
+
+            if role and role not in can_set_role_to:
+                message = (
+                    f"You are only allowed to set role to {', '.join(can_set_role_to)}"
+                    if can_set_role_to
+                    else "You are not allowed to modify role for this user."
+                )
+                raise exceptions.PermissionDenied(message)
+        return attrs
 
 
 class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):

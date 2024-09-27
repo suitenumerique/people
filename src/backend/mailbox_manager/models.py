@@ -47,7 +47,6 @@ class MailDomain(BaseModel):
         """
         Compute and return abilities for a given user on the domain.
         """
-        is_owner_or_admin = False
         role = None
 
         if user.is_authenticated:
@@ -102,6 +101,40 @@ class MailDomainAccess(BaseModel):
 
     def __str__(self):
         return f"Access of user {self.user} on domain {self.domain}."
+
+    def get_can_set_role_to(self, user):
+        """Return roles available to set"""
+        if not user.is_authenticated:
+            return []
+        roles = list(MailDomainRoleChoices)
+        authenticated_user_role = None
+
+        # get role of authenticated user
+        if hasattr(self, "user_role"):
+            authenticated_user_role = self.user_role
+        else:
+            try:
+                authenticated_user_role = user.mail_domain_accesses.get(
+                    domain=self.domain
+                ).role
+            except (MailDomainAccess.DoesNotExist, IndexError):
+                return []
+
+        # only an owner can set an owner role
+        if authenticated_user_role != MailDomainRoleChoices.OWNER:
+            roles.remove(MailDomainRoleChoices.OWNER)
+
+        # if the user authenticated is a viewer, they can't modify role
+        # and only an owner can change role of an owner
+        if authenticated_user_role == MailDomainRoleChoices.VIEWER or (
+            authenticated_user_role != MailDomainRoleChoices.OWNER
+            and self.role == MailDomainRoleChoices.OWNER
+        ):
+            return []
+        # we only want to return other roles available to change,
+        # so we remove the current role of current access.
+        roles.remove(self.role)
+        return sorted(roles)
 
 
 class Mailbox(BaseModel):

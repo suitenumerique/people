@@ -18,6 +18,7 @@ and this project adheres to
 - 🥅(frontend) improve add & update group forms error handling #387
 - ✨(frontend) allow group members filtering #363
 - ✨(mailbox) send new mailbox confirmation email #397
+- ✨(domains) domain accesses update API #423
 
 ### Fixed
 

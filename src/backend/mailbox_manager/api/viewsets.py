@@ -2,12 +2,12 @@
 
 from django.db.models import Subquery
 
-from rest_framework import filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, viewsets
 from rest_framework import permissions as drf_permissions
 
 from core import models as core_models
 
-from mailbox_manager import models
+from mailbox_manager import enums, models
 from mailbox_manager.api import permissions, serializers
 
 
@@ -58,6 +58,7 @@ class MailDomainViewSet(
 class MailDomainAccessViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
 ):
     """
@@ -66,6 +67,14 @@ class MailDomainAccessViewSet(
     GET /api/v1.0/mail-domains/<domain_slug>/accesses/:<domain_access_id>
         Return list of all domain accesses related to the logged-in user and one
         domain access if an id is provided.
+
+    PUT /api/v1.0/mail-domains/<domain_slug>/accesses/<domain_access_id>/ with expected data:
+        - role: str [owner|admin|viewer]
+        Return updated domain access
+
+    PATCH /api/v1.0/mail-domains/<domain_slug>/accesses/<domain_access_id>/ with expected data:
+        - role: str [owner|admin|viewer]
+        Return partially updated domain access
     """
 
     permission_classes = [drf_permissions.IsAuthenticated]
@@ -90,6 +99,7 @@ class MailDomainAccessViewSet(
         """Extra context provided to the serializer class."""
         context = super().get_serializer_context()
         context["domain_slug"] = self.kwargs["domain_slug"]
+        context["authenticated_user"] = self.request.user
         return context
 
     def get_queryset(self):
@@ -117,6 +127,28 @@ class MailDomainAccessViewSet(
                 .distinct()
             )
         return queryset
+
+    def perform_update(self, serializer):
+        """Check that we don't change the role if it leads to losing the last owner."""
+        instance = serializer.instance
+
+        # Check if the role is being updated and the new role is not "owner"
+        if (
+            "role" in self.request.data
+            and self.request.data["role"] != enums.MailDomainRoleChoices.OWNER
+        ):
+            domain = instance.domain
+            # Check if the access being updated is the last owner access for the domain
+            if (
+                instance.role == enums.MailDomainRoleChoices.OWNER
+                and domain.accesses.filter(
+                    role=enums.MailDomainRoleChoices.OWNER
+                ).count()
+                == 1
+            ):
+                message = "Cannot change the role to a non-owner role for the last owner access."
+                raise exceptions.PermissionDenied({"role": message})
+        serializer.save()
 
 
 class MailBoxViewSet(
