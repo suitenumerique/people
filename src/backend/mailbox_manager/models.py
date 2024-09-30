@@ -136,6 +136,31 @@ class MailDomainAccess(BaseModel):
         roles.remove(self.role)
         return sorted(roles)
 
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the domain access.
+        """
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = user.mail_domain_accesses.filter(domain=self.domain).get().role
+            except (MailDomainAccess.DoesNotExist, IndexError):
+                role = None
+
+        is_owner_or_admin = role in [
+            MailDomainRoleChoices.OWNER,
+            MailDomainRoleChoices.ADMIN,
+        ]
+
+        return {
+            "get": bool(role),
+            "patch": is_owner_or_admin,
+            "put": is_owner_or_admin,
+            "post": is_owner_or_admin,
+            "delete": is_owner_or_admin,
+        }
+
 
 class Mailbox(BaseModel):
     """Mailboxes for users from mail domain."""

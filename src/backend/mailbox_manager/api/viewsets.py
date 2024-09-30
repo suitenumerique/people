@@ -3,7 +3,6 @@
 from django.db.models import Subquery
 
 from rest_framework import exceptions, filters, mixins, viewsets
-from rest_framework import permissions as drf_permissions
 
 from core import models as core_models
 
@@ -61,6 +60,7 @@ class MailDomainAccessViewSet(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
 ):
     """
     API ViewSet for all interactions with mail domain accesses.
@@ -81,9 +81,12 @@ class MailDomainAccessViewSet(
     PATCH /api/v1.0/mail-domains/<domain_slug>/accesses/<domain_access_id>/ with expected data:
         - role: str [owner|admin|viewer]
         Return partially updated domain access
+
+    DELETE /api/v1.0/mail-domains/<domain_slug>/accesses/<domain_access_id>/
+        Delete targeted domain access
     """
 
-    permission_classes = [drf_permissions.IsAuthenticated]
+    permission_classes = [permissions.MailDomainAccessRolePermission]
     serializer_class = serializers.MailDomainAccessSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["role", "user__email", "user__name"]
@@ -155,6 +158,22 @@ class MailDomainAccessViewSet(
                 message = "Cannot change the role to a non-owner role for the last owner access."
                 raise exceptions.PermissionDenied({"role": message})
         serializer.save()
+
+    def destroy(self, request, *args, **kwargs):
+        """Forbid deleting the last owner access"""
+        instance = self.get_object()
+        domain = instance.domain
+
+        # Check if the access being deleted is the last owner access for the domain
+        if (
+            instance.role == enums.MailDomainRoleChoices.OWNER
+            and domain.accesses.filter(role=enums.MailDomainRoleChoices.OWNER).count()
+            == 1
+        ):
+            message = "Cannot delete the last owner access for the domain."
+            raise exceptions.PermissionDenied({"detail": message})
+
+        return super().destroy(request, *args, **kwargs)
 
 
 class MailBoxViewSet(
