@@ -131,11 +131,6 @@ demo: ## flush db then create a demo for load testing purpose
 	@$(MANAGE) create_demo
 .PHONY: demo
 
-reset-dimail-container:
-	@$(COMPOSE) up --force-recreate -d dimail
-	@$(MAKE) setup-dimail-db
-.PHONY: reset-dimail-container
-
 
 # Nota bene: Black should come after isort just in case they don't agree...
 lint: ## lint back-end python sources
@@ -282,6 +277,10 @@ i18n-generate-and-upload: \
 
 # -- INTEROPERABILTY
 # -- Dimail configuration
+
+recreate-dimail-container:
+	@$(COMPOSE) up --force-recreate -d dimail
+.PHONY: recreate-dimail-container
 
 dimail-setup-db:
 	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"
