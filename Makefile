@@ -88,7 +88,7 @@ bootstrap: \
 	back-i18n-compile \
 	mails-install \
 	mails-build \
-	setup_dimail_db \
+	dimail-setup-db \
 	install-front-desk
 .PHONY: bootstrap
 
@@ -283,10 +283,10 @@ i18n-generate-and-upload: \
 # -- INTEROPERABILTY
 # -- Dimail configuration
 
-setup-dimail-db:
+dimail-setup-db:
 	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"
 	@$(MANAGE) setup_dimail_db
-.PHONY: setup-dimail-db
+.PHONY: dimail-setup-db
 
 # -- Mail generator
 
