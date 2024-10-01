@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔧(mail) use new scaleway email gateway #435 
+
+
 ## [1.2.0] - 2024-09-30
 
 
