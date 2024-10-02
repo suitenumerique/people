@@ -1,11 +1,11 @@
 # People
 
-People is an application to handle users and teams. 
+People is an application to handle users and teams, and distribute permissions accross [La Suite](https://lasuite.numerique.gouv.fr/).
 
-As of today, this project is **not yet ready for production**. Expect breaking changes.
-
-People is built on top of [Django Rest
+It is built on top of [Django Rest
 Framework](https://www.django-rest-framework.org/).
+
+All interoperabilities will be described in `docs/interoperability`.
 
 ## Getting started
 
@@ -25,7 +25,7 @@ $ docker compose -v
 > ⚠️ You may need to run the following commands with `sudo` but this can be
 > avoided by assigning your user to the `docker` group.
 
-### Project bootstrap
+### Bootstrap project
 
 The easiest way to start working on the project is to use GNU Make:
 
@@ -38,7 +38,7 @@ database migrations and compile translations. It's a good idea to use this
 command each time you are pulling code from the project repository to avoid
 dependency-related or migration-related issues.
 
-Your Docker services should now be up and running 🎉
+Your Docker services should now be up and running! 🎉
 
 Note that if you need to run them afterward, you can use the eponym Make rule:
 
@@ -46,13 +46,7 @@ Note that if you need to run them afterward, you can use the eponym Make rule:
 $ make run
 ```
 
-### Adding content
-
-You can create a basic demo site by running:
-
-    $ make demo
-
-Finally, you can check all available Make rules using:
+You can check all available Make rules using:
 
 ```bash
 $ make help
@@ -71,6 +65,23 @@ $ make superuser
 
 You can then login with sub `admin` and password `admin`.
 
+### Adding demo content
+
+You can create a basic demo site by running:
+
+```bash
+$ make demo
+```
+
+### Setting dimail database 
+
+To ease local development when working on interoperability between people and dimail, we embark dimail-api in a container running in "fake" mode. 
+
+To populate dimail local database with users/domains/permissions needed for basic development:
+- log in with "people" user
+- run `make dimail-setup-db`
+
+
 ### Run frontend
 
 Run the front with:
@@ -79,13 +90,9 @@ Run the front with:
 $ make run-front-desk
 ```
 
-Then access at
-[http://localhost:3000](http://localhost:3000)
-
+Then access [http://localhost:3000](http://localhost:3000) with :
 user: people
-
 password: people
-
 
 ## Contributing
 
