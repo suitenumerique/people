@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.2.1] - 2024-10-03
+
+### Fixed
+
 - 🔧(mail) use new scaleway email gateway #435 
 
 
@@ -82,7 +86,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.2.0...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.2.1...main
+[1.2.1]: https://github.com/numerique-gouv/people/releases/v1.2.1
 [1.2.0]: https://github.com/numerique-gouv/people/releases/v1.2.0
 [1.1.0]: https://github.com/numerique-gouv/people/releases/v1.1.0
 [1.0.2]: https://github.com/numerique-gouv/people/releases/v1.0.2
