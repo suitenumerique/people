@@ -500,7 +500,8 @@ def test_api_mailboxes__user_unrelated_to_domain():
         assert not models.Mailbox.objects.exists()
 
 
-def test_api_mailboxes__handling_dimail_unexpected_error():
+@mock.patch.object(Logger, "error")
+def test_api_mailboxes__handling_dimail_unexpected_error(mock_error):
     """
     API should raise a clear error when dimail returns an unexpected response.
     """
@@ -541,6 +542,12 @@ def test_api_mailboxes__handling_dimail_unexpected_error():
                 "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
             }
         assert not models.Mailbox.objects.exists()
+
+        # Check error logger was called
+        assert mock_error.called
+        assert mock_error.call_args_list[1][0] == (
+            'Unexpected response from dimail: 500 {"details": "Internal server error"}',
+        )
 
 
 @mock.patch.object(Logger, "error")

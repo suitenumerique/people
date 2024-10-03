@@ -120,8 +120,12 @@ class DimailAPIClient:
         """Raise error when encountering an unexpected error in dimail."""
         error_content = response.content.decode("utf-8")
 
-        logger.error("[DIMAIL] unexpected error : %s", error_content)
-        raise SystemError(f"Unexpected response from dimail: {error_content}")
+        logger.error(
+            "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
+        )
+        raise SystemError(
+            f"Unexpected response from dimail: {response.status_code} {error_content}"
+        )
 
     def send_new_mailbox_notification(self, recipient, mailbox_data):
         """
