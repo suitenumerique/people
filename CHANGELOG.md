@@ -16,6 +16,10 @@ and this project adheres to
 
 - ✨(backend) manage roles on domain admin view
 
+### Changed
+
+- 🛂(backend) match email if no existing user matches the sub
+
 ## [1.2.1] - 2024-10-03
 
 ### Fixed

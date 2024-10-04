@@ -1,6 +1,7 @@
 """Authentication Backends for the People core app."""
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import gettext_lazy as _
 
@@ -8,6 +9,8 @@ import requests
 from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
+
+User = get_user_model()
 
 
 class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
@@ -48,7 +51,7 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
         return userinfo
 
     def get_or_create_user(self, access_token, id_token, payload):
-        """Return a User based on userinfo. Get or create a new user if no user matches the Sub.
+        """Return a User based on userinfo. Create a new user if no match is found.
 
         Parameters:
         - access_token (str): The access token.
@@ -64,30 +67,27 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         user_info = self.get_userinfo(access_token, id_token, payload)
 
-        # Compute user name from OIDC name fields as defined in settings
-        names_list = [
-            user_info[field]
-            for field in settings.USER_OIDC_FIELDS_TO_NAME
-            if user_info.get(field)
-        ]
-        user_info["name"] = " ".join(names_list) or None
+        # Get user's full name from OIDC fields defined in settings
+        full_name = self.compute_full_name(user_info)
+        email = user_info.get("email")
+
+        claims = {
+            "email": email,
+            "name": full_name,
+        }
 
         sub = user_info.get("sub")
-        if sub is None:
+        if not sub:
             raise SuspiciousOperation(
                 _("User info contained no recognizable user identification")
             )
 
-        try:
-            user = self.UserModel.objects.get(sub=sub, is_active=True)
-        except self.UserModel.DoesNotExist:
-            if self.get_settings("OIDC_CREATE_USER", True):
-                user = self.create_user(user_info)
-        else:
-            email = user_info.get("email")
-            name = user_info.get("name")
-            if email and email != user.email or name and name != user.name:
-                self.UserModel.objects.filter(sub=sub).update(email=email, name=name)
+        # if sub is absent, try matching on email
+        user = self.get_existing_user(sub, email)
+        if user:
+            self.update_user_if_needed(user, claims)
+        elif self.get_settings("OIDC_CREATE_USER", True):
+            user = User.objects.create(sub=sub, password="!", **claims)  # noqa: S106
 
         return user
 
@@ -105,3 +105,32 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             email=claims.get("email"),
             name=claims.get("name"),
         )
+
+    def compute_full_name(self, user_info):
+        """Compute user's full name based on OIDC fields in settings."""
+        name_fields = settings.USER_OIDC_FIELDS_TO_NAME
+        full_name = " ".join(
+            user_info[field] for field in name_fields if user_info.get(field)
+        )
+        return full_name or None
+
+    def get_existing_user(self, sub, email):
+        """Fetch existing user by sub or email."""
+        try:
+            return User.objects.get(sub=sub, is_active=True)
+        except User.DoesNotExist:
+            if email and settings.OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION:
+                try:
+                    return User.objects.get(email=email, is_active=True)
+                except User.DoesNotExist:
+                    pass
+        return None
+
+    def update_user_if_needed(self, user, claims):
+        """Update user claims if they have changed."""
+        has_changed = any(
+            value and value != getattr(user, key) for key, value in claims.items()
+        )
+        if has_changed:
+            updated_claims = {key: value for key, value in claims.items() if value}
+            self.UserModel.objects.filter(sub=user.sub).update(**updated_claims)

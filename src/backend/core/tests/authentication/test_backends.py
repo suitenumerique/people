@@ -1,5 +1,6 @@
 """Unit tests for the Authentication Backends."""
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 
 import pytest
@@ -8,6 +9,7 @@ from core import factories, models
 from core.authentication.backends import OIDCAuthenticationBackend
 
 pytestmark = pytest.mark.django_db
+User = get_user_model()
 
 
 def test_authentication_getter_existing_user_no_email(
@@ -99,6 +101,59 @@ def test_authentication_getter_existing_user_change_fields(
     user.refresh_from_db()
     assert user.email == email
     assert user.name == f"{first_name:s} {last_name:s}"
+
+
+def test_authentication_getter_existing_user_via_email(
+    django_assert_num_queries, monkeypatch
+):
+    """
+    If an existing user doesn't match the sub but matches the email,
+    the user should be returned.
+    """
+
+    klass = OIDCAuthenticationBackend()
+    db_user = factories.UserFactory()
+
+    def get_userinfo_mocked(*args):
+        return {"sub": "123", "email": db_user.email}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    with django_assert_num_queries(2):
+        user = klass.get_or_create_user(
+            access_token="test-token", id_token=None, payload=None
+        )
+
+    assert user == db_user
+
+
+def test_authentication_getter_existing_user_no_fallback_to_email(
+    settings, monkeypatch
+):
+    """
+    When the "OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION" setting is set to False,
+    the system should not match users by email, even if the email matches.
+    """
+
+    klass = OIDCAuthenticationBackend()
+    db_user = factories.UserFactory()
+
+    # Set the setting to False
+    settings.OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION = False
+
+    def get_userinfo_mocked(*args):
+        return {"sub": "123", "email": db_user.email}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    # Since the sub doesn't match, it should create a new user
+    assert models.User.objects.count() == 2
+    assert user != db_user
+    assert user.sub == "123"
 
 
 def test_authentication_getter_new_user_no_email(monkeypatch):

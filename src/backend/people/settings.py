@@ -413,6 +413,11 @@ class Base(Configuration):
     )
 
     OIDC_TIMEOUT = values.Value(None, environ_name="OIDC_TIMEOUT", environ_prefix=None)
+    OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION = values.BooleanValue(
+        default=True,
+        environ_name="OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION",
+        environ_prefix=None,
+    )
 
     # MAILBOX-PROVISIONING API
     WEBMAIL_URL = values.Value(
