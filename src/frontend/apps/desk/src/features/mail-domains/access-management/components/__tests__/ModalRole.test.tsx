@@ -115,26 +115,6 @@ describe('ModalRole', () => {
     );
   });
 
-  it('disables the Validate button if the user is the last owner', () => {
-    renderModalRole(true, false); // isLastOwner = true, isOtherOwner = false
-
-    const validateButton = screen.getByRole('button', { name: /Validate/i });
-    expect(validateButton).toBeDisabled();
-    expect(
-      screen.getByText(/You are the sole owner of this domain/i),
-    ).toBeInTheDocument();
-  });
-
-  it('disables the Validate button if the user is another owner', () => {
-    renderModalRole(false, true); // isLastOwner = false, isOtherOwner = true
-
-    const validateButton = screen.getByRole('button', { name: /Validate/i });
-    expect(validateButton).toBeDisabled();
-    expect(
-      screen.getByText(/You cannot update the role of other owner/i),
-    ).toBeInTheDocument();
-  });
-
   it('shows error message when update fails', async () => {
     fetchMock.patch(`end:mail-domains/domain-slug/accesses/1-1-1-1-1-1/`, {
       status: 400,

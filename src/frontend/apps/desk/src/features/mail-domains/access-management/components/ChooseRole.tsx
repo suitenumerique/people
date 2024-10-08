@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Role } from '../../domains';
 
+const ORDERED_ROLES = [Role.VIEWER, Role.ADMIN, Role.OWNER];
+
 interface ChooseRoleProps {
   availableRoles: Role[];
+  roleAccess: Role;
   currentRole: Role;
   disabled: boolean;
   setRole: (role: Role) => void;
@@ -12,55 +15,44 @@ interface ChooseRoleProps {
 
 export const ChooseRole = ({
   availableRoles,
+  roleAccess,
   disabled,
   currentRole,
   setRole,
 }: ChooseRoleProps) => {
   const { t } = useTranslation();
-  const rolesToDisplay = Array.from(new Set([currentRole, ...availableRoles]));
+  const rolesToDisplay: Role[] = Array.from(
+    new Set([roleAccess, ...availableRoles]),
+  );
+
+  const translations = {
+    [Role.VIEWER]: t('Viewer'),
+    [Role.ADMIN]: t('Administrator'),
+    [Role.OWNER]: t('Owner'),
+  };
 
   return (
     <RadioGroup>
-      {rolesToDisplay?.map((role) => {
-        switch (role) {
-          case Role.VIEWER:
-            return (
-              <Radio
-                key={Role.VIEWER}
-                label={t('Viewer')}
-                value={Role.VIEWER}
-                name="role"
-                onChange={(evt) => setRole(evt.target.value as Role)}
-                defaultChecked={currentRole === Role.VIEWER}
-                disabled={disabled}
-              />
-            );
-          case Role.ADMIN:
-            return (
-              <Radio
-                key={Role.ADMIN}
-                label={t('Administrator')}
-                value={Role.ADMIN}
-                name="role"
-                onChange={(evt) => setRole(evt.target.value as Role)}
-                defaultChecked={currentRole === Role.ADMIN}
-                disabled={disabled}
-              />
-            );
-          case Role.OWNER:
-            return (
-              <Radio
-                key={Role.OWNER}
-                label={t('Owner')}
-                value={Role.OWNER}
-                name="role"
-                onChange={(evt) => setRole(evt.target.value as Role)}
-                defaultChecked={currentRole === Role.OWNER}
-                disabled={disabled || currentRole !== Role.OWNER}
-              />
-            );
-        }
-      })}
+      {ORDERED_ROLES.filter((role) => rolesToDisplay.includes(role)).map(
+        (role) => {
+          let disableRadio = disabled;
+          if (role === Role.OWNER) {
+            disableRadio = disableRadio || currentRole !== Role.OWNER;
+          }
+
+          return (
+            <Radio
+              key={role}
+              label={translations[role]}
+              value={role}
+              name="role"
+              onChange={(evt) => setRole(evt.target.value as Role)}
+              defaultChecked={roleAccess === role}
+              disabled={disableRadio}
+            />
+          );
+        },
+      )}
     </RadioGroup>
   );
 };

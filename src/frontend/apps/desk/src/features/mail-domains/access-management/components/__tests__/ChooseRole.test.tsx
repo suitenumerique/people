@@ -15,6 +15,7 @@ describe('ChooseRole', () => {
   ) => {
     const defaultProps = {
       availableRoles: [Role.VIEWER, Role.ADMIN],
+      roleAccess: Role.ADMIN,
       currentRole: Role.ADMIN,
       disabled: false,
       setRole: mockSetRole,
@@ -28,11 +29,20 @@ describe('ChooseRole', () => {
     jest.clearAllMocks();
   });
 
-  it('renders available roles correctly', () => {
+  it('renders available roles correctly when we are Administrator', () => {
     renderChooseRole();
-
     expect(screen.getByLabelText('Viewer')).toBeInTheDocument();
     expect(screen.getByLabelText('Administrator')).toBeInTheDocument();
+  });
+
+  it('renders available roles correctly when we are owner', () => {
+    renderChooseRole({
+      currentRole: Role.OWNER,
+      roleAccess: Role.OWNER,
+    });
+    expect(screen.getByLabelText('Viewer')).toBeInTheDocument();
+    expect(screen.getByLabelText('Administrator')).toBeInTheDocument();
+    expect(screen.getByLabelText('Owner')).toBeInTheDocument();
   });
 
   it('sets default role checked correctly', () => {
@@ -91,6 +101,7 @@ describe('ChooseRole', () => {
   it('renders and checks owner role correctly when currentRole is owner', () => {
     renderChooseRole({
       currentRole: Role.OWNER,
+      roleAccess: Role.OWNER,
       availableRoles: [Role.OWNER, Role.VIEWER, Role.ADMIN],
     });
 

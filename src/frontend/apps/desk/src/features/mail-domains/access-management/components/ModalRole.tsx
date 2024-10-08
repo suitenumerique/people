@@ -7,12 +7,11 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text, TextErrors } from '@/components';
+import { Box, TextErrors } from '@/components';
 import { Modal } from '@/components/Modal';
 import { useUpdateMailDomainAccess } from '@/features/mail-domains/access-management';
 
 import { Role } from '../../domains';
-import { useWhoAmI } from '../hooks/useWhoAmI';
 import { Access } from '../types';
 
 import { ChooseRole } from './ChooseRole';
@@ -46,13 +45,10 @@ export const ModalRole = ({
       onClose();
     },
   });
-  const { isLastOwner, isOtherOwner } = useWhoAmI(access);
-
-  const isNotAllowed = isOtherOwner || isLastOwner;
 
   return (
     <Modal
-      isOpen
+      isOpen={true}
       leftActions={
         <Button
           color="secondary"
@@ -77,7 +73,7 @@ export const ModalRole = ({
               accessId: access.id,
             });
           }}
-          disabled={isNotAllowed || isPending}
+          disabled={isPending}
         >
           {t('Validate')}
         </Button>
@@ -93,28 +89,11 @@ export const ModalRole = ({
           />
         )}
 
-        {(isLastOwner || isOtherOwner) && (
-          <Text
-            $theme="warning"
-            $direction="row"
-            $align="center"
-            $gap="0.5rem"
-            $margin={{ bottom: 'tiny' }}
-            $justify="center"
-          >
-            <span className="material-icons">warning</span>
-            {isLastOwner &&
-              t(
-                'You are the sole owner of this domain. Make another member the domain owner, before you can change your own role.',
-              )}
-            {isOtherOwner && t('You cannot update the role of other owner.')}
-          </Text>
-        )}
-
         <ChooseRole
+          roleAccess={access.role}
           availableRoles={access.can_set_role_to}
           currentRole={currentRole}
-          disabled={isNotAllowed}
+          disabled={false}
           setRole={setLocalRole}
         />
       </Box>

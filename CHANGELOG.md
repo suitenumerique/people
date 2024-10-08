@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(frontend) fix update accesses form #448
+
 ## [1.2.1] - 2024-10-03
 
 ### Fixed
