@@ -482,7 +482,7 @@ class Base(Configuration):
                 environment=cls.__name__.lower(),
                 release=get_release(),
                 integrations=[DjangoIntegration()],
-                traces_sample_rate=1.0,
+                traces_sample_rate=0.1,
             )
             with sentry_sdk.configure_scope() as scope:
                 scope.set_extra("application", "backend")
