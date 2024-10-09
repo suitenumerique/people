@@ -1,6 +1,9 @@
 """A minimalist client to synchronize with mailbox provisioning API."""
 
+import ast
 import smtplib
+from email.errors import HeaderParseError, NonASCIILocalPartDefect
+from email.headerregistry import Address
 from logging import getLogger
 
 from django.conf import settings
@@ -12,6 +15,8 @@ from django.utils.translation import gettext_lazy as _
 import requests
 from rest_framework import status
 from urllib3.util import Retry
+
+from mailbox_manager import models
 
 logger = getLogger(__name__)
 
@@ -123,7 +128,7 @@ class DimailAPIClient:
         logger.error(
             "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
         )
-        raise SystemError(
+        raise requests.exceptions.HTTPError(
             f"Unexpected response from dimail: {response.status_code} {error_content}"
         )
 
@@ -163,3 +168,66 @@ class DimailAPIClient:
                 recipient,
                 exception,
             )
+
+    def synchronize_mailboxes_from_dimail(self, domain):
+        """Synchronize mailboxes from dimail - open xchange to our database.
+        This is useful in case of acquisition of a pre-existing mail domain.
+        Mailboxes created here are not new mailboxes and will not trigger mail notification."""
+
+        try:
+            response = session.get(
+                f"{self.API_URL}/domains/{domain.name}/mailboxes/",
+                headers=self.get_headers(),
+                verify=True,
+                timeout=10,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code != status.HTTP_200_OK:
+            return self.pass_dimail_unexpected_response(response)
+
+        dimail_mailboxes = ast.literal_eval(
+            response.content.decode("utf-8")
+        )  # format output str to proper list
+
+        people_mailboxes = models.Mailbox.objects.filter(domain=domain)
+        imported_mailboxes = []
+        for dimail_mailbox in dimail_mailboxes:
+            if not dimail_mailbox["email"] in [
+                str(people_mailbox) for people_mailbox in people_mailboxes
+            ]:
+                try:
+                    # sometimes dimail api returns email from another domain,
+                    # so we decide to exclude this kind of email
+                    address = Address(addr_spec=dimail_mailbox["email"])
+                    if address.domain == domain.name:
+                        # creates a mailbox on our end
+                        mailbox = models.Mailbox.objects.create(
+                            first_name=dimail_mailbox["givenName"],
+                            last_name=dimail_mailbox["surName"],
+                            local_part=address.username,
+                            domain=domain,
+                            secondary_email=dimail_mailbox[
+                                "email"
+                            ],  # secondary email is mandatory. Unfortunately, dimail doesn't
+                            # store any. We temporarily give current email as secondary email.
+                        )
+                        imported_mailboxes.append(str(mailbox))
+                    else:
+                        logger.warning(
+                            "Import of email %s failed because of a wrong domain",
+                            dimail_mailbox["email"],
+                        )
+                except (HeaderParseError, NonASCIILocalPartDefect) as err:
+                    logger.warning(
+                        "Import of email %s failed with error %s",
+                        dimail_mailbox["email"],
+                        err,
+                    )
+        return imported_mailboxes

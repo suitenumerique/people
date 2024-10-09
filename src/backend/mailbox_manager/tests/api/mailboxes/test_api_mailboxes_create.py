@@ -11,6 +11,7 @@ from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
 
 import pytest
+import requests
 import responses
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -531,7 +532,7 @@ def test_api_mailboxes__handling_dimail_unexpected_error(mock_error):
             content_type="application/json",
         )
 
-        with pytest.raises(SystemError):
+        with pytest.raises(requests.exceptions.HTTPError):
             response = client.post(
                 f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
                 mailbox_data,
