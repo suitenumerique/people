@@ -6,6 +6,14 @@ from django.utils.translation import gettext_lazy as _
 from mailbox_manager import models
 
 
+class UserMailDomainAccessInline(admin.TabularInline):
+    """Inline admin class for mail domain accesses."""
+
+    extra = 0
+    model = models.MailDomainAccess
+    readonly_fields = ("created_at", "updated_at", "domain", "user")
+
+
 @admin.register(models.MailDomain)
 class MailDomainAdmin(admin.ModelAdmin):
     """Mail domain admin interface declaration."""
@@ -19,6 +27,7 @@ class MailDomainAdmin(admin.ModelAdmin):
     )
     search_fields = ("name",)
     readonly_fields = ["created_at", "slug"]
+    inlines = (UserMailDomainAccessInline,)
 
 
 @admin.register(models.MailDomainAccess)

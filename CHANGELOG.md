@@ -12,6 +12,10 @@ and this project adheres to
 
 - 🐛(frontend) fix update accesses form #448
 
+### Added
+
+- ✨(backend) manage roles on domain admin view
+
 ## [1.2.1] - 2024-10-03
 
 ### Fixed
