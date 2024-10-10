@@ -25,3 +25,17 @@ class DebugViewTxt(DebugBaseView):
     """Debug View for Text Email Layout"""
 
     template_name = "mail/text/invitation.txt"
+
+
+class DebugViewNewMailboxHtml(DebugBaseView):
+    """Debug view for new mailbox email layout"""
+
+    template_name = "mail/html/new_mailbox.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["mailbox_data"] = {
+            "email": "john.doe@example.com",
+            "password": "6HGVAsjoog_v",
+        }
+        return context

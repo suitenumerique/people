@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Fixed
 
+- 💄(mail) improve mailbox creation email #462
 - 🐛(frontend) fix update accesses form #448
 - 🛂(backend) do not duplicate user when disabled
 

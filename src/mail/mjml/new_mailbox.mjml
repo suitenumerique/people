@@ -3,39 +3,36 @@
 
   <mj-body mj-class="bg--blue-100">
     <mj-wrapper css-class="wrapper" padding="0 40px 40px 40px">
-      <mj-section background-url="{% base64_static 'images/mail-header-background.png' %}" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
+      <mj-section>
         <mj-column>
-            <mj-image align="center" src="{% base64_static 'images/logo-suite-numerique.png' %}" width="250px" align="left" alt="{% trans 'La Suite Numérique' %}" />
+            <mj-image align="center" src="{% base64_static 'images/messagerie.png' %}" width="60px" height="60px" alt="{% trans 'La Messagerie' %}" />
         </mj-column>
       </mj-section>
-      <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
+      <mj-section mj-class="bg--white-100" padding="0px 20px">
         <mj-column>
-          <mj-text font-size="14px">
-            <p>{{ title }}</p>
-          </mj-text>
-
           <!-- Welcome Message -->
-          <mj-text>
-            <h1>{% trans "Your new mailbox is ready !" %}</h1>
-          </mj-text>
-          <mj-divider border-width="1px" border-style="solid" border-color="#DDDDDD" width="30%" align="left"/>
-
-          <mj-image src="{% base64_static 'images/logo.png' %}" width="157px" align="left" alt="{% trans 'Logo' %}" />
-
+          <mj-text font-size="30px"><b>{% trans "Welcome to La Messagerie" %}</b></mj-text>
+          <mj-text>{% trans "La Messagerie is the email solution of La Suite." %}</mj-text>
           <!-- Main Message -->
-          <mj-text>{% trans "Here are your credentials for your new mailbox ! " %}</mj-text>
-          <mj-text>{% trans "Email address : "%}{{ mailbox_data.email }}</mj-text>
-          <mj-text>{% trans "Temporary password : "%}{{ mailbox_data.password }}</mj-text>
-          <mj-text>{% trans "You can access your mails on " %}<a href="//{{ webmail_url }}">{{ webmail_url }}</a>.</mj-text>
-
-          <mj-button href="//{{ site.domain }}" background-color="#000091" color="white" padding-bottom="30px">
-            {% trans "Visit La Régie" %}
+          <mj-text>{% trans "Your mailbox has been created." %}</mj-text>
+          <mj-text>{% trans "Please find below your login info: " %}</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#f3f2fe" padding="0px 20px">
+        <mj-column>
+          <mj-text>{% trans "Email address: "%}<b>{{ mailbox_data.email }}</b></mj-text>
+          <mj-text>{% trans "Temporary password (to be modify on first login): "%}<b>{{ mailbox_data.password }}</b></mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0px 20px">
+        <mj-column>
+          <mj-button href="//{{ webmail_url }}" background-color="#000091" color="white" padding="30px 0px">
+            {% trans "Go to La Messagerie" %}
           </mj-button>
-
           <!-- Signature -->
           <mj-text>
             <p>{% trans "Sincerely," %}</p>
-            <p>{% trans "The La Suite Numérique Team" %}</p>
+            <p>{% trans "La Suite Team" %}</p>
           </mj-text>
         </mj-column>
       </mj-section>

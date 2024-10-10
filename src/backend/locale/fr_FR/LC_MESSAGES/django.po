@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-21 19:26+0000\n"
+"POT-Creation-Date: 2024-10-15 10:52+0000\n"
 "PO-Revision-Date: 2024-01-03 23:15\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
@@ -17,210 +17,249 @@ msgstr ""
 "X-Crowdin-File: backend.pot\n"
 "X-Crowdin-File-ID: 2\n"
 
-#: core/admin.py:70
+#: core/admin.py:45
 msgid "Personal info"
 msgstr ""
 
-#: core/admin.py:72
+#: core/admin.py:47
 msgid "Permissions"
 msgstr ""
 
-#: core/admin.py:84
+#: core/admin.py:59
 msgid "Important dates"
 msgstr ""
 
-#: core/authentication.py:81
+#: core/admin.py:97
+msgid "User"
+msgstr ""
+
+#: core/authentication/backends.py:82
 msgid "User info contained no recognizable user identification"
 msgstr ""
 
-#: core/authentication.py:114
+#: core/authentication/backends.py:90
+msgid "User account is disabled"
+msgstr ""
+
+#: core/authentication/backends.py:102
 msgid "Claims contained no recognizable user identification"
 msgstr ""
 
-#: core/models.py:38
+#: core/enums.py:23
+msgid "Failure"
+msgstr ""
+
+#: core/enums.py:24 mailbox_manager/enums.py:20
+msgid "Pending"
+msgstr ""
+
+#: core/enums.py:25
+msgid "Success"
+msgstr ""
+
+#: core/models.py:42
 msgid "Member"
 msgstr ""
 
-#: core/models.py:39
+#: core/models.py:43 mailbox_manager/enums.py:13
 msgid "Administrator"
 msgstr ""
 
-#: core/models.py:40
+#: core/models.py:44 mailbox_manager/enums.py:14
 msgid "Owner"
 msgstr ""
 
-#: core/models.py:52
+#: core/models.py:56
 msgid "id"
 msgstr ""
 
-#: core/models.py:53
+#: core/models.py:57
 msgid "primary key for the record as UUID"
 msgstr ""
 
-#: core/models.py:59
+#: core/models.py:63
 msgid "created at"
 msgstr ""
 
-#: core/models.py:60
+#: core/models.py:64
 msgid "date and time at which a record was created"
 msgstr ""
 
-#: core/models.py:65
+#: core/models.py:69
 msgid "updated at"
 msgstr ""
 
-#: core/models.py:66
+#: core/models.py:70
 msgid "date and time at which a record was last updated"
 msgstr ""
 
-#: core/models.py:97
+#: core/models.py:101
 msgid "full name"
 msgstr ""
 
-#: core/models.py:98
+#: core/models.py:102
 msgid "short name"
 msgstr ""
 
-#: core/models.py:103
+#: core/models.py:107
 msgid "contact information"
 msgstr ""
 
-#: core/models.py:104
+#: core/models.py:108
 msgid "A JSON object containing the contact information"
 msgstr ""
 
-#: core/models.py:118
+#: core/models.py:122
 msgid "contact"
 msgstr ""
 
-#: core/models.py:119
+#: core/models.py:123
 msgid "contacts"
 msgstr ""
 
-#: core/models.py:160 core/models.py:263 core/models.py:483
-msgid "email address"
-msgstr ""
-
-#: core/models.py:172
-msgid "language"
-msgstr ""
-
-#: core/models.py:173
-msgid "The language in which the user wants to see the interface."
-msgstr ""
-
-#: core/models.py:179
-msgid "The timezone in which the user wants to see times."
-msgstr ""
-
-#: core/models.py:182
-msgid "device"
-msgstr ""
-
-#: core/models.py:184
-msgid "Whether the user is a device or a real user."
-msgstr ""
-
-#: core/models.py:187
-msgid "staff status"
-msgstr ""
-
-#: core/models.py:189
-msgid "Whether the user can log into this admin site."
-msgstr ""
-
-#: core/models.py:192
-msgid "active"
-msgstr ""
-
-#: core/models.py:195
-msgid ""
-"Whether this user should be treated as active. Unselect this instead of "
-"deleting accounts."
-msgstr ""
-
-#: core/models.py:207
-msgid "user"
-msgstr ""
-
-#: core/models.py:208
-msgid "users"
-msgstr ""
-
-#: core/models.py:248
+#: core/models.py:167
 msgid ""
 "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/"
 "_ characters."
 msgstr ""
 
-#: core/models.py:255
+#: core/models.py:173
 msgid "sub"
 msgstr ""
 
-#: core/models.py:257
+#: core/models.py:175
 msgid ""
 "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ "
 "characters only."
 msgstr ""
 
-#: core/models.py:264
+#: core/models.py:181 core/models.py:489
+msgid "email address"
+msgstr ""
+
+#: core/models.py:182 mailbox_manager/models.py:20
 msgid "name"
 msgstr ""
 
-#: core/models.py:266
-msgid "main"
+#: core/models.py:194
+msgid "language"
 msgstr ""
 
-#: core/models.py:268
-msgid "Designates whether the email is the main one."
+#: core/models.py:195
+msgid "The language in which the user wants to see the interface."
 msgstr ""
 
-#: core/models.py:274
-msgid "identity"
+#: core/models.py:201
+msgid "The timezone in which the user wants to see times."
 msgstr ""
 
-#: core/models.py:275
-msgid "identities"
+#: core/models.py:204
+msgid "device"
 msgstr ""
 
-#: core/models.py:282
-msgid "This email address is already declared for this user."
+#: core/models.py:206
+msgid "Whether the user is a device or a real user."
 msgstr ""
 
-#: core/models.py:356
+#: core/models.py:209
+msgid "staff status"
+msgstr ""
+
+#: core/models.py:211
+msgid "Whether the user can log into this admin site."
+msgstr ""
+
+#: core/models.py:214
+msgid "active"
+msgstr ""
+
+#: core/models.py:217
+msgid ""
+"Whether this user should be treated as active. Unselect this instead of "
+"deleting accounts."
+msgstr ""
+
+#: core/models.py:229
+msgid "user"
+msgstr ""
+
+#: core/models.py:230
+msgid "users"
+msgstr ""
+
+#: core/models.py:306
 msgid "Team"
 msgstr ""
 
-#: core/models.py:357
+#: core/models.py:307
 msgid "Teams"
 msgstr ""
 
-#: core/models.py:417
+#: core/models.py:367
 msgid "Team/user relation"
 msgstr ""
 
-#: core/models.py:418
+#: core/models.py:368
 msgid "Team/user relations"
 msgstr ""
 
-#: core/models.py:423
+#: core/models.py:373
 msgid "This user is already in this team."
 msgstr ""
 
-#: core/models.py:500
+#: core/models.py:462
+msgid "url"
+msgstr ""
+
+#: core/models.py:463
+msgid "secret"
+msgstr ""
+
+#: core/models.py:472
+msgid "Team webhook"
+msgstr ""
+
+#: core/models.py:473
+msgid "Team webhooks"
+msgstr ""
+
+#: core/models.py:506
 msgid "Team invitation"
 msgstr ""
 
-#: core/models.py:501
+#: core/models.py:507
 msgid "Team invitations"
 msgstr ""
 
-#: core/models.py:526
+#: core/models.py:532
 msgid "This email is already associated to a registered user."
 msgstr ""
 
-#: core/models.py:568 core/models.py:573
+#: core/models.py:574 core/models.py:580
 msgid "Invitation to join Desk!"
+msgstr ""
+
+#: core/templates/mail/html/hello.html:159 core/templates/mail/text/hello.txt:3
+msgid "Company logo"
+msgstr ""
+
+#: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
+#, python-format
+msgid "Hello %(name)s"
+msgstr ""
+
+#: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
+msgid "Hello"
+msgstr ""
+
+#: core/templates/mail/html/hello.html:189 core/templates/mail/text/hello.txt:6
+msgid "Thank you very much for your visit!"
+msgstr ""
+
+#: core/templates/mail/html/hello.html:221
+#, python-format
+msgid ""
+"This mail has been sent to %(email)s by <a href=\"%(href)s\">%(name)s</a>"
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:160
@@ -246,7 +285,7 @@ msgstr ""
 #: core/templates/mail/html/invitation.html:226
 #: core/templates/mail/text/invitation.txt:14
 msgid ""
-"We are delighted to welcome you to our community on Equipes, your new "
+"We are delighted to welcome you to our community on Régie, your new "
 "companion to simplify the management of your groups efficiently, "
 "intuitively, and securely."
 msgstr ""
@@ -260,7 +299,7 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:236
 #: core/templates/mail/text/invitation.txt:16
-msgid "With Equipes, you will be able to:"
+msgid "With Régie, you will be able to:"
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:237
@@ -294,13 +333,13 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:252
 #: core/templates/mail/text/invitation.txt:23
-msgid "Visit Equipes"
+msgid "Visit Régie"
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:261
 #: core/templates/mail/text/invitation.txt:25
 msgid ""
-"We are confident that Equipes will help you increase efficiency and "
+"We are confident that Régie will help you increase efficiency and "
 "productivity while strengthening the bond among members."
 msgstr ""
 
@@ -320,19 +359,126 @@ msgid ""
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:278
+#: core/templates/mail/html/new_mailbox.html:272
 #: core/templates/mail/text/invitation.txt:29
+#: core/templates/mail/text/new_mailbox.txt:15
 msgid "Sincerely,"
-msgstr ""
+msgstr "Cordialement,"
 
 #: core/templates/mail/html/invitation.html:279
 #: core/templates/mail/text/invitation.txt:31
 msgid "The La Suite Numérique Team"
+msgstr "L'équipe de La Suite Numérique"
+
+#: core/templates/mail/html/new_mailbox.html:159
+#: core/templates/mail/text/new_mailbox.txt:3
+msgid "La Messagerie"
+msgstr "La Messagerie"
+
+#: core/templates/mail/html/new_mailbox.html:188
+#: core/templates/mail/text/new_mailbox.txt:5
+msgid "Welcome to La Messagerie"
+msgstr "Bienvenue dans La Messagerie"
+
+#: core/templates/mail/html/new_mailbox.html:193
+#: core/templates/mail/text/new_mailbox.txt:6
+msgid "La Messagerie is the email solution of La Suite."
+msgstr "La Messagerie est la solution de mail de La Suite."
+
+#: core/templates/mail/html/new_mailbox.html:199
+#: core/templates/mail/text/new_mailbox.txt:7
+msgid "Your mailbox has been created."
+msgstr "Votre boîte mail a été créée."
+
+#: core/templates/mail/html/new_mailbox.html:204
+#: core/templates/mail/text/new_mailbox.txt:8
+msgid "Please find below your login info: "
+msgstr "Voici vos identifiants de connexion :"
+
+#: core/templates/mail/html/new_mailbox.html:228
+#: core/templates/mail/text/new_mailbox.txt:10
+msgid "Email address: "
+msgstr "Adresse email : "
+
+#: core/templates/mail/html/new_mailbox.html:233
+#: core/templates/mail/text/new_mailbox.txt:11
+msgid "Temporary password (to be modify on first login): "
+msgstr "Mot de passe temporaire (à modifier à la première connexion) :"
+
+#: core/templates/mail/html/new_mailbox.html:261
+#: core/templates/mail/text/new_mailbox.txt:13
+msgid "Go to La Messagerie"
+msgstr "Accéder à La Messagerie"
+
+#: core/templates/mail/html/new_mailbox.html:273
+#: core/templates/mail/text/new_mailbox.txt:17
+msgid "La Suite Team"
+msgstr "L'équipe de La Suite"
+
+#: core/templates/mail/text/hello.txt:8
+#, python-format
+msgid "This mail has been sent to %(email)s by %(name)s [%(href)s]"
 msgstr ""
 
-#: people/settings.py:133
-msgid "English"
+#: mailbox_manager/enums.py:12
+msgid "Viewer"
+msgstr ""
+
+#: mailbox_manager/enums.py:21
+msgid "Enabled"
+msgstr ""
+
+#: mailbox_manager/enums.py:22
+msgid "Failed"
+msgstr ""
+
+#: mailbox_manager/enums.py:23
+msgid "Disabled"
+msgstr ""
+
+#: mailbox_manager/models.py:31
+msgid "Mail domain"
+msgstr ""
+
+#: mailbox_manager/models.py:32
+msgid "Mail domains"
+msgstr ""
+
+#: mailbox_manager/models.py:98
+msgid "User/mail domain relation"
+msgstr ""
+
+#: mailbox_manager/models.py:99
+msgid "User/mail domain relations"
+msgstr ""
+
+#: mailbox_manager/models.py:171
+msgid "local_part"
+msgstr ""
+
+#: mailbox_manager/models.py:185
+msgid "secondary email address"
+msgstr ""
+
+#: mailbox_manager/models.py:190
+msgid "Mailbox"
+msgstr ""
+
+#: mailbox_manager/models.py:191
+msgid "Mailboxes"
+msgstr ""
+
+#: mailbox_manager/utils/dimail.py:137
+msgid "Your new mailbox information"
 msgstr ""
 
 #: people/settings.py:134
+msgid "English"
+msgstr ""
+
+#: people/settings.py:135
 msgid "French"
 msgstr ""
+
+#~ msgid "Regards,"
+#~ msgstr "Cordialement,"
