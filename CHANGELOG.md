@@ -20,6 +20,10 @@ and this project adheres to
 
 - 🛂(backend) match email if no existing user matches the sub
 
+### Fixed
+
+- 🛂(backend) do not duplicate user when disabled
+
 ## [1.2.1] - 2024-10-03
 
 ### Fixed
