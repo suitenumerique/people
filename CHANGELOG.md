@@ -16,6 +16,7 @@ and this project adheres to
 ### Added
 
 - ✨(backend) manage roles on domain admin view
+- ✨(frontend) show version number in footer #369
 
 ### Changed
 

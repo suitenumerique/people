@@ -21,7 +21,7 @@ describe('Page', () => {
 
   it('checks Page rendering with team feature', () => {
     useConfigStore.setState({
-      config: { FEATURES: { TEAMS: true }, LANGUAGES: [] },
+      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
     });
 
     render(<Page />, { wrapper: AppWrapper });
@@ -31,7 +31,7 @@ describe('Page', () => {
 
   it('checks Page rendering without team feature', () => {
     useConfigStore.setState({
-      config: { FEATURES: { TEAMS: false }, LANGUAGES: [] },
+      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: false }, LANGUAGES: [] },
     });
 
     render(<Page />, { wrapper: AppWrapper });

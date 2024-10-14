@@ -17,7 +17,7 @@ jest.mock('next/navigation', () => ({
 describe('MainLayout', () => {
   it('checks menu rendering with team feature', () => {
     useConfigStore.setState({
-      config: { FEATURES: { TEAMS: true }, LANGUAGES: [] },
+      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
     });
 
     render(<MainLayout />, { wrapper: AppWrapper });
@@ -37,7 +37,7 @@ describe('MainLayout', () => {
 
   it('checks menu rendering without team feature', () => {
     useConfigStore.setState({
-      config: { FEATURES: { TEAMS: false }, LANGUAGES: [] },
+      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: false }, LANGUAGES: [] },
     });
 
     render(<MainLayout />, { wrapper: AppWrapper });

@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, LogoGouv, StyledLink, Text } from '@/components';
+import { useConfigStore } from '@/core';
 
 import IconLink from './assets/external-link.svg';
 
@@ -16,6 +17,7 @@ const BlueStripe = styled.div`
 
 export const Footer = () => {
   const { t } = useTranslation();
+  const { config } = useConfigStore();
 
   return (
     <Box $position="relative" as="footer">
@@ -94,7 +96,7 @@ export const Footer = () => {
           $padding={{ top: 'tiny' }}
           $css="
             flex-wrap: wrap;
-            border-top: 1px solid var(--c--theme--colors--greyscale-200); 
+            border-top: 1px solid var(--c--theme--colors--greyscale-200);
             column-gap: 1rem;
             row-gap: .5rem;
           "
@@ -138,6 +140,7 @@ export const Footer = () => {
             </StyledLink>
           ))}
         </Box>
+
         <Text
           as="p"
           $size="m"
@@ -145,6 +148,12 @@ export const Footer = () => {
           $variation="600"
           $display="inline"
         >
+          {config?.RELEASE && (
+            <>
+              {t(`Version: {{release}}`, { release: config?.RELEASE })} •&nbsp;
+            </>
+          )}
+
           <Trans>
             Unless otherwise stated, all content on this site is under
             <StyledLink
