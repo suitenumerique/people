@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 
+- ✨(api) add RELEASE version on config endpoint #459
 - 🐛(frontend) fix update accesses form #448
 
 ### Added

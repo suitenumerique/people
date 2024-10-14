@@ -23,6 +23,7 @@ test.describe('Config', () => {
         ['fr-fr', 'French'],
       ],
       FEATURES: { TEAMS: true },
+      RELEASE: 'NA',
     });
   });
 

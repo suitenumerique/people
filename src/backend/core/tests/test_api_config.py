@@ -21,6 +21,7 @@ def test_api_config_anonymous():
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "FEATURES": {"TEAMS": True},
+        "RELEASE": "NA",
     }
 
 
@@ -36,4 +37,5 @@ def test_api_config_authenticated():
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "FEATURES": {"TEAMS": True},
+        "RELEASE": "NA",
     }
