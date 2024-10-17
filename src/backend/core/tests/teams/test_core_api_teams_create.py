@@ -10,7 +10,7 @@ from rest_framework.status import (
 )
 from rest_framework.test import APIClient
 
-from core.factories import TeamFactory, UserFactory
+from core.factories import OrganizationFactory, TeamFactory, UserFactory
 from core.models import Team
 
 pytestmark = pytest.mark.django_db
@@ -34,7 +34,8 @@ def test_api_teams_create_authenticated():
     Authenticated users should be able to create teams and should automatically be declared
     as the owner of the newly created team.
     """
-    user = UserFactory()
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
 
     client = APIClient()
     client.force_login(user)
@@ -50,6 +51,7 @@ def test_api_teams_create_authenticated():
     assert response.status_code == HTTP_201_CREATED
     team = Team.objects.get()
     assert team.name == "my team"
+    assert team.organization == organization
     assert team.accesses.filter(role="owner", user=user).exists()
 
 
@@ -57,7 +59,8 @@ def test_api_teams_create_authenticated_slugify_name():
     """
     Creating teams should automatically generate a slug.
     """
-    user = UserFactory()
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
     client = APIClient()
     client.force_login(user)
 
@@ -70,6 +73,7 @@ def test_api_teams_create_authenticated_slugify_name():
     team = Team.objects.get()
     assert team.name == "my team"
     assert team.slug == "my-team"
+    assert team.organization == organization
 
 
 @pytest.mark.parametrize(
@@ -86,7 +90,8 @@ def test_api_teams_create_authenticated_expected_slug(param):
     """
     Creating teams should automatically create unaccented, no unicode, lower-case slug.
     """
-    user = UserFactory()
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
 
     client = APIClient()
     client.force_login(user)
@@ -102,6 +107,7 @@ def test_api_teams_create_authenticated_expected_slug(param):
     team = Team.objects.get()
     assert team.name == param[0]
     assert team.slug == param[1]
+    assert team.organization == organization
 
 
 def test_api_teams_create_authenticated_unique_slugs():
@@ -123,3 +129,32 @@ def test_api_teams_create_authenticated_unique_slugs():
 
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()["slug"] == ["Team with this Slug already exists."]
+
+
+def test_api_teams_create_cannot_override_organization():
+    """
+    Authenticated users should be able to create teams and not
+    be able to set the organization manually (for now).
+    """
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        "/api/v1.0/teams/",
+        {
+            "name": "my team",
+            "organization": OrganizationFactory(
+                with_registration_id=True
+            ).pk,  # ignored
+        },
+        format="json",
+    )
+
+    assert response.status_code == HTTP_201_CREATED
+    team = Team.objects.get()
+    assert team.name == "my team"
+    assert team.organization == organization
+    assert team.accesses.filter(role="owner", user=user).exists()

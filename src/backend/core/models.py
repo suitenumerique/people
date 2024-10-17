@@ -6,14 +6,18 @@ import json
 import os
 import smtplib
 import uuid
+from contextlib import suppress
 from datetime import timedelta
 from logging import getLogger
+from typing import Tuple
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -27,6 +31,7 @@ from timezone_field import TimeZoneField
 
 from core.enums import WebhookStatusChoices
 from core.utils.webhooks import scim_synchronizer
+from core.validators import get_field_validators_from_setting
 
 logger = getLogger(__name__)
 
@@ -42,6 +47,17 @@ class RoleChoices(models.TextChoices):
     MEMBER = "member", _("Member")
     ADMIN = "administrator", _("Administrator")
     OWNER = "owner", _("Owner")
+
+
+class OrganizationRoleChoices(models.TextChoices):
+    """
+    Defines the possible roles a user can have in an organization.
+    For now, we only have one role, but we might add more in the future.
+
+    administrator: The user can manage the organization: change name, add/remove users.
+    """
+
+    ADMIN = "administrator", _("Administrator")
 
 
 class BaseModel(models.Model):
@@ -158,6 +174,140 @@ class Contact(BaseModel):
             raise exceptions.ValidationError({"data": [error_message]}) from e
 
 
+class OrganizationManager(models.Manager):
+    """
+    Custom manager for the Organization model, to manage complexity/automation.
+    """
+
+    def get_or_create_from_user_claims(
+        self, registration_id: str = None, domain: str = None, **kwargs
+    ) -> Tuple["Organization", bool]:
+        """
+        Get or create an organization using the most fitting information from the user's claims.
+
+        We expect to have only one organization per registration_id, but
+        the registration_id might not be provided.
+        When the registration_id is not provided, we use the domain to identify the organization.
+
+        If both are provided, we use the registration_id first to create missing organization.
+
+        Dev note: When a registration_id is provided by the Identity Provider, we don't want
+        to use the domain to create the organization, because it is less reliable: for example,
+        a professional user, may have a personal email address, and the domain would be gmail.com
+        which is not a good identifier for an organization. The domain email is just a fallback
+        when the registration_id is not provided by the Identity Provider. We can use the domain
+        to create the organization manually when we are sure about the "safety" of it.
+        """
+        if not any([registration_id, domain]):
+            raise ValueError("You must provide either a registration_id or a domain.")
+
+        filters = models.Q()
+        if registration_id:
+            filters |= models.Q(registration_id_list__icontains=registration_id)
+        if domain:
+            filters |= models.Q(domain_list__icontains=domain)
+
+        with suppress(self.model.DoesNotExist):
+            # If there are several organizations, we must raise an error and fix the data
+            # If there is an organization, we return it
+            return self.get(filters, **kwargs), False
+
+        # Manage the case where the organization does not exist: we create one
+        if registration_id:
+            return self.create(
+                name=registration_id, registration_id_list=[registration_id], **kwargs
+            ), True
+
+        if domain:
+            return self.create(name=domain, domain_list=[domain], **kwargs), True
+
+        raise ValueError("Should never reach this point.")
+
+
+def validate_unique_registration_id(value):
+    """
+    Validate that the registration ID values in an array field are unique across all instances.
+    """
+    if Organization.objects.filter(registration_id_list__overlap=value).exists():
+        raise ValidationError(
+            "registration_id_list value must be unique across all instances."
+        )
+
+
+def validate_unique_domain(value):
+    """
+    Validate that the domain values in an array field are unique across all instances.
+    """
+    if Organization.objects.filter(domain_list__overlap=value).exists():
+        raise ValidationError("domain_list value must be unique across all instances.")
+
+
+class Organization(BaseModel):
+    """
+    Organization model used to regroup Teams.
+
+    Each User have an Organization, which corresponds actually to a default organization
+    because a user can belong to a Team from another organization.
+    Each Team have an Organization, which is the Organization from the User who created
+    the Team.
+
+    Organization is managed automatically, the User should never choose their Organization.
+    When creating a User, you must use the `get_or_create` method from the
+    OrganizationManager to find the proper Organization.
+
+    An Organization can have several registration IDs and domains but during automatic
+    creation process, only one will be used. We may want to allow (manual) organization merge
+    later, to regroup several registration IDs or domain in the same Organization.
+    """
+
+    name = models.CharField(_("name"), max_length=100)
+    registration_id_list = ArrayField(
+        models.CharField(
+            max_length=128,
+            validators=get_field_validators_from_setting(
+                "ORGANIZATION_REGISTRATION_ID_VALIDATORS"
+            ),
+        ),
+        verbose_name=_("registration ID list"),
+        default=list,
+        blank=True,
+        validators=[
+            validate_unique_registration_id,
+        ],
+    )
+    domain_list = ArrayField(
+        models.CharField(max_length=256),
+        verbose_name=_("domain list"),
+        default=list,
+        blank=True,
+        validators=[validate_unique_domain],
+    )
+
+    objects = OrganizationManager()
+
+    class Meta:
+        db_table = "people_organization"
+        verbose_name = _("organization")
+        verbose_name_plural = _("organizations")
+        constraints = [
+            models.CheckConstraint(
+                name="registration_id_or_domain",
+                condition=models.Q(registration_id_list__len__gt=0)
+                | models.Q(domain_list__len__gt=0),
+                violation_error_message=_(
+                    "An organization must have at least a registration ID or a domain."
+                ),
+            ),
+            # Check a registration ID str can only be present in one
+            # organization registration ID list
+            # Check a domain str can only be present in one organization domain list
+            # Those checks cannot be done with Django constraints
+        ]
+
+    def __str__(self):
+        return f"{self.name} (# {self.pk})"
+
+
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
 
@@ -217,6 +367,13 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             "Whether this user should be treated as active. "
             "Unselect this instead of deleting accounts."
         ),
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.PROTECT,
+        related_name="users",
+        null=True,  # Need to be set to False when everything is migrated
+        blank=True,  # Need to be set to False when everything is migrated
     )
 
     objects = auth_models.UserManager()
@@ -285,6 +442,44 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         mail.send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
+class OrganizationAccess(BaseModel):
+    """
+    Link table between organization and users,
+    only for user with specific rights on Organization.
+    """
+
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="organization_accesses",
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="organization_accesses",
+    )
+    role = models.CharField(
+        max_length=20,
+        choices=OrganizationRoleChoices.choices,
+        default=OrganizationRoleChoices.ADMIN,
+    )
+
+    class Meta:
+        db_table = "people_organization_access"
+        verbose_name = _("Organization/user relation")
+        verbose_name_plural = _("Organization/user relations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "organization"],
+                name="unique_organization_user",
+                violation_error_message=_("This user is already in this organization."),
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user!s} is {self.role:s} in organization {self.organization!s}"
+
+
 class Team(BaseModel):
     """
     Represents the link between teams and users, specifying the role a user has in a team.
@@ -298,6 +493,13 @@ class Team(BaseModel):
         through="TeamAccess",
         through_fields=("team", "user"),
         related_name="teams",
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.PROTECT,
+        related_name="teams",
+        null=True,  # Need to be set to False when everything is migrated
+        blank=True,  # Need to be set to False when everything is migrated
     )
 
     class Meta:

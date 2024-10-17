@@ -1,5 +1,9 @@
 """Authentication Backends for the People core app."""
 
+import logging
+from email.headerregistry import Address
+from typing import Optional
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
@@ -10,7 +14,19 @@ from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
 
+from core.models import Organization, OrganizationAccess, OrganizationRoleChoices
+
+logger = logging.getLogger(__name__)
+
 User = get_user_model()
+
+
+def get_domain_from_email(email: Optional[str]) -> Optional[str]:
+    """Extract domain from email."""
+    try:
+        return Address(addr_spec=email).domain
+    except (ValueError, AttributeError):
+        return None
 
 
 class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
@@ -67,19 +83,24 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         user_info = self.get_userinfo(access_token, id_token, payload)
 
+        sub = user_info.get("sub")
+        if not sub:
+            raise SuspiciousOperation(
+                _("User info contained no recognizable user identification")
+            )
+
         # Get user's full name from OIDC fields defined in settings
         full_name = self.compute_full_name(user_info)
         email = user_info.get("email")
 
         claims = {
+            "sub": sub,
             "email": email,
             "name": full_name,
         }
-
-        sub = user_info.get("sub")
-        if not sub:
-            raise SuspiciousOperation(
-                _("User info contained no recognizable user identification")
+        if settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD:
+            claims[settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD] = user_info.get(
+                settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD
             )
 
         # if sub is absent, try matching on email
@@ -90,7 +111,41 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
                 raise SuspiciousOperation(_("User account is disabled"))
             self.update_user_if_needed(user, claims)
         elif self.get_settings("OIDC_CREATE_USER", True):
-            user = User.objects.create(sub=sub, password="!", **claims)  # noqa: S106
+            user = self.create_user(claims)
+
+        # Data cleaning, to be removed when user organization is null=False
+        # or all users have an organization.
+        # See https://github.com/numerique-gouv/people/issues/504
+        if not user.organization_id:
+            organization_registration_id = claims.get(
+                settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD
+            )
+            domain = get_domain_from_email(email)
+            try:
+                organization, organization_created = (
+                    Organization.objects.get_or_create_from_user_claims(
+                        registration_id=organization_registration_id,
+                        domain=domain,
+                    )
+                )
+                if organization_created:
+                    logger.info("Organization %s created", organization)
+                    # For this case, we don't create an OrganizationAccess we will
+                    # manage this manually later, because we don't want the first
+                    # user who log in after the release to be the admin of their
+                    # organization. We will keep organization without admin, and
+                    # we will have to manually clean things up (while there is
+                    # not that much organization in the database).
+            except ValueError as exc:
+                # Raised when there is no recognizable organization
+                # identifier (domain or registration_id)
+                logger.warning("Unable to update user organization: %s", exc)
+            else:
+                user.organization = organization
+                user.save()
+                logger.info(
+                    "User %s updated with organization %s", user.pk, organization
+                )
 
         return user
 
@@ -101,13 +156,47 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             raise SuspiciousOperation(
                 _("Claims contained no recognizable user identification")
             )
+        email = claims.get("email")
+        name = claims.get("name")
 
-        return self.UserModel.objects.create(
+        # Extract or create the organization from the data
+        organization_registration_id = claims.get(
+            settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD
+        )
+        domain = get_domain_from_email(email)
+        try:
+            organization, organization_created = (
+                Organization.objects.get_or_create_from_user_claims(
+                    registration_id=organization_registration_id,
+                    domain=domain,
+                )
+            )
+        except ValueError as exc:
+            raise SuspiciousOperation(
+                _("Claims contained no recognizable organization identification")
+            ) from exc
+
+        if organization_created:
+            logger.info("Organization %s created", organization)
+
+        logger.info("Creating user %s / %s", sub, email)
+
+        user = self.UserModel.objects.create(
+            organization=organization,
             password="!",  # noqa: S106
             sub=sub,
-            email=claims.get("email"),
-            name=claims.get("name"),
+            email=email,
+            name=name,
         )
+        if organization_created:
+            # Warning: we may remove this behavior in the near future when we
+            # add a feature to claim the organization ownership.
+            OrganizationAccess.objects.create(
+                organization=organization,
+                user=user,
+                role=OrganizationRoleChoices.ADMIN,
+            )
+        return user
 
     def compute_full_name(self, user_info):
         """Compute user's full name based on OIDC fields in settings."""
@@ -132,8 +221,12 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
     def update_user_if_needed(self, user, claims):
         """Update user claims if they have changed."""
         has_changed = any(
-            value and value != getattr(user, key) for key, value in claims.items()
+            value and value != getattr(user, key)
+            for key, value in claims.items()
+            if key != "sub"
         )
         if has_changed:
-            updated_claims = {key: value for key, value in claims.items() if value}
+            updated_claims = {
+                key: value for key, value in claims.items() if value and key != "sub"
+            }
             self.UserModel.objects.filter(sub=user.sub).update(**updated_claims)

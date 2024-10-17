@@ -18,6 +18,15 @@ class TeamAccessInline(admin.TabularInline):
     readonly_fields = ("created_at", "updated_at")
 
 
+class OrganizationAccessInline(admin.TabularInline):
+    """Inline admin class for organization accesses."""
+
+    autocomplete_fields = ["user", "organization"]
+    extra = 0
+    model = models.OrganizationAccess
+    readonly_fields = ("created_at", "updated_at")
+
+
 class TeamWebhookInline(admin.TabularInline):
     """Inline admin class for team webhooks."""
 
@@ -31,6 +40,7 @@ class TeamWebhookInline(admin.TabularInline):
 class UserAdmin(auth_admin.UserAdmin):
     """Admin class for the User model"""
 
+    autocomplete_fields = ["organization"]
     fieldsets = (
         (
             None,
@@ -67,9 +77,10 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
     )
-    inlines = (TeamAccessInline, MailDomainAccessInline)
+    inlines = (TeamAccessInline, MailDomainAccessInline, OrganizationAccessInline)
     list_display = (
         "get_user",
+        "organization",
         "created_at",
         "updated_at",
         "is_active",
@@ -175,4 +186,31 @@ class ContactAdmin(admin.ModelAdmin):
         "full_name",
         "owner",
         "base",
+    )
+
+
+@admin.register(models.Organization)
+class OrganizationAdmin(admin.ModelAdmin):
+    """Admin interface for organizations."""
+
+    list_display = (
+        "name",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("name",)
+    inlines = (OrganizationAccessInline,)
+
+
+@admin.register(models.OrganizationAccess)
+class OrganizationAccessAdmin(admin.ModelAdmin):
+    """Organization access admin interface declaration."""
+
+    autocomplete_fields = ("user", "organization")
+    list_display = (
+        "user",
+        "organization",
+        "role",
+        "created_at",
+        "updated_at",
     )

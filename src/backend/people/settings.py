@@ -388,6 +388,11 @@ class Base(Configuration):
         environ_name="USER_OIDC_FIELDS_TO_NAME",
         environ_prefix=None,
     )
+    OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = values.Value(
+        default=None,
+        environ_name="OIDC_ORGANIZATION_REGISTRATION_ID_FIELD",
+        environ_prefix=None,
+    )
 
     OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT = values.Value(
         None, environ_name="OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT", environ_prefix=None
@@ -435,6 +440,15 @@ class Base(Configuration):
         default=None,
         environ_name="MAIL_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
+    )
+
+    # Organizations
+    ORGANIZATION_REGISTRATION_ID_VALIDATORS = json.loads(
+        values.Value(
+            default="[]",
+            environ_name="ORGANIZATION_REGISTRATION_ID_VALIDATORS",
+            environ_prefix=None,
+        )
     )
 
     FEATURES = {
@@ -598,6 +612,15 @@ class Test(Base):
 
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
+
+    ORGANIZATION_REGISTRATION_ID_VALIDATORS = [
+        {
+            "NAME": "django.core.validators.RegexValidator",
+            "OPTIONS": {
+                "regex": "^[0-9]{14}$",
+            },
+        },
+    ]
 
 
 class ContinuousIntegration(Test):

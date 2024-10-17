@@ -119,12 +119,38 @@ class ContactFactory(BaseContactFactory):
     owner = factory.SubFactory("core.factories.UserFactory", profile_contact=None)
 
 
+class OrganizationFactory(factory.django.DjangoModelFactory):
+    """Factory to create organizations for testing purposes."""
+
+    name = factory.Faker("company")
+
+    class Meta:
+        model = models.Organization
+
+    class Params:  # pylint: disable=missing-class-docstring
+        with_registration_id = factory.Trait(
+            registration_id_list=factory.List(
+                [factory.Sequence(lambda n: f"{n:014d}")]
+            ),
+        )
+        with_domain = factory.Trait(
+            domain_list=factory.List([factory.Faker("domain_name")]),
+        )
+
+
 class UserFactory(factory.django.DjangoModelFactory):
     """A factory to create random users for testing purposes."""
 
     class Meta:
         model = models.User
         django_get_or_create = ("sub",)
+
+    class Params:
+        with_organization = factory.Trait(
+            organization=factory.SubFactory(
+                OrganizationFactory, with_registration_id=True
+            ),
+        )
 
     sub = factory.Sequence(lambda n: f"user{n!s}")
     email = factory.Faker("email")

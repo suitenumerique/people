@@ -194,6 +194,14 @@ class TeamSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
+    def create(self, validated_data):
+        """Create a new team with organization enforcement."""
+        # Note: this is not the purpose of this API to check the user has an organization
+        return super().create(
+            validated_data=validated_data
+            | {"organization_id": self.context["request"].user.organization_id}
+        )
+
     def get_abilities(self, team) -> dict:
         """Return abilities of the logged-in user on the instance."""
         request = self.context.get("request")
