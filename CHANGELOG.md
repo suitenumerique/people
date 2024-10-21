@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(script) improve and fix release script
+
+
 ## [1.3.1] - 2024-10-18
 
 ## [1.3.0] - 2024-10-18

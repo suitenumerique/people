@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 import sys
 
 from utils import run_command
@@ -17,9 +18,7 @@ def update_files(version):
         lines = file.readlines()
         for index, line in enumerate(lines):
             if line.startswith("version = "):
-                last_version = line.split("=")[-1]
-                new_line = line.replace(last_version, f' "{version}"\n')
-                lines[index] = new_line
+                lines[index] = re.sub(r'\"(.*?)\"', f'"{version}"', line)
     with open(path, 'w+') as file:
         file.writelines(lines)
 
@@ -30,8 +29,8 @@ def update_files(version):
         with open(path, 'r') as file:
             lines = file.readlines()
             for index, line in enumerate(lines):
-                if line.startswith("  tag: "):
-                    lines[index] = f'  tag: "v{version}"\n'
+                if "tag:" in line:
+                    lines[index] = re.sub(r'\"(.*?)\"', f'"v{version}"', line)
         with open(path, 'w+') as file:
             file.writelines(lines)
 
@@ -47,8 +46,8 @@ def update_files(version):
         with open(path, 'r') as file:
             lines = file.readlines()
             for index, line in enumerate(lines):
-                if line.startswith('  "version": '):
-                    lines[index] = f'  "version": "{version}",\n'
+                if "version" in line:
+                    lines[index] = re.sub(r'"version": \"(.*?)\"', f'"version": "{version}"', line)
         with open(path, 'w+') as file:
             file.writelines(lines)
     return
