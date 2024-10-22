@@ -10,8 +10,8 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(sentry) fix duplicated sentry errors #479
 - 🐛(script) improve and fix release script
-
 
 ## [1.3.1] - 2024-10-18
 
