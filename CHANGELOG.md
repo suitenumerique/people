@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(frontend) add tabs inside #466
+
 ### Fixed
 
 - ✏️(mail) fix typo into mailbox creation email
@@ -23,7 +27,6 @@ and this project adheres to
 - ✨(api) add RELEASE version on config endpoint #459
 - ✨(backend) manage roles on domain admin view
 - ✨(frontend) show version number in footer #369
-- ✨(frontend) add tabs inside #466
 
 ### Changed
 
