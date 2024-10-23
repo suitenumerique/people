@@ -187,25 +187,6 @@ describe('MailDomainsContent', () => {
     });
   });
 
-  it('redirects to accesses management page when button is clicked by granted user', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
-      count: 0,
-      results: [],
-    });
-
-    render(<MailDomainsContent mailDomain={mockMailDomain} />, {
-      wrapper: AppWrapper,
-    });
-
-    await waitFor(async () => {
-      await userEvent.click(screen.getByText('Manage accesses'));
-    });
-
-    expect(mockPush).toHaveBeenCalledWith(
-      '/mail-domains/example-com/accesses/',
-    );
-  });
-
   it('displays the correct alert based on mail domain status', async () => {
     fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
       count: 0,

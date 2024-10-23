@@ -211,6 +211,19 @@ test.describe('Mail domain', () => {
         },
       ];
 
+      test('checks if all tabs are visible', async ({ page }) => {
+        await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await clickOnMailDomainsNavButton(page);
+
+        await assertMailDomainUpperElementsAreVisible(page);
+
+        await expect(
+          page.getByLabel('Go to accesses management'),
+        ).toBeVisible();
+        await expect(page.getByLabel('Go to mailbox management')).toBeVisible();
+      });
+
       test('checks all the elements are visible when domain exist but contains no mailboxes', async ({
         page,
       }) => {

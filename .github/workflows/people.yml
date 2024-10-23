@@ -150,7 +150,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-            
+
       - name: Set services env variables
         run: |
           make create-env-files
@@ -175,7 +175,7 @@ jobs:
         with:
           path: src/frontend/apps/desk/out/
           key: build-front-${{ github.run_id }}
-    
+
       - name: Build and Start Docker Servers
         env:
           DOCKER_BUILDKIT: 1
@@ -183,7 +183,7 @@ jobs:
         run: |
           docker compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
           make run
-        
+
       - name: Apply DRF migrations
         run: |
           make migrate

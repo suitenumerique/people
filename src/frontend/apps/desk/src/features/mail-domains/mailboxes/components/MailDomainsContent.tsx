@@ -9,14 +9,12 @@ import {
   VariantType,
   usePagination,
 } from '@openfun/cunningham-react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors, TextStyled } from '@/components';
 import { ModalCreateMailbox } from '@/features/mail-domains/mailboxes';
 
-import { default as MailDomainsLogo } from '../../assets/mail-domains-logo.svg';
 import { PAGE_SIZE } from '../../conf';
 import { MailDomain } from '../../domains/types';
 import { useMailboxes } from '../api/useMailboxes';
@@ -99,12 +97,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
         showMailBoxCreationForm={setIsCreateMailboxFormVisible}
       />
 
-      <Card
-        $padding={{ bottom: 'small' }}
-        $margin={{ all: 'big', top: 'none' }}
-        $overflow="auto"
-        aria-label={t('Mailboxes list card')}
-      >
+      <Card $overflow="auto" aria-label={t('Mailboxes list card')}>
         {error && <TextErrors causes={error.cause} />}
 
         <DataGrid
@@ -153,47 +146,19 @@ const TopBanner = ({
   mailDomain: MailDomain;
   showMailBoxCreationForm: (value: boolean) => void;
 }) => {
-  const router = useRouter();
   const { t } = useTranslation();
 
   return (
-    <Box
-      $direction="column"
-      $margin={{ all: 'big', bottom: 'tiny' }}
-      $gap="1rem"
-    >
+    <Box $direction="column" $gap="1rem">
+      <AlertStatus status={mailDomain.status} />
+
       <Box
         $direction="row"
+        $justify="flex-end"
+        $margin={{ bottom: 'small' }}
         $align="center"
-        $gap="2.25rem"
-        $justify="space-between"
       >
-        <Box $direction="row" $margin="none" $gap="0.5rem">
-          <MailDomainsLogo aria-hidden="true" />
-          <Text $margin="none" as="h3" $size="h3">
-            {mailDomain?.name}
-          </Text>
-        </Box>
-      </Box>
-
-      <Box $direction="row" $justify="space-between">
-        <AlertStatus status={mailDomain.status} />
-      </Box>
-      <Box $direction="row" $justify="flex-end">
-        <Box $display="flex" $direction="row" $gap="0.5rem">
-          {mailDomain?.abilities?.manage_accesses && (
-            <Button
-              color="tertiary"
-              aria-label={t('Manage {{name}} domain members', {
-                name: mailDomain?.name,
-              })}
-              onClick={() =>
-                router.push(`/mail-domains/${mailDomain.slug}/accesses/`)
-              }
-            >
-              {t('Manage accesses')}
-            </Button>
-          )}
+        <Box $display="flex" $direction="row">
           {mailDomain?.abilities.post && (
             <Button
               aria-label={t('Create a mailbox in {{name}} domain', {

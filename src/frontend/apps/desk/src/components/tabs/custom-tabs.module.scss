@@ -1,0 +1,63 @@
+.customTabsContainer {
+  :global {
+    .react-aria-TabList {
+      display: flex;
+
+      &[data-orientation='horizontal'] {
+        .react-aria-Tab {
+          border-bottom: 2px solid var(--c--theme--colors--greyscale-500);
+        }
+      }
+    }
+
+    .react-aria-Tab {
+      padding: 10px;
+      cursor: pointer;
+      outline: none;
+      position: relative;
+      color: var(--c--theme--colors--greyscale-700);
+      transition: color 200ms;
+
+      --border-color: transparent;
+
+      forced-color-adjust: none;
+
+      &[data-hovered],
+      &[data-focused] {
+        color: var(--c--theme--colors--greyscale-900);
+      }
+
+      &[data-selected] {
+        border-bottom: 2px solid var(--c--theme--colors--primary-600) !important;
+        color: var(--c--theme--colors--primary-600);
+      }
+
+      &[data-disabled] {
+        color: var(--c--theme--colors--greyscale-500);
+
+        &[data-selected] {
+          --border-color: var(--c--theme--colors--greyscale-200);
+        }
+      }
+
+      &[data-focus-visible]::after {
+        content: '';
+        position: absolute;
+        inset: 4px;
+        border-radius: 4px;
+        border: 1px solid var(--c--theme--colors--primary-600);
+      }
+    }
+
+    .react-aria-TabPanel {
+      margin-top: 4px;
+      padding: 10px;
+      border-radius: 4px;
+      outline: none;
+
+      &[data-focus-visible] {
+        outline: 2px solid var(--c--theme--colors--primary-600);
+      }
+    }
+  }
+}

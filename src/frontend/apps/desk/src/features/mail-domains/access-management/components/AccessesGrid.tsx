@@ -106,8 +106,6 @@ export const AccessesGrid = ({
 
   return (
     <Card
-      $padding={{ bottom: 'small' }}
-      $margin={{ all: 'big', top: 'none' }}
       $overflow="auto"
       $css={`
           & .c__pagination__goto {

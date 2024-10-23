@@ -1,9 +1,14 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true,
+  },
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'src')],
   },
   compiler: {
     // Enables the styled-components SWC transform

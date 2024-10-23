@@ -1,7 +1,7 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
@@ -9,7 +9,7 @@ import {
   MailDomainsLayout,
   useMailDomain,
 } from '@/features/mail-domains/domains';
-import { MailDomainsContent } from '@/features/mail-domains/mailboxes';
+import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
 import { NextPageWithLayout } from '@/types/next';
 
 const MailboxesPage: NextPageWithLayout = () => {
@@ -45,9 +45,13 @@ const MailboxesPage: NextPageWithLayout = () => {
         <Loader />
       </Box>
     );
-  } else {
-    return mailDomain ? <MailDomainsContent mailDomain={mailDomain} /> : null;
   }
+
+  if (!mailDomain) {
+    return null;
+  }
+
+  return <MailDomainView mailDomain={mailDomain} />;
 };
 
 MailboxesPage.getLayout = function getLayout(page: ReactElement) {

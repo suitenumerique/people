@@ -29,6 +29,7 @@
     "react-hook-form": "7.53.0",
     "react-i18next": "15.0.2",
     "react-select": "5.8.1",
+    "sass": "1.80.3",
     "styled-components": "6.1.13",
     "zod": "3.23.8",
     "zustand": "4.5.5"
