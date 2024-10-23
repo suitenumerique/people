@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 import datetime
 import os
 import re
@@ -95,10 +97,13 @@ def prepare_release(version, kind):
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
     PLEASE DO THE FOLLOWING INSTRUCTIONS:
-    --> Please submit PR and merge code to main than tag version
+    --> Please submit PR and merge code to main 
+    --> Then do:
+    >> git checkout main
+    >> git pull
     >> git tag -a v{version} 
     >> git push origin v{version} 
-    --> Please check docker image: https://hub.docker.com/r/lasuite/people-backend/tags
+    --> Please check and wait for the docker image v{version} to be published here: https://hub.docker.com/r/lasuite/people-backend/tags
     >> git tag -d preprod
     >> git tag preprod
     >> git push -f origin preprod
