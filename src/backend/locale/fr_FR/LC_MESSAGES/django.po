@@ -403,7 +403,7 @@ msgstr "Adresse email : "
 #: core/templates/mail/html/new_mailbox.html:233
 #: core/templates/mail/text/new_mailbox.txt:11
 msgid "Temporary password (to be modify on first login): "
-msgstr "Mot de passe temporaire (à modifier à la première connexion) :"
+msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
 
 #: core/templates/mail/html/new_mailbox.html:261
 #: core/templates/mail/text/new_mailbox.txt:13
@@ -470,7 +470,7 @@ msgstr ""
 
 #: mailbox_manager/utils/dimail.py:137
 msgid "Your new mailbox information"
-msgstr ""
+msgstr "Informations concernant votre nouvelle boîte mail"
 
 #: people/settings.py:134
 msgid "English"

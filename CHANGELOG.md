@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 
+- ✏️(mail) fix typo into mailbox creation email
 - 🐛(sentry) fix duplicated sentry errors #479
 - 🐛(script) improve and fix release script
 
