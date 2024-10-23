@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.4.0] - 2024-10-23
+
 ### Added
 
 - ✨(frontend) add tabs inside #466
@@ -116,7 +118,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.3.1...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.4.0...main
+[1.4.0]: https://github.com/numerique-gouv/people/releases/v1.4.0
 [1.3.1]: https://github.com/numerique-gouv/people/releases/v1.3.1
 [1.3.0]: https://github.com/numerique-gouv/people/releases/v1.3.0
 [1.2.1]: https://github.com/numerique-gouv/people/releases/v1.2.1
