@@ -16,6 +16,7 @@ export function MailDomainsLayout({ children }: PropsWithChildren) {
         <Box
           $background={colorsTokens()['primary-bg']}
           $width="100%"
+          $overflow="auto"
           $height="inherit"
         >
           {children}
