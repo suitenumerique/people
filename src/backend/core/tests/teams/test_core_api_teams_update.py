@@ -7,7 +7,6 @@ import random
 import pytest
 from rest_framework.status import (
     HTTP_200_OK,
-    HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
@@ -125,7 +124,7 @@ def test_api_teams_update_authenticated_administrators():
         elif key == "updated_at":
             assert value > initial_values[key]
         else:
-            # name, slug and abilities successfully modified
+            # name and abilities successfully modified
             assert value == new_values[key]
 
 
@@ -158,7 +157,7 @@ def test_api_teams_update_authenticated_owners():
         elif key == "updated_at":
             assert value > old_team_values[key]
         else:
-            # name, slug and abilities successfully modified
+            # name and abilities successfully modified
             assert value == new_team_values[key]
 
 
@@ -189,31 +188,3 @@ def test_api_teams_update_administrator_or_owner_of_another():
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
     assert team_values == old_team_values
-
-
-def test_api_teams_update_existing_slug_should_return_error():
-    """
-    Updating a team's name to an existing slug should return a bad request,
-    instead of creating a duplicate.
-    """
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    factories.TeamFactory(name="Existing team", users=[(user, "administrator")])
-    my_team = factories.TeamFactory(name="New team", users=[(user, "administrator")])
-
-    updated_values = serializers.TeamSerializer(instance=my_team).data
-    # Update my team's name for existing team. Creates a duplicate slug
-    updated_values["name"] = "existing team"
-    response = client.put(
-        f"/api/v1.0/teams/{my_team.id!s}/",
-        updated_values,
-        format="json",
-    )
-    assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response.json()["slug"] == ["Team with this Slug already exists."]
-    # Both teams names and slugs should be unchanged
-    assert my_team.name == "New team"
-    assert my_team.slug == "new-team"

@@ -47,12 +47,6 @@ def test_models_teams_name_max_length():
         factories.TeamFactory(name="a " * 51)
 
 
-def test_models_teams_slug_empty():
-    """Slug field should not be empty."""
-    with pytest.raises(ValidationError, match="This field cannot be blank."):
-        models.Team.objects.create(slug="")
-
-
 # get_abilities
 
 

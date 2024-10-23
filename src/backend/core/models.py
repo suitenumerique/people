@@ -22,7 +22,6 @@ from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import lazy
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
 
@@ -486,7 +485,6 @@ class Team(BaseModel):
     """
 
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True, null=False, editable=False)
 
     users = models.ManyToManyField(
         User,
@@ -510,15 +508,6 @@ class Team(BaseModel):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        """Override save function to compute the slug."""
-        self.slug = self.get_slug()
-        return super().save(*args, **kwargs)
-
-    def get_slug(self):
-        """Compute slug value from name."""
-        return slugify(self.name)
 
     def get_abilities(self, user):
         """

@@ -115,7 +115,6 @@ class TeamAdmin(admin.ModelAdmin):
     inlines = (TeamAccessInline, TeamWebhookInline)
     list_display = (
         "name",
-        "slug",
         "created_at",
         "updated_at",
     )

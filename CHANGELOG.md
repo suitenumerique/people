@@ -26,6 +26,10 @@ and this project adheres to
 - 🔇(backend) remove Sentry duplicated warning/errors
 - 👷(ci) add sharding e2e tests  #467
 
+### Removed
+
+- 🗃️(teams) remove `slug` field
+
 ## [1.4.1] - 2024-10-23
 
 ### Fixed

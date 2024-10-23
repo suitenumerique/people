@@ -172,7 +172,6 @@ class TeamSerializer(serializers.ModelSerializer):
     """Serialize teams."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
-    slug = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Team
@@ -181,7 +180,6 @@ class TeamSerializer(serializers.ModelSerializer):
             "name",
             "accesses",
             "abilities",
-            "slug",
             "created_at",
             "updated_at",
         ]
@@ -189,7 +187,6 @@ class TeamSerializer(serializers.ModelSerializer):
             "id",
             "accesses",
             "abilities",
-            "slug",
             "created_at",
             "updated_at",
         ]
@@ -208,10 +205,6 @@ class TeamSerializer(serializers.ModelSerializer):
         if request:
             return team.get_abilities(request.user)
         return {}
-
-    def get_slug(self, instance):
-        """Return slug from the team's name."""
-        return instance.get_slug()
 
 
 class InvitationSerializer(serializers.ModelSerializer):

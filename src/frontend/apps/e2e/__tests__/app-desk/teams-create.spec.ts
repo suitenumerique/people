@@ -93,27 +93,6 @@ test.describe('Teams Create', () => {
     await expect(page).toHaveURL(/\/teams\//);
   });
 
-  test('checks error when duplicate team', async ({ page, browserName }) => {
-    const panel = page.getByLabel('Teams panel').first();
-
-    await panel.getByRole('link', { name: 'Add a team' }).click();
-
-    const teamName = `My duplicate team ${browserName}-${Math.floor(Math.random() * 1000)}`;
-    await page.getByText('Team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create the team' }).click();
-
-    await panel.getByRole('link', { name: 'Add a team' }).click();
-
-    await page.getByText('Team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create the team' }).click();
-
-    await expect(
-      page.getByText(
-        'This name is already used for another group. Please enter another one.',
-      ),
-    ).toBeVisible();
-  });
-
   test('checks 404 on teams/[id] page', async ({ page }) => {
     await page.goto('/teams/some-unknown-team');
     await expect(

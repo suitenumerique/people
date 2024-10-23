@@ -174,8 +174,6 @@ def create_demo(stdout):
             queue.push(
                 models.Team(
                     name=f"Team {i:d}",
-                    # slug should be automatic but bulk_create doesn't use save
-                    slug=f"team-{i:d}",
                 )
             )
         queue.flush()
