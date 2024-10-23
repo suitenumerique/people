@@ -77,6 +77,19 @@ class MailDomainSerializer(serializers.ModelSerializer):
             return domain.get_abilities(request.user)
         return {}
 
+    def create(self, validated_data):
+        """
+        Override create function to fire a request to dimail upon domain creation.
+        """
+        # send new domain request to dimail
+        client = DimailAPIClient()
+        client.send_domain_creation_request(
+            validated_data["name"], self.context["request"].user.sub
+        )
+
+        # no exception raised ? Then actually save domain on our database
+        return models.MailDomain.objects.create(**validated_data)
+
 
 class MailDomainAccessSerializer(serializers.ModelSerializer):
     """Serialize mail domain access."""

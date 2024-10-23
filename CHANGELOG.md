@@ -18,6 +18,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(dimail) send domain creation requests to dimail #454
 - ✨(dimail) synchronize mailboxes from dimail to our db #453
 - ✨(ci) add security scan #429
 - ✨(teams) register contacts on admin views
