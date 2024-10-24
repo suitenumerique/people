@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 👷(ci) add sharding e2e tests  #467
+
 ## [1.4.1] - 2024-10-23
 
 ### Fixed
@@ -35,7 +37,6 @@ and this project adheres to
 - ✨(api) add RELEASE version on config endpoint #459
 - ✨(backend) manage roles on domain admin view
 - ✨(frontend) show version number in footer #369
-- 👷(ci) add sharding e2e tests  #467
 
 ### Changed
 
