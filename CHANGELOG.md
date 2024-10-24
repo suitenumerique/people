@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔧(sentry) restore default integrations
 - 👷(ci) add sharding e2e tests  #467
 
 ## [1.4.1] - 2024-10-23
