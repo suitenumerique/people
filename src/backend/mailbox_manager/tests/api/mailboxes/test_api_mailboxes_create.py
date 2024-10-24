@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 import pytest
 import requests
 import responses
+from requests.exceptions import HTTPError
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -501,8 +502,7 @@ def test_api_mailboxes__user_unrelated_to_domain():
         assert not models.Mailbox.objects.exists()
 
 
-@mock.patch.object(Logger, "error")
-def test_api_mailboxes__handling_dimail_unexpected_error(mock_error):
+def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
     """
     API should raise a clear error when dimail returns an unexpected response.
     """
@@ -527,12 +527,12 @@ def test_api_mailboxes__handling_dimail_unexpected_error(mock_error):
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body='{"details": "Internal server error"}',
+            body='{"detail": "Internal server error"}',
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content_type="application/json",
         )
 
-        with pytest.raises(requests.exceptions.HTTPError):
+        with pytest.raises(HTTPError):
             response = client.post(
                 f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
                 mailbox_data,
@@ -545,10 +545,9 @@ def test_api_mailboxes__handling_dimail_unexpected_error(mock_error):
         assert not models.Mailbox.objects.exists()
 
         # Check error logger was called
-        assert mock_error.called
-        assert mock_error.call_args_list[1][0] == (
-            'Unexpected response from dimail: 500 {"details": "Internal server error"}',
-        )
+        assert len(caplog.records) == 2  # 1 + new empty info. To be investigated
+        assert caplog.records[0].levelname == "ERROR"
+        assert caplog.records[0].message == "[DIMAIL] 500: Internal server error"
 
 
 @mock.patch.object(Logger, "error")

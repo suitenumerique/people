@@ -1,6 +1,7 @@
 """A minimalist client to synchronize with mailbox provisioning API."""
 
 import ast
+import json
 import smtplib
 from email.errors import HeaderParseError, NonASCIILocalPartDefect
 from email.headerregistry import Address
@@ -13,6 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 import requests
+from requests.exceptions import HTTPError
 from rest_framework import status
 from urllib3.util import Retry
 
@@ -157,7 +159,7 @@ class DimailAPIClient:
 
     def pass_dimail_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
-        error_content = response.content.decode("utf-8")
+        error_content = json.loads(response.content.decode(response.encoding).replace("'", '"'))
 
         logger.error(
             "[DIMAIL] unexpected error : %s %s", response.status_code, error_content

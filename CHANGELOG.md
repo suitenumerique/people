@@ -15,6 +15,7 @@ and this project adheres to
 - ⬆️(dependencies) remove unneeded dependencies
 - 🔥(teams) remove pagination of teams listing
 - 🔥(teams) remove search users by trigram
+- 🗃️(teams) remove `slug` field
 
 ### Added
 
@@ -30,10 +31,7 @@ and this project adheres to
 - 🔧(sentry) restore default integrations
 - 🔇(backend) remove Sentry duplicated warning/errors
 - 👷(ci) add sharding e2e tests  #467
-
-### Removed
-
-- 🗃️(teams) remove `slug` field
+- 🐛(dimail) fix unexpected status_code for proper debug #454
 
 ## [1.4.1] - 2024-10-23
 
