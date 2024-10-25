@@ -118,10 +118,7 @@ select = [
     "T20", # flake8-print
     "D1", # pydocstyle
 ]
-ignore= ["DJ001", "PLR2004"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
+ignore= ["DJ001", "PLR2004", "D105", "D106"]
 
 [tool.ruff.lint.isort]
 section-order = ["future","standard-library","django","third-party","people","first-party","local-folder"]
