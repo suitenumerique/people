@@ -40,6 +40,7 @@ class MailDomainViewSet(
     queryset = models.MailDomain.objects.all()
 
     def get_queryset(self):
+        """Restrict results to the current user's team."""
         return self.queryset.filter(accesses__user=self.request.user)
 
     def perform_create(self, serializer):
@@ -100,6 +101,7 @@ class MailDomainAccessViewSet(
     detail_serializer_class = serializers.MailDomainAccessSerializer
 
     def get_serializer_class(self):
+        """Chooses list or detail serializer according to the action."""
         if self.action in {"list", "retrieve"}:
             return self.list_serializer_class
         return self.detail_serializer_class

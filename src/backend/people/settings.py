@@ -555,6 +555,7 @@ class Development(Base):
     )
 
     def __init__(self):
+        """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
         self.INSTALLED_APPS += ["django_extensions", "drf_spectacular_sidecar"]
 

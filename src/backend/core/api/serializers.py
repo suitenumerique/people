@@ -34,6 +34,8 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
 
     def __init__(self, *args, **kwargs):
+        """Pass arguments to superclass except 'fields', then drop fields not listed therein."""
+
         # Don't pass the 'fields' arg up to the superclass
         fields = kwargs.pop("fields", None)
 

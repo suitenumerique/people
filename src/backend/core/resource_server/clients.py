@@ -31,6 +31,8 @@ class AuthorizationServerClient:
         timeout,
         proxy,
     ):
+        """Require at a minimum url, url_jwks and url_introspection."""
+
         if not url or not url_jwks or not url_introspection:
             raise ImproperlyConfigured(
                 "Could not instantiate AuthorizationServerClient, some parameters are missing."

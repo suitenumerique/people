@@ -33,6 +33,7 @@ class ResourceServerBackend:
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, authorization_server_client):
+        """Require client_id, client_secret set and authorization_server_client provided."""
         # pylint: disable=invalid-name
         self.UserModel = auth.get_user_model()
 

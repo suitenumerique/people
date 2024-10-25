@@ -33,6 +33,7 @@ class DebugViewNewMailboxHtml(DebugBaseView):
     template_name = "mail/html/new_mailbox.html"
 
     def get_context_data(self, **kwargs):
+        """Hardcode user credentials for debug setting."""
         context = super().get_context_data(**kwargs)
         context["mailbox_data"] = {
             "email": "john.doe@example.com",

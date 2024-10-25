@@ -18,6 +18,7 @@ class MailBoxPermission(core_permissions.IsAuthenticated):
     """Permission class to manage mailboxes for a mail domain"""
 
     def has_permission(self, request, view):
+        """Check permission based on domain."""
         domain = models.MailDomain.objects.get(slug=view.kwargs.get("domain_slug", ""))
         abilities = domain.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)

@@ -1,0 +1,1 @@
+"""Mailbox manager tests."""

@@ -148,8 +148,8 @@ class InvitationAdmin(admin.ModelAdmin):
     )
 
     def get_readonly_fields(self, request, obj=None):
+        """Mark all fields read only, i.e. disable update."""
         if obj:
-            # all fields read only = disable update
             return self.fields
         return self.readonly_fields
 
@@ -162,5 +162,6 @@ class InvitationAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id, extra_context=extra_context)
 
     def save_model(self, request, obj, form, change):
+        """Fill in current logged-in user as issuer."""
         obj.issuer = request.user
         obj.save()

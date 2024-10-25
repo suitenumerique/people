@@ -340,6 +340,7 @@ class TeamAccessViewSet(
         return context
 
     def get_serializer_class(self):
+        """Chooses list or detail serializer according to the action."""
         if self.action in {"list", "retrieve"}:
             return self.list_serializer_class
         return self.detail_serializer_class

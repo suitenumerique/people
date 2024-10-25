@@ -12,13 +12,13 @@ class IsAuthenticated(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        """Check auth token first."""
         return bool(request.auth) if request.auth else request.user.is_authenticated
 
 
 class IsSelf(IsAuthenticated):
     """
-    Allows access only to authenticated users. Alternative method checking the presence
-    of the auth token to avoid hitting the database.
+    Allows access only to user's own data.
     """
 
     def has_object_permission(self, request, view, obj):

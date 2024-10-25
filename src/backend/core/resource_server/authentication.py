@@ -19,6 +19,7 @@ class ResourceServerAuthentication(OIDCAuthentication):
     """Authenticate clients using the token received from the authorization server."""
 
     def __init__(self):
+        """Require authentication to be configured in order to instantiate."""
         super().__init__()
 
         try:
@@ -40,7 +41,7 @@ class ResourceServerAuthentication(OIDCAuthentication):
     def get_access_token(self, request):
         """Retrieve and decode the access token from the request.
 
-        This method overcharges the 'get_access_token' method from the parent class,
+        This method overrides the 'get_access_token' method from the parent class,
         to support service providers that would base64 encode the bearer token.
         """
 
