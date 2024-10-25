@@ -490,8 +490,10 @@ class Base(Configuration):
                 integrations=[DjangoIntegration()],
                 traces_sample_rate=0.1,
             )
-            with sentry_sdk.configure_scope() as scope:
-                scope.set_extra("application", "backend")
+
+            # Add the application name to the Sentry scope
+            scope = sentry_sdk.get_global_scope()
+            scope.set_tag("application", "backend")
 
             # Ignore the logs added by the DockerflowMiddleware
             ignore_logger("request.summary")
