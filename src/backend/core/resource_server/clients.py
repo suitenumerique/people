@@ -19,7 +19,7 @@ class AuthorizationServerClient:
     - Setting appropriate headers for secure communication as recommended by RFC drafts.
     """
 
-    # ruff: noqa: PLR0913 PLR017
+    # ruff: noqa: PLR0913 PLR0917
     # pylint: disable=too-many-positional-arguments
     # pylint: disable=too-many-arguments
     def __init__(
