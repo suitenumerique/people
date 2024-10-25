@@ -8,7 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
 - 🔧(sentry) restore default integrations
+- 🔇(backend) remove Sentry duplicated warning/errors
 - 👷(ci) add sharding e2e tests  #467
 
 ## [1.4.1] - 2024-10-23
