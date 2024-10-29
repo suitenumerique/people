@@ -156,8 +156,13 @@ def create_demo(stdout):
         queue.flush()
 
     with Timeit(stdout, "Creating domains"):
+        created = set()
         for _i in range(defaults.NB_OBJECTS["domains"]):
             name = fake.domain_name()
+            if name in created:
+                continue
+            created.add(name)
+
             slug = slugify(name)
 
             queue.push(

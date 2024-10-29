@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 
+- 💚(ci) improve E2E tests #492
 - 🔧(sentry) restore default integrations
 - 🔇(backend) remove Sentry duplicated warning/errors
 - 👷(ci) add sharding e2e tests  #467

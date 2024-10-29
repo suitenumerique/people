@@ -203,6 +203,10 @@ jobs:
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
+      - name: Save logs
+        if: always()
+        run: docker compose logs > src/frontend/apps/e2e/report/logs.txt
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
