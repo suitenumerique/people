@@ -246,6 +246,7 @@ class TeamViewSet(
     ordering_fields = ["created_at"]
     ordering = ["-created_at"]
     queryset = models.Team.objects.all()
+    pagination_class = None
 
     def get_queryset(self):
         """Custom queryset to get user related teams."""

@@ -8,13 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
-### Added
-
-- ✨(teams) register contacts on admin views 
-
 ### Changed
 
+- 🔥(teams) remove pagination of teams listing
 - 🔥(teams) remove search users by trigram
+
+### Added
+
+- ✨(teams) register contacts on admin views
 
 ### Fixed
 

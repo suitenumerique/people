@@ -47,58 +47,11 @@ def test_api_teams_list_authenticated():
     )
 
     assert response.status_code == HTTP_200_OK
-    results = response.json()["results"]
+    results = response.json()
+
     assert len(results) == 5
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
-
-
-@mock.patch.object(PageNumberPagination, "get_page_size", return_value=2)
-def test_api_teams_list_pagination(
-    _mock_page_size,
-):
-    """Pagination should work as expected."""
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    team_ids = [
-        str(access.team.id)
-        for access in factories.TeamAccessFactory.create_batch(3, user=user)
-    ]
-
-    # Get page 1
-    response = client.get(
-        "/api/v1.0/teams/",
-    )
-
-    assert response.status_code == HTTP_200_OK
-    content = response.json()
-
-    assert content["count"] == 3
-    assert content["next"] == "http://testserver/api/v1.0/teams/?page=2"
-    assert content["previous"] is None
-
-    assert len(content["results"]) == 2
-    for item in content["results"]:
-        team_ids.remove(item["id"])
-
-    # Get page 2
-    response = client.get(
-        "/api/v1.0/teams/?page=2",
-    )
-
-    assert response.status_code == HTTP_200_OK
-    content = response.json()
-
-    assert content["count"] == 3
-    assert content["next"] is None
-    assert content["previous"] == "http://testserver/api/v1.0/teams/"
-
-    assert len(content["results"]) == 1
-    team_ids.remove(content["results"][0]["id"])
-    assert team_ids == []
 
 
 def test_api_teams_list_authenticated_distinct():
@@ -118,8 +71,8 @@ def test_api_teams_list_authenticated_distinct():
 
     assert response.status_code == HTTP_200_OK
     content = response.json()
-    assert len(content["results"]) == 1
-    assert content["results"][0]["id"] == str(team.id)
+    assert len(content) == 1
+    assert content[0]["id"] == str(team.id)
 
 
 def test_api_teams_order():
@@ -142,7 +95,7 @@ def test_api_teams_order():
     assert response.status_code == 200
 
     response_data = response.json()
-    response_team_ids = [team["id"] for team in response_data["results"]]
+    response_team_ids = [team["id"] for team in response_data]
 
     team_ids.reverse()
     assert (
@@ -171,7 +124,7 @@ def test_api_teams_order_param():
 
     response_data = response.json()
 
-    response_team_ids = [team["id"] for team in response_data["results"]]
+    response_team_ids = [team["id"] for team in response_data]
 
     assert (
         response_team_ids == team_ids
