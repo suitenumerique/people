@@ -139,9 +139,9 @@ test.describe('Members Delete', () => {
     await createTeam(page, 'member-delete-6', browserName, 1);
 
     // To not be the only owner
-    await addNewMember(page, 0, 'Owner');
+    await addNewMember(page, 0, 'Owner', 'Jean');
 
-    const username = await addNewMember(page, 1, 'Administration', 'something');
+    const username = await addNewMember(page, 0, 'Administration', 'Monique');
 
     const table = page.getByLabel('List members card').getByRole('table');
 

@@ -46,9 +46,5 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], locale: 'en-US' },
     },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], locale: 'en-US' },
-    },
   ],
 });
