@@ -165,3 +165,14 @@ class InvitationAdmin(admin.ModelAdmin):
         """Fill in current logged-in user as issuer."""
         obj.issuer = request.user
         obj.save()
+
+
+@admin.register(models.Contact)
+class ContactAdmin(admin.ModelAdmin):
+    """Contact admin interface declaration."""
+
+    list_display = (
+        "full_name",
+        "owner",
+        "base",
+    )

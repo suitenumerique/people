@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(teams) register contacts on admin views 
+
 ### Fixed
 
 - 💚(ci) improve E2E tests #492
