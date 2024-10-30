@@ -78,28 +78,16 @@ def test_api_users_authenticated_list_by_email():
     user_ids = [user["id"] for user in response.json()["results"]]
     assert user_ids[0] == str(frank.id)
 
-    # Result that matches a trigram twice ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    # "Nicole Foole" matches twice on "ole"
-    assert user_ids == [str(nicole.id), str(frank.id)]
+    assert user_ids == [str(frank.id), str(nicole.id)]
 
-    # Even with a low similarity threshold, query should match expected emails
     response = client.get("/api/v1.0/users/?q=ool")
 
     assert response.status_code == HTTP_200_OK
     assert response.json()["results"] == [
-        {
-            "id": str(nicole.id),
-            "email": nicole.email,
-            "name": nicole.name,
-            "is_device": nicole.is_device,
-            "is_staff": nicole.is_staff,
-            "language": nicole.language,
-            "timezone": str(nicole.timezone),
-        },
         {
             "id": str(frank.id),
             "email": frank.email,
@@ -108,6 +96,15 @@ def test_api_users_authenticated_list_by_email():
             "is_staff": frank.is_staff,
             "language": frank.language,
             "timezone": str(frank.timezone),
+        },
+        {
+            "id": str(nicole.id),
+            "email": nicole.email,
+            "name": nicole.name,
+            "is_device": nicole.is_device,
+            "is_staff": nicole.is_staff,
+            "language": nicole.language,
+            "timezone": str(nicole.timezone),
         },
     ]
 
@@ -118,9 +115,9 @@ def test_api_users_authenticated_list_by_name():
     partial query on the name.
     """
     user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
-    dave = factories.UserFactory(name="dave bowman", email=None)
+    dave = factories.UserFactory(name="Dave bowman", email=None)
     nicole = factories.UserFactory(name="nicole foole", email=None)
-    frank = factories.UserFactory(name="frank poole", email=None)
+    frank = factories.UserFactory(name="frank poolé", email=None)
     factories.UserFactory(name="heywood floyd", email=None)
 
     client = APIClient()
@@ -128,7 +125,7 @@ def test_api_users_authenticated_list_by_name():
 
     # Full query should work
     response = client.get(
-        "/api/v1.0/users/?q=david.bowman@work.com",
+        "/api/v1.0/users/?q=dave",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -142,28 +139,16 @@ def test_api_users_authenticated_list_by_name():
     user_ids = [user["id"] for user in response.json()["results"]]
     assert user_ids[0] == str(frank.id)
 
-    # Result that matches a trigram twice ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
-    # "Nicole Foole" matches twice on "ole"
-    assert user_ids == [str(nicole.id), str(frank.id)]
+    assert user_ids == [str(frank.id), str(nicole.id)]
 
-    # Even with a low similarity threshold, query should match expected user
-    response = client.get("/api/v1.0/users/?q=ool")
+    response = client.get("/api/v1.0/users/?q=oole")
 
     assert response.status_code == HTTP_200_OK
     assert response.json()["results"] == [
-        {
-            "id": str(nicole.id),
-            "email": nicole.email,
-            "name": nicole.name,
-            "is_device": nicole.is_device,
-            "is_staff": nicole.is_staff,
-            "language": nicole.language,
-            "timezone": str(nicole.timezone),
-        },
         {
             "id": str(frank.id),
             "email": frank.email,
@@ -172,6 +157,15 @@ def test_api_users_authenticated_list_by_name():
             "is_staff": frank.is_staff,
             "language": frank.language,
             "timezone": str(frank.timezone),
+        },
+        {
+            "id": str(nicole.id),
+            "email": nicole.email,
+            "name": nicole.name,
+            "is_device": nicole.is_device,
+            "is_staff": nicole.is_staff,
+            "language": nicole.language,
+            "timezone": str(nicole.timezone),
         },
     ]
 
@@ -184,22 +178,18 @@ def test_api_users_authenticated_list_by_name_and_email():
 
     user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
     nicole = factories.UserFactory(email="nicole_foole@work.com", name="nicole foole")
-    frank = factories.UserFactory(email="oleg_poole@work.com", name=None)
+    oleg = factories.UserFactory(email="oleg_poole@work.com", name=None)
     david = factories.UserFactory(email=None, name="david role")
 
     client = APIClient()
     client.force_login(user)
 
-    # Result that matches a trigram in name and email ranks better than result that matches once
     response = client.get("/api/v1.0/users/?q=ole")
 
     assert response.status_code == HTTP_200_OK
     user_ids = [user["id"] for user in response.json()["results"]]
 
-    # "Nicole Foole" matches twice on "ole" in her name and twice on "ole" in her email
-    # "Oleg poole" matches twice on "ole" in her email
-    # "David role" matches once on "ole" in his name
-    assert user_ids == [str(nicole.id), str(frank.id), str(david.id)]
+    assert user_ids == [str(david.id), str(oleg.id), str(nicole.id)]
 
 
 def test_api_users_authenticated_list_exclude_users_already_in_team(

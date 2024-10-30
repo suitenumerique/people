@@ -182,9 +182,7 @@ class UserViewSet(
     User viewset for all interactions with user infos and teams.
 
     GET /api/users/&q=query
-        Return a list of users whose email matches the query. Similarity is
-        calculated using trigram similarity, allowing for partial,
-        case-insensitive matches and accented queries.
+        Return a list of users whose email or name matches the query.
     """
 
     permission_classes = [permissions.IsSelf]
@@ -207,22 +205,11 @@ class UserViewSet(
             if team_id := self.request.GET.get("team_id", ""):
                 queryset = queryset.exclude(teams__id=team_id)
 
-            # Search by case-insensitive and accent-insensitive trigram similarity
+            # Search by case-insensitive and accent-insensitive
             if query := self.request.GET.get("q", ""):
-                similarity = Max(
-                    TrigramSimilarity(
-                        Coalesce(Func("email", function="unaccent"), Value("")),
-                        Func(Value(query), function="unaccent"),
-                    )
-                    + TrigramSimilarity(
-                        Coalesce(Func("name", function="unaccent"), Value("")),
-                        Func(Value(query), function="unaccent"),
-                    )
-                )
-                queryset = (
-                    queryset.annotate(similarity=similarity)
-                    .filter(similarity__gte=SIMILARITY_THRESHOLD)
-                    .order_by("-similarity")
+                queryset = queryset.filter(
+                    Q(name__unaccent__icontains=query)
+                    | Q(email__unaccent__icontains=query)
                 )
 
         return queryset

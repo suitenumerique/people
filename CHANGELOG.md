@@ -12,6 +12,10 @@ and this project adheres to
 
 - ✨(teams) register contacts on admin views 
 
+### Changed
+
+- 🔥(teams) remove search users by trigram
+
 ### Fixed
 
 - 💚(ci) improve E2E tests #492
