@@ -1,11 +1,6 @@
-import {
-  DefinedInitialDataInfiniteOptions,
-  InfiniteData,
-  QueryKey,
-  useInfiniteQuery,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
+import { APIError, errorCauses, fetchAPI } from '@/api';
 
 import { Team } from '../types';
 
@@ -17,18 +12,14 @@ export enum TeamsOrdering {
 export type TeamsParams = {
   ordering: TeamsOrdering;
 };
-type TeamsAPIParams = TeamsParams & {
-  page: number;
-};
 
-type TeamsResponse = APIList<Team>;
+type TeamsResponse = Team[];
 
 export const getTeams = async ({
   ordering,
-  page,
-}: TeamsAPIParams): Promise<TeamsResponse> => {
-  const orderingQuery = ordering ? `&ordering=${ordering}` : '';
-  const response = await fetchAPI(`teams/?page=${page}${orderingQuery}`);
+}: TeamsParams): Promise<TeamsResponse> => {
+  const orderingQuery = ordering ? `?ordering=${ordering}` : '';
+  const response = await fetchAPI(`teams/${orderingQuery}`);
 
   if (!response.ok) {
     throw new APIError('Failed to get the teams', await errorCauses(response));
@@ -39,33 +30,9 @@ export const getTeams = async ({
 
 export const KEY_LIST_TEAM = 'teams';
 
-export function useTeams(
-  param: TeamsParams,
-  queryConfig?: DefinedInitialDataInfiniteOptions<
-    TeamsResponse,
-    APIError,
-    InfiniteData<TeamsResponse>,
-    QueryKey,
-    number
-  >,
-) {
-  return useInfiniteQuery<
-    TeamsResponse,
-    APIError,
-    InfiniteData<TeamsResponse>,
-    QueryKey,
-    number
-  >({
-    initialPageParam: 1,
-    queryKey: [KEY_LIST_TEAM, param],
-    queryFn: ({ pageParam }) =>
-      getTeams({
-        ...param,
-        page: pageParam,
-      }),
-    getNextPageParam(lastPage, allPages) {
-      return lastPage.next ? allPages.length + 1 : undefined;
-    },
-    ...queryConfig,
+export function useTeams(params: TeamsParams) {
+  return useQuery({
+    queryKey: [KEY_LIST_TEAM, params],
+    queryFn: () => getTeams(params),
   });
 }

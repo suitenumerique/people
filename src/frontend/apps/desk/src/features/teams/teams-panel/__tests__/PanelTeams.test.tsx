@@ -23,10 +23,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders with no team to display', async () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 0,
-      results: [],
-    });
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, []);
 
     render(<TeamList />, { wrapper: AppWrapper });
 
@@ -40,16 +37,13 @@ describe('PanelTeams', () => {
   });
 
   it('renders an empty team', async () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 1,
-      results: [
-        {
-          id: '1',
-          name: 'Team 1',
-          accesses: [],
-        },
-      ],
-    });
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, [
+      {
+        id: '1',
+        name: 'Team 1',
+        accesses: [],
+      },
+    ]);
 
     render(<TeamList />, { wrapper: AppWrapper });
 
@@ -59,21 +53,18 @@ describe('PanelTeams', () => {
   });
 
   it('renders a team with only 1 member', async () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 1,
-      results: [
-        {
-          id: '1',
-          name: 'Team 1',
-          accesses: [
-            {
-              id: '1',
-              role: 'owner',
-            },
-          ],
-        },
-      ],
-    });
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, [
+      {
+        id: '1',
+        name: 'Team 1',
+        accesses: [
+          {
+            id: '1',
+            role: 'owner',
+          },
+        ],
+      },
+    ]);
 
     render(<TeamList />, { wrapper: AppWrapper });
 
@@ -83,25 +74,22 @@ describe('PanelTeams', () => {
   });
 
   it('renders a non-empty team', () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 1,
-      results: [
-        {
-          id: '1',
-          name: 'Team 1',
-          accesses: [
-            {
-              id: '1',
-              role: 'admin',
-            },
-            {
-              id: '2',
-              role: 'member',
-            },
-          ],
-        },
-      ],
-    });
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, [
+      {
+        id: '1',
+        name: 'Team 1',
+        accesses: [
+          {
+            id: '1',
+            role: 'admin',
+          },
+          {
+            id: '2',
+            role: 'member',
+          },
+        ],
+      },
+    ]);
 
     render(<TeamList />, { wrapper: AppWrapper });
 
@@ -109,7 +97,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders the error', async () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, {
       status: 500,
     });
 
@@ -125,10 +113,7 @@ describe('PanelTeams', () => {
   });
 
   it('renders with team panel open', async () => {
-    fetchMock.mock(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 1,
-      results: [],
-    });
+    fetchMock.mock(`end:/teams/?ordering=-created_at`, []);
 
     render(<Panel />, { wrapper: AppWrapper });
 
@@ -140,10 +125,7 @@ describe('PanelTeams', () => {
   });
 
   it('closes and opens the team panel', async () => {
-    fetchMock.get(`end:/teams/?page=1&ordering=-created_at`, {
-      count: 1,
-      results: [],
-    });
+    fetchMock.get(`end:/teams/?ordering=-created_at`, []);
 
     render(<Panel />, { wrapper: AppWrapper });
 

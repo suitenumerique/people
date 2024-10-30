@@ -26,9 +26,9 @@ const payloadGetTeams = {
 };
 
 const mockApiRequests = (page: Page) => {
-  void page.route('**/teams/?page=1&ordering=-created_at', (route) => {
+  void page.route('**/teams/?ordering=-created_at', (route) => {
     void route.fulfill({
-      json: payloadGetTeams,
+      json: payloadGetTeams.results,
     });
   });
 };
