@@ -28,7 +28,9 @@ def test_commands_create_demo():
     """The create_demo management command should create objects as expected."""
     call_command("create_demo")
 
-    assert models.User.objects.count() == TEST_NB_OBJECTS["users"]
+    assert (
+        models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3
+    )  # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
     assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"]
