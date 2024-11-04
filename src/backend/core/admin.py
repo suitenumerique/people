@@ -108,11 +108,20 @@ class UserAdmin(auth_admin.UserAdmin):
     get_user.short_description = _("User")
 
 
+class TeamServiceProviderInline(admin.TabularInline):
+    """Inline admin class for service providers."""
+
+    can_delete = False
+    model = models.Team.service_providers.through
+    extra = 0
+
+
 @admin.register(models.Team)
 class TeamAdmin(admin.ModelAdmin):
     """Team admin interface declaration."""
 
-    inlines = (TeamAccessInline, TeamWebhookInline)
+    inlines = (TeamAccessInline, TeamWebhookInline, TeamServiceProviderInline)
+    exclude = ("service_providers",)  # Handled by the inline
     list_display = (
         "name",
         "created_at",
@@ -188,6 +197,14 @@ class ContactAdmin(admin.ModelAdmin):
     )
 
 
+class OrganizationServiceProviderInline(admin.TabularInline):
+    """Inline admin class for service providers."""
+
+    can_delete = False
+    model = models.Organization.service_providers.through
+    extra = 0
+
+
 @admin.register(models.Organization)
 class OrganizationAdmin(admin.ModelAdmin):
     """Admin interface for organizations."""
@@ -198,7 +215,8 @@ class OrganizationAdmin(admin.ModelAdmin):
         "updated_at",
     )
     search_fields = ("name",)
-    inlines = (OrganizationAccessInline,)
+    inlines = (OrganizationAccessInline, OrganizationServiceProviderInline)
+    exclude = ("service_providers",)  # Handled by the inline
 
 
 @admin.register(models.OrganizationAccess)
@@ -213,3 +231,17 @@ class OrganizationAccessAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
+
+
+@admin.register(models.ServiceProvider)
+class ServiceProviderAdmin(admin.ModelAdmin):
+    """Admin interface for service providers."""
+
+    list_display = (
+        "name",
+        "audience_id",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("name", "audience_id")
+    readonly_fields = ("created_at", "updated_at")

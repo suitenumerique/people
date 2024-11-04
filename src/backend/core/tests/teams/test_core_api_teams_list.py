@@ -2,10 +2,7 @@
 Tests for Teams API endpoint in People's core app: list
 """
 
-from unittest import mock
-
 import pytest
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
@@ -123,7 +120,6 @@ def test_api_teams_order_param():
     assert response.status_code == 200
 
     response_data = response.json()
-
     response_team_ids = [team["id"] for team in response_data]
 
     assert (

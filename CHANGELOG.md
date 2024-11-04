@@ -25,6 +25,7 @@ and this project adheres to
 
 - ✨(domains) allow creation of "pending" mailboxes
 - ✨(teams) allow team management for team admins/owners #509
+- ✨(backend) add ServiceProvider #522
 
 ### Fixed
 

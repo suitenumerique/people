@@ -53,3 +53,20 @@ class ResourceServerAuthentication(OIDCAuthentication):
             pass
 
         return access_token
+
+    def authenticate(self, request):
+        """
+        Authenticate the request and return a tuple of (user, token) or None.
+
+        We override the 'authenticate' method from the parent class to store
+        the introspected token audience inside the request.
+        """
+        result = super().authenticate(request)  # Might raise AuthenticationFailed
+
+        if result is None:  # Case when there is no access token
+            return None
+
+        # Note: at this stage, the request is a "drf_request" object
+        request.resource_server_token_audience = self.backend.token_origin_audience
+
+        return result

@@ -180,6 +180,13 @@ class TeamFactory(factory.django.DjangoModelFactory):
             else:
                 TeamAccessFactory(team=self, user=user_entry[0], role=user_entry[1])
 
+    @factory.post_generation
+    def service_providers(self, create, extracted, **kwargs):
+        """Add service providers to team from a given list of service providers."""
+        if not create or not extracted:
+            return
+        self.service_providers.set(extracted)
+
 
 class TeamAccessFactory(factory.django.DjangoModelFactory):
     """Create fake team user accesses for testing."""
@@ -212,3 +219,12 @@ class InvitationFactory(factory.django.DjangoModelFactory):
     email = factory.Faker("email")
     role = factory.fuzzy.FuzzyChoice([role[0] for role in models.RoleChoices.choices])
     issuer = factory.SubFactory(UserFactory)
+
+
+class ServiceProviderFactory(factory.django.DjangoModelFactory):
+    """A factory to create service providers for testing purposes."""
+
+    class Meta:
+        model = models.ServiceProvider
+
+    audience_id = factory.Faker("uuid4")

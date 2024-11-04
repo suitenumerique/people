@@ -188,3 +188,34 @@ def test_api_teams_update_administrator_or_owner_of_another():
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
     assert team_values == old_team_values
+
+
+def test_api_teams_update_authenticated_owners_add_service_providers():
+    """
+    Owners of a team should be allowed to update its service providers.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    new_team_values = serializers.TeamSerializer(instance=team).data
+
+    service_provider_1 = factories.ServiceProviderFactory()
+    service_provider_2 = factories.ServiceProviderFactory()
+    new_team_values["service_providers"] = [
+        service_provider_1.pk,
+        service_provider_2.pk,
+    ]
+
+    response = client.put(
+        f"/api/v1.0/teams/{team.id!s}/",
+        new_team_values,
+        format="json",
+    )
+    assert response.status_code == HTTP_200_OK
+
+    team.refresh_from_db()
+    assert team.service_providers.count() == 2
+    assert set(team.service_providers.all()) == {service_provider_1, service_provider_2}

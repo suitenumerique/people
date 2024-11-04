@@ -4,6 +4,7 @@ from rest_framework import exceptions, serializers
 from timezone_field.rest_framework import TimeZoneSerializerField
 
 from core import models
+from core.models import ServiceProvider
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -205,6 +206,9 @@ class TeamSerializer(serializers.ModelSerializer):
     """Serialize teams."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
+    service_providers = serializers.PrimaryKeyRelatedField(
+        queryset=ServiceProvider.objects.all(), many=True, required=False
+    )
 
     class Meta:
         model = models.Team
@@ -215,6 +219,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "abilities",
             "created_at",
             "updated_at",
+            "service_providers",
         ]
         read_only_fields = [
             "id",
@@ -226,6 +231,13 @@ class TeamSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a new team with organization enforcement."""
+        # When called as a resource server, we enforce the team service provider
+        if sp_audience := self.context.get("from_service_provider_audience", None):
+            service_provider, _created = models.ServiceProvider.objects.get_or_create(
+                audience_id=sp_audience
+            )
+            validated_data["service_providers"] = [service_provider]
+
         # Note: this is not the purpose of this API to check the user has an organization
         return super().create(
             validated_data=validated_data

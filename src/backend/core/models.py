@@ -173,6 +173,34 @@ class Contact(BaseModel):
             raise exceptions.ValidationError({"data": [error_message]}) from e
 
 
+class ServiceProvider(BaseModel):
+    """
+    Represents a service provider that will consume our information.
+
+    Organization uses this model to define the list of SP available to their users.
+    Team uses this model to define their visibility to the various SP.
+    """
+
+    name = models.CharField(_("name"), max_length=256, unique=True)
+    audience_id = models.CharField(
+        _("audience id"), max_length=256, unique=True, db_index=True
+    )
+
+    class Meta:
+        db_table = "people_service_provider"
+        verbose_name = _("service provider")
+        verbose_name_plural = _("service providers")
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        """Enforce name (even if ugly) from the `audience_id` field."""
+        if not self.name:
+            self.name = self.audience_id  # ok, same length
+        return super().save(*args, **kwargs)
+
+
 class OrganizationManager(models.Manager):
     """
     Custom manager for the Organization model, to manage complexity/automation.
@@ -280,6 +308,12 @@ class Organization(BaseModel):
         default=list,
         blank=True,
         validators=[validate_unique_domain],
+    )
+
+    service_providers = models.ManyToManyField(
+        ServiceProvider,
+        related_name="organizations",
+        blank=True,
     )
 
     objects = OrganizationManager()
@@ -539,6 +573,11 @@ class OrganizationAccess(BaseModel):
 class Team(BaseModel):
     """
     Represents the link between teams and users, specifying the role a user has in a team.
+
+    When a team is created from here, the user have to choose which Service Providers
+    can see it.
+    When a team is created from a Service Provider this one is automatically set in the
+    Team `service_providers`.
     """
 
     name = models.CharField(max_length=100)
@@ -555,6 +594,11 @@ class Team(BaseModel):
         related_name="teams",
         null=True,  # Need to be set to False when everything is migrated
         blank=True,  # Need to be set to False when everything is migrated
+    )
+    service_providers = models.ManyToManyField(
+        ServiceProvider,
+        related_name="teams",
+        blank=True,
     )
 
     class Meta:

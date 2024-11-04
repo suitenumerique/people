@@ -61,6 +61,10 @@ class ResourceServerBackend:
             token_introspection={"essential": True},
         )
 
+        # Declare the token origin audience: to know where the token comes from
+        # and store it for further use in the application
+        self.token_origin_audience = None
+
     # pylint: disable=unused-argument
     def get_or_create_user(self, access_token, id_token, payload):
         """Maintain API compatibility with OIDCAuthentication class from mozilla-django-oidc
@@ -85,6 +89,8 @@ class ResourceServerBackend:
         that extends RFC 7662 by returning a signed and encrypted JWT for stronger assurance that
         the authorization server issued the token introspection response.
         """
+        self.token_origin_audience = None  # Reset the token origin audience
+
         jwt = self._introspect(access_token)
         claims = self._verify_claims(jwt)
         user_info = self._verify_user_info(claims["token_introspection"])
@@ -99,6 +105,8 @@ class ResourceServerBackend:
         except self.UserModel.DoesNotExist:
             logger.debug("Login failed: No user with %s found", sub)
             return None
+
+        self.token_origin_audience = str(user_info["aud"])
 
         return user
 
@@ -126,6 +134,12 @@ class ResourceServerBackend:
             message = "Introspection response contains any required scopes."
             logger.debug(message)
             raise SuspiciousOperation(message)
+
+        audience = introspection_response.get("aud", None)
+        if not audience:
+            raise SuspiciousOperation(
+                "Introspection response does not provide source audience."
+            )
 
         return introspection_response
 
@@ -218,6 +232,8 @@ class ResourceServerBackend:
 
 class ResourceServerImproperlyConfiguredBackend:
     """Fallback backend for improperly configured Resource Servers."""
+
+    token_origin_audience = None
 
     def get_or_create_user(self, access_token, id_token, payload):
         """Indicate that the Resource Server is improperly configured."""

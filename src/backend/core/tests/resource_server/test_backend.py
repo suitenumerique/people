@@ -296,7 +296,7 @@ def test_introspect_public_key_import_failure(
 
 def test_verify_user_info_success(resource_server_backend):
     """Test '_verify_user_info' with a successful response."""
-    introspection_response = {"active": True, "scope": "groups"}
+    introspection_response = {"active": True, "scope": "groups", "aud": "123"}
 
     result = resource_server_backend._verify_user_info(introspection_response)
     assert result == introspection_response
@@ -333,7 +333,7 @@ def test_get_user_success(resource_server_backend):
 
     access_token = "valid_access_token"
     mock_jwt = Mock()
-    mock_claims = {"token_introspection": {"sub": "user123"}}
+    mock_claims = {"token_introspection": {"sub": "user123", "aud": "123"}}
     mock_user = Mock()
 
     resource_server_backend._introspect = Mock(return_value=mock_jwt)
