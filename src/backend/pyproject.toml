@@ -50,7 +50,6 @@ dependencies = [
     "joserfc==1.0.0",
     "requests==2.32.3",
     "sentry-sdk[django]==2.17.0",
-    "url-normalize==1.4.3",
     "whitenoise==6.8.2",
     "mozilla-django-oidc==4.0.1",
 ]

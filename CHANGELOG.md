@@ -8,8 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
-### Changed
+### Removed
 
+- ⬆️(dependencies) remove unneeded dependencies
 - 🔥(teams) remove pagination of teams listing
 - 🔥(teams) remove search users by trigram
 
