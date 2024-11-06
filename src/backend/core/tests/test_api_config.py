@@ -20,7 +20,13 @@ def test_api_config_anonymous():
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
-        "FEATURES": {"TEAMS": True},
+        "FEATURES": {
+            "CONTACTS_DISPLAY": True,
+            "CONTACTS_CREATE": True,
+            "MAILBOXES_CREATE": True,
+            "TEAMS": True,
+            "TEAMS_CREATE": True,
+        },
         "RELEASE": "NA",
     }
 
@@ -36,6 +42,12 @@ def test_api_config_authenticated():
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
-        "FEATURES": {"TEAMS": True},
+        "FEATURES": {
+            "CONTACTS_DISPLAY": True,
+            "CONTACTS_CREATE": True,
+            "MAILBOXES_CREATE": True,
+            "TEAMS": True,
+            "TEAMS_CREATE": True,
+        },
         "RELEASE": "NA",
     }

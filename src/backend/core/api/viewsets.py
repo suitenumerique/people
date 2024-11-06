@@ -85,16 +85,23 @@ class SerializerPerActionMixin:
 
     This mixin is useful to avoid to define a serializer class for each action in the
     `get_serializer_class` method.
-    """
 
-    serializer_classes: dict[str, type] = {}
-    default_serializer_class: type = None
+    Example:
+    ```
+    class MyViewSet(SerializerPerActionMixin, viewsets.GenericViewSet):
+        serializer_class = MySerializer
+        list_serializer_class = MyListSerializer
+        retrieve_serializer_class = MyRetrieveSerializer
+    ```
+    """
 
     def get_serializer_class(self):
         """
         Return the serializer class to use depending on the action.
         """
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
+        if serializer_class := getattr(self, f"{self.action}_serializer_class", None):
+            return serializer_class
+        return super().get_serializer_class()
 
 
 class Pagination(pagination.PageNumberPagination):
@@ -176,7 +183,10 @@ class ContactViewSet(
 
 
 class UserViewSet(
-    mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.ListModelMixin
+    SerializerPerActionMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
 ):
     """
     User viewset for all interactions with user infos and teams.
