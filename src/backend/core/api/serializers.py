@@ -71,6 +71,39 @@ class UserSerializer(DynamicFieldsModelSerializer):
         read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
 
 
+class UserMeSerializer(UserSerializer):
+    """
+    Serialize the current user.
+
+    Same as the `UserSerializer` but with abilities.
+    """
+
+    abilities = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.User
+        fields = [
+            "email",
+            "id",
+            "is_device",
+            "is_staff",
+            "language",
+            "name",
+            "timezone",
+            # added fields
+            "abilities",
+        ]
+        read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
+
+    def get_abilities(self, user: models.User) -> dict:
+        """Return abilities of the logged-in user on the instance."""
+        if user != self.context["request"].user:  # Should not happen
+            raise RuntimeError(
+                "UserMeSerializer.get_abilities: user is not the same as the request user",
+            )
+        return user.get_abilities()
+
+
 class TeamAccessSerializer(serializers.ModelSerializer):
     """Serialize team accesses."""
 

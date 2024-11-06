@@ -440,6 +440,63 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             raise ValueError("You must first set an email for the user.")
         mail.send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def get_abilities(self):
+        """
+        Return the user permissions at the application level (ie feature availability).
+
+        Note: this is for display purposes only for now.
+
+        - Contacts view and creation is globally available (or not) for now.
+        - Teams view is available if the user is owner or admin of at least
+        one Team for now. It allows to restrict users knowing the existence of
+        this feature.
+        - Teams creation is globally available (or not) for now.
+        - Mailboxes view is available if the user has access to at least one
+        MailDomain for now. It allows to restrict users knowing the existence of
+        this feature.
+        - Mailboxes creation is globally available (or not) for now.
+        """
+        user_info = (
+            self._meta.model.objects.filter(pk=self.pk)
+            .annotate(
+                teams_can_view=models.Exists(
+                    self.accesses.model.objects.filter(  # pylint: disable=no-member
+                        user=models.OuterRef("pk"),
+                        role__in=[RoleChoices.OWNER, RoleChoices.ADMIN],
+                    )
+                ),
+                mailboxes_can_view=models.Exists(
+                    self.mail_domain_accesses.model.objects.filter(  # pylint: disable=no-member
+                        user=models.OuterRef("pk")
+                    )
+                ),
+            )
+            .only("id")
+            .get()
+        )
+
+        teams_can_view = user_info.teams_can_view
+        mailboxes_can_view = user_info.mailboxes_can_view
+
+        return {
+            "contacts": {
+                "can_view": settings.FEATURES["CONTACTS_DISPLAY"],
+                "can_create": (
+                    settings.FEATURES["CONTACTS_DISPLAY"]
+                    and settings.FEATURES["CONTACTS_CREATE"]
+                ),
+            },
+            "teams": {
+                "can_view": teams_can_view and settings.FEATURES["TEAMS"],
+                "can_create": teams_can_view and settings.FEATURES["TEAMS_CREATE"],
+            },
+            "mailboxes": {
+                "can_view": mailboxes_can_view,
+                "can_create": mailboxes_can_view
+                and settings.FEATURES["MAILBOXES_CREATE"],
+            },
+        }
+
 
 class OrganizationAccess(BaseModel):
     """

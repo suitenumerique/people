@@ -451,17 +451,32 @@ class Base(Configuration):
         )
     )
 
-    FEATURES = {
-        "TEAMS": values.BooleanValue(
-            default=True, environ_name="FEATURE_TEAMS", environ_prefix=None
-        ),
-    }
-
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
         """Environment in which the application is launched."""
         return self.__class__.__name__.lower()
+
+    # pylint: disable=invalid-name
+    @property
+    def FEATURES(self):
+        """Feature flags for the application."""
+        FEATURE_FLAGS: set = {
+            "CONTACTS_CREATE",  # Used in the users/me/ endpoint
+            "CONTACTS_DISPLAY",  # Used in the users/me/ endpoint
+            "MAILBOXES_CREATE",  # Used in the users/me/ endpoint
+            "TEAMS",
+            "TEAMS_CREATE",  # Used in the users/me/ endpoint
+        }
+
+        return {
+            feature: values.BooleanValue(
+                default=True,
+                environ_name=f"FEATURE_{feature}",
+                environ_prefix=None,
+            )
+            for feature in FEATURE_FLAGS
+        }
 
     # pylint: disable=invalid-name
     @property

@@ -16,6 +16,9 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 from core.api.viewsets import Pagination
+from core.factories import TeamAccessFactory
+
+from mailbox_manager.factories import MailDomainAccessFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -458,6 +461,77 @@ def test_api_users_retrieve_me_authenticated():
         "timezone": str(user.timezone),
         "is_device": False,
         "is_staff": False,
+        "abilities": {
+            "contacts": {"can_create": True, "can_view": True},
+            "mailboxes": {"can_create": False, "can_view": False},
+            "teams": {"can_create": False, "can_view": False},
+        },
+    }
+
+
+def test_api_users_retrieve_me_authenticated_abilities():
+    """
+    Authenticated users should be able to retrieve their own user via the "/users/me" path
+    with the proper abilities.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    # Define profile contact
+    contact = factories.ContactFactory(owner=user)
+    user.profile_contact = contact
+    user.save()
+
+    factories.UserFactory.create_batch(2)
+
+    # Test the mailboxes abilities
+    mail_domain_access = MailDomainAccessFactory(user=user)
+
+    response = client.get("/api/v1.0/users/me/")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["abilities"] == {
+        "contacts": {"can_create": True, "can_view": True},
+        "mailboxes": {"can_create": True, "can_view": True},
+        "teams": {"can_create": False, "can_view": False},
+    }
+
+    # Test the teams abilities - user is not an admin/owner
+    team_access = TeamAccessFactory(user=user, role=models.RoleChoices.MEMBER)
+    response = client.get("/api/v1.0/users/me/")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["abilities"] == {
+        "contacts": {"can_create": True, "can_view": True},
+        "mailboxes": {"can_create": True, "can_view": True},
+        "teams": {"can_create": False, "can_view": False},
+    }
+
+    # Test the teams abilities - user is an admin/owner
+    team_access.role = models.RoleChoices.ADMIN
+    team_access.save()
+
+    response = client.get("/api/v1.0/users/me/")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["abilities"] == {
+        "contacts": {"can_create": True, "can_view": True},
+        "mailboxes": {"can_create": True, "can_view": True},
+        "teams": {"can_create": True, "can_view": True},
+    }
+
+    # Test the mailboxes abilities - user has no mail domain access anymore
+    mail_domain_access.delete()
+
+    response = client.get("/api/v1.0/users/me/")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json()["abilities"] == {
+        "contacts": {"can_create": True, "can_view": True},
+        "mailboxes": {"can_create": False, "can_view": False},
+        "teams": {"can_create": True, "can_view": True},
     }
 
 

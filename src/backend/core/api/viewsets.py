@@ -188,6 +188,7 @@ class UserViewSet(
     permission_classes = [permissions.IsSelf]
     queryset = models.User.objects.all().order_by("-created_at")
     serializer_class = serializers.UserSerializer
+    get_me_serializer_class = serializers.UserMeSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
     pagination_class = Pagination
 
@@ -225,9 +226,7 @@ class UserViewSet(
         Return information on currently logged user
         """
         user = request.user
-        return response.Response(
-            self.serializer_class(user, context={"request": request}).data
-        )
+        return response.Response(self.get_serializer(user).data)
 
 
 class TeamViewSet(

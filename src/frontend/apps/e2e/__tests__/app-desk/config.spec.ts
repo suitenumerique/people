@@ -22,7 +22,13 @@ test.describe('Config', () => {
         ['en-us', 'English'],
         ['fr-fr', 'French'],
       ],
-      FEATURES: { TEAMS: true },
+      FEATURES: {
+        CONTACTS_CREATE: true,
+        CONTACTS_DISPLAY: true,
+        MAILBOXES_CREATE: true,
+        TEAMS_CREATE: true,
+        TEAMS: true,
+      },
       RELEASE: 'NA',
     });
   });
