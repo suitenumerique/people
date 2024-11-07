@@ -82,9 +82,10 @@ class DimailAPIClient:
         """Send a domain creation request to dimail API."""
 
         payload = {
-            "domain": domain_name,
-            "context": domain_name,  # for now, we put each domain on its own context
-            "features": ["webmail", "mailboxes"],
+            "name": domain_name,
+            "context_name": domain_name,  # for now, we put each domain on its own context
+            "features": ["webmail", "mailbox"],
+            "delivery": "virtual",
         }
         try:
             response = session.post(
@@ -159,7 +160,10 @@ class DimailAPIClient:
 
     def pass_dimail_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
-        error_content = json.loads(response.content.decode(response.encoding).replace("'", '"'))
+        try:
+            error_content = json.loads(response.content.decode(response.encoding).replace("'", '"'))
+        except:
+            error_content = response.content.decode(response.encoding)
 
         logger.error(
             "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
