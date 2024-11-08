@@ -21,6 +21,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(mail) fix display button on outlook
 - 💚(ci) improve E2E tests #492
 - 🔧(sentry) restore default integrations
 - 🔇(backend) remove Sentry duplicated warning/errors

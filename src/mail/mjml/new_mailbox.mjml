@@ -26,7 +26,7 @@
       </mj-section>
       <mj-section padding="0px 20px">
         <mj-column>
-          <mj-button href="//{{ webmail_url }}" background-color="#000091" color="white" padding="30px 0px">
+          <mj-button background-color="#000091" color="white" href="{{ webmail_url }}">
             {% trans "Go to La Messagerie" %}
           </mj-button>
           <!-- Signature -->
