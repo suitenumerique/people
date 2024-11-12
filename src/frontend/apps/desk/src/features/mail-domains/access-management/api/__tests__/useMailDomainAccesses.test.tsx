@@ -35,7 +35,11 @@ describe('getMailDomainAccesses', () => {
         {
           id: '2',
           role: Role.VIEWER,
-          user: { id: '12', name: 'username2', email: 'user2@test.com' },
+          user: {
+            id: '12',
+            name: 'username2',
+            email: 'user2@test.com',
+          },
           can_set_role_to: [Role.VIEWER],
         },
       ],

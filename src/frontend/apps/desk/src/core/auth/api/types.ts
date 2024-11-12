@@ -9,4 +9,14 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  abilities?: {
+    mailboxes: UserAbilities;
+    contacts: UserAbilities;
+    teams: UserAbilities;
+  };
 }
+
+export type UserAbilities = {
+  can_view?: boolean;
+  can_create?: boolean;
+};

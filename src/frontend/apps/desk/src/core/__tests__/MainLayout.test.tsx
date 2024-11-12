@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { AppWrapper } from '@/tests/utils';
 
 import { MainLayout } from '../MainLayout';
+import { useAuthStore } from '../auth';
 import { useConfigStore } from '../config';
 
 jest.mock('next/navigation', () => ({
@@ -18,6 +19,19 @@ describe('MainLayout', () => {
   it('checks menu rendering with team feature', () => {
     useConfigStore.setState({
       config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
+    });
+    useAuthStore.setState({
+      authenticated: true,
+      userData: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        abilities: {
+          contacts: { can_view: true },
+          teams: { can_view: true },
+          mailboxes: { can_view: true },
+        },
+      },
     });
 
     render(<MainLayout />, { wrapper: AppWrapper });
@@ -35,9 +49,56 @@ describe('MainLayout', () => {
     ).toBeInTheDocument();
   });
 
+  it('checks menu rendering with no abilities', () => {
+    useConfigStore.setState({
+      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
+    });
+    useAuthStore.setState({
+      authenticated: true,
+      userData: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        abilities: {
+          contacts: { can_view: false },
+          teams: { can_view: false },
+          mailboxes: { can_view: false },
+        },
+      },
+    });
+
+    render(<MainLayout />, { wrapper: AppWrapper });
+
+    expect(
+      screen.queryByRole('button', {
+        // Changé de getByRole à queryByRole
+        name: /Teams button/i,
+      }),
+    ).not.toBeInTheDocument(); //
+
+    expect(
+      screen.queryByRole('button', {
+        name: /Mail Domains button/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   it('checks menu rendering without team feature', () => {
     useConfigStore.setState({
       config: { RELEASE: '1.0.0', FEATURES: { TEAMS: false }, LANGUAGES: [] },
+    });
+    useAuthStore.setState({
+      authenticated: true,
+      userData: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        abilities: {
+          contacts: { can_view: true },
+          teams: { can_view: true },
+          mailboxes: { can_view: true },
+        },
+      },
     });
 
     render(<MainLayout />, { wrapper: AppWrapper });

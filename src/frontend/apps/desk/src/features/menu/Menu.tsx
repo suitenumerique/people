@@ -1,8 +1,8 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box } from '@/components/';
+import { useAuthStore } from '@/core/auth';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import MenuItem from './MenuItems';
@@ -10,6 +10,9 @@ import IconMailDomains from './assets/icon-mails.svg';
 
 export const Menu = () => {
   const { colorsTokens } = useCunninghamTheme();
+  const { userData } = useAuthStore();
+
+  console.log(userData);
   const { t } = useTranslation();
 
   return (
@@ -22,17 +25,21 @@ export const Menu = () => {
       $margin="none"
     >
       <Box $padding={{ top: 'large' }} $direction="column" $gap="0.8rem">
-        <MenuItem
-          Icon={IconGroup}
-          label={t('Teams')}
-          href="/teams"
-          alias={['/teams']}
-        />
-        <MenuItem
-          Icon={IconMailDomains}
-          label={t('Mail Domains')}
-          href="/mail-domains"
-        />
+        {userData?.abilities?.teams.can_view && (
+          <MenuItem
+            Icon={IconGroup}
+            label={t('Teams')}
+            href="/teams"
+            alias={['/teams']}
+          />
+        )}
+        {userData?.abilities?.mailboxes.can_view && (
+          <MenuItem
+            Icon={IconMailDomains}
+            label={t('Mail Domains')}
+            href="/mail-domains"
+          />
+        )}
       </Box>
     </Box>
   );
