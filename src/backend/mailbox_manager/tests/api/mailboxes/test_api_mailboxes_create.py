@@ -11,7 +11,6 @@ from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
 
 import pytest
-import requests
 import responses
 from requests.exceptions import HTTPError
 from rest_framework import status
@@ -545,9 +544,11 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
         assert not models.Mailbox.objects.exists()
 
         # Check error logger was called
-        assert len(caplog.records) == 2  # 1 + new empty info. To be investigated
         assert caplog.records[0].levelname == "ERROR"
-        assert caplog.records[0].message == "[DIMAIL] 500: Internal server error"
+        assert (
+            caplog.records[0].message
+            == "[DIMAIL] unexpected error : 500 {'detail': 'Internal server error'}"
+        )
 
 
 @mock.patch.object(Logger, "error")

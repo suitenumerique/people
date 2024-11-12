@@ -14,7 +14,6 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 import requests
-from requests.exceptions import HTTPError
 from rest_framework import status
 from urllib3.util import Retry
 
@@ -161,8 +160,10 @@ class DimailAPIClient:
     def pass_dimail_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
         try:
-            error_content = json.loads(response.content.decode(response.encoding).replace("'", '"'))
-        except:
+            error_content = json.loads(
+                response.content.decode(response.encoding).replace("'", '"')
+            )
+        except json.decoder.JSONDecodeError:
             error_content = response.content.decode(response.encoding)
 
         logger.error(

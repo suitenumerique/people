@@ -207,6 +207,10 @@ jobs:
         if: always()
         run: docker compose logs > src/frontend/apps/e2e/report/logs.txt
 
+      - name: Save Dimail logs
+        if: always()
+        run: docker compose logs dimail > src/frontend/apps/e2e/report/dimail-logs.txt
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

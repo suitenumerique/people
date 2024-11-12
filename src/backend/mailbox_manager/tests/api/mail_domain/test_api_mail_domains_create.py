@@ -182,10 +182,9 @@ def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
             assert response.json() == {"detail": dimail_error["detail"]}
 
     # check logs
-    assert len(caplog.records) == 2  # 1 + new empty info. To be investigated
     record = caplog.records[0]
     assert record.levelname == "ERROR"
     assert (
         record.message
-        == f"[DIMAIL] {dimail_error['status_code']}: {dimail_error['detail']}"
+        == "[DIMAIL] unexpected error : 409 {'detail': 'Domain already exists'}"
     )
