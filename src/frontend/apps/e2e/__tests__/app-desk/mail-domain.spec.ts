@@ -113,14 +113,13 @@ const assertFilledMailboxesTableElementsAreVisible = async (
 };
 
 test.describe('Mail domain', () => {
-  test.beforeEach(async ({ page, browserName }) => {
-    await page.goto('/');
-    await keyCloakSignIn(page, browserName);
-  });
-
   test('redirects to 404 page when the mail domain requested does not exist', async ({
     page,
+    browserName,
   }) => {
+    await page.goto('/');
+    await keyCloakSignIn(page, browserName);
+
     await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
       await route.fulfill({
         json: {
@@ -143,6 +142,11 @@ test.describe('Mail domain', () => {
   });
 
   test.describe('user is administrator or owner', () => {
+    test.beforeEach(async ({ page, browserName }) => {
+      await page.goto('/');
+      await keyCloakSignIn(page, browserName, 'mail-owner');
+    });
+
     test.describe('mail domain is enabled', () => {
       const mailDomainsFixtures: MailDomain[] = [
         {
@@ -479,6 +483,11 @@ test.describe('Mail domain', () => {
   });
 
   test.describe('user is member', () => {
+    test.beforeEach(async ({ page, browserName }) => {
+      await page.goto('/');
+      await keyCloakSignIn(page, browserName, 'mail-member');
+    });
+
     test.describe('mail domain is enabled', () => {
       const mailDomainsFixtures: MailDomain[] = [
         {

@@ -75,7 +75,7 @@ test.describe('Mail domains', () => {
   test.describe('checks all the elements are visible', () => {
     test.beforeEach(async ({ page, browserName }) => {
       await page.goto('/');
-      await keyCloakSignIn(page, browserName);
+      await keyCloakSignIn(page, browserName, 'mail-member');
     });
 
     test('checks the sort button', async ({ page }) => {

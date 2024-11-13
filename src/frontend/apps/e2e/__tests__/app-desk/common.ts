@@ -1,18 +1,27 @@
 import { Page, expect } from '@playwright/test';
 
-export const keyCloakSignIn = async (page: Page, browserName: string) => {
+export const keyCloakSignIn = async (
+  page: Page,
+  browserName: string,
+  accountName?: string,
+) => {
+  // Use the account name to use a specific account defined in
+  // the Keycloak/backend demo data creation script.
   const title = await page.locator('h1').first().textContent({
     timeout: 5000,
   });
 
-  if (title?.includes('Sign in to your account')) {
-    await page
-      .getByRole('textbox', { name: 'username' })
-      .fill(`user-e2e-${browserName}`);
+  const username = accountName
+    ? `jean.${accountName}`
+    : `user-e2e-${browserName}`;
+  const password = accountName
+    ? `password-e2e-jean.${accountName}`
+    : `password-e2e-${browserName}`;
 
-    await page
-      .getByRole('textbox', { name: 'password' })
-      .fill(`password-e2e-${browserName}`);
+  if (title?.includes('Sign in to your account')) {
+    await page.getByRole('textbox', { name: 'username' }).fill(username);
+
+    await page.getByRole('textbox', { name: 'password' }).fill(password);
 
     await page.click('input[type="submit"]', { force: true });
   }

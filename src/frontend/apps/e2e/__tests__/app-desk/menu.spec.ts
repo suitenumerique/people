@@ -4,7 +4,7 @@ import { createTeam, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
 });
 
 test.describe('Menu', () => {

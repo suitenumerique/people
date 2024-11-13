@@ -106,7 +106,7 @@ class Timeit:
         return elapsed_time
 
 
-def create_demo(stdout):
+def create_demo(stdout):  # pylint: disable=too-many-locals
     """
     Create a database with demo data for developers to work in a realistic environment.
     The code is engineered to create a huge number of objects fast.
@@ -190,7 +190,6 @@ def create_demo(stdout):
                 queue.push(
                     models.TeamAccess(team_id=team_id, user_id=user_id, role=role[0])
                 )
-        queue.flush()
 
     with Timeit(stdout, "Creating domains"):
         created = set()
@@ -224,6 +223,75 @@ def create_demo(stdout):
                     role=models.RoleChoices.OWNER,
                 )
             )
+
+        queue.flush()
+
+    with Timeit(stdout, "Creating specific users"):
+        # ⚠️ Warning: this users also need to be created in the keycloak
+        # realm.json AND the OIDC setting to fallback on user email
+        # should be set to True, because we don't pilot the sub.
+        for role in models.RoleChoices.values:
+            team_user = models.User(
+                sub=uuid4(),
+                email=f"jean.team-{role}@example.com",
+                name=f"Jean Group {role.capitalize()}",
+                password="!",
+                is_superuser=False,
+                is_active=True,
+                is_staff=False,
+                language=random.choice(settings.LANGUAGES)[0],
+            )
+            queue.push(team_user)
+            queue.push(
+                models.TeamAccess(team_id=teams_ids[0], user_id=team_user.pk, role=role)
+            )
+
+        for role in models.RoleChoices.values:
+            user_with_mail = models.User(
+                sub=uuid4(),
+                email=f"jean.mail-{role}@example.com",
+                name=f"Jean Mail {role.capitalize()}",
+                password="!",
+                is_superuser=False,
+                is_active=True,
+                is_staff=False,
+                language=random.choice(settings.LANGUAGES)[0],
+            )
+            queue.push(user_with_mail)
+            queue.push(
+                mailbox_models.MailDomainAccess(
+                    domain_id=domains_ids[0],
+                    user_id=user_with_mail.pk,
+                    role=role,
+                )
+            )
+
+        for team_role in models.RoleChoices.values:
+            for domain_role in models.RoleChoices.values:
+                team_mail_user = models.User(
+                    sub=uuid4(),
+                    email=f"jean.team-{team_role}-mail-{domain_role}@example.com",
+                    name=f"Jean Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
+                    password="!",
+                    is_superuser=False,
+                    is_active=True,
+                    is_staff=False,
+                    language=random.choice(settings.LANGUAGES)[0],
+                )
+                queue.push(team_mail_user)
+                queue.push(
+                    models.TeamAccess(
+                        team_id=teams_ids[0], user_id=team_mail_user.pk, role=team_role
+                    )
+                )
+                queue.push(
+                    mailbox_models.MailDomainAccess(
+                        domain_id=domains_ids[0],
+                        user_id=team_mail_user.pk,
+                        role=domain_role,
+                    )
+                )
+
         queue.flush()
 
 

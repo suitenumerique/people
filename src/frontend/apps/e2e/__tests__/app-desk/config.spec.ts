@@ -3,12 +3,10 @@ import { expect, test } from '@playwright/test';
 import { keyCloakSignIn } from './common';
 
 test.describe('Config', () => {
-  test.beforeEach(async ({ page, browserName }) => {
+  test('it checks the config api is called', async ({ page, browserName }) => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName);
-  });
 
-  test('it checks the config api is called', async ({ page }) => {
     const responsePromise = page.waitForResponse(
       (response) =>
         response.url().includes('/config/') && response.status() === 200,
@@ -35,7 +33,12 @@ test.describe('Config', () => {
 
   test('it checks that the config can deactivate the feature "teams"', async ({
     page,
+    browserName,
   }) => {
+    await page.goto('/');
+    // Login with a user who has the visibility on the groups
+    await keyCloakSignIn(page, browserName, 'team-member');
+
     await page.route('**/api/v1.0/config/', async (route) => {
       const request = route.request();
       if (request.method().includes('GET')) {
@@ -61,10 +64,6 @@ test.describe('Config', () => {
       }),
     ).toBeHidden();
 
-    await expect(
-      page.getByRole('button', {
-        name: 'Add a mail domain',
-      }),
-    ).toBeVisible();
+    await expect(page.getByText('Mail Domains')).toBeVisible();
   });
 });

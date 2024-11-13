@@ -130,7 +130,8 @@ const navigateToMailboxCreationFormForMailDomainFr = async (
 test.describe('Mail domain create mailbox', () => {
   test.beforeEach(async ({ page, browserName }) => {
     await page.goto('/');
-    await keyCloakSignIn(page, browserName);
+    // Login with a user who has the visibility on the mail domains
+    await keyCloakSignIn(page, browserName, 'mail-member');
   });
 
   test('checks user can create a mailbox when he has post ability', async ({

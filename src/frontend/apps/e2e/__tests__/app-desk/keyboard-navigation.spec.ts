@@ -41,7 +41,7 @@ test.describe('Keyboard navigation', () => {
     const page = await browser.newPage();
 
     await page.goto('/');
-    await keyCloakSignIn(page, browserName);
+    await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
 
     void mockApiRequests(page);
 

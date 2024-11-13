@@ -28,13 +28,22 @@ def test_commands_create_demo():
     """The create_demo management command should create objects as expected."""
     call_command("create_demo")
 
-    assert (
-        models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3
-    )  # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
+    # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
+    # 3 user with team rights
+    # 3 user with domain rights
+    # 3 x 3 user with both rights
+    assert models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3 + 3 + 3 + 9
+
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
     assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"]
-    assert mailbox_models.MailDomainAccess.objects.count() == TEST_NB_OBJECTS["domains"]
+
+    # 3 domain access for each user with domain rights
+    # 3 x 3 domain access for each user with both rights
+    assert (
+        mailbox_models.MailDomainAccess.objects.count()
+        == TEST_NB_OBJECTS["domains"] + 3 + 9
+    )
 
 
 def test_commands_createsuperuser():

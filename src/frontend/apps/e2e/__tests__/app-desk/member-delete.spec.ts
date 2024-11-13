@@ -4,7 +4,7 @@ import { addNewMember, createTeam, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await keyCloakSignIn(page, browserName, 'team-member');
 });
 
 test.describe('Members Delete', () => {
@@ -17,9 +17,7 @@ test.describe('Members Delete', () => {
     const table = page.getByLabel('List members card').getByRole('table');
 
     const cells = table.getByRole('row').nth(1).getByRole('cell');
-    await expect(cells.nth(1)).toHaveText(
-      new RegExp(`E2E ${browserName}`, 'i'),
-    );
+    await expect(cells.nth(1)).toHaveText('Jean Group Member');
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
@@ -46,7 +44,7 @@ test.describe('Members Delete', () => {
     // find row where regexp match the name
     const cells = table
       .getByRole('row')
-      .filter({ hasText: new RegExp(`E2E ${browserName}`, 'i') })
+      .filter({ hasText: 'E2E Group Member' })
       .getByRole('cell');
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
@@ -118,7 +116,7 @@ test.describe('Members Delete', () => {
     // find row where regexp match the name
     const myCells = table
       .getByRole('row')
-      .filter({ hasText: new RegExp(`E2E ${browserName}`, 'i') })
+      .filter({ hasText: 'E2E Group Member' })
       .getByRole('cell');
     await myCells.nth(4).getByLabel('Member options').click();
 
@@ -148,7 +146,7 @@ test.describe('Members Delete', () => {
     // find row where regexp match the name
     const myCells = table
       .getByRole('row')
-      .filter({ hasText: new RegExp(`E2E ${browserName}`, 'i') })
+      .filter({ hasText: 'E2E Group Member' })
       .getByRole('cell');
     await myCells.nth(4).getByLabel('Member options').click();
 
