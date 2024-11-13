@@ -38,13 +38,21 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: lasuite/people-backend
+          images: |
+            lasuite/people-backend
+            lasuite/people-frontend
       -
-        name: Run trivy scan
+        name: Run trivy scan (backend)
         uses: numerique-gouv/action-trivy-cache@main
         with:
           docker-build-args: '--target backend-production -f Dockerfile'
           docker-image-name: 'docker.io/lasuite/people-backend:${{ github.sha }}'
+      -
+        name: Run trivy scan (frontend)
+        uses: numerique-gouv/action-trivy-cache@main
+        with:
+          docker-build-args: '--target frontend-production -f Dockerfile'
+          docker-image-name: 'docker.io/lasuite/people-frontend:${{ github.sha }}'
 
   build-and-push-backend:
     runs-on: ubuntu-latest
@@ -123,12 +131,6 @@ jobs:
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
         run: echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
-      -
-        name: Run trivy scan
-        uses: numerique-gouv/action-trivy-cache@main
-        with:
-          docker-build-args: '-f Dockerfile --target frontend-production'
-          docker-image-name: 'docker.io/lasuite/people-frontend:${{ github.sha }}'
       -
         name: Build and push
         uses: docker/build-push-action@v6
