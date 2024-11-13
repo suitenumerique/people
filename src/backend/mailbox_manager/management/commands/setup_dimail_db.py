@@ -13,7 +13,7 @@ from mailbox_manager.models import MailDomain
 User = get_user_model()
 
 
-DIMAIL_URL = "http://host.docker.internal:8001"
+DIMAIL_URL = "http://dimail:8000"
 admin = {"username": "admin", "password": "admin"}
 regie = {"username": "la_regie", "password": "password"}
 

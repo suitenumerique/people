@@ -432,7 +432,7 @@ class Base(Configuration):
         environ_prefix=None,
     )
     MAIL_PROVISIONING_API_URL = values.Value(
-        default="http://host.docker.internal:8001",
+        default="http://dimail:8000",
         environ_name="MAIL_PROVISIONING_API_URL",
         environ_prefix=None,
     )
