@@ -487,7 +487,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
                 ),
             },
             "teams": {
-                "can_view": teams_can_view and settings.FEATURES["TEAMS"],
+                "can_view": teams_can_view and settings.FEATURES["TEAMS_DISPLAY"],
                 "can_create": teams_can_view and settings.FEATURES["TEAMS_CREATE"],
             },
             "mailboxes": {

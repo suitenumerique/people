@@ -22,7 +22,7 @@ export const Panel = () => {
     $minWidth: '0',
   };
 
-  const styleNoTeam = !config?.FEATURES.TEAMS && {
+  const styleNoTeam = !config?.FEATURES.TEAMS_DISPLAY && {
     $display: 'none',
     tabIndex: -1,
   };

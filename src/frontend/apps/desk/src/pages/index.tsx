@@ -9,8 +9,8 @@ const Page: NextPageWithLayout = () => {
   const router = useNavigate();
 
   useEffect(() => {
-    router.push(config?.FEATURES.TEAMS ? '/teams/' : '/mail-domains/');
-  }, [config?.FEATURES.TEAMS, router]);
+    router.push(config?.FEATURES.TEAMS_DISPLAY ? '/teams/' : '/mail-domains/');
+  }, [config?.FEATURES.TEAMS_DISPLAY, router]);
 
   return null;
 };

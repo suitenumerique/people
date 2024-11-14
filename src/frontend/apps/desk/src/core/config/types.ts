@@ -2,6 +2,6 @@ export interface Config {
   LANGUAGES: [string, string][];
   RELEASE: string;
   FEATURES: {
-    TEAMS: boolean;
+    TEAMS_DISPLAY: boolean;
   };
 }

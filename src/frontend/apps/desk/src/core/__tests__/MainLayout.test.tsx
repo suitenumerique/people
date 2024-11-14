@@ -18,7 +18,11 @@ jest.mock('next/navigation', () => ({
 describe('MainLayout', () => {
   it('checks menu rendering with team feature', () => {
     useConfigStore.setState({
-      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
+      config: {
+        RELEASE: '1.0.0',
+        FEATURES: { TEAMS_DISPLAY: true },
+        LANGUAGES: [],
+      },
     });
     useAuthStore.setState({
       authenticated: true,
@@ -51,7 +55,11 @@ describe('MainLayout', () => {
 
   it('checks menu rendering with no abilities', () => {
     useConfigStore.setState({
-      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: true }, LANGUAGES: [] },
+      config: {
+        RELEASE: '1.0.0',
+        FEATURES: { TEAMS_DISPLAY: true },
+        LANGUAGES: [],
+      },
     });
     useAuthStore.setState({
       authenticated: true,
@@ -85,7 +93,11 @@ describe('MainLayout', () => {
 
   it('checks menu rendering without team feature', () => {
     useConfigStore.setState({
-      config: { RELEASE: '1.0.0', FEATURES: { TEAMS: false }, LANGUAGES: [] },
+      config: {
+        RELEASE: '1.0.0',
+        FEATURES: { TEAMS_DISPLAY: false },
+        LANGUAGES: [],
+      },
     });
     useAuthStore.setState({
       authenticated: true,

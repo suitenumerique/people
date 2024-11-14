@@ -15,7 +15,7 @@ export function MainLayout({ children }: PropsWithChildren) {
       <Box $height="100vh">
         <Header />
         <Box $css="flex: 1;" $direction="row">
-          {config?.FEATURES.TEAMS && <Menu />}
+          {config?.FEATURES.TEAMS_DISPLAY && <Menu />}
           <Box
             as="main"
             $height={`calc(100vh - ${HEADER_HEIGHT})`}

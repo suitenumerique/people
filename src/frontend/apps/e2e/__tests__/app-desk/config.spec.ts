@@ -25,7 +25,7 @@ test.describe('Config', () => {
         CONTACTS_DISPLAY: true,
         MAILBOXES_CREATE: true,
         TEAMS_CREATE: true,
-        TEAMS: true,
+        TEAMS_DISPLAY: true,
       },
       RELEASE: 'NA',
     });
@@ -48,7 +48,7 @@ test.describe('Config', () => {
               ['en-us', 'English'],
               ['fr-fr', 'French'],
             ],
-            FEATURES: { TEAMS: false },
+            FEATURES: { TEAMS_DISPLAY: false },
           },
         });
       } else {
