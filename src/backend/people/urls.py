@@ -14,13 +14,17 @@ from drf_spectacular.views import (
 
 from debug import urls as debug_urls
 
-from . import api_urls
+from . import api_urls, resource_server_urls
 
 API_VERSION = settings.API_VERSION
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-] + api_urls.urlpatterns
+urlpatterns = (
+    [
+        path("admin/", admin.site.urls),
+    ]
+    + api_urls.urlpatterns
+    + resource_server_urls.urlpatterns
+)
 
 if settings.DEBUG:
     urlpatterns = (

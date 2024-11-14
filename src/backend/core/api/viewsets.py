@@ -18,7 +18,6 @@ from rest_framework.permissions import AllowAny
 
 from core import models
 
-from ..resource_server.authentication import ResourceServerAuthentication
 from . import permissions, serializers
 
 SIMILARITY_THRESHOLD = 0.04
@@ -248,26 +247,6 @@ class TeamViewSet(
     queryset = models.Team.objects.all()
     pagination_class = None
 
-    def _get_service_provider_audience(self):
-        """Return the audience of the Service Provider from the OIDC introspected token."""
-        if not isinstance(
-            self.request.successful_authenticator, ResourceServerAuthentication
-        ):
-            # We could check request.resource_server_token_audience here, but it's
-            # more explicit to check the authenticator type and assert the attribute
-            # existence.
-            return None
-
-        # When used as a resource server, the request has a token audience
-        service_provider_audience = self.request.resource_server_token_audience
-
-        if not service_provider_audience:  # should not happen
-            raise exceptions.AuthenticationFailed(
-                "Resource server token audience not found in request"
-            )
-
-        return service_provider_audience
-
     def get_queryset(self):
         """Custom queryset to get user related teams."""
         user_role_query = models.TeamAccess.objects.filter(
@@ -281,18 +260,6 @@ class TeamViewSet(
             )
             .annotate(user_role=Subquery(user_role_query))
         )
-
-    def get_serializer_context(self):
-        """Extra context provided to the serializer class."""
-        context = super().get_serializer_context()
-
-        # When used as a resource server, we need to know the audience to automatically:
-        # - add the Service Provider to the team "scope" on creation
-        context["from_service_provider_audience"] = (
-            self._get_service_provider_audience()
-        )
-
-        return context
 
     def perform_create(self, serializer):
         """Set the current user as owner of the newly created team."""

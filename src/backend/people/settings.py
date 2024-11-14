@@ -230,7 +230,10 @@ class Base(Configuration):
 
     REST_FRAMEWORK = {
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "core.resource_server.authentication.ResourceServerAuthentication",
+            # "core.resource_server.authentication.ResourceServerAuthentication",
+            # The resource server authentication is added on a per-view basis
+            # to enforce the filtering adapted from the introspected token.
+            # See ResourceServerMixin usage for more details.
             "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
             "rest_framework.authentication.SessionAuthentication",
         ),
