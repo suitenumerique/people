@@ -137,6 +137,7 @@ def test_api_mailboxes__create_roles_success(role):
         "last_name": str(mailbox.last_name),
         "local_part": str(mailbox.local_part),
         "secondary_email": str(mailbox.secondary_email),
+        "status": enums.MailboxStatusChoices.ENABLED,
     }
 
 
@@ -194,6 +195,7 @@ def test_api_mailboxes__create_with_accent_success(role):
         "last_name": str(mailbox.last_name),
         "local_part": str(mailbox.local_part),
         "secondary_email": str(mailbox.secondary_email),
+        "status": enums.MailboxStatusChoices.ENABLED,
     }
 
 
@@ -234,6 +236,73 @@ def test_api_mailboxes__create_administrator_missing_fields():
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert not models.Mailbox.objects.exists()
     assert response.json() == {"secondary_email": ["This field is required."]}
+
+
+@pytest.mark.parametrize(
+    "role",
+    [
+        enums.MailDomainRoleChoices.OWNER,
+        enums.MailDomainRoleChoices.ADMIN,
+    ],
+)
+def test_api_mailboxes__cannot_create_on_disabled_domain(role):
+    """Admin and owner users should not be able to create mailboxes for a disabled domain"""
+    mail_domain = factories.MailDomainFactory(
+        status=enums.MailDomainStatusChoices.DISABLED
+    )
+    access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not models.Mailbox.objects.exists()
+    assert response.json() == ["You can't create a mailbox for a disabled domain."]
+
+
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.FAILED,
+    ],
+)
+def test_api_mailboxes__create_pending_mailboxes(domain_status):
+    """
+    Admin and owner users should be able to create mailboxes, including on pending and failed
+    domains.
+    Mailboxes created on pending and failed domains should have the "pending" status
+    """
+    mail_domain = factories.MailDomainFactory(status=domain_status)
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN, domain=mail_domain
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build()
+    ).data
+    with responses.RequestsMock():
+        # We add no response in RequestsMock
+        # because we expect no outside calls to be made
+        response = client.post(
+            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+            mailbox_values,
+            format="json",
+        )
+    assert response.status_code == status.HTTP_201_CREATED
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == "pending"
 
 
 ### REACTING TO DIMAIL-API
@@ -411,6 +480,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
         "last_name": str(mailbox_data["last_name"]),
         "local_part": str(mailbox_data["local_part"]),
         "secondary_email": str(mailbox_data["secondary_email"]),
+        "status": enums.MailboxStatusChoices.ENABLED,
     }
     assert mailbox.first_name == mailbox_data["first_name"]
     assert mailbox.last_name == mailbox_data["last_name"]

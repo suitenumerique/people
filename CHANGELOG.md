@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) allow creation of "pending" mailboxes
 - ✨(teams) allow team management for team admins/owners #509
 
 ## [1.5.0] - 2024-11-14

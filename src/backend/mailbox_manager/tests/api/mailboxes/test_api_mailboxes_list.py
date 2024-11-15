@@ -53,8 +53,8 @@ def test_api_mailboxes__list_authenticated():
 def test_api_mailboxes__list_roles(role):
     """Owner, admin and viewer users should be able to list mailboxes"""
     mail_domain = factories.MailDomainEnabledFactory()
-    mailbox1 = factories.MailboxFactory(domain=mail_domain)
-    mailbox2 = factories.MailboxFactory(domain=mail_domain)
+    mailbox1 = factories.MailboxEnabledFactory(domain=mail_domain)
+    mailbox2 = factories.MailboxEnabledFactory(domain=mail_domain)
 
     access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
     client = APIClient()
@@ -69,6 +69,7 @@ def test_api_mailboxes__list_roles(role):
             "last_name": str(mailbox2.last_name),
             "local_part": str(mailbox2.local_part),
             "secondary_email": str(mailbox2.secondary_email),
+            "status": enums.MailboxStatusChoices.ENABLED,
         },
         {
             "id": str(mailbox1.id),
@@ -76,6 +77,7 @@ def test_api_mailboxes__list_roles(role):
             "last_name": str(mailbox1.last_name),
             "local_part": str(mailbox1.local_part),
             "secondary_email": str(mailbox1.secondary_email),
+            "status": enums.MailboxStatusChoices.ENABLED,
         },
     ]
 

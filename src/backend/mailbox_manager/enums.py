@@ -1,3 +1,4 @@
+# pylint: disable=too-many-ancestors
 """
 Application enums declaration
 """
@@ -16,6 +17,15 @@ class MailDomainRoleChoices(models.TextChoices):
 
 class MailDomainStatusChoices(models.TextChoices):
     """Defines the possible statuses in which a mail domain can be."""
+
+    PENDING = "pending", _("Pending")
+    ENABLED = "enabled", _("Enabled")
+    FAILED = "failed", _("Failed")
+    DISABLED = "disabled", _("Disabled")
+
+
+class MailboxStatusChoices(models.TextChoices):
+    """Lists the possible statuses in which a mailbox can be."""
 
     PENDING = "pending", _("Pending")
     ENABLED = "enabled", _("Enabled")

@@ -37,6 +37,21 @@ def test_models_mail_domain__slug_inferred_from_name():
     assert domain.slug == slugify(name)
 
 
+# "STATUS" FIELD
+
+
+def test_models_mail_domain__status_should_not_be_empty():
+    """Status field should not be empty."""
+    with pytest.raises(ValidationError, match="This field cannot be blank"):
+        factories.MailDomainFactory(status="")
+
+
+def test_models_mail_domain__status_should_not_be_null():
+    """Status field should not be null."""
+    with pytest.raises(ValidationError, match="This field cannot be null."):
+        factories.MailDomainFactory(status=None)
+
+
 # get_abilities
 
 

@@ -10,7 +10,11 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel
 
-from mailbox_manager.enums import MailDomainRoleChoices, MailDomainStatusChoices
+from mailbox_manager.enums import (
+    MailboxStatusChoices,
+    MailDomainRoleChoices,
+    MailDomainStatusChoices,
+)
 
 
 class MailDomain(BaseModel):
@@ -184,6 +188,11 @@ class Mailbox(BaseModel):
     secondary_email = models.EmailField(
         _("secondary email address"), null=False, blank=False
     )
+    status = models.CharField(
+        max_length=20,
+        choices=MailboxStatusChoices.choices,
+        default=MailboxStatusChoices.PENDING,
+    )
 
     class Meta:
         db_table = "people_mail_box"
@@ -196,14 +205,8 @@ class Mailbox(BaseModel):
 
     def clean(self):
         """
-        Mailboxes can only be created on enabled domains.
-        Also, mail-provisioning API credentials must be set for dimail to allow auth.
+        Mail-provisioning API credentials must be set for dimail to allow auth.
         """
-        if self.domain.status != MailDomainStatusChoices.ENABLED:
-            raise exceptions.ValidationError(
-                "You can create mailbox only for a domain enabled"
-            )
-
         # Won't be able to query user token if MAIL_PROVISIONING_API_CREDENTIALS are not set
         if not settings.MAIL_PROVISIONING_API_CREDENTIALS:
             raise exceptions.ValidationError(
@@ -215,6 +218,11 @@ class Mailbox(BaseModel):
         Modification is forbidden for now.
         """
         self.full_clean()
+
+        if self.domain.status == MailDomainStatusChoices.DISABLED:
+            raise exceptions.ValidationError(
+                _("You can't create a mailbox for a disabled domain.")
+            )
 
         if self._state.adding:
             return super().save(*args, **kwargs)

@@ -75,3 +75,9 @@ class MailboxFactory(factory.django.DjangoModelFactory):
     )
     domain = factory.SubFactory(MailDomainEnabledFactory)
     secondary_email = factory.Faker("email")
+
+
+class MailboxEnabledFactory(MailboxFactory):
+    """A factory to create mailbox enabled."""
+
+    status = enums.MailboxStatusChoices.ENABLED

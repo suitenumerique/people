@@ -74,7 +74,7 @@ def test_models_mailboxes__domain_must_be_a_maildomain_instance():
 
 def test_models_mailboxes__domain_cannot_be_null():
     """The "domain" field should not be null."""
-    with pytest.raises(models.MailDomain.DoesNotExist, match="Mailbox has no domain."):
+    with pytest.raises(exceptions.ValidationError, match="This field cannot be null"):
         factories.MailboxFactory(domain=None)
 
 
@@ -93,44 +93,37 @@ def test_models_mailboxes__secondary_email_cannot_be_null():
         factories.MailboxFactory(secondary_email=None)
 
 
-def test_models_mailboxes__cannot_be_created_for_disabled_maildomain():
-    """Mailbox creation is allowed only for a domain enabled.
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.FAILED,
+    ],
+)
+def test_models_mailboxes__can_create_pending_mailboxes_on_non_enabled_domain(
+    domain_status,
+):
+    """Mailbox creation is allowed for a domain pending and failed.
+    A pending mailbox is created."""
+    mailbox = factories.MailboxFactory(
+        domain=factories.MailDomainFactory(status=domain_status)
+    )
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+
+def test_models_mailboxes__cannot_create_mailboxes_on_disabled_domain():
+    """Mailbox creation is not allowed for a domain disabled.
     A disabled status for the mail domain raises an error."""
     with pytest.raises(
         exceptions.ValidationError,
-        match="You can create mailbox only for a domain enabled",
+        match="You can't create a mailbox for a disabled domain.",
     ):
         factories.MailboxFactory(
             domain=factories.MailDomainFactory(
                 status=enums.MailDomainStatusChoices.DISABLED
             )
         )
-
-
-def test_models_mailboxes__cannot_be_created_for_failed_maildomain():
-    """Mailbox creation is allowed only for a domain enabled.
-    A failed status for the mail domain raises an error."""
-    with pytest.raises(
-        exceptions.ValidationError,
-        match="You can create mailbox only for a domain enabled",
-    ):
-        factories.MailboxFactory(
-            domain=factories.MailDomainFactory(
-                status=enums.MailDomainStatusChoices.FAILED
-            )
-        )
-
-
-def test_models_mailboxes__cannot_be_created_for_pending_maildomain():
-    """Mailbox creation is allowed only for a domain enabled.
-    A pending status for the mail domain raises an error."""
-    with pytest.raises(
-        exceptions.ValidationError,
-        match="You can create mailbox only for a domain enabled",
-    ):
-        # MailDomainFactory initializes a mail domain with default values,
-        # so mail domain status is pending!
-        factories.MailboxFactory(domain=factories.MailDomainFactory())
+        assert not models.Mailbox.objects.exist()
 
 
 ### REACTING TO DIMAIL-API
