@@ -251,24 +251,6 @@ class OrganizationManager(models.Manager):
         raise ValueError("Should never reach this point.")
 
 
-def validate_unique_registration_id(value):
-    """
-    Validate that the registration ID values in an array field are unique across all instances.
-    """
-    if Organization.objects.filter(registration_id_list__overlap=value).exists():
-        raise ValidationError(
-            "registration_id_list value must be unique across all instances."
-        )
-
-
-def validate_unique_domain(value):
-    """
-    Validate that the domain values in an array field are unique across all instances.
-    """
-    if Organization.objects.filter(domain_list__overlap=value).exists():
-        raise ValidationError("domain_list value must be unique across all instances.")
-
-
 class Organization(BaseModel):
     """
     Organization model used to regroup Teams.
@@ -298,16 +280,14 @@ class Organization(BaseModel):
         verbose_name=_("registration ID list"),
         default=list,
         blank=True,
-        validators=[
-            validate_unique_registration_id,
-        ],
+        # list overlap validation is done in the validate_unique method
     )
     domain_list = ArrayField(
         models.CharField(max_length=256),
         verbose_name=_("domain list"),
         default=list,
         blank=True,
-        validators=[validate_unique_domain],
+        # list overlap validation is done in the validate_unique method
     )
 
     service_providers = models.ManyToManyField(
@@ -339,6 +319,41 @@ class Organization(BaseModel):
 
     def __str__(self):
         return f"{self.name} (# {self.pk})"
+
+    def validate_unique(self, exclude=None):
+        """
+        Validate Registration/Domain values in an array field are unique
+        across all instances.
+
+        This can't be done in the field validator because we need to
+        exclude the current object if already in database.
+        """
+        super().validate_unique(exclude=exclude)
+
+        if self.pk:
+            organization_qs = Organization.objects.exclude(pk=self.pk)
+        else:
+            organization_qs = Organization.objects.all()
+
+        # Check a registration ID can only be present in one organization
+        if (
+            self.registration_id_list
+            and organization_qs.filter(
+                registration_id_list__overlap=self.registration_id_list
+            ).exists()
+        ):
+            raise ValidationError(
+                "registration_id_list value must be unique across all instances."
+            )
+
+        # Check a domain can only be present in one organization
+        if (
+            self.domain_list
+            and organization_qs.filter(domain_list__overlap=self.domain_list).exists()
+        ):
+            raise ValidationError(
+                "domain_list value must be unique across all instances."
+            )
 
 
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):

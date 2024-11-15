@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='date and time at which a record was created', verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='date and time at which a record was last updated', verbose_name='updated at')),
                 ('name', models.CharField(max_length=100, verbose_name='name')),
-                ('registration_id_list', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=128), blank=True, default=list, size=None, validators=[core.models.validate_unique_registration_id], verbose_name='registration ID list')),
-                ('domain_list', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=256), blank=True, default=list, size=None, validators=[core.models.validate_unique_domain], verbose_name='domain list')),
+                ('registration_id_list', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=128), blank=True, default=list, size=None, verbose_name='registration ID list')),
+                ('domain_list', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=256), blank=True, default=list, size=None, verbose_name='domain list')),
             ],
             options={
                 'verbose_name': 'organization',
