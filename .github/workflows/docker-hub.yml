@@ -87,6 +87,13 @@ jobs:
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
         run: echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+      - name: create-version-json
+        id: create-version-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "version.json"
+          json: '{"source":"${{github.repository}}", "version":"${{github.ref_name}}", "commit":"${{github.sha}}", "build": "NA"}'
+          dir: 'src/backend'
       -
         name: Build and push
         uses: docker/build-push-action@v6
@@ -127,6 +134,13 @@ jobs:
         with:
           secret-file: secrets/numerique-gouv/people/secrets.enc.env
           age-key: ${{ secrets.SOPS_PRIVATE }}
+      - name: create-version-json
+        id: create-version-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "version.json"
+          json: '{"source":"${{github.repository}}", "version":"${{github.ref_name}}", "commit":"${{github.sha}}", "build": "NA"}'
+          dir: 'src/frontend/apps/desk'
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
