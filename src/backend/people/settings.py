@@ -44,6 +44,17 @@ def get_release():
         return "NA"  # Default: not available
 
 
+def get_commit():
+    """
+    Get the current commit of the application
+    """
+    try:
+        with open(os.path.join(BASE_DIR, "version.json"), encoding="utf8") as version:
+            return json.load(version)["commit"]
+    except FileNotFoundError:
+        return "NA"  # Default: not available
+
+
 class Base(Configuration):
     """
     This is the base configuration every configuration (aka environment) should inherit from. It
@@ -487,6 +498,14 @@ class Base(Configuration):
         Delegate to the module function to enable easier testing.
         """
         return get_release()
+
+    # pylint: disable=invalid-name
+    @property
+    def COMMIT(self):
+        """
+        Return the commit information.
+        """
+        return get_commit()
 
     # pylint: disable=invalid-name
     @property

@@ -504,7 +504,7 @@ class ConfigView(views.APIView):
         GET /api/v1.0/config/
             Return a dictionary of public settings.
         """
-        array_settings = ["LANGUAGES", "FEATURES", "RELEASE"]
+        array_settings = ["LANGUAGES", "FEATURES", "RELEASE", "COMMIT"]
         dict_settings = {}
         for setting in array_settings:
             dict_settings[setting] = getattr(settings, setting)

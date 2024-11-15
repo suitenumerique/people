@@ -20,6 +20,7 @@ def test_api_config_anonymous():
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
+        "COMMIT": "NA",
         "FEATURES": {
             "CONTACTS_DISPLAY": True,
             "CONTACTS_CREATE": True,
@@ -42,6 +43,7 @@ def test_api_config_authenticated():
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
+        "COMMIT": "NA",
         "FEATURES": {
             "CONTACTS_DISPLAY": True,
             "CONTACTS_CREATE": True,

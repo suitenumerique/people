@@ -20,6 +20,7 @@ describe('MainLayout', () => {
     useConfigStore.setState({
       config: {
         RELEASE: '1.0.0',
+        COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: true },
         LANGUAGES: [],
       },
@@ -57,6 +58,7 @@ describe('MainLayout', () => {
     useConfigStore.setState({
       config: {
         RELEASE: '1.0.0',
+        COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: true },
         LANGUAGES: [],
       },
@@ -95,6 +97,7 @@ describe('MainLayout', () => {
     useConfigStore.setState({
       config: {
         RELEASE: '1.0.0',
+        COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: false },
         LANGUAGES: [],
       },

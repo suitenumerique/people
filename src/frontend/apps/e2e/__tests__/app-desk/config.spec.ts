@@ -20,6 +20,7 @@ test.describe('Config', () => {
         ['en-us', 'English'],
         ['fr-fr', 'French'],
       ],
+      COMMIT: 'NA',
       FEATURES: {
         CONTACTS_CREATE: true,
         CONTACTS_DISPLAY: true,

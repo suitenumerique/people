@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { Box, LogoGouv, StyledLink, Text } from '@/components';
 import { useConfigStore } from '@/core';
 
+import frontVersion from '../../../version.json';
+
 import IconLink from './assets/external-link.svg';
 
 const BlueStripe = styled.div`
@@ -140,6 +142,11 @@ export const Footer = () => {
             </StyledLink>
           ))}
         </Box>
+
+        <Text as="p" aria-hidden="true" $css="display: none">
+          You have found the hidden app version information ! Well done ! back
+          commit is: {config?.COMMIT}; front commit is: {frontVersion?.commit}
+        </Text>
 
         <Text
           as="p"
