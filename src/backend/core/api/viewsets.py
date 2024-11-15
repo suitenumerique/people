@@ -494,3 +494,50 @@ class ConfigView(views.APIView):
             dict_settings[setting] = getattr(settings, setting)
 
         return response.Response(dict_settings)
+
+
+class ServiceProviderFilter(filters.BaseFilterBackend):
+    """
+    Filter service providers.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        Filter service providers by audience or name.
+        """
+        if name := request.GET.get("name"):
+            queryset = queryset.filter(name__icontains=name)
+        if audience_id := request.GET.get("audience_id"):
+            queryset = queryset.filter(audience_id=audience_id)
+        return queryset
+
+
+class ServiceProviderViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    API ViewSet for all interactions with service providers.
+
+    GET /api/v1.0/service-providers/
+        Return a list of service providers.
+
+    GET /api/v1.0/service-providers/<service_provider_id>/
+        Return a service provider.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = models.ServiceProvider.objects.all()
+    serializer_class = serializers.ServiceProviderSerializer
+    throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
+    pagination_class = Pagination
+    filter_backends = [filters.OrderingFilter, ServiceProviderFilter]
+    ordering = ["name"]
+    ordering_fields = ["name", "created_at"]
+
+    def get_queryset(self):
+        """Filter the queryset to limit results to user's organization."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(organizations__id=self.request.user.organization_id)
+        return queryset

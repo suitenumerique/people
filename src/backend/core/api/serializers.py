@@ -285,3 +285,12 @@ class InvitationSerializer(serializers.ModelSerializer):
         attrs["team_id"] = team_id
         attrs["issuer"] = user
         return attrs
+
+
+class ServiceProviderSerializer(serializers.ModelSerializer):
+    """Serialize service providers."""
+
+    class Meta:
+        model = models.ServiceProvider
+        fields = ["id", "audience_id", "name"]
+        read_only_fields = ["id", "audience_id"]

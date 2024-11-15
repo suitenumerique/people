@@ -226,5 +226,20 @@ class ServiceProviderFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.ServiceProvider
+        skip_postgeneration_save = True
 
     audience_id = factory.Faker("uuid4")
+
+    @factory.post_generation
+    def teams(self, create, extracted, **kwargs):
+        """Add teams to service provider from a given list."""
+        if not create or not extracted:
+            return
+        self.teams.set(extracted)
+
+    @factory.post_generation
+    def organizations(self, create, extracted, **kwargs):
+        """Add organization to service provider from a given list."""
+        if not create or not extracted:
+            return
+        self.organizations.set(extracted)
