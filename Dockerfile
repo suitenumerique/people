@@ -1,7 +1,7 @@
 # Django People
 
 # ---- base image to inherit from ----
-FROM python:3.12.6-alpine3.20 as base
+FROM python:3.12.6-alpine3.20 AS base
 
 # Upgrade pip to its latest release to speed up dependencies installation
 RUN python -m pip install --upgrade pip setuptools
@@ -11,7 +11,7 @@ RUN apk update && \
   apk upgrade
 
 ### ---- Front-end dependencies image ----
-FROM node:20 as frontend-deps
+FROM node:20 AS frontend-deps
 
 WORKDIR /deps
 
@@ -24,7 +24,7 @@ COPY ./src/frontend/packages/eslint-config-people/package.json ./packages/eslint
 RUN yarn --frozen-lockfile
 
 ### ---- Front-end builder dev image ----
-FROM node:20 as frontend-builder-dev
+FROM node:20 AS frontend-builder-dev
 
 WORKDIR /builder
 
@@ -34,12 +34,12 @@ COPY ./src/frontend .
 WORKDIR ./apps/desk
 
 ### ---- Front-end builder image ----
-FROM frontend-builder-dev as frontend-builder
+FROM frontend-builder-dev AS frontend-builder
 
 RUN yarn build
 
 # ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.26-alpine as frontend-production
+FROM nginxinc/nginx-unprivileged:1.26-alpine AS frontend-production
 
 # Un-privileged user running the application
 ARG DOCKER_USER
@@ -60,7 +60,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 
 # ---- Back-end builder image ----
-FROM base as back-builder
+FROM base AS back-builder
 
 WORKDIR /builder
 
@@ -72,7 +72,7 @@ RUN mkdir /install && \
 
 
 # ---- mails ----
-FROM node:20 as mail-builder
+FROM node:20 AS mail-builder
 
 COPY ./src/mail /mail/app
 
@@ -83,7 +83,7 @@ RUN yarn install --frozen-lockfile && \
 
 
 # ---- static link collector ----
-FROM base as link-collector
+FROM base AS link-collector
 ARG PEOPLE_STATIC_ROOT=/data/static
 
 # Install libpangocairo & rdfind
@@ -108,7 +108,7 @@ RUN DJANGO_CONFIGURATION=Build DJANGO_JWT_PRIVATE_SIGNING_KEY=Dummy \
 RUN rdfind -makesymlinks true -followsymlinks true -makeresultsfile false ${PEOPLE_STATIC_ROOT}
 
 # ---- Core application image ----
-FROM base as core
+FROM base AS core
 
 ENV PYTHONUNBUFFERED=1
 
@@ -143,7 +143,7 @@ WORKDIR /app
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
 # ---- Development image ----
-FROM core as backend-development
+FROM core AS backend-development
 
 # Switch back to the root user to install development dependencies
 USER root:root
@@ -169,7 +169,7 @@ ENV DB_HOST=postgresql \
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # ---- Production image ----
-FROM core as backend-production
+FROM core AS backend-production
 
 ARG PEOPLE_STATIC_ROOT=/data/static
 
