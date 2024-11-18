@@ -117,22 +117,6 @@ services:
     volumes:
       - ".:/app"
 
-  terraform-state:
-    image: hashicorp/terraform:1.6
-    environment:
-      - TF_WORKSPACE=${PROJECT:-} # avoid env conflict in local state
-    user: ${DOCKER_USER:-1000}
-    working_dir: /app
-    volumes:
-      - ./src/terraform/create_state_bucket:/app
-
-  terraform:
-    image: hashicorp/terraform:1.6
-    user: ${DOCKER_USER:-1000}
-    working_dir: /app
-    volumes:
-      - ./src/terraform:/app
-
   kc_postgresql:
       image: postgres:14.3
       ports:

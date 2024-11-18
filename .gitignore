@@ -42,7 +42,6 @@ env.bak/
 venv.bak/
 env.d/development/*
 !env.d/development/*.dist
-env.d/terraform
 
 # npm
 node_modules
@@ -58,11 +57,6 @@ src/frontend/tsclient
 
 # Logs
 *.log
-
-# Terraform
-.terraform
-*.tfstate
-*.tfstate.backup
 
 # Test & lint
 .coverage
