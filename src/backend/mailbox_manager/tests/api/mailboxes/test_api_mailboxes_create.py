@@ -318,6 +318,57 @@ def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
         assert len(rsps.calls) == 0
 
 
+def test_api_mailboxes__same_local_part_on_different_domains():
+    """A domain admin should be able to create a mailbox with the same local part
+    of another mailbox, on different domain."""
+    # a mailbox exists on another domain
+    existing_mailbox = factories.MailboxFactory()
+
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN,
+        domain=factories.MailDomainEnabledFactory(),
+    )
+    client = APIClient()
+    client.force_login(access.user)
+
+    # create a full dict with same local part as another existing mailbox
+    mailbox_values = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(local_part=existing_mailbox.local_part)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_values['local_part']}@{access.domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_values,
+            format="json",
+        )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        len(models.Mailbox.objects.filter(local_part=existing_mailbox.local_part)) == 2
+    )
+
+
 @pytest.mark.parametrize(
     "domain_status",
     [
@@ -539,7 +590,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
 
 
 @override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
-def test_api_mailboxes__dimail_token_permission_denied():
+def test_api_mailboxes__dimail_token_permission_denied(caplog):
     """
     API should raise a clear "permission denied" error
     when receiving a permission denied from dimail upon requesting token.
@@ -577,12 +628,20 @@ def test_api_mailboxes__dimail_token_permission_denied():
         mailbox = models.Mailbox.objects.get()
         assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
+        # Check error logger was called
+        assert caplog.records[0].levelname == "ERROR"
+        assert (
+            caplog.records[0].message
+            == "[DIMAIL] 403 Forbidden: Could not retrieve a token,"
+            "please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting."
+        )
+
 
 def test_api_mailboxes__user_unrelated_to_domain():
     """
     API should raise a clear "permission denied" when dimail returns a permission denied
     on mailbox creation. This means token was granted for this user
-    but user is not allowed to modify this domain (i.e. not owner)
+    but user is not allowed to modify this domain (i.e. does not have a allow)
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)

@@ -68,8 +68,8 @@ class DimailAPIClient:
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
             logger.error(
-                "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
-                please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting.",
+                "[DIMAIL] 403 Forbidden: Could not retrieve a token,"
+                "please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting.",
             )
             raise exceptions.PermissionDenied(
                 "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
