@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Removed
+
+- 🔥(teams) remove search by trigram for team access and contact
+
 ### Added
 
 - ✨(domains) allow creation of "pending" mailboxes

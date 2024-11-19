@@ -1,9 +1,7 @@
 """API endpoints"""
 
 from django.conf import settings
-from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Func, Max, OuterRef, Q, Subquery, Value
-from django.db.models.functions import Coalesce
+from django.db.models import OuterRef, Q, Subquery
 
 from rest_framework import (
     decorators,
@@ -157,19 +155,11 @@ class ContactViewSet(
             overriding_contacts__isnull=True,
         )
 
-        # Search by case-insensitive and accent-insensitive trigram similarity
+        # Search by case-insensitive and accent-insensitive similarity
         if query := self.request.GET.get("q", ""):
-            query = Func(Value(query), function="unaccent")
-            similarity = TrigramSimilarity(
-                Func("full_name", function="unaccent"),
-                query,
-            ) + TrigramSimilarity(Func("short_name", function="unaccent"), query)
-            queryset = (
-                queryset.annotate(similarity=similarity)
-                .filter(
-                    similarity__gte=0.05
-                )  # Value determined by testing (test_api_contacts.py)
-                .order_by("-similarity")
+            queryset = queryset.filter(
+                Q(full_name__unaccent__icontains=query)
+                | Q(short_name__unaccent__icontains=query)
             )
 
         serializer = self.get_serializer(queryset, many=True)
@@ -349,20 +339,9 @@ class TeamAccessViewSet(
 
         if self.action in {"list", "retrieve"}:
             if query := self.request.GET.get("q", ""):
-                similarity = Max(
-                    TrigramSimilarity(
-                        Coalesce(Func("user__email", function="unaccent"), Value("")),
-                        Func(Value(query), function="unaccent"),
-                    )
-                    + TrigramSimilarity(
-                        Coalesce(Func("user__name", function="unaccent"), Value("")),
-                        Func(Value(query), function="unaccent"),
-                    )
-                )
-                queryset = (
-                    queryset.annotate(similarity=similarity)
-                    .filter(similarity__gte=SIMILARITY_THRESHOLD)
-                    .order_by("-similarity")
+                queryset = queryset.filter(
+                    Q(user__email__unaccent__icontains=query)
+                    | Q(user__name__unaccent__icontains=query)
                 )
 
             # Determine which role the logged-in user has in the team

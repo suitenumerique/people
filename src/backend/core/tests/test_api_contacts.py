@@ -131,19 +131,17 @@ def test_api_contacts_list_authenticated_by_full_name():
     contact_ids = [contact["id"] for contact in response.json()]
     assert contact_ids == [str(frank.id)]
 
-    # Result that matches a trigram twice ranks better than result that matches once
     response = client.get("/api/v1.0/contacts/?q=ole")
 
     assert response.status_code == 200
     contact_ids = [contact["id"] for contact in response.json()]
-    # "Nicole Foole" matches twice on "ole"
-    assert contact_ids == [str(nicole.id), str(frank.id)]
+    assert contact_ids == [str(frank.id), str(nicole.id)]
 
     response = client.get("/api/v1.0/contacts/?q=ool")
 
     assert response.status_code == 200
     contact_ids = [contact["id"] for contact in response.json()]
-    assert contact_ids == [str(nicole.id), str(frank.id)]
+    assert contact_ids == [str(frank.id), str(nicole.id)]
 
 
 def test_api_contacts_list_authenticated_uppercase_content():
