@@ -51,10 +51,12 @@ class MailDomainViewSet(
         """Set the current user as owner of the newly created mail domain."""
 
         domain = serializer.save()
-        models.MailDomainAccess.objects.create(
-            user=self.request.user,
-            domain=domain,
-            role=core_models.RoleChoices.OWNER,
+        serializers.MailDomainAccessSerializer().create(
+            validated_data={
+                "user": self.request.user,
+                "domain": domain,
+                "role": str(core_models.RoleChoices.OWNER),
+            }
         )
 
 

@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(dimail) automate allows requests to dimail
 -  ✨(contacts) add notes & force full_name #565
 
 ### Changed

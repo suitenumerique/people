@@ -157,6 +157,85 @@ class DimailAPIClient:
 
         return self.raise_exception_for_unexpected_response(response)
 
+    def create_user(self, user_sub):
+        """Send a request to dimail, to create a new user there."""
+
+        payload = {"name": user_sub, "password": "no", "is_admin": "false", "perms": []}
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/users/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                json=payload,
+                verify=True,
+                timeout=10,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_201_CREATED:
+            logger.info(
+                '[DIMAIL] User "%s" successfully created on dimail',
+                user_sub,
+            )
+            return response
+
+        if response.status_code == status.HTTP_409_CONFLICT:
+            logger.info(
+                '[DIMAIL] Attempt to create user "%s" which already exists.',
+                user_sub,
+            )
+            return response
+
+        return self.raise_exception_for_unexpected_response(response)
+
+    def create_allow(self, user_sub, domain_name):
+        """Send a request to dimail for a new 'allow' between user and the domain."""
+
+        payload = {
+            "user": user_sub,
+            "domain": domain_name,
+        }
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/allows/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                json=payload,
+                verify=True,
+                timeout=10,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_201_CREATED:
+            logger.info(
+                '[DIMAIL] Permissions granted for user "%s" on domain %s.',
+                user_sub,
+                domain_name,
+            )
+            return response
+
+        if response.status_code == status.HTTP_409_CONFLICT:
+            logger.info(
+                '[DIMAIL] Attempt to create already existing permission between "%s" and "%s".',
+                user_sub,
+                domain_name,
+            )
+            return response
+
+        return self.raise_exception_for_unexpected_response(response)
+
     def raise_exception_for_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
         try:

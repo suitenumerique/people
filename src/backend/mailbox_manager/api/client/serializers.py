@@ -99,7 +99,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
         client.create_domain(validated_data["name"], self.context["request"].user.sub)
 
         # no exception raised ? Then actually save domain on our database
-        return models.MailDomain.objects.create(**validated_data)
+        return super().create(validated_data)
 
 
 class MailDomainAccessSerializer(serializers.ModelSerializer):
@@ -169,6 +169,7 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                 raise exceptions.PermissionDenied(
                     "You are not allowed to manage accesses for this domain."
                 )
+
             # only an owner can set an owner role to another user
             if (
                 role == enums.MailDomainRoleChoices.OWNER
@@ -182,6 +183,23 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                 slug=self.context["domain_slug"]
             )
         return attrs
+
+    def create(self, validated_data):
+        """
+        Override create function to fire requests to dimail on access creation.
+        """
+        dimail = DimailAPIClient()
+
+        if validated_data["role"] in [
+            enums.MailDomainRoleChoices.ADMIN,
+            enums.MailDomainRoleChoices.OWNER,
+        ]:
+            dimail.create_user(validated_data["user"].sub)
+            dimail.create_allow(
+                validated_data["user"].sub, validated_data["domain"].name
+            )
+
+        return super().create(validated_data)
 
 
 class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):

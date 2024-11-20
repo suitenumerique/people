@@ -2,9 +2,8 @@
 Tests for MailDomains API endpoint in People's app mailbox_manager. Focus on "create" action.
 """
 
+import logging
 import re
-from logging import Logger
-from unittest import mock
 
 import pytest
 import responses
@@ -77,6 +76,27 @@ def test_api_mail_domains__create_authenticated():
             status=status.HTTP_201_CREATED,
             content_type="application/json",
         )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/users/"),
+            body=str(
+                {
+                    "name": "request-user-sub",
+                    "is_admin": "false",
+                    "uuid": "user-uuid-on-dimail",
+                    "perms": [],
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/allows/"),
+            body=str({"user": "request-user-sub", "domain": str(domain_name)}),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
         response = client.post(
             "/api/v1.0/mail-domains/",
             {"name": domain_name, "context": "null", "features": ["webmail"]},
@@ -103,13 +123,13 @@ def test_api_mail_domains__create_authenticated():
 
 
 ## SYNC TO DIMAIL
-@mock.patch.object(Logger, "info")
-def test_api_mail_domains__create_dimail_domain(mock_info):
+def test_api_mail_domains__create_dimail_domain(caplog):
     """
     Creating a domain should trigger a call to create a domain on dimail too.
     """
-    user = core_factories.UserFactory()
+    caplog.set_level(logging.INFO)
 
+    user = core_factories.UserFactory()
     client = APIClient()
     client.force_login(user)
     domain_name = "test.fr"
@@ -126,6 +146,27 @@ def test_api_mail_domains__create_dimail_domain(mock_info):
             status=status.HTTP_201_CREATED,
             content_type="application/json",
         )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/users/"),
+            body=str(
+                {
+                    "name": "request-user-sub",
+                    "is_admin": "false",
+                    "uuid": "user-uuid-on-dimail",
+                    "perms": [],
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/allows/"),
+            body=str({"user": "request-user-sub", "domain": str(domain_name)}),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
         response = client.post(
             "/api/v1.0/mail-domains/",
             {
@@ -138,13 +179,18 @@ def test_api_mail_domains__create_dimail_domain(mock_info):
     assert rsp.call_count == 1  # endpoint was called
 
     # Logger
+    assert len(caplog.records) == 4  # should be 3. Last empty info still here.
     assert (
-        mock_info.call_count == 2
-    )  # should be 1. A new empty info has been added. To be investigated
-    assert mock_info.call_args_list[0][0] == (
-        "Domain %s successfully created on dimail by user %s",
-        domain_name,
-        user.sub,
+        caplog.records[0].message
+        == f"Domain {domain_name} successfully created on dimail by user {user.sub}"
+    )
+    assert (
+        caplog.records[1].message
+        == f'[DIMAIL] User "{user.sub}" successfully created on dimail'
+    )
+    assert (
+        caplog.records[2].message
+        == f'[DIMAIL] Permissions granted for user "{user.sub}" on domain {domain_name}.'
     )
 
 
