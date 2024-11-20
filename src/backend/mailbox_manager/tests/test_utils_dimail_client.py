@@ -56,7 +56,7 @@ def test_dimail_synchronization__already_sync():
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
-        imported_mailboxes = dimail_client.synchronize_mailboxes_from_dimail(domain)
+        imported_mailboxes = dimail_client.import_mailboxes(domain)
 
     post_sync_mailboxes = models.Mailbox.objects.filter(domain=domain)
     assert post_sync_mailboxes.count() == 3
@@ -130,7 +130,7 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
             content_type="application/json",
         )
 
-        imported_mailboxes = dimail_client.synchronize_mailboxes_from_dimail(domain)
+        imported_mailboxes = dimail_client.import_mailboxes(domain)
 
         # 3 imports failed: wrong domain, HeaderParseError, NonASCIILocalPartDefect
         assert mock_warning.call_count == 3

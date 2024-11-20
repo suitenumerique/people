@@ -16,7 +16,7 @@ def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disabl
 
     for domain in queryset:
         try:
-            imported_mailboxes = client.synchronize_mailboxes_from_dimail(domain)
+            imported_mailboxes = client.import_mailboxes(domain)
         except exceptions.HTTPError as err:
             messages.error(
                 request,

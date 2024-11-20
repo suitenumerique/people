@@ -75,9 +75,9 @@ class DimailAPIClient:
                 "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
-        return self.pass_dimail_unexpected_response(response)
+        return self.raise_exception_for_unexpected_response(response)
 
-    def send_domain_creation_request(self, domain_name, request_user):
+    def create_domain(self, domain_name, request_user):
         """Send a domain creation request to dimail API."""
 
         payload = {
@@ -110,9 +110,9 @@ class DimailAPIClient:
             )
             return response
 
-        return self.pass_dimail_unexpected_response(response)
+        return self.raise_exception_for_unexpected_response(response)
 
-    def send_mailbox_request(self, mailbox, user_sub=None):
+    def create_mailbox(self, mailbox, user_sub=None):
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
@@ -155,9 +155,9 @@ class DimailAPIClient:
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
-        return self.pass_dimail_unexpected_response(response)
+        return self.raise_exception_for_unexpected_response(response)
 
-    def pass_dimail_unexpected_response(self, response):
+    def raise_exception_for_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
         try:
             error_content = json.loads(
@@ -173,7 +173,7 @@ class DimailAPIClient:
             f"Unexpected response from dimail: {response.status_code} {error_content}"
         )
 
-    def send_new_mailbox_notification(self, recipient, mailbox_data):
+    def notify_mailbox_creation(self, recipient, mailbox_data):
         """
         Send email to confirm mailbox creation
         and send new mailbox information.
@@ -210,7 +210,7 @@ class DimailAPIClient:
                 exception,
             )
 
-    def synchronize_mailboxes_from_dimail(self, domain):
+    def import_mailboxes(self, domain):
         """Synchronize mailboxes from dimail - open xchange to our database.
         This is useful in case of acquisition of a pre-existing mail domain.
         Mailboxes created here are not new mailboxes and will not trigger mail notification."""
@@ -231,7 +231,7 @@ class DimailAPIClient:
             raise error
 
         if response.status_code != status.HTTP_200_OK:
-            return self.pass_dimail_unexpected_response(response)
+            return self.raise_exception_for_unexpected_response(response)
 
         dimail_mailboxes = ast.literal_eval(
             response.content.decode("utf-8")

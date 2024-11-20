@@ -36,7 +36,7 @@ class MailboxSerializer(serializers.ModelSerializer):
         if validated_data["domain"].status == enums.MailDomainStatusChoices.ENABLED:
             client = DimailAPIClient()
             # send new mailbox request to dimail
-            response = client.send_mailbox_request(
+            response = client.create_mailbox(
                 validated_data, self.context["request"].user.sub
             )
 
@@ -49,7 +49,7 @@ class MailboxSerializer(serializers.ModelSerializer):
             mailbox_status = enums.MailDomainStatusChoices.ENABLED
 
             # send confirmation email
-            client.send_new_mailbox_notification(
+            client.notify_mailbox_creation(
                 recipient=validated_data["secondary_email"], mailbox_data=mailbox_data
             )
 
@@ -96,9 +96,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
         """
         # send new domain request to dimail
         client = DimailAPIClient()
-        client.send_domain_creation_request(
-            validated_data["name"], self.context["request"].user.sub
-        )
+        client.create_domain(validated_data["name"], self.context["request"].user.sub)
 
         # no exception raised ? Then actually save domain on our database
         return models.MailDomain.objects.create(**validated_data)
