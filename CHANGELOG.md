@@ -19,6 +19,10 @@ and this project adheres to
 - ✨(domains) allow creation of "pending" mailboxes
 - ✨(teams) allow team management for team admins/owners #509
 
+### Fixed
+
+-  🔊(backend) update logger config to info #542
+
 ## [1.5.0] - 2024-11-14
 
 ### Removed
