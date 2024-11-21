@@ -220,13 +220,11 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
     def update_user_if_needed(self, user, claims):
         """Update user claims if they have changed."""
-        has_changed = any(
-            value and value != getattr(user, key)
-            for key, value in claims.items()
-            if key != "sub"
-        )
-        if has_changed:
-            updated_claims = {
-                key: value for key, value in claims.items() if value and key != "sub"
-            }
+        updated_claims = {}
+        for key in ["email", "name"]:
+            claim_value = claims.get(key)
+            if claim_value and claim_value != getattr(user, key):
+                updated_claims[key] = claim_value
+
+        if updated_claims:
             self.UserModel.objects.filter(sub=user.sub).update(**updated_claims)

@@ -11,6 +11,7 @@ and this project adheres to
 ### Fixed
 
 - 🩹(mailbox) fix status of current mailboxes
+- 🚑️(backend) fix claim contains non-user field #548
 
 ## [1.6.0] - 2024-11-20
 

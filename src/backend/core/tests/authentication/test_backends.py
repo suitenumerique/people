@@ -106,6 +106,39 @@ def test_authentication_getter_existing_user_change_fields(
     assert user.name == f"{first_name:s} {last_name:s}"
 
 
+def test_authentication_getter_existing_user_keep_fields(
+    django_assert_num_queries, monkeypatch
+):
+    """
+    Falsy values in claim should not update the user's fields.
+    """
+    klass = OIDCAuthenticationBackend()
+    user = factories.UserFactory(
+        name="John Doe", email="john.doe@example.com", with_organization=True
+    )
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": user.sub,
+            "email": None,
+            "first_name": "",
+            "last_name": "",
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # No field changed no more query
+    with django_assert_num_queries(1):
+        authenticated_user = klass.get_or_create_user(
+            access_token="test-token", id_token=None, payload=None
+        )
+
+    assert user == authenticated_user
+    user.refresh_from_db()
+    assert user.email == "john.doe@example.com"
+    assert user.name == "John Doe"
+
+
 def test_authentication_getter_existing_user_via_email(
     django_assert_num_queries, monkeypatch
 ):
@@ -381,3 +414,42 @@ def test_authentication_getter_existing_user_via_email_update_organization(
     assert user == db_user
     assert user.organization is not None
     assert user.organization.domain_list == ["my-domain.com"]
+
+
+def test_authentication_getter_existing_user_with_registration_id(
+    monkeypatch,
+    settings,
+):
+    """
+    Authenticate a user who already exists with an organization registration ID.
+
+    This asserts the "update_user_if_needed" does not fail when the claim
+    contains the organization registration ID (or any value not present in the
+    User model).
+    """
+    settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = "registration_number"
+
+    klass = OIDCAuthenticationBackend()
+    _existing_user = factories.UserFactory(
+        sub="123",
+        name="John Doe",
+        email="people@example.com",
+    )
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": "123",
+            "email": "people@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "registration_number": "12345678901234",
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    assert user.organization is not None
+    assert user.organization.registration_id_list == ["12345678901234"]
