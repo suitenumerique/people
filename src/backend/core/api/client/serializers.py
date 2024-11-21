@@ -51,6 +51,24 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
+class OrganizationSerializer(serializers.ModelSerializer):
+    """Serialize organizations."""
+
+    abilities = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Organization
+        fields = ["id", "name", "registration_id_list", "domain_list", "abilities"]
+        read_only_fields = ["id", "registration_id_list", "domain_list"]
+
+    def get_abilities(self, organization) -> dict:
+        """Return abilities of the logged-in user on the instance."""
+        request = self.context.get("request")
+        if request:
+            return organization.get_abilities(request.user)
+        return {}
+
+
 class UserSerializer(DynamicFieldsModelSerializer):
     """Serialize users."""
 

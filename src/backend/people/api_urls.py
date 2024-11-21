@@ -12,6 +12,7 @@ from core.resource_server.urls import urlpatterns as resource_server_urls
 # - Main endpoints
 router = DefaultRouter()
 router.register("contacts", viewsets.ContactViewSet, basename="contacts")
+router.register("organizations", viewsets.OrganizationViewSet, basename="organizations")
 router.register("teams", viewsets.TeamViewSet, basename="teams")
 router.register("users", viewsets.UserViewSet, basename="users")
 router.register(

@@ -40,7 +40,7 @@ with open(contact_schema_path, "r", encoding="utf-8") as contact_schema_file:
     contact_schema = json.load(contact_schema_file)
 
 
-class RoleChoices(models.TextChoices):
+class RoleChoices(models.TextChoices):  # pylint: disable=too-many-ancestors
     """Defines the possible roles a user can have in a team."""
 
     MEMBER = "member", _("Member")
@@ -48,7 +48,7 @@ class RoleChoices(models.TextChoices):
     OWNER = "owner", _("Owner")
 
 
-class OrganizationRoleChoices(models.TextChoices):
+class OrganizationRoleChoices(models.TextChoices):  # pylint: disable=too-many-ancestors
     """
     Defines the possible roles a user can have in an organization.
     For now, we only have one role, but we might add more in the future.
@@ -354,6 +354,26 @@ class Organization(BaseModel):
             raise ValidationError(
                 "domain_list value must be unique across all instances."
             )
+
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the organization.
+        """
+        try:
+            # Use the role from queryset annotation if available
+            is_admin = self.user_role == OrganizationRoleChoices.ADMIN
+        except AttributeError:
+            is_admin = self.organization_accesses.filter(
+                user=user,
+                role=OrganizationRoleChoices.ADMIN,
+            ).exists()
+
+        return {
+            "get": user.organization_id == self.pk,
+            "patch": is_admin,
+            "put": is_admin,
+            "delete": False,
+        }
 
 
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):

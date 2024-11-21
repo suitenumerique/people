@@ -172,6 +172,45 @@ class ContactViewSet(
         return super().perform_create(serializer)
 
 
+class OrganizationViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    Organization ViewSet
+
+    GET /api/organizations/<organization_id>/
+        Return the organization details for the given id.
+
+    PUT /api/organizations/<organization_id>/
+        Update the organization details for the given id.
+
+    PATCH /api/organizations/<organization_id>/
+        Partially update the organization details for the given id.
+    """
+
+    permission_classes = [permissions.AccessPermission]
+    queryset = models.Organization.objects.all()
+    serializer_class = serializers.OrganizationSerializer
+    throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
+
+    def get_queryset(self):
+        """Limit listed organizations to the one the user belongs to."""
+        return (
+            super()
+            .get_queryset()
+            .filter(pk=self.request.user.organization_id)
+            .annotate(
+                user_role=Subquery(
+                    models.OrganizationAccess.objects.filter(
+                        user=self.request.user, organization=OuterRef("pk")
+                    ).values("role")[:1]
+                )
+            )
+        )
+
+
 class UserViewSet(
     SerializerPerActionMixin,
     mixins.UpdateModelMixin,

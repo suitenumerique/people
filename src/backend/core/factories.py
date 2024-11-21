@@ -138,6 +138,22 @@ class OrganizationFactory(factory.django.DjangoModelFactory):
         )
 
 
+class OrganizationAccessFactory(factory.django.DjangoModelFactory):
+    """Factory to create organization accesses for testing purposes."""
+
+    class Meta:
+        model = models.OrganizationAccess
+
+    user = factory.SubFactory(
+        "core.factories.UserFactory",
+        organization=factory.SelfAttribute("..organization"),
+    )
+    organization = factory.SubFactory(
+        "core.factories.OrganizationFactory", with_registration_id=True
+    )
+    role = factory.fuzzy.FuzzyChoice(models.OrganizationRoleChoices.values)
+
+
 class UserFactory(factory.django.DjangoModelFactory):
     """A factory to create random users for testing purposes."""
 
