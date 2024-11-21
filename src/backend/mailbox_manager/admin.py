@@ -61,7 +61,7 @@ class MailDomainAdmin(admin.ModelAdmin):
 class MailboxAdmin(admin.ModelAdmin):
     """Admin for mailbox model."""
 
-    list_display = ("__str__", "first_name", "last_name")
+    list_display = ("__str__", "first_name", "last_name", "status")
 
 
 @admin.register(models.MailDomainAccess)

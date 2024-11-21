@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🩹(mailbox) fix status of current mailboxes
+
 ## [1.6.0] - 2024-11-20
 
 ### Removed
