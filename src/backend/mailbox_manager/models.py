@@ -215,17 +215,12 @@ class Mailbox(BaseModel):
 
     def save(self, *args, **kwargs):
         """
-        Modification is forbidden for now.
+        Override save function to not allow to create or update mailbox of a disabled domain.
         """
         self.full_clean()
 
         if self.domain.status == MailDomainStatusChoices.DISABLED:
             raise exceptions.ValidationError(
-                _("You can't create a mailbox for a disabled domain.")
+                _("You can't create or update a mailbox for a disabled domain.")
             )
-
-        if self._state.adding:
-            return super().save(*args, **kwargs)
-
-        # Update is not implemented for now
-        raise NotImplementedError()
+        return super().save(*args, **kwargs)

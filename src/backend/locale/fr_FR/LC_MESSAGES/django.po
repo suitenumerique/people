@@ -519,8 +519,8 @@ msgid "Mailboxes"
 msgstr ""
 
 #: mailbox_manager/models.py:224
-msgid "You can't create a mailbox for a disabled domain."
-msgstr "Vous ne pouvez pas créer de boîte mail pour un domain désactivé."
+msgid "You can't create or update a mailbox for a disabled domain."
+msgstr "Vous ne pouvez pas créer ou modifier une boîte mail pour un domain désactivé."
 
 #: mailbox_manager/utils/dimail.py:183
 msgid "Your new mailbox information"

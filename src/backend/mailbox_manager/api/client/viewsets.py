@@ -3,12 +3,15 @@
 from django.db.models import Subquery
 
 from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from core import models as core_models
 
 from mailbox_manager import enums, models
 from mailbox_manager.api import permissions
 from mailbox_manager.api.client import serializers
+from mailbox_manager.utils.dimail import DimailAPIClient
 
 
 # pylint: disable=too-many-ancestors
@@ -186,15 +189,18 @@ class MailBoxViewSet(
 ):
     """MailBox ViewSet
 
-    GET /api/<version>/mail-domains/<domain-slug>/mailboxes/
+    GET /api/<version>/mail-domains/<domain_slug>/mailboxes/
         Return a list of mailboxes on the domain
 
-    POST /api/<version>/mail-domains/<domain-slug>/mailboxes/ with expected data:
+    POST /api/<version>/mail-domains/<domain_slug>/mailboxes/ with expected data:
         - first_name: str
         - last_name: str
         - local_part: str
         - secondary_email: str
         Sends request to email provisioning API and returns newly created mailbox
+
+    POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/disable/
+        Send a request to dimail to disable mailbox and change status of the mailbox in our DB
     """
 
     permission_classes = [permissions.MailBoxPermission]
@@ -218,3 +224,13 @@ class MailBoxViewSet(
                 slug=domain_slug
             )
         super().perform_create(serializer)
+
+    @action(detail=True, methods=["post"])
+    def disable(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Disable mailbox. Send a request to dimail and change status in our DB"""
+        mailbox = self.get_object()
+        client = DimailAPIClient()
+        client.disable_mailbox(mailbox, request.user.sub)
+        mailbox.status = enums.MailboxStatusChoices.DISABLED
+        mailbox.save()
+        return Response(serializers.MailboxSerializer(mailbox).data)

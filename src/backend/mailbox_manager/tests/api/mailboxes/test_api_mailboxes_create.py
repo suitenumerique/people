@@ -264,7 +264,9 @@ def test_api_mailboxes__cannot_create_on_disabled_domain(role):
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert not models.Mailbox.objects.exists()
-    assert response.json() == ["You can't create a mailbox for a disabled domain."]
+    assert response.json() == [
+        "You can't create or update a mailbox for a disabled domain."
+    ]
 
 
 @pytest.mark.parametrize(

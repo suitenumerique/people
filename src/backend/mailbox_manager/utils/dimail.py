@@ -211,7 +211,7 @@ class DimailAPIClient:
             )
 
     def import_mailboxes(self, domain):
-        """Synchronize mailboxes from dimail - open xchange to our database.
+        """Import mailboxes from dimail - open xchange in our database.
         This is useful in case of acquisition of a pre-existing mail domain.
         Mailboxes created here are not new mailboxes and will not trigger mail notification."""
 
@@ -272,3 +272,22 @@ class DimailAPIClient:
                         err,
                     )
         return imported_mailboxes
+
+    def disable_mailbox(self, mailbox, user_sub=None):
+        """Send a request to disable a mailbox to dimail API"""
+        response = session.patch(
+            f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
+            json={"active": "no"},
+            headers=self.get_headers(user_sub),
+            verify=True,
+            timeout=10,
+        )
+        if response.status_code == status.HTTP_200_OK:
+            logger.info(
+                "Mailbox %s successfully desactivated on domain %s by user %s",
+                str(mailbox),
+                str(mailbox.domain),
+                user_sub,
+            )
+            return response
+        return self.raise_exception_for_unexpected_response(response)

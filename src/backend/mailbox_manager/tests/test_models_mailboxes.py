@@ -116,7 +116,7 @@ def test_models_mailboxes__cannot_create_mailboxes_on_disabled_domain():
     A disabled status for the mail domain raises an error."""
     with pytest.raises(
         exceptions.ValidationError,
-        match="You can't create a mailbox for a disabled domain.",
+        match="You can't create or update a mailbox for a disabled domain.",
     ):
         factories.MailboxFactory(
             domain=factories.MailDomainFactory(
