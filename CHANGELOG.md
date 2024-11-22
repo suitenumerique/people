@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.6.1] - 2024-11-22
+
 ### Fixed
 
 - 🩹(mailbox) fix status of current mailboxes
@@ -170,7 +172,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.6.0...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.6.1...main
+[1.6.1]: https://github.com/numerique-gouv/people/releases/v1.6.1
 [1.6.0]: https://github.com/numerique-gouv/people/releases/v1.6.0
 [1.5.0]: https://github.com/numerique-gouv/people/releases/v1.5.0
 [1.4.1]: https://github.com/numerique-gouv/people/releases/v1.4.1
