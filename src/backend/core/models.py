@@ -359,14 +359,8 @@ class Organization(BaseModel):
         """
         Compute and return abilities for a given user on the organization.
         """
-        try:
-            # Use the role from queryset annotation if available
-            is_admin = self.user_role == OrganizationRoleChoices.ADMIN
-        except AttributeError:
-            is_admin = self.organization_accesses.filter(
-                user=user,
-                role=OrganizationRoleChoices.ADMIN,
-            ).exists()
+        # Use the role from queryset annotation will raise on purpose if not used properly
+        is_admin = self.user_role == OrganizationRoleChoices.ADMIN  # pylint: disable=no-member
 
         return {
             "get": user.organization_id == self.pk,

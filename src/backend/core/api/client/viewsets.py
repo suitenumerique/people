@@ -225,7 +225,9 @@ class UserViewSet(
     """
 
     permission_classes = [permissions.IsSelf]
-    queryset = models.User.objects.all().order_by("-created_at")
+    queryset = (
+        models.User.objects.select_related("organization").all().order_by("-created_at")
+    )
     serializer_class = serializers.UserSerializer
     get_me_serializer_class = serializers.UserMeSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]

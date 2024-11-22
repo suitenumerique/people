@@ -51,6 +51,73 @@ def test_api_users_list_authenticated():
     assert len(response.json()["results"]) == 3
 
 
+def test_api_users_list_authenticated_response_content(
+    client, django_assert_num_queries
+):
+    """
+    Authenticated users should be able to list all users with the expected output.
+    """
+    user_organization = factories.OrganizationFactory(
+        with_registration_id=True, name="HAL 9000"
+    )
+    user = factories.UserFactory(
+        organization=user_organization,
+        email="kylefields@example.net",
+        name="Mr. Christopher Curtis",
+        language="en-us",
+    )
+
+    client.force_login(user)
+
+    other_user_organization = factories.OrganizationFactory(
+        with_registration_id=True, name="Corp. Inc."
+    )
+    other_user = factories.UserFactory(
+        organization=other_user_organization,
+        email="sara83@example.com",
+        name="Christopher Thompson",
+        language="fr-fr",
+    )
+
+    with django_assert_num_queries(3):  # get User, Count, Users
+        response = client.get("/api/v1.0/users/")
+
+    assert response.status_code == HTTP_200_OK
+    assert response.json() == {
+        "count": 2,
+        "next": None,
+        "previous": None,
+        "results": [
+            {
+                "email": "sara83@example.com",
+                "id": str(other_user.pk),
+                "is_device": False,
+                "is_staff": False,
+                "language": "fr-fr",
+                "name": "Christopher Thompson",
+                "organization": {
+                    "id": str(other_user.organization.pk),
+                    "name": "Corp. Inc.",
+                },
+                "timezone": "UTC",
+            },
+            {
+                "email": "kylefields@example.net",
+                "id": str(user.pk),
+                "is_device": False,
+                "is_staff": False,
+                "language": "en-us",
+                "name": "Mr. Christopher Curtis",
+                "organization": {
+                    "id": str(user.organization.pk),
+                    "name": "HAL 9000",
+                },
+                "timezone": "UTC",
+            },
+        ],
+    }
+
+
 def test_api_users_authenticated_list_by_email():
     """
     Authenticated users should be able to search users with a case-insensitive and
@@ -58,8 +125,12 @@ def test_api_users_authenticated_list_by_email():
     """
     user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
     dave = factories.UserFactory(email="david.bowman@work.com", name=None)
-    nicole = factories.UserFactory(email="nicole_foole@work.com", name=None)
-    frank = factories.UserFactory(email="frank_poole@work.com", name=None)
+    nicole = factories.UserFactory(
+        email="nicole_foole@work.com", name=None, with_organization=True
+    )
+    frank = factories.UserFactory(
+        email="frank_poole@work.com", name=None, with_organization=True
+    )
     factories.UserFactory(email="heywood_floyd@work.com", name=None)
 
     client = APIClient()
@@ -99,6 +170,10 @@ def test_api_users_authenticated_list_by_email():
             "is_staff": frank.is_staff,
             "language": frank.language,
             "timezone": str(frank.timezone),
+            "organization": {
+                "id": str(frank.organization.pk),
+                "name": frank.organization.name,
+            },
         },
         {
             "id": str(nicole.id),
@@ -108,6 +183,10 @@ def test_api_users_authenticated_list_by_email():
             "is_staff": nicole.is_staff,
             "language": nicole.language,
             "timezone": str(nicole.timezone),
+            "organization": {
+                "id": str(nicole.organization.pk),
+                "name": nicole.organization.name,
+            },
         },
     ]
 
@@ -119,8 +198,12 @@ def test_api_users_authenticated_list_by_name():
     """
     user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
     dave = factories.UserFactory(name="Dave bowman", email=None)
-    nicole = factories.UserFactory(name="nicole foole", email=None)
-    frank = factories.UserFactory(name="frank poolé", email=None)
+    nicole = factories.UserFactory(
+        name="nicole foole", email=None, with_organization=True
+    )
+    frank = factories.UserFactory(
+        name="frank poolé", email=None, with_organization=True
+    )
     factories.UserFactory(name="heywood floyd", email=None)
 
     client = APIClient()
@@ -160,6 +243,10 @@ def test_api_users_authenticated_list_by_name():
             "is_staff": frank.is_staff,
             "language": frank.language,
             "timezone": str(frank.timezone),
+            "organization": {
+                "id": str(frank.organization.pk),
+                "name": frank.organization.name,
+            },
         },
         {
             "id": str(nicole.id),
@@ -169,6 +256,10 @@ def test_api_users_authenticated_list_by_name():
             "is_staff": nicole.is_staff,
             "language": nicole.language,
             "timezone": str(nicole.timezone),
+            "organization": {
+                "id": str(nicole.organization.pk),
+                "name": nicole.organization.name,
+            },
         },
     ]
 
@@ -437,7 +528,7 @@ def test_api_users_retrieve_me_anonymous():
 
 def test_api_users_retrieve_me_authenticated():
     """Authenticated users should be able to retrieve their own user via the "/users/me" path."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_organization=True)
 
     client = APIClient()
     client.force_login(user)
@@ -465,6 +556,10 @@ def test_api_users_retrieve_me_authenticated():
             "contacts": {"can_create": True, "can_view": True},
             "mailboxes": {"can_create": False, "can_view": False},
             "teams": {"can_create": False, "can_view": False},
+        },
+        "organization": {
+            "id": str(user.organization.pk),
+            "name": user.organization.name,
         },
     }
 

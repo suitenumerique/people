@@ -69,12 +69,22 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return {}
 
 
+class UserOrganizationSerializer(serializers.ModelSerializer):
+    """Serialize organizations for users."""
+
+    class Meta:
+        model = models.Organization
+        fields = ["id", "name"]
+        read_only_fields = ["id", "name"]
+
+
 class UserSerializer(DynamicFieldsModelSerializer):
     """Serialize users."""
 
     timezone = TimeZoneSerializerField(use_pytz=False, required=True)
     email = serializers.ReadOnlyField()
     name = serializers.ReadOnlyField()
+    organization = UserOrganizationSerializer(read_only=True)
 
     class Meta:
         model = models.User
@@ -83,6 +93,7 @@ class UserSerializer(DynamicFieldsModelSerializer):
             "email",
             "language",
             "name",
+            "organization",
             "timezone",
             "is_device",
             "is_staff",
@@ -98,6 +109,7 @@ class UserMeSerializer(UserSerializer):
     """
 
     abilities = serializers.SerializerMethodField()
+    organization = UserOrganizationSerializer(read_only=True)
 
     class Meta:
         model = models.User
@@ -108,6 +120,7 @@ class UserMeSerializer(UserSerializer):
             "is_staff",
             "language",
             "name",
+            "organization",
             "timezone",
             # added fields
             "abilities",

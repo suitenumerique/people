@@ -14,6 +14,7 @@ and this project adheres to
 - ✨(mailbox) allow to disable mailbox
 - ✨(backend) add ServiceProvider #522
 - 💄(admin) allow header color customization #552 
+- ✨(organization) add API endpoints #551
 
 ### Fixed
 
