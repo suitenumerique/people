@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 
 - ✨(backend) add ServiceProvider #522
+- 💄(admin) allow header color customization #552 
 
 ### Fixed
 

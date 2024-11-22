@@ -8,6 +8,8 @@ backend:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
   envVars:
+    DJANGO_ADMIN_HEADER_BACKGROUND: "#dc3545"
+    DJANGO_ADMIN_HEADER_COLOR: "#ffffff"
     DJANGO_CSRF_TRUSTED_ORIGINS: https://regie.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"

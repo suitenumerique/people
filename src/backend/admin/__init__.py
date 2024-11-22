@@ -1,0 +1,1 @@
+"""People custom admin site."""

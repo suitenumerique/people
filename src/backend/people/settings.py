@@ -158,7 +158,12 @@ class Base(Configuration):
     TEMPLATES = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "DIRS": [os.path.join(BASE_DIR, "templates")],
+            "DIRS": [
+                os.path.join(BASE_DIR, "templates"),
+                os.path.join(
+                    BASE_DIR, "admin", "templates"
+                ),  # enforce load before Django's admin
+            ],
             "OPTIONS": {
                 "context_processors": [
                     "django.contrib.auth.context_processors.auth",
@@ -200,6 +205,7 @@ class Base(Configuration):
     # Django's applications from the highest priority to the lowest
     INSTALLED_APPS = [
         # People
+        "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'
         "core",
         "demo",
         "mailbox_manager",
@@ -211,7 +217,6 @@ class Base(Configuration):
         "parler",
         "easy_thumbnails",
         # Django
-        "django.contrib.admin",
         "django.contrib.auth",
         "django.contrib.contenttypes",
         "django.contrib.postgres",
@@ -276,6 +281,10 @@ class Base(Configuration):
         "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
         "REDOC_DIST": "SIDECAR",
     }
+
+    # Django Admin
+    ADMIN_HEADER_BACKGROUND = values.Value(None)
+    ADMIN_HEADER_COLOR = values.Value(None)
 
     # Mail
     EMAIL_BACKEND = values.Value("django.core.mail.backends.smtp.EmailBackend")
