@@ -101,7 +101,7 @@ def prepare_release(version, kind):
     --> Then do:
     >> git checkout main
     >> git pull
-    >> git tag -a v{version} 
+    >> git tag v{version} 
     >> git push origin v{version} 
     --> Please check and wait for the docker image v{version} to be published here: https://hub.docker.com/r/lasuite/people-backend/tags
     >> git tag -d preprod
