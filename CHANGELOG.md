@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+-  🐛(admin) add organization on user #555
+
 ## [1.6.1] - 2024-11-22
 
 ### Fixed

@@ -49,6 +49,7 @@ class UserAdmin(auth_admin.UserAdmin):
                     "id",
                     "sub",
                     "password",
+                    "organization",
                 )
             },
         ),
