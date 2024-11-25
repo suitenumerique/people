@@ -14,8 +14,8 @@ from rest_framework.status import (
 from rest_framework.test import APIClient
 
 from core import factories, models
-from core.api import serializers
-from core.api.viewsets import Pagination
+from core.api.client import serializers
+from core.api.client.viewsets import Pagination
 from core.factories import TeamAccessFactory
 
 from mailbox_manager.factories import MailDomainAccessFactory

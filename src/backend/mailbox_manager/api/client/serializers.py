@@ -4,7 +4,7 @@ import json
 
 from rest_framework import exceptions, serializers
 
-from core.api.serializers import UserSerializer
+from core.api.client.serializers import UserSerializer
 from core.models import User
 
 from mailbox_manager import enums, models

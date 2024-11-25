@@ -14,7 +14,7 @@ from rest_framework.status import (
 from rest_framework.test import APIClient
 
 from core import factories
-from core.api import serializers
+from core.api.client import serializers
 
 pytestmark = pytest.mark.django_db
 

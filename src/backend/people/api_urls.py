@@ -5,7 +5,7 @@ from django.urls import include, path, re_path
 
 from rest_framework.routers import DefaultRouter
 
-from core.api import viewsets
+from core.api.client import viewsets
 from core.authentication.urls import urlpatterns as oidc_urls
 from core.resource_server.urls import urlpatterns as resource_server_urls
 

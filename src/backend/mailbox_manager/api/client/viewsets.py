@@ -7,7 +7,8 @@ from rest_framework import exceptions, filters, mixins, viewsets
 from core import models as core_models
 
 from mailbox_manager import enums, models
-from mailbox_manager.api import permissions, serializers
+from mailbox_manager.api import permissions
+from mailbox_manager.api.client import serializers
 
 
 # pylint: disable=too-many-ancestors

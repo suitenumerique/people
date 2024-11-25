@@ -12,7 +12,7 @@ from rest_framework.status import (
 from rest_framework.test import APIClient
 
 from core import factories
-from core.resource_server_api import serializers
+from core.api.resource_server import serializers
 
 pytestmark = pytest.mark.django_db
 

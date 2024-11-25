@@ -4,7 +4,7 @@ from django.urls import include, path, re_path
 
 from rest_framework.routers import DefaultRouter
 
-from mailbox_manager.api import viewsets
+from mailbox_manager.api.client import viewsets
 
 maildomain_router = DefaultRouter()
 maildomain_router.register(

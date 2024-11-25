@@ -10,9 +10,9 @@ from rest_framework import (
 
 from core import models
 from core.api import permissions
+from core.api.client.viewsets import Pagination
 from core.resource_server.mixins import ResourceServerMixin
 
-from ..api.viewsets import Pagination
 from . import serializers
 
 

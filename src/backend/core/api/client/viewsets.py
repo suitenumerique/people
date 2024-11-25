@@ -17,8 +17,8 @@ from rest_framework import (
 from rest_framework.permissions import AllowAny
 
 from core import models
-
-from . import permissions, serializers
+from core.api import permissions
+from core.api.client import serializers
 
 SIMILARITY_THRESHOLD = 0.04
 
