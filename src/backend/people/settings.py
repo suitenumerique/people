@@ -215,6 +215,7 @@ class Base(Configuration):
         "dockerflow.django",
         "rest_framework",
         "parler",
+        "treebeard",
         "easy_thumbnails",
         # Django
         "django.contrib.auth",

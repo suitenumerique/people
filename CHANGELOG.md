@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(teams) add Team dependencies #560
 - ✨(organization) add admin action for plugin #640
 - ✨(anct) fetch and display organization names of communes #583
 - ✨(frontend) display email if no username #562

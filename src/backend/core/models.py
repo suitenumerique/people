@@ -26,6 +26,7 @@ from django.utils.translation import override
 
 import jsonschema
 from timezone_field import TimeZoneField
+from treebeard.mp_tree import MP_Node, MP_NodeManager
 
 from core.enums import WebhookStatusChoices
 from core.plugins.loader import organization_plugins_run_after_create
@@ -633,7 +634,34 @@ class OrganizationAccess(BaseModel):
         return f"{self.user!s} is {self.role:s} in organization {self.organization!s}"
 
 
-class Team(BaseModel):
+class TeamManager(MP_NodeManager):
+    """
+    Custom manager for the Team model, to manage complexity/automation.
+    """
+
+    def create(self, parent_id=None, **kwargs):
+        """
+        Replace the default create method to ease the Team creation process.
+
+        Notes:
+            - the `add_*` methods from django-treebeard does not support the "using db".
+              Which means it will always use the default db.
+            - the `add_*` methods from django-treebeard does not support the "force_insert".
+
+        """
+        if parent_id is None:
+            return self.model.add_root(**kwargs)
+
+        # Retrieve parent object, because django-treebeard uses raw queries for most
+        # write operations, and raw queries don’t update the django objects of the db
+        # entries they modify. See caveats in the django-treebeard documentation.
+        # This might be changed later if we never do any operation on the parent object
+        # before creating the child.
+        # Beware the N+1 here.
+        return self.get(pk=parent_id).add_child(**kwargs)
+
+
+class Team(MP_Node, BaseModel):
     """
     Represents the link between teams and users, specifying the role a user has in a team.
 
@@ -642,6 +670,12 @@ class Team(BaseModel):
     When a team is created from a Service Provider this one is automatically set in the
     Team `service_providers`.
     """
+
+    # Allow up to 80 nested teams with 62^5 (916_132_832) root nodes
+    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    # Django treebeard does not allow max_length = None...
+    steplen = 5
+    path = models.CharField(max_length=5 * 80, unique=True, db_collation="C")
 
     name = models.CharField(max_length=100)
 
@@ -663,6 +697,8 @@ class Team(BaseModel):
         related_name="teams",
         blank=True,
     )
+
+    objects = TeamManager()
 
     class Meta:
         db_table = "people_team"

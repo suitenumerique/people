@@ -4,6 +4,9 @@ from django.contrib import admin, messages
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
 
+from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
+
 from mailbox_manager.admin import MailDomainAccessInline
 
 from . import models
@@ -122,9 +125,10 @@ class TeamServiceProviderInline(admin.TabularInline):
 
 
 @admin.register(models.Team)
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(TreeAdmin):
     """Team admin interface declaration."""
 
+    form = movenodeform_factory(models.Team)
     inlines = (TeamAccessInline, TeamWebhookInline, TeamServiceProviderInline)
     exclude = ("service_providers",)  # Handled by the inline
     list_display = (
@@ -133,6 +137,7 @@ class TeamAdmin(admin.ModelAdmin):
         "updated_at",
     )
     search_fields = ("name",)
+    readonly_fields = ("path", "depth", "numchild")
 
 
 @admin.register(models.TeamAccess)

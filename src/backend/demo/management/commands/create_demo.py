@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from faker import Faker
+from treebeard.mp_tree import MP_Node
 
 from core import models
 
@@ -45,7 +46,33 @@ class BulkQueue:
         if not objects:
             return
 
-        objects[0]._meta.model.objects.bulk_create(objects, ignore_conflicts=False)  # noqa: SLF001
+        objects_model = objects[0]._meta.model  # noqa: SLF001
+        if issubclass(objects_model, MP_Node):
+            # For treebeard models, we need to create the tree structure
+            # in a specific way. This is not perfect but it works for the
+            # current use case.
+            model_fields = {
+                field
+                for field in objects_model._meta.concrete_fields  # noqa: SLF001
+                if field.name not in {"depth", "numchild", "path"}
+            }
+            bulk_data = [
+                {
+                    "data": {
+                        field.name: field.value_from_object(obj)
+                        for field in model_fields
+                        if field.value_from_object(obj)
+                    }
+                }
+                for obj in objects
+            ]
+            objects_model.load_bulk(bulk_data)
+        else:
+            objects_model.objects.bulk_create(
+                objects,
+                ignore_conflicts=False,
+            )
+
         # In debug mode, Django keeps query cache which creates a memory leak in this case
         db.reset_queries()
         self.queue[objects[0]._meta.model.__name__] = []  # noqa: SLF001
@@ -192,21 +219,15 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 )
 
     with Timeit(stdout, "Creating domains"):
-        created = set()
-        for _i in range(defaults.NB_OBJECTS["domains"]):
-            name = fake.domain_name()
-            if name in created:
-                continue
-            created.add(name)
-
-            slug = slugify(name)
+        for i in range(defaults.NB_OBJECTS["domains"]):
+            name = f"{fake.domain_name()}-i{i:d}"
 
             queue.push(
                 mailbox_models.MailDomain(
                     name=name,
                     # slug should be automatic but bulk_create doesn't use save
-                    slug=slug,
-                    status=random.choice(MailDomainStatusChoices.choices)[0],
+                    slug=slugify(name),
+                    status=random.choice(MailDomainStatusChoices.values),
                 )
             )
         queue.flush()

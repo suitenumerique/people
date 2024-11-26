@@ -12,14 +12,15 @@ from core import models
 from demo import defaults
 from mailbox_manager import models as mailbox_models
 
-TEST_NB_OBJECTS = {
-    "users": 5,
-    "teams": 3,
-    "max_users_per_team": 5,
-    "domains": 2,
-}
-
 pytestmark = pytest.mark.django_db
+
+
+TEST_NB_OBJECTS = {
+    "users": 100,
+    "teams": 100,
+    "max_users_per_team": 5,
+    "domains": 100,
+}
 
 
 @override_settings(DEBUG=True)
