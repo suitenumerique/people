@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(mailbox) allow to activate mailbox
 - ✨(mailbox) allow to disable mailbox
 - ✨(backend) add ServiceProvider #522
 - 💄(admin) allow header color customization #552 

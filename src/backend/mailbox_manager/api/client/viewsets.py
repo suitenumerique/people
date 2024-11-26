@@ -201,6 +201,9 @@ class MailBoxViewSet(
 
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/disable/
         Send a request to dimail to disable mailbox and change status of the mailbox in our DB
+
+    POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/enable/
+        Send a request to dimail to enable mailbox and change status of the mailbox in our DB
     """
 
     permission_classes = [permissions.MailBoxPermission]
@@ -232,5 +235,15 @@ class MailBoxViewSet(
         client = DimailAPIClient()
         client.disable_mailbox(mailbox, request.user.sub)
         mailbox.status = enums.MailboxStatusChoices.DISABLED
+        mailbox.save()
+        return Response(serializers.MailboxSerializer(mailbox).data)
+
+    @action(detail=True, methods=["post"])
+    def enable(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Enable mailbox. Send a request to dimail and change status in our DB"""
+        mailbox = self.get_object()
+        client = DimailAPIClient()
+        client.enable_mailbox(mailbox, request.user.sub)
+        mailbox.status = enums.MailboxStatusChoices.ENABLED
         mailbox.save()
         return Response(serializers.MailboxSerializer(mailbox).data)

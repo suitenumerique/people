@@ -291,3 +291,22 @@ class DimailAPIClient:
             )
             return response
         return self.raise_exception_for_unexpected_response(response)
+
+    def enable_mailbox(self, mailbox, user_sub=None):
+        """Send a request to enable a mailbox to dimail API"""
+        response = session.patch(
+            f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
+            json={"active": "yes"},
+            headers=self.get_headers(user_sub),
+            verify=True,
+            timeout=10,
+        )
+        if response.status_code == status.HTTP_200_OK:
+            logger.info(
+                "Mailbox %s successfully enabled on domain %s by user %s",
+                str(mailbox),
+                str(mailbox.domain),
+                user_sub,
+            )
+            return response
+        return self.raise_exception_for_unexpected_response(response)
