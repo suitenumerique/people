@@ -1,12 +1,13 @@
 """API endpoints"""
 
-from django.db.models import Subquery
+from django.db.models import Q, Subquery
 
 from rest_framework import exceptions, filters, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core import models as core_models
+from core.api.client.serializers import UserSerializer
 
 from mailbox_manager import enums, models
 from mailbox_manager.api import permissions
@@ -75,6 +76,9 @@ class MailDomainAccessViewSet(
     GET /api/v1.0/mail-domains/<domain_slug>/accesses/:<domain_access_id>
         Return list of all domain accesses related to the logged-in user and one
         domain access if an id is provided.
+
+    GET /api/v1.0/mail-domains/<domain_slug>/accesses/users/
+        Return list of all users who can have an access to the domain
 
     POST /api/v1.0/mail-domains/<domain_slug>/accesses/ with expected data:
         - user: str
@@ -182,6 +186,30 @@ class MailDomainAccessViewSet(
             raise exceptions.PermissionDenied({"detail": message})
 
         return super().destroy(request, *args, **kwargs)
+
+    @action(detail=False, url_path="users", methods=["get"])
+    def get_available_users(self, request, domain_slug):
+        """API endpoint to search user to give them new access.
+        More filters and permission will be added soon.
+        """
+        domain = models.MailDomain.objects.get(slug=domain_slug)
+        abilities = domain.get_abilities(request.user)
+        if not abilities["manage_accesses"]:
+            raise exceptions.PermissionDenied()
+
+        queryset = (
+            core_models.User.objects.order_by("-created_at")
+            # exclude inactive users and get users from identified user's organization
+            .filter(is_active=True, organization_id=request.user.organization_id)
+            # exclude all users with already an access config
+            .exclude(mail_domain_accesses__domain__slug=domain_slug)
+        )
+        # Search by case-insensitive and accent-insensitive
+        if query := request.GET.get("q", ""):
+            queryset = queryset.filter(
+                Q(name__unaccent__icontains=query) | Q(email__unaccent__icontains=query)
+            )
+        return Response(UserSerializer(queryset.all(), many=True).data)
 
 
 class MailBoxViewSet(

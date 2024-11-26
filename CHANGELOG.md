@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(maildomain_access) add API endpoint to search users #508
+
 ## [1.8.0] - 2024-12-12
 
 ### Added
