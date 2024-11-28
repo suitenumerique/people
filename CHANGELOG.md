@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.7.0] - 2024-11-28
+
 ### Added
 
 - ✨(mailbox) allow to activate mailbox
@@ -184,7 +186,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.6.1...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.7.0...main
+[1.7.0]: https://github.com/numerique-gouv/people/releases/v1.7.0
 [1.6.1]: https://github.com/numerique-gouv/people/releases/v1.6.1
 [1.6.0]: https://github.com/numerique-gouv/people/releases/v1.6.0
 [1.5.0]: https://github.com/numerique-gouv/people/releases/v1.5.0
