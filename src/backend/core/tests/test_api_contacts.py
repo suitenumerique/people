@@ -97,6 +97,7 @@ def test_api_contacts_list_authenticated_no_query():
             "owner": str(contact2.owner.id),
             "data": contact2.data,
             "full_name": contact2.full_name,
+            "notes": "",
             "short_name": contact2.short_name,
         },
     ]
@@ -271,6 +272,7 @@ def test_api_contacts_retrieve_authenticated_owned():
         "owner": str(contact.owner.id),
         "data": contact.data,
         "full_name": contact.full_name,
+        "notes": "",
         "short_name": contact.short_name,
     }
 
@@ -293,6 +295,7 @@ def test_api_contacts_retrieve_authenticated_public():
         "owner": None,
         "data": contact.data,
         "full_name": contact.full_name,
+        "notes": "",
         "short_name": contact.short_name,
     }
 
@@ -328,7 +331,7 @@ def test_api_contacts_create_anonymous_forbidden():
 
 
 def test_api_contacts_create_authenticated_missing_base():
-    """Anonymous users should be able to create users."""
+    """Authenticated user should be able to create contact without override."""
     user = factories.UserFactory(profile_contact=None)
 
     client = APIClient()
@@ -339,13 +342,23 @@ def test_api_contacts_create_authenticated_missing_base():
         {
             "full_name": "David Bowman",
             "short_name": "Dave",
+            "data": {},
         },
         format="json",
     )
-    assert response.status_code == 400
-    assert models.Contact.objects.exists() is False
+    assert response.status_code == 201
 
-    assert response.json() == {"base": ["This field is required."]}
+    new_contact = models.Contact.objects.get(owner=user)
+
+    assert response.json() == {
+        "base": None,
+        "data": {},
+        "full_name": "David Bowman",
+        "id": str(new_contact.pk),
+        "notes": "",
+        "owner": str(user.pk),
+        "short_name": "Dave",
+    }
 
 
 def test_api_contacts_create_authenticated_successful():
@@ -379,6 +392,7 @@ def test_api_contacts_create_authenticated_successful():
         "base": str(base_contact.id),
         "data": CONTACT_DATA,
         "full_name": "David Bowman",
+        "notes": "",
         "owner": str(user.id),
         "short_name": "Dave",
     }
@@ -408,6 +422,7 @@ def test_api_contacts_create_authenticated_existing_override():
         {
             "base": str(base_contact.id),
             "full_name": "David Bowman",
+            "notes": "",
             "short_name": "Dave",
             "data": CONTACT_DATA,
         },
@@ -420,6 +435,45 @@ def test_api_contacts_create_authenticated_existing_override():
     assert response.json() == {
         "__all__": ["Contact with this Owner and Base already exists."]
     }
+
+
+def test_api_contacts_create_authenticated_successful_with_notes():
+    """Authenticated users should be able to create contacts with notes."""
+    user = factories.UserFactory(profile_contact=None)
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        "/api/v1.0/contacts/",
+        {
+            "full_name": "David Bowman",
+            "short_name": "Dave",
+            "data": CONTACT_DATA,
+            "notes": "This is a note",
+        },
+        format="json",
+    )
+
+    assert response.status_code == 201
+    assert models.Contact.objects.count() == 1
+
+    contact = models.Contact.objects.get(owner=user)
+    assert response.json() == {
+        "id": str(contact.id),
+        "base": None,
+        "data": CONTACT_DATA,
+        "full_name": "David Bowman",
+        "notes": "This is a note",
+        "owner": str(user.id),
+        "short_name": "Dave",
+    }
+
+    assert contact.full_name == "David Bowman"
+    assert contact.short_name == "Dave"
+    assert contact.data == CONTACT_DATA
+    assert contact.owner == user
+    assert contact.notes == "This is a note"
 
 
 def test_api_contacts_update_anonymous():

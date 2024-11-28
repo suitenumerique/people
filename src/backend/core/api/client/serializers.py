@@ -17,10 +17,14 @@ class ContactSerializer(serializers.ModelSerializer):
             "base",
             "data",
             "full_name",
+            "notes",
             "owner",
             "short_name",
         ]
         read_only_fields = ["id", "owner"]
+        extra_kwargs = {
+            "base": {"required": False},
+        }
 
     def update(self, instance, validated_data):
         """Make "base" field readonly but only for update/patch."""

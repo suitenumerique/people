@@ -17,12 +17,6 @@ def test_models_contacts_str_full_name():
     assert str(contact) == "David Bowman"
 
 
-def test_models_contacts_str_short_name():
-    """The str representation should be the contact's short name if full name is not set."""
-    contact = factories.ContactFactory(full_name=None, short_name="Dave")
-    assert str(contact) == "Dave"
-
-
 def test_models_contacts_base_self():
     """A contact should not point to itself as a base contact."""
     contact = factories.ContactFactory()

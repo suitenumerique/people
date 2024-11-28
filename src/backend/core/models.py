@@ -113,11 +113,11 @@ class Contact(BaseModel):
         null=True,
         blank=True,
     )
-    full_name = models.CharField(_("full name"), max_length=150, null=True, blank=True)
+    full_name = models.CharField(_("full name"), max_length=150)
     short_name = models.CharField(_("short name"), max_length=30, null=True, blank=True)
 
     # avatar =
-    # notes =
+    notes = models.TextField(_("notes"), blank=True, default="")
     data = models.JSONField(
         _("contact information"),
         help_text=_("A JSON object containing the contact information"),
@@ -151,7 +151,7 @@ class Contact(BaseModel):
         ]
 
     def __str__(self):
-        return self.full_name or self.short_name
+        return self.full_name
 
     def clean(self):
         """Validate fields."""

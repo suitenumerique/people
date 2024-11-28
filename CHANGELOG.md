@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+-  ✨(contacts) add notes & force full_name #565
+
 ## [1.7.1] - 2024-11-28
 
 ## [1.7.0] - 2024-11-28
