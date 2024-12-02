@@ -1,0 +1,1 @@
+"""Contacts tests package."""
