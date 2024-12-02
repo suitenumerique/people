@@ -15,6 +15,7 @@ and this project adheres to
 ### Changed
 
 - ♻️(contacts) move user profile to contact #572
+- ♻️(contacts) split api test module in actions #573
 
 ## [1.7.1] - 2024-11-28
 

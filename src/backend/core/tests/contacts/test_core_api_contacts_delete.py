@@ -118,4 +118,3 @@ def test_api_contacts_delete_authenticated_other():
 
     assert response.status_code == 403
     assert models.Contact.objects.count() == 1
- 

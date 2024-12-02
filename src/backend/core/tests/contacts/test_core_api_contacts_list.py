@@ -2,54 +2,12 @@
 Test contacts API endpoints in People's core app.
 """
 
-from django.test.utils import override_settings
-
 import pytest
 from rest_framework.test import APIClient
 
-from core import factories, models
-from core.api.client import serializers
+from core import factories
 
 pytestmark = pytest.mark.django_db
-
-
-CONTACT_DATA = {
-    "emails": [
-        {"type": "Work", "value": "john.doe@work.com"},
-        {"type": "Home", "value": "john.doe@home.com"},
-    ],
-    "phones": [
-        {"type": "Work", "value": "(123) 456-7890"},
-        {"type": "Other", "value": "(987) 654-3210"},
-    ],
-    "addresses": [
-        {
-            "type": "Home",
-            "street": "123 Main St",
-            "city": "Cityville",
-            "state": "CA",
-            "zip": "12345",
-            "country": "USA",
-        }
-    ],
-    "links": [
-        {"type": "Blog", "value": "http://personalwebsite.com"},
-        {"type": "Website", "value": "http://workwebsite.com"},
-    ],
-    "customFields": {"custom_field_1": "value1", "custom_field_2": "value2"},
-    "organizations": [
-        {
-            "name": "ACME Corporation",
-            "department": "IT",
-            "jobTitle": "Software Engineer",
-        },
-        {
-            "name": "XYZ Ltd",
-            "department": "Marketing",
-            "jobTitle": "Marketing Specialist",
-        },
-    ],
-}
 
 
 def test_api_contacts_list_anonymous():
