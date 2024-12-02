@@ -113,6 +113,14 @@ class Contact(BaseModel):
         null=True,
         blank=True,
     )
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="profile_contact",
+        blank=True,
+        null=True,
+    )
+
     full_name = models.CharField(_("full name"), max_length=150)
     short_name = models.CharField(_("short name"), max_length=30, null=True, blank=True)
 
@@ -147,6 +155,13 @@ class Contact(BaseModel):
                 condition=~models.Q(override=models.F("id")),
                 name="override_not_self",
                 violation_error_message="A contact cannot override itself.",
+            ),
+            # When a user is set, the owner must be the user
+            models.CheckConstraint(
+                condition=models.Q(user__isnull=True)
+                | models.Q(owner=models.F("user"), owner__isnull=False),
+                name="profile_contact_owner_constraint",
+                violation_error_message="Users can only declare as profile a contact they own.",
             ),
         ]
 
@@ -392,13 +407,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     )
     email = models.EmailField(_("email address"), null=True, blank=True)
     name = models.CharField(_("name"), max_length=100, null=True, blank=True)
-    profile_contact = models.OneToOneField(
-        Contact,
-        on_delete=models.SET_NULL,
-        related_name="user",
-        blank=True,
-        null=True,
-    )
     language = models.CharField(
         max_length=10,
         choices=lazy(lambda: settings.LANGUAGES, tuple)(),
@@ -466,11 +474,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         super().clean()
         if self.email:
             self.email = User.objects.normalize_email(self.email)
-
-        if self.profile_contact_id and not self.profile_contact.owner == self:
-            raise exceptions.ValidationError(
-                "Users can only declare as profile a contact they own."
-            )
 
     def _convert_valid_invitations(self):
         """

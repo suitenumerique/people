@@ -115,7 +115,7 @@ class ContactFactory(BaseContactFactory):
     class Meta:
         model = models.Contact
 
-    owner = factory.SubFactory("core.factories.UserFactory", profile_contact=None)
+    owner = factory.SubFactory("core.factories.UserFactory")
 
 
 class OverrideContactFactory(BaseContactFactory):
@@ -125,7 +125,7 @@ class OverrideContactFactory(BaseContactFactory):
         model = models.Contact
 
     override = factory.SubFactory("core.factories.ContactFactory", owner=None)
-    owner = factory.SubFactory("core.factories.UserFactory", profile_contact=None)
+    owner = factory.SubFactory("core.factories.UserFactory")
 
 
 class OrganizationFactory(factory.django.DjangoModelFactory):

@@ -72,10 +72,8 @@ def test_models_contacts_base_not_owned():
 
 def test_models_contacts_profile_not_owned():
     """A contact cannot be defined as profile for a user if is not owned."""
-    base_contact = factories.ContactFactory(owner=None)
-
     with pytest.raises(ValidationError) as excinfo:
-        factories.UserFactory(profile_contact=base_contact)
+        factories.ContactFactory(owner=None, user=factories.UserFactory())
 
     assert (
         str(excinfo.value)
@@ -88,7 +86,8 @@ def test_models_contacts_profile_owned_by_other():
     contact = factories.ContactFactory()
 
     with pytest.raises(ValidationError) as excinfo:
-        factories.UserFactory(profile_contact=contact)
+        contact.user = factories.UserFactory()
+        contact.save()
 
     assert (
         str(excinfo.value)

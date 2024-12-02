@@ -534,9 +534,7 @@ def test_api_users_retrieve_me_authenticated():
     client.force_login(user)
 
     # Define profile contact
-    contact = factories.ContactFactory(owner=user)
-    user.profile_contact = contact
-    user.save()
+    factories.ContactFactory(owner=user, user=user)
 
     factories.UserFactory.create_batch(2)
     response = client.get(
@@ -575,9 +573,7 @@ def test_api_users_retrieve_me_authenticated_abilities():
     client.force_login(user)
 
     # Define profile contact
-    contact = factories.ContactFactory(owner=user)
-    user.profile_contact = contact
-    user.save()
+    factories.ContactFactory(owner=user, user=user)
 
     factories.UserFactory.create_batch(2)
 

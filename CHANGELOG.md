@@ -12,6 +12,10 @@ and this project adheres to
 
 -  ✨(contacts) add notes & force full_name #565
 
+### Changed
+
+- ♻️(contacts) move user profile to contact #572
+
 ## [1.7.1] - 2024-11-28
 
 ## [1.7.0] - 2024-11-28

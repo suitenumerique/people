@@ -14,7 +14,12 @@ from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
 
-from core.models import Organization, OrganizationAccess, OrganizationRoleChoices
+from core.models import (
+    Contact,
+    Organization,
+    OrganizationAccess,
+    OrganizationRoleChoices,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -196,6 +201,19 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
                 user=user,
                 role=OrganizationRoleChoices.ADMIN,
             )
+
+        # Initiate the user's profile
+        Contact.objects.create(
+            owner=user,
+            user=user,
+            full_name=name or email,
+            data={
+                "emails": [
+                    {"type": "Work", "value": email},
+                ],
+            },
+        )
+
         return user
 
     def compute_full_name(self, user_info):

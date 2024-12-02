@@ -135,9 +135,9 @@ def test_models_users_profile_not_owned():
     user = factories.UserFactory()
     contact = factories.ContactFactory(override=None, owner=None)
 
-    user.profile_contact = contact
     with pytest.raises(ValidationError) as excinfo:
-        user.save()
+        contact.user = user
+        contact.save()
 
     assert (
         str(excinfo.value)
@@ -150,9 +150,9 @@ def test_models_users_profile_owned_by_other():
     user = factories.UserFactory()
     contact = factories.ContactFactory()
 
-    user.profile_contact = contact
     with pytest.raises(ValidationError) as excinfo:
-        user.save()
+        contact.user = user
+        contact.save()
 
     assert (
         str(excinfo.value)

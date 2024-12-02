@@ -70,9 +70,7 @@ def test_api_contacts_list_authenticated_no_query():
     Profile and overridden contacts should be excluded.
     """
     user = factories.UserFactory()
-    contact = factories.ContactFactory(owner=user)
-    user.profile_contact = contact
-    user.save()
+    factories.ContactFactory(owner=user, user=user)
 
     # Let's have 5 contacts in database:
     assert user.profile_contact is not None  # Excluded because profile contact
@@ -332,7 +330,7 @@ def test_api_contacts_create_anonymous_forbidden():
 
 def test_api_contacts_create_authenticated_missing_base():
     """Authenticated user should be able to create contact without override."""
-    user = factories.UserFactory(profile_contact=None)
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -363,7 +361,7 @@ def test_api_contacts_create_authenticated_missing_base():
 
 def test_api_contacts_create_authenticated_successful():
     """Authenticated users should be able to create contacts."""
-    user = factories.UserFactory(profile_contact=None)
+    user = factories.UserFactory()
     base_contact = factories.BaseContactFactory()
 
     client = APIClient()
@@ -410,7 +408,7 @@ def test_api_contacts_create_authenticated_existing_override():
     Trying to create a contact overriding a contact that is already overridden by the user
     should receive a 400 error.
     """
-    user = factories.UserFactory(profile_contact=None)
+    user = factories.UserFactory()
     base_contact = factories.BaseContactFactory()
     factories.ContactFactory(override=base_contact, owner=user)
 
@@ -439,7 +437,7 @@ def test_api_contacts_create_authenticated_existing_override():
 
 def test_api_contacts_create_authenticated_successful_with_notes():
     """Authenticated users should be able to create contacts with notes."""
-    user = factories.UserFactory(profile_contact=None)
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -504,7 +502,7 @@ def test_api_contacts_update_authenticated_owned():
     """
     Authenticated users should be allowed to update their own contacts.
     """
-    user = factories.UserFactory(profile_contact=None)
+    user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
@@ -543,9 +541,7 @@ def test_api_contacts_update_authenticated_profile():
     client = APIClient()
     client.force_login(user)
 
-    contact = factories.ContactFactory(owner=user)
-    user.profile_contact = contact
-    user.save()
+    contact = factories.ContactFactory(owner=user, user=user)
 
     old_contact_values = serializers.ContactSerializer(instance=contact).data
     new_contact_values = serializers.ContactSerializer(
@@ -678,9 +674,7 @@ def test_api_contacts_delete_authenticated_profile():
     Authenticated users should be allowed to delete their profile contact.
     """
     user = factories.UserFactory()
-    contact = factories.ContactFactory(owner=user, override=None)
-    user.profile_contact = contact
-    user.save()
+    contact = factories.ContactFactory(owner=user, user=user)
 
     client = APIClient()
     client.force_login(user)
