@@ -133,7 +133,7 @@ def test_models_users_email_not_unique():
 def test_models_users_profile_not_owned():
     """A user cannot declare as profile a contact that not is owned."""
     user = factories.UserFactory()
-    contact = factories.ContactFactory(base=None, owner=None)
+    contact = factories.ContactFactory(override=None, owner=None)
 
     user.profile_contact = contact
     with pytest.raises(ValidationError) as excinfo:

@@ -99,10 +99,10 @@ class BaseModel(models.Model):
 class Contact(BaseModel):
     """User contacts"""
 
-    base = models.ForeignKey(
+    override = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
-        related_name="overriding_contacts",
+        related_name="overridden_by",
         null=True,
         blank=True,
     )
@@ -136,17 +136,17 @@ class Contact(BaseModel):
         ordering = ("full_name", "short_name")
         verbose_name = _("contact")
         verbose_name_plural = _("contacts")
-        unique_together = ("owner", "base")
+        unique_together = ("owner", "override")
         constraints = [
             models.CheckConstraint(
-                condition=~models.Q(base__isnull=False, owner__isnull=True),
-                name="base_owner_constraint",
+                condition=~models.Q(override__isnull=False, owner__isnull=True),
+                name="override_owner_constraint",
                 violation_error_message="A contact overriding a base contact must be owned.",
             ),
             models.CheckConstraint(
-                condition=~models.Q(base=models.F("id")),
-                name="base_not_self",
-                violation_error_message="A contact cannot be based on itself.",
+                condition=~models.Q(override=models.F("id")),
+                name="override_not_self",
+                violation_error_message="A contact cannot override itself.",
             ),
         ]
 
@@ -157,10 +157,10 @@ class Contact(BaseModel):
         """Validate fields."""
         super().clean()
 
-        # Check if the contact points to a base contact that itself points to another base contact
-        if self.base_id and self.base.base_id:
+        # Check if the contact overrides a contact that itself overrides another base contact
+        if self.override_id and self.override.override_id:
             raise exceptions.ValidationError(
-                "A contact cannot point to a base contact that itself points to a base contact."
+                "A contact cannot override a contact that itself overrides a contact."
             )
 
         # Validate the content of the "data" field against our jsonschema definition

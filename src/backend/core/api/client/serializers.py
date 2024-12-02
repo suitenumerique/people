@@ -14,7 +14,7 @@ class ContactSerializer(serializers.ModelSerializer):
         model = models.Contact
         fields = [
             "id",
-            "base",
+            "override",
             "data",
             "full_name",
             "notes",
@@ -23,12 +23,12 @@ class ContactSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "owner"]
         extra_kwargs = {
-            "base": {"required": False},
+            "override": {"required": False},
         }
 
     def update(self, instance, validated_data):
-        """Make "base" field readonly but only for update/patch."""
-        validated_data.pop("base", None)
+        """Make "override" field readonly but only for update/patch."""
+        validated_data.pop("override", None)
         return super().update(instance, validated_data)
 
 

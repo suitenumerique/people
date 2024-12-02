@@ -18,51 +18,51 @@ def test_models_contacts_str_full_name():
 
 
 def test_models_contacts_base_self():
-    """A contact should not point to itself as a base contact."""
+    """A contact should not override itself."""
     contact = factories.ContactFactory()
-    contact.base = contact
+    contact.override = contact
 
     with pytest.raises(ValidationError) as excinfo:
         contact.save()
 
     error_message = (
-        "{'__all__': ['A contact cannot point to a base contact that itself points to a "
-        "base contact.', 'A contact cannot be based on itself.']}"
+        "{'__all__': ['A contact cannot override a contact that itself overrides a contact.',"
+        " 'A contact cannot override itself.']}"
     )
     assert str(excinfo.value) == error_message
 
 
 def test_models_contacts_base_to_base():
-    """A contact should not point to a base contact that is itself derived from a base contact."""
-    contact = factories.ContactFactory()
+    """A contact should not override a contact that is itself overrides contact."""
+    contact = factories.OverrideContactFactory()
 
     with pytest.raises(ValidationError) as excinfo:
-        factories.ContactFactory(base=contact)
+        factories.OverrideContactFactory(override=contact)
 
     error_message = (
-        "{'__all__': ['A contact cannot point to a base contact that itself points to a "
-        "base contact.']}"
+        "{'__all__': ['A contact cannot override a contact that "
+        "itself overrides a contact.']}"
     )
     assert str(excinfo.value) == error_message
 
 
 def test_models_contacts_owner_base_unique():
-    """There should be only one contact deriving from a given base contact for a given owner."""
-    contact = factories.ContactFactory()
+    """There should be only one contact overriding a contact for a given owner."""
+    contact = factories.OverrideContactFactory()
 
     with pytest.raises(ValidationError) as excinfo:
-        factories.ContactFactory(base=contact.base, owner=contact.owner)
+        factories.OverrideContactFactory(override=contact.override, owner=contact.owner)
 
     assert (
         str(excinfo.value)
-        == "{'__all__': ['Contact with this Owner and Base already exists.']}"
+        == "{'__all__': ['Contact with this Owner and Override already exists.']}"
     )
 
 
 def test_models_contacts_base_not_owned():
-    """A contact cannot have a base and not be owned."""
+    """A contact cannot override a contact without being owned."""
     with pytest.raises(ValidationError) as excinfo:
-        factories.ContactFactory(owner=None)
+        factories.OverrideContactFactory(owner=None)
 
     assert (
         str(excinfo.value)
@@ -72,7 +72,7 @@ def test_models_contacts_base_not_owned():
 
 def test_models_contacts_profile_not_owned():
     """A contact cannot be defined as profile for a user if is not owned."""
-    base_contact = factories.ContactFactory(owner=None, base=None)
+    base_contact = factories.ContactFactory(owner=None)
 
     with pytest.raises(ValidationError) as excinfo:
         factories.UserFactory(profile_contact=base_contact)

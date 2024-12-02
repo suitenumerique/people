@@ -115,7 +115,16 @@ class ContactFactory(BaseContactFactory):
     class Meta:
         model = models.Contact
 
-    base = factory.SubFactory("core.factories.ContactFactory", base=None, owner=None)
+    owner = factory.SubFactory("core.factories.UserFactory", profile_contact=None)
+
+
+class OverrideContactFactory(BaseContactFactory):
+    """A factory to create contacts for a user"""
+
+    class Meta:
+        model = models.Contact
+
+    override = factory.SubFactory("core.factories.ContactFactory", owner=None)
     owner = factory.SubFactory("core.factories.UserFactory", profile_contact=None)
 
 

@@ -194,7 +194,7 @@ class ContactAdmin(admin.ModelAdmin):
     list_display = (
         "full_name",
         "owner",
-        "base",
+        "override",
     )
 
 

@@ -152,7 +152,7 @@ class ContactViewSet(
             # - are profile contacts for a user
             user__isnull=True,
             # - are overriden base contacts
-            overriding_contacts__isnull=True,
+            overridden_by__isnull=True,
         )
 
         # Search by case-insensitive and accent-insensitive similarity
