@@ -59,6 +59,23 @@
       "realmRoles": ["user"]
     },
     {
+      "username": "marie",
+      "email": "marie.varzy@gmail.com",
+      "firstName": "Marie",
+      "lastName": "Devarzy",
+      "enabled": true,
+      "attributes": {
+          "siret": "21580304000017"
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "people"
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
       "username": "user-e2e-chromium",
       "email": "user@chromium.e2e",
       "firstName": "E2E",
@@ -696,8 +713,16 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "scopeMappings": [
     {
+      "clientScope": "siret",
+      "roles": [
+        "user"
+      ]
+    },
+    {
       "clientScope": "offline_access",
-      "roles": ["offline_access"]
+      "roles": [
+        "offline_access"
+      ]
     }
   ],
   "clientScopeMappings": {
@@ -947,6 +972,7 @@
         "acr",
         "roles",
         "profile",
+        "siret",
         "email"
       ],
       "optionalClientScopes": [
@@ -1103,6 +1129,35 @@
             "claim.name": "realm_access.roles",
             "jsonType.label": "String",
             "multivalued": "true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "eb220fbb-02ac-4105-95a3-727954f6565d",
+      "name": "siret",
+      "description": "siret",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false",
+        "gui.order": ""
+      },
+      "protocolMappers": [
+        {
+          "id": "333a4e89-9363-4c36-b56f-79c6b019c6c6",
+          "name": "siret",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "aggregate.attrs": "false",
+            "userinfo.token.claim": "true",
+            "multivalued": "false",
+            "user.attribute": "siret",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "siret"
           }
         }
       ]
@@ -1573,7 +1628,8 @@
     "email",
     "roles",
     "web-origins",
-    "acr"
+    "acr",
+    "siret"
   ],
   "defaultOptionalClientScopes": [
     "offline_access",
