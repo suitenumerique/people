@@ -790,6 +790,17 @@ class Feature(Production):
     """
 
 
+class Local(Production):
+    """
+    Local environment settings
+
+    This configuration is used by the developers to run the application
+    locally through the helm files (used for tilt)
+
+    nota bene: it should inherit from the Production environment.
+    """
+
+
 class Staging(Production):
     """
     Staging environment settings

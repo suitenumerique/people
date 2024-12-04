@@ -9,7 +9,7 @@ backend:
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
   envVars:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://desk-preprod.beta.numerique.gouv.fr
-    DJANGO_CONFIGURATION: Production
+    DJANGO_CONFIGURATION: PreProduction
     DJANGO_ALLOWED_HOSTS: "*"
     DJANGO_SECRET_KEY:
       secretKeyRef:

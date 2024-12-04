@@ -17,6 +17,10 @@ and this project adheres to
 - ♻️(contacts) move user profile to contact #572
 - ♻️(contacts) split api test module in actions #573
 
+### Fixed
+
+- 🔧(helm) fix the configuration environment #579
+
 ## [1.7.1] - 2024-11-28
 
 ## [1.7.0] - 2024-11-28
