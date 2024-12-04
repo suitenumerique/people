@@ -6,16 +6,56 @@ interact efficiently.
 
 Let's see how we could interact with Django's shell to recreate David's environment in the app.
 
-## Base contacts from the organization records
+## Profile contact
 
-David Bowman is an exemplary employee at Space Odyssey Corporation. His email is
-`david.bowman@spaceodyssey.com` and he is registered in the organization's records via a base
-contact as follows:
+The system identifies Dave through the `sub` associated with his OIDC session.
+The OIDC should also provide his email address.
+
+Note: as some Identity Providers do not provide a constant `sub`, the system should be able to
+fallback to the email address to find it the user is already in the database.
+
+When Dave logs in for the first time, the system checks if he is already in the database. If not
+a new user is created for him.
+
+Users needs to be linked to an Organization (see [organizations.md](./organizations.md)).
 
 ```python
-david_base_contact = Contact.objects.create(
+space_odyssey, _created = Organization.objects.get_or_create(...)
+
+david_user = User.objects.create(
+    organization=space_odyssey,
+    language="en-us",
+    timezone="America/Los_Angeles",
+    name="David Bowman",
+    sub="1234567890",
+    email="david.bowman@spaceodyssey.com",
+)
+```
+
+The system then creates a profile contact for Dave, based on the information provided by the OIDC:
+
+```python
+david_profile_contact = Contact.objects.create(
+    owner=david_user,
+    user=david_user,  # this means it's the user's profile contact
     full_name="David Bowman",
-    short_name="David",
+    data={
+        "emails": [
+            {"type": "Work", "value": "david.bowman@spaceodyssey.com"},
+        ],
+    },
+)
+```
+
+**Future feature:**
+Dave will be prompted to confirm the details of the base contact stored in the database
+and fill the details for a better profile.
+
+His profile contact will be updated with the new information.
+
+```python
+Contact.objects.filter(user=david_user, owner=david_user).update(
+    short_name="Dave",
     data={
         "emails": [
             {"type": "Work", "value": "david.bowman@spaceodyssey.com"},
@@ -48,90 +88,80 @@ david_base_contact = Contact.objects.create(
 )
 ```
 
-When David logs-in to the People application for the first time using the corporation's OIDC
-Single Sign-On service. A user is created for him on the fly by the system, together with an
-identity record representing the OIDC session:
+David's profile contact is available to all users of his company/organization.
 
-```python
-david_user = User.objects.create(
-    language="en-us",
-    timezone="America/Los_Angeles",
-)
-david_identity = Identity.objects.create(
-  "user": david_user,
-  "sub": "2a1b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-  "email" : "david.bowman@spaceodyssey.com",
-  "is_main": True,
-)
-```
-
-## Profile contact
-
-The system identifies Dave through the email associated with his OIDC session and prompts him to
-confirm the details of the base contact stored in the database.
-
-When David confirms, giving an alternative short name that he prefers, a contact override is
-created on top of the organization's base contact. This new contact is marked as David's profile
-on the user:
-
-```python
-david_contact = Contact.objects.create(
-    base=david_base_contact,
-    owner=david_user,
-    full_name="David Bowman",
-    short_name="Dave",
-    data={}
-)
-david_user.profile_contact = david_contact
-david_user.save()
-```
-
-If Dave had not had any existing contact in the organization's records, the profile contact would
-have been created independently, without any connection to a base contact:
-
-```python
-david_contact = Contact.objects.create(
-    base=None,
-    owner=david_user,
-    full_name="David Bowman",
-    short_name="Dave",
-    data={}
-)
-```
-
-Now, Dave feels like sharing his mobile phone number with his colleagues. He can do this
-by editing his contact in the application:
-
-```python
-contact.data["phones"] = [
-    {"type": "Mobile", "value": "(123) 456-7890"},
-]
-contact.save()
-```
 
 ## Contact override
 
 During a Space conference he attended, Dave met Dr Ryan Stone, a medical engineer who gave him
-her professional email address. Ryan is already present in the system but her email is missing.
+her personal email address (because she will quit the company she works for). Ryan is already 
+present in the system.
+
 Dave can add it to his private version of the contact:
 
 ```python
-ryan_base_contact = Contact.objects.create(
-    full_name="Ryan Stone",
-    data={}
+ryan_user = User.objects.create(
+    organization=space_odyssey,
+    language="en-us",
+    timezone="America/Los_Angeles",
+    name="Ryan Stone",
+    sub="0987654321",
+    email="ryan.stone@spaceodyssey.com",
 )
-ryan_contact = Contact.objects.create(
-    base=ryan_base_contact,
-    owner=david_user,
+
+ryan_profile_contact = Contact.objects.create(
+    user=ryan_user,
+    owner=ryan_user,
     full_name="Ryan Stone",
     short_name="Dr Ryan",
     data={
         "emails": [
             {"type": "Work", "value": "ryan.stone@hubblestation.com"},
         ],
-    }
+    },
+)
+
+david_ryan_contact = Contact.objects.create(
+    override=ryan_profile_contact,
+    owner=david_user,
+    full_name="Ryan Stone",
+    short_name="Dr Ryan",
+    data={
+        "emails": [
+            {"type": "Home", "value": "ryan@stone.com"},
+        ],
+    },
 )
 ```
+
+## Personal contacts
+
+Dave met a lot of people during the last Opensource Experience event. He can add them to his personal contacts:
+
+```python
+julie_personal_contact = Contact.objects.create(
+    owner=david_user,
+    full_name="Julie Powell",
+    short_name="Julie",
+    data={
+        "emails": [
+            {"type": "Work", "value": "julie.powell@example.com"},
+        ],
+        "phones": [
+            {"type": "Work", "value": "(123) 456-7890"},
+        ],
+    },
+)
+```
+
+These contacts are only available to Dave.
+
+
+## Contacts from shared directories
+
+This is a future feature that will allow Dave to access contacts from shared directories.
+Shared directories will provide contacts for all users from several organizations.
+
 
 ## Team Collaboration
 
