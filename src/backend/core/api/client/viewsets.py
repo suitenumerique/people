@@ -139,19 +139,21 @@ class ContactViewSet(
     queryset = models.Contact.objects.all()
     serializer_class = serializers.ContactSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
+    ordering_fields = ["full_name", "short_name", "created_at"]
+    ordering = ["full_name"]
 
     def list(self, request, *args, **kwargs):
         """Limit listed users by a query with throttle protection."""
         user = self.request.user
         queryset = self.filter_queryset(self.get_queryset())
 
-        # Exclude contacts that:
+        # List only contacts that:
         queryset = queryset.filter(
-            # - belong to another user (keep public and owned contacts)
-            Q(owner__isnull=True) | Q(owner=user),
-            # - are profile contacts for a user
-            user__isnull=True,
-            # - are overriden base contacts
+            # - are owned by the user
+            Q(owner=user)
+            # - are profile contacts for a user from the same organization
+            | Q(user__organization_id=user.organization_id),
+            # - are not overriden by another contact
             overridden_by__isnull=True,
         )
 

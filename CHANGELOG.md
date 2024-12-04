@@ -12,8 +12,9 @@ and this project adheres to
 
 ### Added
 
+- ✨(contacts) return profile contact from same organization
 - ✨(dimail) automate allows requests to dimail
--  ✨(contacts) add notes & force full_name #565
+- ✨(contacts) add notes & force full_name #565
 
 ### Changed
 

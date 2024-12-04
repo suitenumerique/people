@@ -118,6 +118,16 @@ class ContactFactory(BaseContactFactory):
     owner = factory.SubFactory("core.factories.UserFactory")
 
 
+class ProfileContactFactory(BaseContactFactory):
+    """A factory to create profile contacts for a user"""
+
+    class Meta:
+        model = models.Contact
+
+    owner = factory.SelfAttribute(".user")
+    user = factory.SubFactory("core.factories.UserFactory")
+
+
 class OverrideContactFactory(BaseContactFactory):
     """A factory to create contacts for a user"""
 

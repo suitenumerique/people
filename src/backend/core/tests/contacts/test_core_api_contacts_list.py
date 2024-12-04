@@ -27,18 +27,32 @@ def test_api_contacts_list_authenticated_no_query():
     Authenticated users should be able to list contacts without applying a query.
     Profile and overridden contacts should be excluded.
     """
-    user = factories.UserFactory()
-    factories.ContactFactory(owner=user, user=user)
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
 
-    # Let's have 5 contacts in database:
-    assert user.profile_contact is not None  # Excluded because profile contact
-    base_contact = factories.BaseContactFactory()  # Excluded because overridden
-    factories.ContactFactory(
-        override=base_contact
-    )  # Excluded because belongs to other user
-    contact2 = factories.ContactFactory(
-        override=base_contact, owner=user, full_name="Bernard"
-    )  # Included
+    # The user's profile contact should be listed (why not)
+    user_profile_contact = factories.ContactFactory(
+        owner=user, user=user, full_name="Dave Bowman"
+    )
+
+    # A contact that belongs to another user should not be listed
+    factories.ContactFactory()
+    # even if from the same organization
+    factories.ContactFactory(owner__organization=organization)
+
+    # A profile contact should not be listed if from another organization
+    factories.ProfileContactFactory()
+
+    # A profile contact for someone in the same organization should be listed
+    profile_contact = factories.ProfileContactFactory(
+        user__organization=organization, full_name="Frank Poole"
+    )
+
+    # An overridden contact should not be listed, but the override must be
+    overriden_contact = factories.ProfileContactFactory(user__organization=organization)
+    override_contact = factories.ContactFactory(
+        owner=user, override=overriden_contact, full_name="Nicole Foole"
+    )
 
     client = APIClient()
     client.force_login(user)
@@ -48,13 +62,31 @@ def test_api_contacts_list_authenticated_no_query():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": str(contact2.id),
-            "override": str(base_contact.id),
-            "owner": str(contact2.owner.id),
-            "data": contact2.data,
-            "full_name": contact2.full_name,
+            "id": str(user_profile_contact.pk),
+            "override": None,
+            "owner": str(user.pk),
+            "data": user_profile_contact.data,
+            "full_name": user_profile_contact.full_name,
             "notes": "",
-            "short_name": contact2.short_name,
+            "short_name": user_profile_contact.short_name,
+        },
+        {
+            "id": str(profile_contact.pk),
+            "override": None,
+            "owner": str(profile_contact.user.pk),
+            "data": profile_contact.data,
+            "full_name": profile_contact.full_name,
+            "notes": "",
+            "short_name": profile_contact.short_name,
+        },
+        {
+            "id": str(override_contact.pk),
+            "override": str(overriden_contact.pk),
+            "owner": str(user.pk),
+            "data": override_contact.data,
+            "full_name": override_contact.full_name,
+            "notes": "",
+            "short_name": override_contact.short_name,
         },
     ]
 
