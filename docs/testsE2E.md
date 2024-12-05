@@ -19,18 +19,18 @@ A new browser window will open and you will be able to run the tests.
 ## Available accounts
 
 The `make demo` command creates the following accounts:
- - `jean.team-<role>@example.com` where `<role>` is one of `administrator`, `member`, `owner`:
+ - `e2e.team-<role>@example.com` where `<role>` is one of `administrator`, `member`, `owner`:
     this account only belong to a team with the specified role.
- - `jean.mail-<role>@example.com` where `<role>` is one of `administrator`, `member`, `owner`:
+ - `e2e.mail-<role>@example.com` where `<role>` is one of `administrator`, `member`, `owner`:
     this account only have a mailbox with the specified role access.
- - `jean.team-<team_role>-mail-<domain_role>@example.com` with a combination of roles as for the
+ - `e2e.team-<team_role>-mail-<domain_role>@example.com` with a combination of roles as for the
     previous accounts.
 
-For each account, the password is `password-e2e-<username>`, for instance `password-e2e-jean.team-member`.
+For each account, the password is `password-e2e.<role>`, for instance `password-e2e.team-member`.
 
 In the E2E tests you can use these accounts to benefit from there accesses, 
 using the `keyCloakSignIn(page, browserName, <account_name>)`. The account name is the 
-username without the prefix `jean.`.
+username without the prefix `e2e.`.
 
 ``` typescript jsx
 await keyCloakSignIn(page, browserName, 'mail-owner');

@@ -12,10 +12,10 @@ export const keyCloakSignIn = async (
   });
 
   const username = accountName
-    ? `jean.${accountName}`
+    ? `e2e.${accountName}`
     : `user-e2e-${browserName}`;
   const password = accountName
-    ? `password-e2e-jean.${accountName}`
+    ? `password-e2e.${accountName}`
     : `password-e2e-${browserName}`;
 
   if (title?.includes('Sign in to your account')) {

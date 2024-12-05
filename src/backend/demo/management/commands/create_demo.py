@@ -233,8 +233,8 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
         for role in models.RoleChoices.values:
             team_user = models.User(
                 sub=uuid4(),
-                email=f"jean.team-{role}@example.com",
-                name=f"Jean Group {role.capitalize()}",
+                email=f"e2e.team-{role}@example.com",
+                name=f"E2E Group {role.capitalize()}",
                 password="!",
                 is_superuser=False,
                 is_active=True,
@@ -249,8 +249,8 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
         for role in models.RoleChoices.values:
             user_with_mail = models.User(
                 sub=uuid4(),
-                email=f"jean.mail-{role}@example.com",
-                name=f"Jean Mail {role.capitalize()}",
+                email=f"e2e.mail-{role}@example.com",
+                name=f"E2E Mail {role.capitalize()}",
                 password="!",
                 is_superuser=False,
                 is_active=True,
@@ -270,8 +270,8 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
             for domain_role in models.RoleChoices.values:
                 team_mail_user = models.User(
                     sub=uuid4(),
-                    email=f"jean.team-{team_role}-mail-{domain_role}@example.com",
-                    name=f"Jean Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
+                    email=f"e2e.team-{team_role}-mail-{domain_role}@example.com",
+                    name=f"E2E Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
                     password="!",
                     is_superuser=False,
                     is_active=True,

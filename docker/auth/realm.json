@@ -101,211 +101,211 @@
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-member",
-      "email": "jean.team-member@example.com",
+      "username": "e2e.team-member",
+      "email": "e2e.team-member@example.com",
       "firstName": "E2E",
       "lastName": "Group Member",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-member"
+          "value": "password-e2e.team-member"
         }
       ],
       "realmRoles": ["user"]
     },
         {
-      "username": "jean.team-administrator",
-      "email": "jean.team-administrator@example.com",
+      "username": "e2e.team-administrator",
+      "email": "e2e.team-administrator@example.com",
       "firstName": "E2E",
       "lastName": "Group Administrator",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-administrator"
+          "value": "password-e2e.team-administrator"
         }
       ],
       "realmRoles": ["user"]
     },
         {
-      "username": "jean.team-owner",
-      "email": "jean.team-owner@example.com",
+      "username": "e2e.team-owner",
+      "email": "e2e.team-owner@example.com",
       "firstName": "E2E",
       "lastName": "Group Owner",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-owner"
+          "value": "password-e2e.team-owner"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.mail-member",
-      "email": "jean.mail-member@example.com",
+      "username": "e2e.mail-member",
+      "email": "e2e.mail-member@example.com",
       "firstName": "E2E",
       "lastName": "Mailbox Member",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.mail-member"
+          "value": "password-e2e.mail-member"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.mail-administrator",
-      "email": "jean.mail-administrator@example.com",
+      "username": "e2e.mail-administrator",
+      "email": "e2e.mail-administrator@example.com",
       "firstName": "E2E",
       "lastName": "Mailbox Administrator",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.mail-administrator"
+          "value": "password-e2e.mail-administrator"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.mail-owner",
-      "email": "jean.mail-owner@example.com",
+      "username": "e2e.mail-owner",
+      "email": "e2e.mail-owner@example.com",
       "firstName": "E2E",
       "lastName": "Mailbox Owner",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.mail-owner"
+          "value": "password-e2e.mail-owner"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-member-mail-member",
-      "email": "jean.team-member-mail-member@example.com",
+      "username": "e2e.team-member-mail-member",
+      "email": "e2e.team-member-mail-member@example.com",
       "firstName": "E2E",
       "lastName": "Group Member Mailbox Member",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-member-mail-member"
+          "value": "password-e2e.team-member-mail-member"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-member-mail-administrator",
-      "email": "jean.team-member-mail-administrator@example.com",
+      "username": "e2e.team-member-mail-administrator",
+      "email": "e2e.team-member-mail-administrator@example.com",
       "firstName": "E2E",
       "lastName": "Group Member Mailbox Administrator",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-member-mail-administrator"
+          "value": "password-e2e.team-member-mail-administrator"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-member-mail-owner",
-      "email": "jean.team-member-mail-owner@example.com",
+      "username": "e2e.team-member-mail-owner",
+      "email": "e2e.team-member-mail-owner@example.com",
       "firstName": "E2E",
       "lastName": "Group Member Mailbox Owner",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-member-mail-owner"
+          "value": "password-e2e.team-member-mail-owner"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-administrator-mail-member",
-      "email": "jean.team-administrator-mail-member@example.com",
+      "username": "e2e.team-administrator-mail-member",
+      "email": "e2e.team-administrator-mail-member@example.com",
       "firstName": "E2E",
       "lastName": "Group Administrator Mailbox Member",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-administrator-mail-member"
+          "value": "password-e2e.team-administrator-mail-member"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-administrator-mail-administrator",
-      "email": "jean.team-administrator-mail-administrator@example.com",
+      "username": "e2e.team-administrator-mail-administrator",
+      "email": "e2e.team-administrator-mail-administrator@example.com",
       "firstName": "E2E",
       "lastName": "Group Administrator Mailbox Administrator",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-administrator-mail-administrator"
+          "value": "password-e2e.team-administrator-mail-administrator"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-administrator-mail-owner",
-      "email": "jean.team-administrator-mail-owner@example.com",
+      "username": "e2e.team-administrator-mail-owner",
+      "email": "e2e.team-administrator-mail-owner@example.com",
       "firstName": "E2E",
       "lastName": "Group Administrator Mailbox Owner",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-administrator-mail-owner"
+          "value": "password-e2e.team-administrator-mail-owner"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-owner-mail-member",
-      "email": "jean.team-owner-mail-member@example.com",
+      "username": "e2e.team-owner-mail-member",
+      "email": "e2e.team-owner-mail-member@example.com",
       "firstName": "E2E",
       "lastName": "Group Owner Mailbox Member",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-owner-mail-member"
+          "value": "password-e2e.team-owner-mail-member"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-owner-mail-administrator",
-      "email": "jean.team-owner-mail-administrator@example.com",
+      "username": "e2e.team-owner-mail-administrator",
+      "email": "e2e.team-owner-mail-administrator@example.com",
       "firstName": "E2E",
       "lastName": "Group Owner Mailbox Administrator",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-owner-mail-administrator"
+          "value": "password-e2e.team-owner-mail-administrator"
         }
       ],
       "realmRoles": ["user"]
     },
     {
-      "username": "jean.team-owner-mail-owner",
-      "email": "jean.team-owner-mail-owner@example.com",
+      "username": "e2e.team-owner-mail-owner",
+      "email": "e2e.team-owner-mail-owner@example.com",
       "firstName": "E2E",
       "lastName": "Mailbox Owner",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password-e2e-jean.team-owner-mail-owner"
+          "value": "password-e2e.team-owner-mail-owner"
         }
       ],
       "realmRoles": ["user"]

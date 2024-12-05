@@ -17,7 +17,7 @@ test.describe('Members Delete', () => {
     const table = page.getByLabel('List members card').getByRole('table');
 
     const cells = table.getByRole('row').nth(1).getByRole('cell');
-    await expect(cells.nth(1)).toHaveText('Jean Group Member');
+    await expect(cells.nth(1)).toHaveText('E2E Group Member');
     await cells.nth(4).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
@@ -137,7 +137,7 @@ test.describe('Members Delete', () => {
     await createTeam(page, 'member-delete-6', browserName, 1);
 
     // To not be the only owner
-    await addNewMember(page, 0, 'Owner', 'Jean');
+    await addNewMember(page, 0, 'Owner', 'E2E');
 
     const username = await addNewMember(page, 0, 'Administration', 'Monique');
 
