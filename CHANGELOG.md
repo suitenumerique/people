@@ -12,6 +12,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(contacts) allow filter list API with email
 - ✨(contacts) return profile contact from same organization
 - ✨(dimail) automate allows requests to dimail
 - ✨(contacts) add notes & force full_name #565

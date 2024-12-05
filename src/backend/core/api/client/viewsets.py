@@ -19,6 +19,7 @@ from rest_framework.permissions import AllowAny
 from core import models
 from core.api import permissions
 from core.api.client import serializers
+from core.utils.raw_sql import gen_sql_filter_json_array
 
 SIMILARITY_THRESHOLD = 0.04
 
@@ -157,11 +158,22 @@ class ContactViewSet(
             overridden_by__isnull=True,
         )
 
-        # Search by case-insensitive and accent-insensitive similarity
+        # Search by case-insensitive and accent-insensitive on:
+        # - full name
+        # - short name
+        # - email (from data `emails` field)
         if query := self.request.GET.get("q", ""):
             queryset = queryset.filter(
                 Q(full_name__unaccent__icontains=query)
                 | Q(short_name__unaccent__icontains=query)
+                | Q(
+                    id__in=gen_sql_filter_json_array(
+                        queryset.model,
+                        "data->'emails'",
+                        "value",
+                        query,
+                    )
+                )
             )
 
         serializer = self.get_serializer(queryset, many=True)

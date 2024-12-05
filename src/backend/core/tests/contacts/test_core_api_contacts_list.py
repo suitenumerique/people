@@ -133,6 +133,78 @@ def test_api_contacts_list_authenticated_by_full_name():
     assert contact_ids == [str(frank.id), str(nicole.id)]
 
 
+def test_api_contacts_list_authenticated_by_email():
+    """
+    Authenticated users should be able to search users with a case insensitive and
+    partial query on the email.
+    """
+    user = factories.UserFactory()
+
+    dave = factories.BaseContactFactory(
+        full_name="0",  # don't match on full name but allow ordering
+        data={
+            "emails": [
+                {"type": "Home", "value": "dave@personal.com"},
+                {"type": "Work", "value": "david.bowman@example.com"},
+            ],
+        },
+    )
+    nicole = factories.BaseContactFactory(
+        full_name="1",  # don't match on full name but allow ordering
+        data={
+            "emails": [
+                {"type": "Work", "value": "nicole.foole@example.com"},
+            ],
+        },
+    )
+    frank = factories.BaseContactFactory(
+        full_name="2",  # don't match on full name but allow ordering
+        data={
+            "emails": [
+                {"type": "Home", "value": "francky@personal.com"},
+                {"type": "Work", "value": "franck.poole@example.com"},
+            ],
+        },
+    )
+    factories.BaseContactFactory(
+        full_name="3",  # don't match on full name but allow ordering
+        data={
+            "emails": [
+                {"type": "Work", "value": "heywood.floyd@example.com"},
+            ],
+        },
+    )
+
+    # Full query should work
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.get("/api/v1.0/contacts/?q=david.bowman@example.com")
+
+    assert response.status_code == 200
+    contact_ids = [contact["id"] for contact in response.json()]
+    assert contact_ids == [str(dave.pk)]
+
+    # Partial query should work
+    response = client.get("/api/v1.0/contacts/?q=anc")
+
+    assert response.status_code == 200
+    contact_ids = [contact["id"] for contact in response.json()]
+    assert contact_ids == [str(frank.pk)]
+
+    response = client.get("/api/v1.0/contacts/?q=olé")  # accented
+
+    assert response.status_code == 200
+    contact_ids = [contact["id"] for contact in response.json()]
+    assert contact_ids == [str(nicole.pk), str(frank.pk)]
+
+    response = client.get("/api/v1.0/contacts/?q=oOl")  # mixed case
+
+    assert response.status_code == 200
+    contact_ids = [contact["id"] for contact in response.json()]
+    assert contact_ids == [str(nicole.pk), str(frank.pk)]
+
+
 def test_api_contacts_list_authenticated_uppercase_content():
     """Upper case content should be found by lower case query."""
     user = factories.UserFactory()
