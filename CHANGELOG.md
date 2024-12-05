@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(organizations) add siret to name conversion #584
 - 💄(frontend) redirect home according to abilities #588
 - ✨(maildomain_access) add API endpoint to search users #508
 

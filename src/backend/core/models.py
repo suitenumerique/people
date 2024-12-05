@@ -29,6 +29,7 @@ import jsonschema
 from timezone_field import TimeZoneField
 
 from core.enums import WebhookStatusChoices
+from core.plugins.loader import organization_plugins_run_after_create
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
 
@@ -285,6 +286,16 @@ class OrganizationManager(models.Manager):
             return self.create(name=domain, domain_list=[domain], **kwargs), True
 
         raise ValueError("Should never reach this point.")
+
+    def create(self, **kwargs):
+        """
+        Create an organization with the given kwargs.
+
+        This method is overridden to call the Organization plugins.
+        """
+        instance = super().create(**kwargs)
+        organization_plugins_run_after_create(instance)
+        return instance
 
 
 class Organization(BaseModel):

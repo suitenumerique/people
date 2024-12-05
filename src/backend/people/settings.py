@@ -473,6 +473,11 @@ class Base(Configuration):
             environ_prefix=None,
         )
     )
+    ORGANIZATION_PLUGINS = values.ListValue(
+        default=[],
+        environ_name="ORGANIZATION_PLUGINS",
+        environ_prefix=None,
+    )
 
     # pylint: disable=invalid-name
     @property
