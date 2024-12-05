@@ -6,6 +6,8 @@ import responses
 from core.models import Organization
 from core.plugins.loader import get_organization_plugins
 
+from plugins.organizations import NameFromSiretOrganizationPlugin
+
 pytestmark = pytest.mark.django_db
 
 
@@ -135,3 +137,34 @@ def test_organization_plugins_run_after_create_name_already_set(
         name="Magic WOW", registration_id_list=["12345678901234"]
     )
     assert organization.name == "Magic WOW"
+
+
+def test_extract_name_from_org_data_when_commune(
+    organization_plugins_settings,
+):
+    """Test the name is extracted correctly for a French commune."""
+    data = {
+        "results": [
+            {
+                "nom_complet": "COMMUNE DE VARZY",
+                "nom_raison_sociale": "COMMUNE DE VARZY",
+                "siege": {
+                    "libelle_commune": "VARZY",
+                    "liste_enseignes": ["MAIRIE"],
+                    "siret": "21580304000017",
+                },
+                "nature_juridique": "7210",
+                "matching_etablissements": [
+                    {
+                        "siret": "21580304000017",
+                        "libelle_commune": "VARZY",
+                        "liste_enseignes": ["MAIRIE"],
+                    }
+                ],
+            }
+        ]
+    }
+
+    plugin = NameFromSiretOrganizationPlugin()
+    name = plugin.get_organization_name_from_results(data, "21580304000017")
+    assert name == "Varzy"

@@ -14,7 +14,12 @@ export const AccountDropdown = () => {
     <DropButton
       button={
         <Box $flex $direction="row" $align="center">
-          <Text $theme="primary">{userName}</Text>
+          <Box $flex $direction="column" $align="left">
+            <Text $theme="primary">{userName}</Text>
+            {userData?.organization?.registration_id_list?.at(0) && (
+              <Text $theme="primary">{userData?.organization?.name}</Text>
+            )}
+          </Box>
           <Text className="material-icons" $theme="primary" aria-hidden="true">
             arrow_drop_down
           </Text>

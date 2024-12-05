@@ -9,11 +9,18 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  organization?: Organization;
   abilities?: {
     mailboxes: UserAbilities;
     contacts: UserAbilities;
     teams: UserAbilities;
   };
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  registration_id_list: [string];
 }
 
 export type UserAbilities = {
