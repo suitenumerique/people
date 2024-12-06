@@ -136,7 +136,7 @@ class ContactViewSet(
 ):
     """Contact ViewSet"""
 
-    permission_classes = [permissions.IsOwnedOrPublic]
+    permission_classes = [permissions.AccessPermission]
     queryset = models.Contact.objects.all()
     serializer_class = serializers.ContactSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
@@ -150,8 +150,10 @@ class ContactViewSet(
 
         # List only contacts that:
         queryset = queryset.filter(
+            # - is public (owner is None)
+            Q(owner__isnull=True)
             # - are owned by the user
-            Q(owner=user)
+            | Q(owner=user)
             # - are profile contacts for a user from the same organization
             | Q(user__organization_id=user.organization_id),
             # - are not overriden by another contact

@@ -86,10 +86,10 @@ def test_api_contacts_delete_authenticated_owner():
 
 def test_api_contacts_delete_authenticated_profile():
     """
-    Authenticated users should be allowed to delete their profile contact.
+    Authenticated users should not be allowed to delete their profile contact.
     """
     user = factories.UserFactory()
-    contact = factories.ContactFactory(owner=user, user=user)
+    contact = factories.ProfileContactFactory(user=user)
 
     client = APIClient()
     client.force_login(user)
@@ -98,8 +98,8 @@ def test_api_contacts_delete_authenticated_profile():
         f"/api/v1.0/contacts/{contact.id!s}/",
     )
 
-    assert response.status_code == 204
-    assert models.Contact.objects.exists() is False
+    assert response.status_code == 403
+    assert models.Contact.objects.exists() is True
 
 
 def test_api_contacts_delete_authenticated_other():

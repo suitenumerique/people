@@ -187,6 +187,27 @@ class Contact(BaseModel):
             error_message = f"Validation error in '{field_path:s}': {e.message}"
             raise exceptions.ValidationError({"data": [error_message]}) from e
 
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the contact.
+
+        Beware that the model allows owner to be None, we are still not
+        sure about the use case for this and the API does not allow this.
+        For now, we still consider here, a contact without owner is "public"
+        so we allow access to it.
+        """
+        is_owner = user == self.owner
+        is_profile_member_or_same_organization = bool(self.user) and (
+            self.user.organization_id == user.organization_id
+        )
+
+        return {
+            "get": is_owner or is_profile_member_or_same_organization or not self.owner,
+            "patch": is_owner,
+            "put": is_owner,
+            "delete": is_owner and not self.user,  # Can't delete a profile contact
+        }
+
 
 class ServiceProvider(BaseModel):
     """
