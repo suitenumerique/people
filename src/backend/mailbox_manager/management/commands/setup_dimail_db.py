@@ -13,7 +13,7 @@ from mailbox_manager.models import MailDomain
 User = get_user_model()
 
 
-DIMAIL_URL = "http://dimail:8000"
+DIMAIL_URL = settings.MAIL_PROVISIONING_API_URL
 admin = {"username": "admin", "password": "admin"}
 regie = {"username": "la_regie", "password": "password"}
 
@@ -62,9 +62,12 @@ class Command(BaseCommand):
         # we create a dimail user for keycloak+regie user John Doe
         # This way, la Régie will be able to make request in the name of
         # this user
-        people_base_user = User.objects.filter(name="John Doe")
-        if people_base_user.exists():
-            self.create_user(name=people_base_user.sub, password="whatever")  # noqa S106
+        try:
+            people_base_user = User.objects.get(email="people@people.world")
+        except User.DoesNotExist:
+            self.stdout.write("people@people.world user not found", ending="\n")
+        else:
+            self.create_user(name=people_base_user.sub)
             self.create_allows(people_base_user.sub, domain_name)
 
         self.stdout.write("DONE", ending="\n")
@@ -72,7 +75,7 @@ class Command(BaseCommand):
     def create_user(
         self,
         name,
-        password,
+        password="no",  # noqa S107
         perms=None,
         auth=(regie["username"], regie["password"]),
     ):
