@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 💄(frontend) redirect home according to abilities #588
 - ✨(maildomain_access) add API endpoint to search users #508
 
 ## [1.8.0] - 2024-12-12

@@ -32,13 +32,39 @@ test.describe('Config', () => {
     });
   });
 
-  test('it checks that the config can deactivate the feature "teams"', async ({
+  test('it checks that the user abilities display mail domains', async ({
     page,
     browserName,
   }) => {
     await page.goto('/');
-    // Login with a user who has the visibility on the groups
+    await keyCloakSignIn(page, browserName, 'mail-member');
+
+    await expect(page.locator('menu')).toBeHidden();
+
+    await expect(page.getByText('Mail Domains')).toBeVisible();
+  });
+
+  test('it checks that the user abilities display teams', async ({
+    page,
+    browserName,
+  }) => {
+    await page.goto('/');
     await keyCloakSignIn(page, browserName, 'team-member');
+
+    await expect(page.locator('menu')).toBeHidden();
+
+    await expect(page.getByText('Groups')).toBeVisible();
+  });
+
+  test('it checks that the config does not deactivate the feature "teams"', async ({
+    page,
+    browserName,
+  }) => {
+    await page.goto('/');
+    // Login with a user who has the visibility on the groups should see groups
+    // It's now the backend that decides if the user can see the group menu and they
+    // should be redirected to the groups page in such case
+    await keyCloakSignIn(page, browserName, 'team-administrator');
 
     await page.route('**/api/v1.0/config/', async (route) => {
       const request = route.request();
@@ -59,12 +85,6 @@ test.describe('Config', () => {
 
     await expect(page.locator('menu')).toBeHidden();
 
-    await expect(
-      page.getByRole('button', {
-        name: 'Create a new team',
-      }),
-    ).toBeHidden();
-
-    await expect(page.getByText('Mail Domains')).toBeVisible();
+    await expect(page.getByText('Groups')).toBeVisible();
   });
 });

@@ -75,7 +75,11 @@ test.describe('Mail domains', () => {
   test.describe('checks all the elements are visible', () => {
     test.beforeEach(async ({ page, browserName }) => {
       await page.goto('/');
-      await keyCloakSignIn(page, browserName, 'mail-member');
+      // The user is a team administrator, so they land on the team page
+      // This allows to prevent the redirection to the mail domains page
+      // to make the '/api/v1.0/mail-domains/?page=1&ordering=created_at'
+      // query at login, which will be cached and not called afterward in tests.
+      await keyCloakSignIn(page, browserName, 'team-administrator-mail-member');
     });
 
     test('checks the sort button', async ({ page }) => {
