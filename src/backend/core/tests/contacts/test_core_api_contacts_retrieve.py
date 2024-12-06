@@ -22,7 +22,7 @@ def test_api_contacts_retrieve_anonymous():
     }
 
 
-def test_api_contacts_retrieve_authenticated_owned():
+def test_api_contacts_retrieve_authenticated_owned(django_assert_num_queries):
     """
     Authenticated users should be allowed to retrieve a contact they own.
     """
@@ -32,11 +32,13 @@ def test_api_contacts_retrieve_authenticated_owned():
     client = APIClient()
     client.force_login(user)
 
-    response = client.get(f"/api/v1.0/contacts/{contact.id!s}/")
+    with django_assert_num_queries(2):
+        response = client.get(f"/api/v1.0/contacts/{contact.id!s}/")
 
     assert response.status_code == 200
     assert response.json() == {
         "id": str(contact.id),
+        "abilities": {"delete": True, "get": True, "patch": True, "put": True},
         "override": None,
         "owner": str(contact.owner.id),
         "data": contact.data,
@@ -60,6 +62,7 @@ def test_api_contacts_retrieve_authenticated_public():
     assert response.status_code == 200
     assert response.json() == {
         "id": str(contact.id),
+        "abilities": {"delete": False, "get": True, "patch": False, "put": False},
         "override": None,
         "owner": None,
         "data": contact.data,

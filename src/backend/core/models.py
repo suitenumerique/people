@@ -196,8 +196,8 @@ class Contact(BaseModel):
         For now, we still consider here, a contact without owner is "public"
         so we allow access to it.
         """
-        is_owner = user == self.owner
-        is_profile_member_or_same_organization = bool(self.user) and (
+        is_owner = user.pk == self.owner_id
+        is_profile_member_or_same_organization = bool(self.user_id) and (
             self.user.organization_id == user.organization_id
         )
 

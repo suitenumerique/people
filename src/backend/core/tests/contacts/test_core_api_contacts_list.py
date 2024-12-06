@@ -22,7 +22,7 @@ def test_api_contacts_list_anonymous():
     }
 
 
-def test_api_contacts_list_authenticated_no_query():
+def test_api_contacts_list_authenticated_no_query(django_assert_num_queries):
     """
     Authenticated users should be able to list contacts without applying a query.
     Profile and overridden contacts should be excluded.
@@ -57,12 +57,14 @@ def test_api_contacts_list_authenticated_no_query():
     client = APIClient()
     client.force_login(user)
 
-    response = client.get("/api/v1.0/contacts/")
+    with django_assert_num_queries(2):
+        response = client.get("/api/v1.0/contacts/")
 
     assert response.status_code == 200
     assert response.json() == [
         {
             "id": str(user_profile_contact.pk),
+            "abilities": {"delete": False, "get": True, "patch": True, "put": True},
             "override": None,
             "owner": str(user.pk),
             "data": user_profile_contact.data,
@@ -72,6 +74,7 @@ def test_api_contacts_list_authenticated_no_query():
         },
         {
             "id": str(profile_contact.pk),
+            "abilities": {"delete": False, "get": True, "patch": False, "put": False},
             "override": None,
             "owner": str(profile_contact.user.pk),
             "data": profile_contact.data,
@@ -81,6 +84,7 @@ def test_api_contacts_list_authenticated_no_query():
         },
         {
             "id": str(override_contact.pk),
+            "abilities": {"delete": True, "get": True, "patch": True, "put": True},
             "override": str(overriden_contact.pk),
             "owner": str(user.pk),
             "data": override_contact.data,

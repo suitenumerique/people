@@ -12,6 +12,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(contacts) add "abilities" to API endpoint data #585
 - ✨(contacts) allow filter list API with email
 - ✨(contacts) return profile contact from same organization
 - ✨(dimail) automate allows requests to dimail

@@ -86,6 +86,7 @@ def test_api_contacts_create_authenticated_missing_base():
 
     assert response.json() == {
         "override": None,
+        "abilities": {"delete": True, "get": True, "patch": True, "put": True},
         "data": {},
         "full_name": "David Bowman",
         "id": str(new_contact.pk),
@@ -123,6 +124,7 @@ def test_api_contacts_create_authenticated_successful():
     contact = models.Contact.objects.get(owner=user)
     assert response.json() == {
         "id": str(contact.id),
+        "abilities": {"delete": True, "get": True, "patch": True, "put": True},
         "override": str(base_contact.id),
         "data": CONTACT_DATA,
         "full_name": "David Bowman",
@@ -195,6 +197,7 @@ def test_api_contacts_create_authenticated_successful_with_notes():
     contact = models.Contact.objects.get(owner=user)
     assert response.json() == {
         "id": str(contact.id),
+        "abilities": {"delete": True, "get": True, "patch": True, "put": True},
         "override": None,
         "data": CONTACT_DATA,
         "full_name": "David Bowman",

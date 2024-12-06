@@ -35,7 +35,7 @@ def test_api_contacts_update_anonymous():
     assert contact_values == old_contact_values
 
 
-def test_api_contacts_update_authenticated_owned():
+def test_api_contacts_update_authenticated_owned(django_assert_num_queries):
     """
     Authenticated users should be allowed to update their own contacts.
     """
@@ -52,11 +52,13 @@ def test_api_contacts_update_authenticated_owned():
     ).data
     new_contact_values["override"] = str(factories.ContactFactory().id)
 
-    response = client.put(
-        f"/api/v1.0/contacts/{contact.id!s}/",
-        new_contact_values,
-        format="json",
-    )
+    with django_assert_num_queries(8):
+        # user, 2x contact, user, 3x check, update contact
+        response = client.put(
+            f"/api/v1.0/contacts/{contact.id!s}/",
+            new_contact_values,
+            format="json",
+        )
 
     assert response.status_code == 200
 
