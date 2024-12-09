@@ -58,3 +58,17 @@ cmd_button('Migrate db',
            icon_name='developer_board',
            text='Run database migration',
 )
+
+# Command to created domain/users/access from people to dimail
+populate_dimail_from_people = '''
+set -eu
+# get k8s pod name from tilt resource name
+POD_NAME="$(tilt get kubernetesdiscovery desk-backend -ojsonpath='{.status.pods[0].name}')"
+kubectl -n desk exec "$POD_NAME" -- python manage.py setup_dimail_db --populate-from-people
+'''
+cmd_button('Populate dimail from people',
+           argv=['sh', '-c', populate_dimail_from_people],
+           resource='desk-backend',
+           icon_name='developer_board',
+           text='Populate dimail from people',
+)
