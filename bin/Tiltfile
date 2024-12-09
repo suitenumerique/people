@@ -29,7 +29,9 @@ docker_build(
     ]
 )
 
-k8s_yaml(local('cd ../src/helm && helmfile -n desk -e ${DEV_ENV:-dev} template .'))
+# helmfile in docker mount the current working directory and the helmfile.yaml
+# requires the keycloak config in another directory
+k8s_yaml(local('cd .. && helmfile -n desk -e ${DEV_ENV:-dev} template --file ./src/helm/helmfile.yaml'))
 
 migration = '''
 set -eu

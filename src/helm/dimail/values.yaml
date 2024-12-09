@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: registry.mim-libre.fr/dimail/dimail-api
+  tag: v0.0.13
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  hostname: dimail.127.0.0.1.nip.io
+
+env:
+  DIMAIL_MODE: FAKE
+  DIMAIL_JWT_SECRET: fake_jwt_secret

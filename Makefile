@@ -354,9 +354,17 @@ start-kind: ## Create the kubernetes cluster
 	./bin/start-kind.sh
 .PHONY: start-kind
 
+install-external-secrets: ## install the kubernetes secrets from Vaultwarden
+	./bin/install-external-secrets.sh
+.PHONY: build-k8s-cluster
+
 tilt-up: ## start tilt - k8s local development
 	tilt up -f ./bin/Tiltfile
 .PHONY: tilt-up
+
+start-tilt-keycloak: ## start the kubernetes cluster using kind, without Pro Connect for authentication, use keycloak
+	DEV_ENV=dev-keycloak tilt up -f ./bin/Tiltfile
+.PHONY: build-k8s-cluster
 
 release:  ## helper for release and deployment
 	python scripts/release.py

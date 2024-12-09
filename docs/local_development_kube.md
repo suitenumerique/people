@@ -89,6 +89,14 @@ Run the following command to create a kubernetes cluster using kind:
 make start-kind
 ```
 
+### [Optional] Install the secret
+
+You don't need to do this if you are running the stack with keycloak.
+
+```bash
+make install-external-secrets
+```
+
 ### Deploy the application
 
 ```bash
@@ -102,7 +110,11 @@ DEV_ENV=dev-keycloak tilt up -f ./bin/Tiltfile
 **or** run the equivalent using the makefile
 
 ```bash
+# Pro Connect environment
 make tilt-up
+
+# Standalone environment with keycloak
+make tilt-up-keycloak
 ```
 
 That's it! You should now have a local development environment for Kubernetes.

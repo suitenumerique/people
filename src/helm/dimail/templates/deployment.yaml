@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dimail
+  labels:
+    app: dimail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dimail
+  template:
+    metadata:
+      labels:
+        app: dimail
+    spec:
+      containers:
+        - name: dimail
+          command: ["/bin/sh", "-c", "/opt/dimail-api/start-dev.sh"]
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DIMAIL_MODE
+              value: FAKE
+            - name: DIMAIL_JWT_SECRET
+              value: fake_jwt_secret

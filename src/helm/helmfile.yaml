@@ -49,7 +49,7 @@ releases:
           metadata:
             name: desk-keycloak
           data:
-            meet.json: |
+            desk.json: |
 {{ readFile "../../docker/auth/realm.json" | replace "http://localhost:3200" "https://desk.127.0.0.1.nip.io" | indent 14 }}
 
   - name: postgres
@@ -77,6 +77,12 @@ releases:
       - auth:
           password: pass
         architecture: standalone
+
+  - name: dimail
+    installed: {{ eq .Environment.Name "dev" | toYaml }}
+    missingFileHandler: Warn
+    namespace: {{ .Namespace }}
+    chart: ./dimail
 
   - name: desk
     installed: {{ regexMatch "^dev.*" .Environment.Name | toYaml }}
