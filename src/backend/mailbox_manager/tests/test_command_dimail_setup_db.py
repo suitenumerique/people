@@ -1,12 +1,14 @@
 """Test the `setup_dimail_db` management command"""
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
 import pytest
-import requests
+import responses
 
+from core import factories
+
+from mailbox_manager import factories as mailbox_factories
 from mailbox_manager.management.commands.setup_dimail_db import DIMAIL_URL, admin
 
 pytestmark = pytest.mark.django_db
@@ -15,55 +17,105 @@ admin_auth = (admin["username"], admin["password"])
 User = get_user_model()
 
 
-@pytest.mark.skipif(
-    settings.DEBUG is not True,
-    reason="Run only in local (dimail container not running in other envs)",
-)
-def test_commands_setup_dimail_db():
+@responses.activate
+def test_commands_setup_dimail_db(settings):
     """The create_demo management command should create objects as expected."""
+    settings.DEBUG = True  # required to run the command
+
+    john_doe = factories.UserFactory(
+        name="John Doe", email="people@people.world", sub="sub.john.doe"
+    )
+
+    # mock dimail API
+    responses.add(responses.POST, f"{DIMAIL_URL}/users/", status=201)
+    responses.add(responses.POST, f"{DIMAIL_URL}/domains/", status=201)
+    responses.add(responses.POST, f"{DIMAIL_URL}/allows/", status=201)
+    responses.add(
+        responses.GET,
+        f"{DIMAIL_URL}/users/",
+        json=[
+            {
+                "is_admin": False,
+                "name": john_doe.sub,
+                "perms": [],
+            },
+            {
+                "is_admin": True,
+                "name": "admin",
+                "perms": [],
+            },
+            {
+                "is_admin": False,
+                "name": "la_regie",
+                "perms": [
+                    "new_domain",
+                    "create_users",
+                    "manage_users",
+                ],
+            },
+        ],
+    )
+
     call_command("setup_dimail_db")
 
-    # check created users
-    response = requests.get(url=f"{DIMAIL_URL}/users/", auth=admin_auth, timeout=10)
-    users = response.json()
+    # check dimail API received the expected requests
+    assert len(responses.calls) == 5
+    assert responses.calls[0].request.url == f"{DIMAIL_URL}/users/"
+    assert (
+        responses.calls[0].request.body
+        == b'{"name": "admin", "password": "admin", "is_admin": true, "perms": []}'
+    )
 
-    # if John Doe exists, we created a dimail user for them
-    local_user = User.objects.filter(name="John Doe").exists()
+    assert responses.calls[1].request.url == f"{DIMAIL_URL}/users/"
+    assert responses.calls[1].request.body == (
+        b'{"name": "la_regie", "password": "password", "is_admin": false, '
+        b'"perms": ["new_domain", "create_users", "manage_users"]}'
+    )
 
-    assert len(users) == 3 if local_user else 2
-    # remove uuid because we cannot devine them
-    [user.pop("uuid") for user in users]  # pylint: disable=W0106
+    assert responses.calls[2].request.url == f"{DIMAIL_URL}/domains/"
+    assert responses.calls[2].request.body == (
+        b'{"name": "test.domain.com", "context_name": "context", '
+        b'"features": ["webmail", "mailbox", "alias"]}'
+    )
 
-    if local_user:
-        assert users.pop() == {
-            "is_admin": False,
-            "name": User.objects.get(name="John Doe").uuid,
-            "perms": [],
-        }
-    assert users == [
-        {
-            "is_admin": True,
-            "name": "admin",
-            "perms": [],
-        },
-        {
-            "is_admin": False,
-            "name": "la_regie",
-            "perms": [
-                "new_domain",
-                "create_users",
-                "manage_users",
-            ],
-        },
-    ]
+    assert responses.calls[3].request.url == f"{DIMAIL_URL}/users/"
+    assert (
+        responses.calls[3].request.body
+        == b'{"name": "sub.john.doe", "password": "no", "is_admin": false, "perms": []}'
+    )
 
-    # check created domains
-    response = requests.get(url=f"{DIMAIL_URL}/domains/", auth=admin_auth, timeout=10)
-    domains = response.json()
-    assert len(domains) == 1
-    assert domains[0]["name"] == "test.domain.com"
+    assert responses.calls[4].request.url == f"{DIMAIL_URL}/allows/"
+    assert (
+        responses.calls[4].request.body
+        == b'{"domain": "test.domain.com", "user": "sub.john.doe"}'
+    )
 
-    # check created allows
-    response = requests.get(url=f"{DIMAIL_URL}/allows/", auth=admin_auth, timeout=10)
-    allows = response.json()
-    assert len(allows) == 2 if local_user else 1
+    # reset the responses counter
+    responses.calls.reset()  # pylint: disable=no-member
+
+    # check the command with "populate-from-people" option
+    mailbox_factories.MailDomainAccessFactory(
+        domain__name="some.domain.com", user__sub="sub.toto.123"
+    )
+
+    call_command("setup_dimail_db", "--populate-from-people")
+
+    # check dimail API received the expected requests
+    assert len(responses.calls) == 5 + 3
+    assert responses.calls[5].request.url == f"{DIMAIL_URL}/domains/"
+    assert responses.calls[5].request.body == (
+        b'{"name": "some.domain.com", "context_name": "context", '
+        b'"features": ["webmail", "mailbox", "alias"]}'
+    )
+
+    assert responses.calls[6].request.url == f"{DIMAIL_URL}/users/"
+    assert responses.calls[6].request.body == (
+        b'{"name": "sub.toto.123", "password": "no", "is_admin": false, '
+        b'"perms": []}'
+    )
+
+    assert responses.calls[7].request.url == f"{DIMAIL_URL}/allows/"
+    assert (
+        responses.calls[7].request.body
+        == b'{"domain": "some.domain.com", "user": "sub.toto.123"}'
+    )

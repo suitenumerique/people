@@ -8,7 +8,7 @@ import requests
 from rest_framework import status
 
 from mailbox_manager.enums import MailDomainStatusChoices
-from mailbox_manager.models import MailDomain
+from mailbox_manager.models import MailDomain, MailDomainAccess
 
 User = get_user_model()
 
@@ -25,11 +25,23 @@ class Command(BaseCommand):
 
     help = "Populate local dimail database, for dev purposes."
 
+    def add_arguments(self, parser):
+        """Add arguments to the command."""
+        parser.add_argument(
+            "--populate-from-people",
+            action="store_true",
+            help="Create accounts from already exising account in people database.",
+        )
+
     def handle(self, *args, **options):
         """Handling of the management command."""
-        if not settings.DEBUG:
+        # Allow only in local dev environment: debug or django-configuration is "local"
+        if (
+            not settings.DEBUG
+            and str(settings.CONFIGURATION) != "people.settings.Local"
+        ):
             raise CommandError(
-                ("This command is meant to run in local dev environment.")
+                f"This command is not meant to run in {settings.CONFIGURATION} environment."
             )
 
         # Create a first superuser for dimail-api container. User creation is usually
@@ -69,6 +81,9 @@ class Command(BaseCommand):
         else:
             self.create_user(name=people_base_user.sub)
             self.create_allows(people_base_user.sub, domain_name)
+
+        if options["populate_from_people"]:
+            self._populate_dimail_from_people()
 
         self.stdout.write("DONE", ending="\n")
 
@@ -157,3 +172,39 @@ class Command(BaseCommand):
                      ........ failed: {response.json()['detail']}"
                 )
             )
+
+    def _populate_dimail_from_people(self):
+        self.stdout.write("Creating accounts from people database", ending="\n")
+
+        user_to_create = set()
+        domain_to_create = set()
+        access_to_create = set()
+        for mail_access in MailDomainAccess.objects.select_related(
+            "domain", "user"
+        ).all():
+            user_to_create.add(mail_access.user)
+            domain_to_create.add(mail_access.domain)
+            access_to_create.add(mail_access)
+
+        # create missing domains
+        for domain in domain_to_create:
+            # enforce domain status
+            if domain.status != MailDomainStatusChoices.ENABLED:
+                self.stdout.write(
+                    f"  - {domain.name} status {domain.status} -> ENABLED"
+                )
+                domain.status = MailDomainStatusChoices.ENABLED
+                domain.save()
+            self.create_domain(domain.name)
+
+        # create missing users
+        for user in user_to_create:
+            self.create_user(
+                auth=(admin["username"], admin["password"]),
+                name=user.sub,
+                perms=[],  # no permission needed for "classic" users
+            )
+
+        # create missing accesses
+        for access in access_to_create:
+            self.create_allows(access.user.sub, access.domain.name)
