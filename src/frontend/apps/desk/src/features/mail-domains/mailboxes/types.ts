@@ -6,4 +6,11 @@ export interface MailDomainMailbox {
   first_name: string;
   last_name: string;
   secondary_email: string;
+  status: MailDomainMailboxStatus;
 }
+
+export type MailDomainMailboxStatus =
+  | 'enabled'
+  | 'disabled'
+  | 'pending'
+  | 'failed';

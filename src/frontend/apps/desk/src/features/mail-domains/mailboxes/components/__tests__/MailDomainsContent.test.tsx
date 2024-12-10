@@ -195,10 +195,6 @@ describe('MailDomainsContent', () => {
 
     const statuses = [
       {
-        status: 'pending',
-        regex: /Your domain name is being validated/,
-      },
-      {
         status: 'disabled',
         regex:
           /This domain name is deactivated. No new mailboxes can be created/,

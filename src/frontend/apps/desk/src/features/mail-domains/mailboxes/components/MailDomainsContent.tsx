@@ -9,7 +9,7 @@ import {
   VariantType,
   usePagination,
 } from '@openfun/cunningham-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors, TextStyled } from '@/components';
@@ -20,10 +20,14 @@ import { MailDomain } from '../../domains/types';
 import { useMailboxes } from '../api/useMailboxes';
 import { MailDomainMailbox } from '../types';
 
+import { MailDomainsActions } from './MailDomainsActions';
+
 export type ViewMailbox = {
   name: string;
   email: string;
   id: UUID;
+  status: MailDomainMailbox['status'];
+  mailbox: MailDomainMailbox;
 };
 
 // FIXME : ask Cunningham to export this type
@@ -72,6 +76,8 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
           email: `${mailbox.local_part}@${mailDomain.name}`,
           name: `${mailbox.first_name} ${mailbox.last_name}`,
           id: mailbox.id,
+          status: mailbox.status,
+          mailbox,
         }))
       : [];
 
@@ -97,7 +103,16 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
         showMailBoxCreationForm={setIsCreateMailboxFormVisible}
       />
 
-      <Card $overflow="auto" aria-label={t('Mailboxes list card')}>
+      <Card
+        $overflow="auto"
+        aria-label={t('Mailboxes list card')}
+        $css={`
+          
+          & table td:last-child {
+            text-align: right;
+          }
+      `}
+      >
         {error && <TextErrors causes={error.cause} />}
 
         <DataGrid
@@ -118,6 +133,19 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
             {
               field: 'email',
               headerName: t('Emails'),
+            },
+            {
+              field: 'status',
+              headerName: t('Status'),
+            },
+            {
+              id: 'column-actions',
+              renderCell: ({ row }) => (
+                <MailDomainsActions
+                  mailbox={row.mailbox}
+                  mailDomain={mailDomain}
+                />
+              ),
             },
           ]}
           rows={viewMailboxes}
@@ -147,6 +175,8 @@ const TopBanner = ({
   showMailBoxCreationForm: (value: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const canCreateMailbox =
+    mailDomain.status === 'enabled' || mailDomain.status === 'pending';
 
   return (
     <Box $direction="column" $gap="1rem">
@@ -164,7 +194,7 @@ const TopBanner = ({
               aria-label={t('Create a mailbox in {{name}} domain', {
                 name: mailDomain?.name,
               })}
-              disabled={mailDomain?.status !== 'enabled'}
+              disabled={!canCreateMailbox}
               onClick={() => showMailBoxCreationForm(true)}
             >
               {t('Create a mailbox')}
@@ -181,14 +211,6 @@ const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
 
   const getStatusAlertProps = (status?: string) => {
     switch (status) {
-      case 'pending':
-        return {
-          variant: VariantType.WARNING,
-          message: t(
-            'Your domain name is being validated. ' +
-              'You will not be able to create mailboxes until your domain name has been validated by our team.',
-          ),
-        };
       case 'disabled':
         return {
           variant: VariantType.NEUTRAL,

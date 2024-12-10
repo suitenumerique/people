@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) disable mailbox and allow to create pending mailbox
 - ✨(organizations) add siret to name conversion #584
 - 💄(frontend) redirect home according to abilities #588
 - ✨(maildomain_access) add API endpoint to search users #508

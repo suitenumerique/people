@@ -375,15 +375,8 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByText(
-            'Your domain name is being validated.  ' +
-              'You will not be able to create mailboxes until your domain name has been validated by our team.',
-          ),
-        ).toBeVisible();
-
-        await expect(
           page.getByRole('button', { name: 'Create a mailbox' }),
-        ).toBeDisabled();
+        ).toBeEnabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -700,13 +693,6 @@ test.describe('Mail domain', () => {
 
         await expect(
           page.getByRole('heading', { name: 'domain.fr' }),
-        ).toBeVisible();
-
-        await expect(
-          page.getByText(
-            'Your domain name is being validated.  ' +
-              'You will not be able to create mailboxes until your domain name has been validated by our team.',
-          ),
         ).toBeVisible();
 
         await expect(

@@ -85,38 +85,41 @@ const mailboxesFixtures = {
   },
 };
 
-const interceptCommonApiRequests = (page: Page) => {
+const interceptCommonApiRequests = (page: Page, mailDomains?: MailDomain[]) => {
+  const mailDomainsToUse = mailDomains ?? mailDomainsFixtures;
   void page.route('**/api/v1.0/mail-domains/?page=*', (route) => {
     void route.fulfill({
       json: {
-        count: mailDomainsFixtures.length,
+        count: mailDomainsToUse.length,
         next: null,
         previous: null,
-        results: mailDomainsFixtures,
+        results: mailDomainsToUse,
       },
     });
   });
 
-  void page.route('**/api/v1.0/mail-domains/domainfr/', (route) => {
-    void route.fulfill({
-      json: mailDomainDomainFrFixture,
-    });
-  });
-
-  void page.route(
-    '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
-    (route) => {
+  mailDomainsToUse.forEach((mailDomain) => {
+    void page.route(`**/api/v1.0/mail-domains/${mailDomain.slug}/`, (route) => {
       void route.fulfill({
-        json: {
-          count: mailboxesFixtures.domainFr.page1.length,
-          next: null,
-          previous: null,
-          results: mailboxesFixtures.domainFr.page1,
-        },
+        json: mailDomain,
       });
-    },
-    { times: 1 },
-  );
+    });
+
+    void page.route(
+      `**/api/v1.0/mail-domains/${mailDomain.slug}/mailboxes/?page=1**`,
+      (route) => {
+        void route.fulfill({
+          json: {
+            count: mailboxesFixtures.domainFr.page1.length,
+            next: null,
+            previous: null,
+            results: mailboxesFixtures.domainFr.page1,
+          },
+        });
+      },
+      { times: 1 },
+    );
+  });
 };
 
 const navigateToMailboxCreationFormForMailDomainFr = async (
@@ -132,6 +135,57 @@ test.describe('Mail domain create mailbox', () => {
     await page.goto('/');
     // Login with a user who has the visibility on the mail domains
     await keyCloakSignIn(page, browserName, 'mail-member');
+  });
+
+  test('checks create mailbox button is visible or not', async ({ page }) => {
+    const domains = [...mailDomainsFixtures];
+    domains[0].status = 'enabled';
+    domains[1].status = 'pending';
+    domains[2].status = 'disabled';
+    domains[3].status = 'failed';
+    void interceptCommonApiRequests(page, domains);
+
+    await page
+      .locator('menu')
+      .first()
+      .getByLabel(`Mail Domains button`)
+      .click();
+    const domainFr = page.getByRole('listbox').first().getByText('domain.fr');
+    const mailsFr = page.getByRole('listbox').first().getByText('mails.fr');
+    const versaillesNet = page
+      .getByRole('listbox')
+      .first()
+      .getByText('versailles.net');
+    const parisFr = page.getByRole('listbox').first().getByText('paris.fr');
+
+    await expect(domainFr).toBeVisible();
+    await expect(mailsFr).toBeVisible();
+    await expect(versaillesNet).toBeVisible();
+    await expect(parisFr).toBeVisible();
+
+    // Check that the button is enabled when the domain is enabled
+    await domainFr.click();
+    await expect(
+      page.getByRole('button', { name: 'Create a mailbox' }),
+    ).toBeEnabled();
+
+    // Check that the button is enabled when the domain is pending
+    await mailsFr.click();
+    await expect(
+      page.getByRole('button', { name: 'Create a mailbox' }),
+    ).toBeEnabled();
+
+    // Check that the button is disabled when the domain is disabled
+    await versaillesNet.click();
+    await expect(
+      page.getByRole('button', { name: 'Create a mailbox' }),
+    ).toBeDisabled();
+
+    // Check that the button is disabled when the domain is failed
+    await parisFr.click();
+    await expect(
+      page.getByRole('button', { name: 'Create a mailbox' }),
+    ).toBeDisabled();
   });
 
   test('checks user can create a mailbox when he has post ability', async ({
@@ -196,7 +250,7 @@ test.describe('Mail domain create mailbox', () => {
     });
 
     void interceptRequests(page);
-
+    expect(true).toBeTruthy();
     await navigateToMailboxCreationFormForMailDomainFr(page);
 
     await page.getByRole('button', { name: 'Cancel' }).click();
