@@ -197,6 +197,10 @@ jobs:
         run: |
           make demo FLUSH_ARGS='--no-input'
 
+      - name: Setup Dimail DB
+        run: |
+          make dimail-setup-db
+
       - name: Install Playwright Browsers
         run: cd src/frontend/apps/e2e && yarn install
 
