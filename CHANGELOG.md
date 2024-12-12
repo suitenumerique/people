@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(mailbox) fix activate mailbox feature
 - 🔧(helm) fix the configuration environment #579
 
 ## [1.7.1] - 2024-11-28

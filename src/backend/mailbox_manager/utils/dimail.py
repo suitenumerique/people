@@ -375,7 +375,12 @@ class DimailAPIClient:
         """Send a request to enable a mailbox to dimail API"""
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
-            json={"active": "yes"},
+            json={
+                "active": "yes",
+                "givenName": mailbox.first_name,
+                "surName": mailbox.last_name,
+                "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+            },
             headers=self.get_headers(user_sub),
             verify=True,
             timeout=10,
