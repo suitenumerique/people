@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(backend) fix manage roles on domain admin view
 - 🐛(mailbox) fix activate mailbox feature
 - 🔧(helm) fix the configuration environment #579
 

@@ -37,7 +37,7 @@ class UserMailDomainAccessInline(admin.TabularInline):
 
     extra = 0
     model = models.MailDomainAccess
-    readonly_fields = ("created_at", "updated_at", "domain", "user")
+    readonly_fields = ("created_at", "updated_at", "domain")
 
 
 @admin.register(models.MailDomain)
