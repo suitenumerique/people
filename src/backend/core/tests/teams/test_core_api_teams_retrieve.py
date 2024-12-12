@@ -74,3 +74,67 @@ def test_api_teams_retrieve_authenticated_related():
         "updated_at": team.updated_at.isoformat().replace("+00:00", "Z"),
         "service_providers": [],
     }
+
+
+@pytest.mark.parametrize(
+    "role",
+    ["owner", "administrator", "member"],
+)
+def test_api_teams_retrieve_authenticated_related_parent(client, role):
+    """
+    Authenticated users should be allowed to retrieve a parent team
+    to which they are related through the child team whatever the role.
+    """
+    user = factories.UserFactory()
+
+    client.force_login(user)
+
+    root_team = factories.TeamFactory(name="Root")
+    first_team = factories.TeamFactory(name="First", parent_id=root_team.pk)
+    second_team = factories.TeamFactory(name="Second", parent_id=first_team.pk)
+
+    # user is a member of the second team
+    factories.TeamAccessFactory(team=second_team, user=user, role=role)
+
+    response = client.get(f"/api/v1.0/teams/{first_team.pk!s}/")
+
+    # the abilities enforces the "get" via the queryset
+    abilities = first_team.get_abilities(user)
+    abilities["get"] = True
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "id": str(first_team.pk),
+        "name": first_team.name,
+        "abilities": abilities,
+        "accesses": [],
+        "created_at": first_team.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": first_team.updated_at.isoformat().replace("+00:00", "Z"),
+        "service_providers": [],
+    }
+
+
+@pytest.mark.parametrize(
+    "role",
+    ["owner", "administrator", "member"],
+)
+def test_api_teams_retrieve_authenticated_related_children(client, role):
+    """
+    Authenticated users should NOT be allowed to retrieve a child team
+    to which they are related through the parent team whatever the role.
+    """
+    user = factories.UserFactory()
+
+    client.force_login(user)
+
+    root_team = factories.TeamFactory(name="Root")
+    first_team = factories.TeamFactory(name="First", parent_id=root_team.pk)
+    second_team = factories.TeamFactory(name="Second", parent_id=first_team.pk)
+
+    # user is a member of the first team
+    factories.TeamAccessFactory(team=first_team, user=user, role=role)
+
+    response = client.get(f"/api/v1.0/teams/{second_team.pk!s}/")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No Team matches the given query."}

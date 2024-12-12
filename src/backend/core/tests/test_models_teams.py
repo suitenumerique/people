@@ -138,6 +138,7 @@ def test_models_teams_get_abilities_preset_role(django_assert_num_queries):
 
 # test trees
 
+
 def test_models_teams_create_root_team():
     """Create a root team."""
     team = models.Team.add_root(name="Root Team")
