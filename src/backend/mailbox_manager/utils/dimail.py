@@ -245,7 +245,7 @@ class DimailAPIClient:
         except json.decoder.JSONDecodeError:
             error_content = response.content.decode(response.encoding)
 
-        logger.error(
+        logger.exception(
             "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
         )
         raise requests.exceptions.HTTPError(

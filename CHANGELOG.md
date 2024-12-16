@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(backend) fix manage roles on domain admin view
+
 ### Added
 
 - ✨(organizations) add siret to name conversion #584

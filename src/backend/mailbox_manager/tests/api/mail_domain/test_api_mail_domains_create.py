@@ -122,6 +122,77 @@ def test_api_mail_domains__create_authenticated():
     assert domain.accesses.filter(role="owner", user=user).exists()
 
 
+def test_api_mail_domains__create_authenticated__dimail_failure():
+    """
+    Despite a dimail failure for user and/or allow creation,
+    an authenticated user should be able to create a mail domain
+    and should automatically be added as owner of the newly created domain.
+    """
+    user = core_factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    domain_name = "test.domain.fr"
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/domains/"),
+            body=str(
+                {
+                    "name": domain_name,
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/users/"),
+            body=str(
+                {
+                    "name": "request-user-sub",
+                    "is_admin": "false",
+                    "uuid": "user-uuid-on-dimail",
+                    "perms": [],
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/allows/"),
+            body=str({"user": "request-user-sub", "domain": str(domain_name)}),
+            status=status.HTTP_403_FORBIDDEN,
+            content_type="application/json",
+        )
+        response = client.post(
+            "/api/v1.0/mail-domains/",
+            {"name": domain_name, "context": "null", "features": ["webmail"]},
+            format="json",
+        )
+    assert response.status_code == status.HTTP_201_CREATED
+    domain = models.MailDomain.objects.get()
+
+    # response is as expected
+    assert response.json() == {
+        "id": str(domain.id),
+        "name": domain.name,
+        "slug": domain.slug,
+        "status": enums.MailDomainStatusChoices.FAILED,
+        "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
+        "abilities": domain.get_abilities(user),
+    }
+
+    # a new domain with status "failed" is created and authenticated user is the owner
+    assert domain.status == enums.MailDomainStatusChoices.FAILED
+    assert domain.name == domain_name
+    assert domain.accesses.filter(role="owner", user=user).exists()
+
+
 ## SYNC TO DIMAIL
 def test_api_mail_domains__create_dimail_domain(caplog):
     """

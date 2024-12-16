@@ -1,7 +1,9 @@
 """Client serializers for People's mailbox manager app."""
 
 import json
+from logging import getLogger
 
+from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
 
 from core.api.client.serializers import UserSerializer
@@ -9,6 +11,8 @@ from core.models import User
 
 from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
+
+logger = getLogger(__name__)
 
 
 class MailboxSerializer(serializers.ModelSerializer):
@@ -190,14 +194,20 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
         """
         dimail = DimailAPIClient()
 
+        user = validated_data["user"]
+        domain = validated_data["domain"]
+
         if validated_data["role"] in [
             enums.MailDomainRoleChoices.ADMIN,
             enums.MailDomainRoleChoices.OWNER,
         ]:
-            dimail.create_user(validated_data["user"].sub)
-            dimail.create_allow(
-                validated_data["user"].sub, validated_data["domain"].name
-            )
+            try:
+                dimail.create_user(user.sub)
+                dimail.create_allow(user.sub, domain.name)
+            except HTTPError:
+                logger.exception("[DIMAIL] access creation failed %s")
+                domain.status = enums.MailDomainStatusChoices.FAILED
+                domain.save()
 
         return super().create(validated_data)
 
