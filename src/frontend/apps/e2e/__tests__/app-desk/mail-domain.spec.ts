@@ -10,7 +10,7 @@ const interceptCommonApiCalls = async (
   arrayMailDomains: MailDomain[],
 ) => {
   const singleMailDomain = arrayMailDomains[0];
-  await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
+  await page.route('**/api/v1.0/mail-domains/\?*', async (route) => {
     await route.fulfill({
       json: {
         count: arrayMailDomains.length,
