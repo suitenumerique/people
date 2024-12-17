@@ -937,3 +937,4 @@ def test_api_users_delete_self():
 
     assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
     assert models.User.objects.count() == 1
+ 
