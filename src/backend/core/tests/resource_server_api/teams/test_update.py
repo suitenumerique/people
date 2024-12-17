@@ -244,3 +244,95 @@ def test_api_teams_update_administrator_or_owner_of_another(
     team.refresh_from_db()
     team_values = serializers.TeamSerializer(instance=team).data
     assert team_values == old_team_values
+
+
+@pytest.mark.parametrize("role", ["administrator", "member", "owner"])
+def test_api_teams_update_parent_team(client, force_login_via_resource_server, role):
+    """
+    Belonging to a team should NOT grant authorization to update
+    another parent team.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    root_team = factories.TeamFactory(
+        name="Root",
+        organization=organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First",
+        parent_id=root_team.pk,
+        organization=organization,
+        service_providers=[service_provider],
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=organization,
+    )
+    factories.TeamAccessFactory(user=user, team=second_team, role=role)
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.patch(
+            f"/resource-server/v1.0/teams/{first_team.pk}/",
+            {
+                "name": "New name",
+            },
+            content_type="application/json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_403_FORBIDDEN
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
+
+    first_team.refresh_from_db()
+    assert first_team.name == "First"
+
+
+@pytest.mark.parametrize("role", ["administrator", "member", "owner"])
+def test_api_teams_update_child_team(client, force_login_via_resource_server, role):
+    """
+    Belonging to a team should NOT grant authorization to update
+    another child team.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    root_team = factories.TeamFactory(
+        name="Root",
+        organization=organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First",
+        parent_id=root_team.pk,
+        organization=organization,
+        service_providers=[service_provider],
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=organization,
+    )
+    factories.TeamAccessFactory(user=user, team=first_team, role=role)
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.patch(
+            f"/resource-server/v1.0/teams/{second_team.pk}/",
+            {
+                "name": "New name",
+            },
+            content_type="application/json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No Team matches the given query."}
+
+    second_team.refresh_from_db()
+    assert second_team.name == "Second"

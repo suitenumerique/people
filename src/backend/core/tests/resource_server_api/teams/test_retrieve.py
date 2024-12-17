@@ -8,7 +8,7 @@ from rest_framework.status import HTTP_404_NOT_FOUND
 from rest_framework.test import APIClient
 
 from core import factories
-from core.factories import UserFactory
+from core.factories import TeamAccessFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -97,3 +97,129 @@ def test_api_teams_retrieve_authenticated_other_service_provider(
         )
 
     assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_api_teams_retrieve_authenticated_related_parent_same_organization(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be allowed to retrieve a parent team
+    of a team to which they are related, only if they belong to the
+    same organization.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    root_team = factories.TeamFactory(
+        name="Root",
+        organization=organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First",
+        parent_id=root_team.pk,
+        organization=organization,
+        service_providers=[service_provider],
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=organization,
+    )
+    TeamAccessFactory(user=user, team=second_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(
+            f"/resource-server/v1.0/teams/{first_team.pk}/",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "id": str(first_team.pk),
+        "name": first_team.name,
+        "created_at": first_team.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": first_team.updated_at.isoformat().replace("+00:00", "Z"),
+    }
+
+
+def test_api_teams_retrieve_authenticated_related_parent_other_organization(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be allowed to retrieve a parent team
+    of a team to which they are related, only if they belong to the
+    same organization.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    other_organization = factories.OrganizationFactory(with_registration_id=True)
+    root_team = factories.TeamFactory(
+        name="Root",
+        organization=other_organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First",
+        parent_id=root_team.pk,
+        organization=other_organization,
+        service_providers=[service_provider],
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=other_organization,
+    )
+    TeamAccessFactory(user=user, team=second_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(
+            f"/resource-server/v1.0/teams/{first_team.pk}/",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No Team matches the given query."}
+
+
+def test_api_teams_retrieve_authenticated_related_child_same_organization(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should NOT be allowed to retrieve a child team
+    of a team to which they are related, even if they belong to the
+    same organization.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    root_team = factories.TeamFactory(
+        name="Root",
+        organization=organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First",
+        parent_id=root_team.pk,
+        organization=organization,
+        service_providers=[service_provider],
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=organization,
+    )
+    TeamAccessFactory(user=user, team=first_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(
+            f"/resource-server/v1.0/teams/{second_team.pk}/",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No Team matches the given query."}

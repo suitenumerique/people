@@ -1,6 +1,10 @@
 """Resource server API endpoints"""
 
-from django.db.models import OuterRef, Prefetch, Subquery
+import operator
+from functools import reduce
+
+from django.db.models import OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models.functions import Coalesce
 
 from rest_framework import (
     filters,
@@ -56,6 +60,14 @@ class TeamViewSet(  # pylint: disable=too-many-ancestors
 
     def get_queryset(self):
         """Custom queryset to get user related teams."""
+        teams_queryset = models.Team.objects.filter(
+            accesses__user=self.request.user,
+        )
+        depth_path = teams_queryset.values("depth", "path")
+
+        if not depth_path:
+            return models.Team.objects.none()
+
         user_role_query = models.TeamAccess.objects.filter(
             user=self.request.user, team=OuterRef("pk")
         ).values("role")[:1]
@@ -74,10 +86,33 @@ class TeamViewSet(  # pylint: disable=too-many-ancestors
                 service_provider_prefetch,
             )
             .filter(
-                accesses__user=self.request.user,
+                reduce(
+                    operator.or_,
+                    (
+                        Q(
+                            # The team the user has access to
+                            depth=d["depth"],
+                            path=d["path"],
+                        )
+                        | Q(
+                            # The parent team the user has access to
+                            depth__lt=d["depth"],
+                            path__startswith=d["path"][: models.Team.steplen],
+                            organization_id=self.request.user.organization_id,
+                        )
+                        for d in depth_path
+                    ),
+                ),
                 service_providers__audience_id=service_provider_audience,
             )
-            .annotate(user_role=Subquery(user_role_query))
+            # Abilities are computed based on logged-in user's role for the team
+            # and if the user does not have access, it's ok to consider them as a member
+            # because it's a parent team.
+            .annotate(
+                user_role=Coalesce(
+                    Subquery(user_role_query), Value(models.RoleChoices.MEMBER.value)
+                )
+            )
         )
 
     def perform_create(self, serializer):

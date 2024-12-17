@@ -64,7 +64,8 @@ def test_api_teams_list_authenticated(  # pylint: disable=too-many-locals
 
     # Authenticate using the resource server, ie via the Authorization header
     with force_login_via_resource_server(client, user, service_provider.audience_id):
-        with django_assert_num_queries(4):  # Count, Team, ServiceProvider, TeamAccess
+        with django_assert_num_queries(5):
+            # queries: Team path, Count, Team, ServiceProvider, TeamAccess
             response = client.get(
                 "/resource-server/v1.0/teams/?ordering=created_at",
                 format="json",
@@ -182,3 +183,81 @@ def test_api_teams_order_param(client, force_login_via_resource_server):
     assert (
         response_team_ids == team_ids
     ), "created_at values are not sorted from oldest to newest"
+
+
+def test_api_teams_list_with_parent_teams(client, force_login_via_resource_server):
+    """
+    Authenticated users should be able to list teams including parent teams.
+    Parent teams should not be listed if they don't have the service provider.
+    """
+    user = factories.UserFactory()
+    service_provider = factories.ServiceProviderFactory()
+
+    root_team = factories.TeamFactory(name="Root", service_providers=[service_provider])
+    first_team = factories.TeamFactory(name="First", parent_id=root_team.pk)
+    second_team = factories.TeamFactory(
+        name="Second", parent_id=first_team.pk, service_providers=[service_provider]
+    )
+
+    factories.TeamAccessFactory(user=user, team=second_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(
+            "/resource-server/v1.0/teams/",
+            format="json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_200_OK
+    response_data = response.json()
+    assert response_data["count"] == 2
+
+    team_ids = [team["id"] for team in response_data["results"]]
+    assert len(team_ids) == 2
+    assert set(team_ids) == {str(root_team.id), str(second_team.id)}
+
+
+def test_api_teams_list_with_parent_teams_other_organization(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be able to list teams including parent teams.
+    Parent teams should not be listed if they don't have the service provider
+    or if the user does not belong to the organization.
+    """
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
+    service_provider = factories.ServiceProviderFactory()
+
+    other_organization = factories.OrganizationFactory(with_registration_id=True)
+    root_team = factories.TeamFactory(
+        name="Root",
+        service_providers=[service_provider],
+        organization=other_organization,
+    )
+    first_team = factories.TeamFactory(
+        name="First", parent_id=root_team.pk, organization=other_organization
+    )
+    second_team = factories.TeamFactory(
+        name="Second",
+        parent_id=first_team.pk,
+        service_providers=[service_provider],
+        organization=other_organization,
+    )
+
+    factories.TeamAccessFactory(user=user, team=second_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(
+            "/resource-server/v1.0/teams/",
+            format="json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_200_OK
+    response_data = response.json()
+    assert response_data["count"] == 1
+
+    team_ids = [team["id"] for team in response_data["results"]]
+    assert len(team_ids) == 1
+    assert set(team_ids) == {str(second_team.id)}
