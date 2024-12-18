@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🧑‍💻(user) fix the User.language infinite migration #611
+
 ## [1.9.1] - 2024-12-18
 
 ## [1.9.0] - 2024-12-17

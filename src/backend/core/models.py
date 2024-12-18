@@ -21,7 +21,6 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
 
@@ -441,7 +440,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     name = models.CharField(_("name"), max_length=100, null=True, blank=True)
     language = models.CharField(
         max_length=10,
-        choices=lazy(lambda: settings.LANGUAGES, tuple)(),
+        choices=settings.LANGUAGES,
         default=settings.LANGUAGE_CODE,
         verbose_name=_("language"),
         help_text=_("The language in which the user wants to see the interface."),

@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('sub', models.CharField(help_text='Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only.', max_length=255, unique=True, validators=[django.core.validators.RegexValidator(message='Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/_ characters.', regex='^[\\w.@+-]+\\Z')], verbose_name='sub')),
                 ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='email address')),
                 ('name', models.CharField(blank=True, max_length=100, null=True, verbose_name='name')),
-                ('language', models.CharField(choices="(('en-us', 'English'), ('fr-fr', 'French'))", default='en-us', help_text='The language in which the user wants to see the interface.', max_length=10, verbose_name='language')),
+                ('language', models.CharField(choices=settings.LANGUAGES, default='en-us', help_text='The language in which the user wants to see the interface.', max_length=10, verbose_name='language')),
                 ('timezone', timezone_field.fields.TimeZoneField(choices_display='WITH_GMT_OFFSET', default='UTC', help_text='The timezone in which the user wants to see times.', use_pytz=False)),
                 ('is_device', models.BooleanField(default=False, help_text='Whether the user is a device or a real user.', verbose_name='device')),
                 ('is_staff', models.BooleanField(default=False, help_text='Whether the user can log into this admin site.', verbose_name='staff status')),
