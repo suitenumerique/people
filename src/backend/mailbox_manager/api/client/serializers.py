@@ -48,7 +48,6 @@ class MailboxSerializer(serializers.ModelSerializer):
             mailbox_data = json.loads(
                 response.content.decode("utf-8").replace("'", '"')
             )
-            del mailbox_data["uuid"]
 
             mailbox_status = enums.MailDomainStatusChoices.ENABLED
 
