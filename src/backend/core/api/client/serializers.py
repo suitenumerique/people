@@ -88,8 +88,8 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Organization
-        fields = ["id", "name"]
-        read_only_fields = ["id", "name"]
+        fields = ["id", "name", "registration_id_list"]
+        read_only_fields = ["id", "name", "registration_id_list"]
 
 
 class UserSerializer(DynamicFieldsModelSerializer):

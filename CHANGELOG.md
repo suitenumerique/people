@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 🧑‍💻(oidc) add ability to pull registration ID (e.g. SIRET) from OIDC #577
+
 ### Fixed
 
 - 🧑‍💻(user) fix the User.language infinite migration #611

@@ -4,6 +4,7 @@ Test users API endpoints in the People core app: focus on "list" action
 
 from unittest import mock
 
+import jq
 import pytest
 from rest_framework.status import (
     HTTP_200_OK,
@@ -77,7 +78,13 @@ def test_api_users_list_authenticated_response_content(
         response = client.get("/api/v1.0/users/")
 
     assert response.status_code == HTTP_200_OK
-    assert response.json() == {
+    json = response.json()
+    edited_json = (
+        jq.compile(".results[] |= (.organization |= del(.registration_id_list))")
+        .input(json)
+        .first()
+    )
+    assert edited_json == {
         "count": 2,
         "next": None,
         "previous": None,
@@ -155,7 +162,13 @@ def test_api_users_authenticated_list_by_email():
     response = client.get("/api/v1.0/users/?q=ool")
 
     assert response.status_code == HTTP_200_OK
-    assert response.json()["results"] == [
+    json = response.json()
+    edited_json = (
+        jq.compile(".results[] |= (.organization |= del(.registration_id_list))")
+        .input(json)
+        .first()
+    )
+    assert edited_json["results"] == [
         {
             "id": str(frank.id),
             "email": frank.email,
@@ -228,7 +241,13 @@ def test_api_users_authenticated_list_by_name():
     response = client.get("/api/v1.0/users/?q=oole")
 
     assert response.status_code == HTTP_200_OK
-    assert response.json()["results"] == [
+    json = response.json()
+    edited_json = (
+        jq.compile(".results[] |= (.organization |= del(.registration_id_list))")
+        .input(json)
+        .first()
+    )
+    assert edited_json["results"] == [
         {
             "id": str(frank.id),
             "email": frank.email,

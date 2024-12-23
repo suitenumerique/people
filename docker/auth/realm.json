@@ -59,7 +59,7 @@
       "realmRoles": ["user"]
     },
     {
-      "username": "marie",
+      "username": "e2e.marie",
       "email": "marie.varzy@gmail.com",
       "firstName": "Marie",
       "lastName": "Devarzy",
@@ -70,7 +70,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "people"
+          "value": "password-e2e.marie"
         }
       ],
       "realmRoles": ["user"]

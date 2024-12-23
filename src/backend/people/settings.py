@@ -639,6 +639,8 @@ class Development(Base):
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
 
+    OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = "siret"
+
     def __init__(self):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name

@@ -26,6 +26,7 @@ backend:
     OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
     OIDC_OP_USER_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/userinfo
     OIDC_OP_LOGOUT_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/session/end
+    OIDC_ORGANIZATION_REGISTRATION_ID_FIELD: "siret"
     OIDC_RP_CLIENT_ID:
       secretKeyRef:
         name: backend

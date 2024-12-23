@@ -61,6 +61,7 @@ def test_api_users_retrieve_me_authenticated():
         "organization": {
             "id": str(user.organization.pk),
             "name": user.organization.name,
+            "registration_id_list": user.organization.registration_id_list,
         },
     }
 
