@@ -269,6 +269,55 @@ def test_api_mailboxes__cannot_create_on_disabled_domain(role):
     ]
 
 
+def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
+    """Duplication case fails on our side at creation step thanks to unique_together
+    on Mailbox model and no dimail call should be made."""
+    mail_domain = factories.MailDomainEnabledFactory()
+    mailbox = factories.MailboxFactory(domain=mail_domain)
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN, domain=mail_domain
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    # now we try to make the same mailbox
+    mailbox_data = serializers.MailboxSerializer(mailbox).data
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+        # try to create duplicate mailbox but django validation does not agree
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        # no new mailbox should be created
+        assert models.Mailbox.objects.count() == 1
+        # no dimail call should be made
+        assert len(rsps.calls) == 0
+
+
 @pytest.mark.parametrize(
     "domain_status",
     [
@@ -524,7 +573,9 @@ def test_api_mailboxes__dimail_token_permission_denied():
         assert response.json() == {
             "detail": "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
         }
-        assert not models.Mailbox.objects.exists()
+        # mailbox was created in our side only and in pending status
+        mailbox = models.Mailbox.objects.get()
+        assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
 def test_api_mailboxes__user_unrelated_to_domain():
@@ -569,7 +620,9 @@ def test_api_mailboxes__user_unrelated_to_domain():
         assert response.json() == {
             "detail": "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
         }
-        assert not models.Mailbox.objects.exists()
+        # mailbox was created in our side only and in pending status
+        mailbox = models.Mailbox.objects.get()
+        assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
 def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
@@ -612,7 +665,10 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
             assert response.json() == {
                 "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
             }
-        assert not models.Mailbox.objects.exists()
+
+        # mailbox was created in our side only and in pending status
+        mailbox = models.Mailbox.objects.get()
+        assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
         # Check error logger was called
         assert caplog.records[0].levelname == "ERROR"

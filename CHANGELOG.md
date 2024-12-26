@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(backend) fix dimail call despite mailbox creation failure on our side
 - 🧑‍💻(user) fix the User.language infinite migration #611
 
 ## [1.9.1] - 2024-12-18
