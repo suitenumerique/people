@@ -103,7 +103,7 @@ def prepare_release(version, kind):
     >> git pull
     >> git tag v{version} 
     >> git push origin v{version} 
-    --> Please check and wait for the docker image v{version} to be published here: https://hub.docker.com/r/lasuite/people-backend/tags
+    --> Please check and wait for the docker image v{version} to be published here: https://hub.docker.com/r/lasuite/people-backend/tags and https://hub.docker.com/r/lasuite/people-frontend/tags
     >> git tag -d preprod
     >> git tag preprod
     >> git push -f origin preprod
