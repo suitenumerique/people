@@ -101,21 +101,31 @@ def test_commands_setup_dimail_db(settings):
     call_command("setup_dimail_db", "--populate-from-people")
 
     # check dimail API received the expected requests
-    assert len(responses.calls) == 5 + 3
-    assert responses.calls[5].request.url == f"{DIMAIL_URL}/domains/"
-    assert responses.calls[5].request.body == (
-        b'{"name": "some.domain.com", "context_name": "context", '
-        b'"features": ["webmail", "mailbox", "alias"]}'
-    )
-
-    assert responses.calls[6].request.url == f"{DIMAIL_URL}/users/"
-    assert responses.calls[6].request.body == (
-        b'{"name": "sub.toto.123", "password": "no", "is_admin": false, '
-        b'"perms": []}'
-    )
-
-    assert responses.calls[7].request.url == f"{DIMAIL_URL}/allows/"
     assert (
-        responses.calls[7].request.body
-        == b'{"domain": "some.domain.com", "user": "sub.toto.123"}'
-    )
+        len(responses.calls) == 5 + 3 + 3
+    )  # calls for some.domain.com and test.domain.com
+
+    dimail_calls = []
+    for call in responses.calls[5:]:
+        dimail_calls.append((call.request.url, call.request.body))
+
+    assert (
+        f"{DIMAIL_URL}/domains/",
+        (
+            b'{"name": "some.domain.com", "context_name": "context", '
+            b'"features": ["webmail", "mailbox", "alias"]}'
+        ),
+    ) in dimail_calls
+
+    assert (
+        f"{DIMAIL_URL}/users/",
+        (
+            b'{"name": "sub.toto.123", "password": "no", "is_admin": false, '
+            b'"perms": []}'
+        ),
+    ) in dimail_calls
+
+    assert (
+        f"{DIMAIL_URL}/allows/",
+        b'{"domain": "some.domain.com", "user": "sub.toto.123"}',
+    ) in dimail_calls

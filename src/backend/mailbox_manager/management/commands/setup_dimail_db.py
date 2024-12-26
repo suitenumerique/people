@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 import requests
 from rest_framework import status
 
-from mailbox_manager.enums import MailDomainStatusChoices
+from mailbox_manager import enums
 from mailbox_manager.models import MailDomain, MailDomainAccess
 
 User = get_user_model()
@@ -65,10 +65,9 @@ class Command(BaseCommand):
 
         # we create a domain and add John Doe to it
         domain_name = "test.domain.com"
-        if not MailDomain.objects.filter(name=domain_name).exists():
-            MailDomain.objects.create(
-                name=domain_name, status=MailDomainStatusChoices.ENABLED
-            )
+        domain = MailDomain.objects.get_or_create(
+            name=domain_name, defaults={"status": enums.MailDomainStatusChoices.ENABLED}
+        )[0]
         self.create_domain(domain_name)
 
         # we create a dimail user for keycloak+regie user John Doe
@@ -79,8 +78,14 @@ class Command(BaseCommand):
         except User.DoesNotExist:
             self.stdout.write("people@people.world user not found", ending="\n")
         else:
+            # create accesses for john doe
             self.create_user(name=people_base_user.sub)
             self.create_allows(people_base_user.sub, domain_name)
+            MailDomainAccess.objects.get_or_create(
+                user=people_base_user,
+                domain=domain,
+                defaults={"role": enums.MailDomainRoleChoices.OWNER},
+            )
 
         if options["populate_from_people"]:
             self._populate_dimail_from_people()
@@ -189,11 +194,11 @@ class Command(BaseCommand):
         # create missing domains
         for domain in domain_to_create:
             # enforce domain status
-            if domain.status != MailDomainStatusChoices.ENABLED:
+            if domain.status != enums.MailDomainStatusChoices.ENABLED:
                 self.stdout.write(
                     f"  - {domain.name} status {domain.status} -> ENABLED"
                 )
-                domain.status = MailDomainStatusChoices.ENABLED
+                domain.status = enums.MailDomainStatusChoices.ENABLED
                 domain.save()
             self.create_domain(domain.name)
 
