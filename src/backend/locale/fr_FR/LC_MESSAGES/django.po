@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-18 23:02+0000\n"
+"POT-Creation-Date: 2025-01-09 11:42+0000\n"
 "PO-Revision-Date: 2024-01-03 23:15\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
@@ -17,35 +17,35 @@ msgstr ""
 "X-Crowdin-File: backend.pot\n"
 "X-Crowdin-File-ID: 2\n"
 
-#: core/admin.py:55
+#: core/admin.py:56
 msgid "Personal info"
 msgstr ""
 
-#: core/admin.py:57
+#: core/admin.py:58
 msgid "Permissions"
 msgstr ""
 
-#: core/admin.py:69
+#: core/admin.py:70
 msgid "Important dates"
 msgstr ""
 
-#: core/admin.py:108
+#: core/admin.py:109
 msgid "User"
 msgstr ""
 
-#: core/authentication/backends.py:89
+#: core/authentication/backends.py:94
 msgid "User info contained no recognizable user identification"
 msgstr ""
 
-#: core/authentication/backends.py:111
+#: core/authentication/backends.py:116
 msgid "User account is disabled"
 msgstr ""
 
-#: core/authentication/backends.py:157
+#: core/authentication/backends.py:162
 msgid "Claims contained no recognizable user identification"
 msgstr ""
 
-#: core/authentication/backends.py:176
+#: core/authentication/backends.py:181
 msgid "Claims contained no recognizable organization identification"
 msgstr ""
 
@@ -97,181 +97,198 @@ msgstr ""
 msgid "date and time at which a record was last updated"
 msgstr ""
 
-#: core/models.py:116
+#: core/models.py:124
 msgid "full name"
 msgstr ""
 
-#: core/models.py:117
+#: core/models.py:125
 msgid "short name"
 msgstr ""
 
-#: core/models.py:122
+#: core/models.py:128
+msgid "notes"
+msgstr ""
+
+#: core/models.py:130
 msgid "contact information"
 msgstr ""
 
-#: core/models.py:123
+#: core/models.py:131
 msgid "A JSON object containing the contact information"
 msgstr ""
 
-#: core/models.py:137
+#: core/models.py:145
 msgid "contact"
 msgstr ""
 
-#: core/models.py:138
+#: core/models.py:146
 msgid "contacts"
 msgstr ""
 
-#: core/models.py:262 core/models.py:331 mailbox_manager/models.py:24
+#: core/models.py:220 core/models.py:318 core/models.py:440
+#: mailbox_manager/models.py:24
 msgid "name"
 msgstr ""
 
-#: core/models.py:270
+#: core/models.py:222
+msgid "audience id"
+msgstr ""
+
+#: core/models.py:227
+msgid "service provider"
+msgstr ""
+
+#: core/models.py:228
+msgid "service providers"
+msgstr ""
+
+#: core/models.py:326
 msgid "registration ID list"
 msgstr ""
 
-#: core/models.py:279
+#: core/models.py:333
 msgid "domain list"
 msgstr ""
 
-#: core/models.py:289
+#: core/models.py:349
 msgid "organization"
 msgstr ""
 
-#: core/models.py:290
+#: core/models.py:350
 msgid "organizations"
 msgstr ""
 
-#: core/models.py:297
+#: core/models.py:357
 msgid "An organization must have at least a registration ID or a domain."
 msgstr ""
 
-#: core/models.py:316
+#: core/models.py:425
 msgid ""
 "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/"
 "_ characters."
 msgstr ""
 
-#: core/models.py:322
+#: core/models.py:431
 msgid "sub"
 msgstr ""
 
-#: core/models.py:324
+#: core/models.py:433
 msgid ""
 "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ "
 "characters only."
 msgstr ""
 
-#: core/models.py:330 core/models.py:737
+#: core/models.py:439 core/models.py:844
 msgid "email address"
 msgstr ""
 
-#: core/models.py:343
+#: core/models.py:445
 msgid "language"
 msgstr ""
 
-#: core/models.py:344
+#: core/models.py:446
 msgid "The language in which the user wants to see the interface."
 msgstr ""
 
-#: core/models.py:350
+#: core/models.py:452
 msgid "The timezone in which the user wants to see times."
 msgstr ""
 
-#: core/models.py:353
+#: core/models.py:455
 msgid "device"
 msgstr ""
 
-#: core/models.py:355
+#: core/models.py:457
 msgid "Whether the user is a device or a real user."
 msgstr ""
 
-#: core/models.py:358
+#: core/models.py:460
 msgid "staff status"
 msgstr ""
 
-#: core/models.py:360
+#: core/models.py:462
 msgid "Whether the user can log into this admin site."
 msgstr ""
 
-#: core/models.py:363
+#: core/models.py:465
 msgid "active"
 msgstr ""
 
-#: core/models.py:366
+#: core/models.py:468
 msgid ""
 "Whether this user should be treated as active. Unselect this instead of "
 "deleting accounts."
 msgstr ""
 
-#: core/models.py:385
+#: core/models.py:487
 msgid "user"
 msgstr ""
 
-#: core/models.py:386
+#: core/models.py:488
 msgid "users"
 msgstr ""
 
-#: core/models.py:525
+#: core/models.py:622
 msgid "Organization/user relation"
 msgstr ""
 
-#: core/models.py:526
+#: core/models.py:623
 msgid "Organization/user relations"
 msgstr ""
 
-#: core/models.py:531
+#: core/models.py:628
 msgid "This user is already in this organization."
 msgstr ""
 
-#: core/models.py:563
+#: core/models.py:670
 msgid "Team"
 msgstr ""
 
-#: core/models.py:564
+#: core/models.py:671
 msgid "Teams"
 msgstr ""
 
-#: core/models.py:615
+#: core/models.py:722
 msgid "Team/user relation"
 msgstr ""
 
-#: core/models.py:616
+#: core/models.py:723
 msgid "Team/user relations"
 msgstr ""
 
-#: core/models.py:621
+#: core/models.py:728
 msgid "This user is already in this team."
 msgstr ""
 
-#: core/models.py:710
+#: core/models.py:817
 msgid "url"
 msgstr ""
 
-#: core/models.py:711
+#: core/models.py:818
 msgid "secret"
 msgstr ""
 
-#: core/models.py:720
+#: core/models.py:827
 msgid "Team webhook"
 msgstr ""
 
-#: core/models.py:721
+#: core/models.py:828
 msgid "Team webhooks"
 msgstr ""
 
-#: core/models.py:754
+#: core/models.py:861
 msgid "Team invitation"
 msgstr ""
 
-#: core/models.py:755
+#: core/models.py:862
 msgid "Team invitations"
 msgstr ""
 
-#: core/models.py:780
+#: core/models.py:887
 msgid "This email is already associated to a registered user."
 msgstr ""
 
-#: core/models.py:822 core/models.py:828
+#: core/models.py:929 core/models.py:935
 msgid "Invitation to join Desk!"
 msgstr ""
 
@@ -456,19 +473,50 @@ msgstr "L'équipe de La Suite"
 msgid "This mail has been sent to %(email)s by %(name)s [%(href)s]"
 msgstr ""
 
-#: mailbox_manager/admin.py:12
+#: mailbox_manager/admin.py:13
 msgid "Synchronise from dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:23
+#: mailbox_manager/admin.py:24
 #, python-brace-format
 msgid "Synchronisation failed for {domain.name} with message: [{err}]"
 msgstr ""
 
-#: mailbox_manager/admin.py:29
+#: mailbox_manager/admin.py:30
 #, python-brace-format
 msgid "Synchronisation succeed for {domain.name}. "
 msgstr ""
+
+#: mailbox_manager/admin.py:36
+msgid "Check and update status from dimail"
+msgstr "Vérification et mise à jour de l'état à partir de dimail"
+
+#: mailbox_manager/admin.py:52
+#, python-brace-format
+msgid "- <b>{domain.name}</b> with message: '{err}'"
+msgstr "- <b>{domain.name}</b> avec le message: '{err}'"
+
+#: mailbox_manager/admin.py:63
+msgid "Check domains done with success."
+msgstr "Vérification des domains réalisée avec success."
+
+#: mailbox_manager/admin.py:64
+msgid "Domains updated: {', '.join(domains_updated)}"
+msgstr "Domaines mis à jour : {', '.join(domains_updated)}"
+
+#: mailbox_manager/admin.py:66
+msgid "No domain updated."
+msgstr "Aucun domain n'a été mis à jour."
+
+#: mailbox_manager/admin.py:70
+msgid "Check domain failed for:"
+msgstr "La vérification de domain a échoué pour :"
+
+#: mailbox_manager/admin.py:76
+msgid "Domains disabled are excluded from check: {', '.join(excluded_domains)}"
+msgstr ""
+"Les domains désactivés sont exclus de la vérification : {', '."
+"join(excluded_domains)}"
 
 #: mailbox_manager/enums.py:13
 msgid "Viewer"
@@ -520,16 +568,17 @@ msgstr ""
 
 #: mailbox_manager/models.py:224
 msgid "You can't create or update a mailbox for a disabled domain."
-msgstr "Vous ne pouvez pas créer ou modifier une boîte mail pour un domain désactivé."
+msgstr ""
+"Vous ne pouvez pas créer ou modifier une boîte mail pour un domain désactivé."
 
-#: mailbox_manager/utils/dimail.py:183
+#: mailbox_manager/utils/dimail.py:262
 msgid "Your new mailbox information"
 msgstr "Informations concernant votre nouvelle boîte mail"
 
-#: people/settings.py:135
+#: people/settings.py:146
 msgid "English"
 msgstr ""
 
-#: people/settings.py:136
+#: people/settings.py:147
 msgid "French"
 msgstr ""
