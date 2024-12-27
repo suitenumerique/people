@@ -17,7 +17,7 @@ import requests
 from rest_framework import status
 from urllib3.util import Retry
 
-from mailbox_manager import models
+from mailbox_manager import enums, models
 
 logger = getLogger(__name__)
 
@@ -249,7 +249,8 @@ class DimailAPIClient:
             "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
         )
         raise requests.exceptions.HTTPError(
-            f"Unexpected response from dimail: {response.status_code} {error_content}"
+            f"Unexpected response from dimail: {response.status_code} "
+            f"{error_content.get('detail') or error_content}"
         )
 
     def notify_mailbox_creation(self, recipient, mailbox_data):
@@ -392,5 +393,30 @@ class DimailAPIClient:
                 str(mailbox.domain),
                 user_sub,
             )
+            return response
+        return self.raise_exception_for_unexpected_response(response)
+
+    def fetch_domain_status(self, domain):
+        """Send a request to check domain and update status of our domain."""
+        response = session.get(
+            f"{self.API_URL}/domains/{domain.name}/check/",
+            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+            verify=True,
+            timeout=10,
+        )
+        if response.status_code == status.HTTP_200_OK:
+            dimail_status = response.json()["state"]
+            if (
+                domain.status != enums.MailDomainStatusChoices.ENABLED
+                and dimail_status == "ok"
+            ):
+                domain.status = enums.MailDomainStatusChoices.ENABLED
+                domain.save()
+            elif (
+                domain.status != enums.MailDomainStatusChoices.FAILED
+                and dimail_status == "broken"
+            ):
+                domain.status = enums.MailDomainStatusChoices.FAILED
+                domain.save()
             return response
         return self.raise_exception_for_unexpected_response(response)

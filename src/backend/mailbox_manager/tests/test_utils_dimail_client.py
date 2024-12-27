@@ -2,6 +2,7 @@
 Unit tests for dimail client
 """
 
+import json
 import re
 from email.errors import HeaderParseError, NonASCIILocalPartDefect
 from logging import Logger
@@ -11,8 +12,10 @@ import pytest
 import responses
 from rest_framework import status
 
-from mailbox_manager import factories, models
+from mailbox_manager import enums, factories, models
 from mailbox_manager.utils.dimail import DimailAPIClient
+
+from .fixtures.dimail import CHECK_DOMAIN_BROKEN
 
 pytestmark = pytest.mark.django_db
 
@@ -154,3 +157,22 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
         mailbox = models.Mailbox.objects.get()
         assert mailbox.local_part == "oxadmin"
         assert imported_mailboxes == [mailbox_valid["email"]]
+
+
+def test_dimail__fetch_domain_status_from_dimail():
+    """Request to dimail health status of a domain"""
+    domain = factories.MailDomainEnabledFactory()
+    with responses.RequestsMock() as rsps:
+        body_content_domain = CHECK_DOMAIN_BROKEN.copy()
+        body_content_domain["name"] = domain.name
+        rsps.add(
+            rsps.GET,
+            re.compile(rf".*/domains/{domain.name}/check/"),
+            body=json.dumps(body_content_domain),
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        dimail_client = DimailAPIClient()
+        response = dimail_client.fetch_domain_status(domain)
+        assert response.status_code == status.HTTP_200_OK
+        assert domain.status == enums.MailDomainStatusChoices.FAILED

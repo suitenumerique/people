@@ -27,6 +27,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(dimail) check domain health
 - ✨(frontend) disable mailbox and allow to create pending mailbox
 - ✨(organizations) add siret to name conversion #584
 - 💄(frontend) redirect home according to abilities #588
