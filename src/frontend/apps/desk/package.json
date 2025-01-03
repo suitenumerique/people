@@ -22,7 +22,7 @@
     "i18next": "24.0.2",
     "lodash": "4.17.21",
     "luxon": "3.5.0",
-    "next": "15.0.3",
+    "next": "15.1.2",
     "react": "*",
     "react-dom": "*",
     "react-hook-form": "7.53.2",
