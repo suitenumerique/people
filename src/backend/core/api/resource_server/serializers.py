@@ -12,13 +12,19 @@ class TeamSerializer(serializers.ModelSerializer):
         model = models.Team
         fields = [
             "id",
-            "name",
             "created_at",
+            "depth",
+            "name",
+            "numchild",
+            "path",
             "updated_at",
         ]
         read_only_fields = [
             "id",
             "created_at",
+            "depth",
+            "numchild",
+            "path",
             "updated_at",
         ]
 

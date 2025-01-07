@@ -59,7 +59,10 @@ def test_api_teams_create_authenticated_new_service_provider(
     assert response.json() == {
         "created_at": team.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "id": str(team.pk),
+        "depth": team.depth,
         "name": "my team",
+        "numchild": team.numchild,
+        "path": team.path,
         "updated_at": team.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
     }
 

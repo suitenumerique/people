@@ -67,12 +67,15 @@ def test_api_teams_retrieve_authenticated_related():
         ]
     )
     assert response.json() == {
-        "id": str(team.id),
-        "name": team.name,
         "abilities": team.get_abilities(user),
         "created_at": team.created_at.isoformat().replace("+00:00", "Z"),
-        "updated_at": team.updated_at.isoformat().replace("+00:00", "Z"),
+        "depth": 1,
+        "id": str(team.id),
+        "name": team.name,
+        "numchild": 0,
+        "path": team.path,
         "service_providers": [],
+        "updated_at": team.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -104,13 +107,16 @@ def test_api_teams_retrieve_authenticated_related_parent(client, role):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "id": str(first_team.pk),
-        "name": first_team.name,
         "abilities": abilities,
         "accesses": [],
         "created_at": first_team.created_at.isoformat().replace("+00:00", "Z"),
-        "updated_at": first_team.updated_at.isoformat().replace("+00:00", "Z"),
+        "depth": 2,
+        "id": str(first_team.pk),
+        "name": first_team.name,
+        "numchild": 1,
+        "path": first_team.path,
         "service_providers": [],
+        "updated_at": first_team.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 

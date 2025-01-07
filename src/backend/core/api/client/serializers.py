@@ -259,18 +259,24 @@ class TeamSerializer(serializers.ModelSerializer):
         model = models.Team
         fields = [
             "id",
-            "name",
-            "accesses",
             "abilities",
+            "accesses",
             "created_at",
-            "updated_at",
+            "depth",
+            "name",
+            "numchild",
+            "path",
             "service_providers",
+            "updated_at",
         ]
         read_only_fields = [
             "id",
-            "accesses",
             "abilities",
+            "accesses",
             "created_at",
+            "depth",
+            "numchild",
+            "path",
             "updated_at",
         ]
 
