@@ -72,6 +72,8 @@ ingressAdmin:
 ## @section backend
 
 backend:
+  ## @param backend.dpAnnotations Annotations to add to the backend Deployment
+  dpAnnotations: {}
 
   ## @param backend.command Override the backend container command
   command: []
@@ -117,8 +119,8 @@ backend:
     targetPort: 8000
     annotations: {}
 
- ## @param backend.migrate.command backend migrate command
- ## @param backend.migrate.restartPolicy backend migrate job restart policy
+  ## @param backend.migrate.command backend migrate command
+  ## @param backend.migrate.restartPolicy backend migrate job restart policy
   migrate:
     command:
       - "python"
@@ -171,9 +173,11 @@ backend:
   ## @param backend.extraVolumes Additional volumes to mount on the backend.
   extraVolumes: []
 
+  ## @param backend.createsuperuser.command The command to create the django super user
+  createsuperuser:
+    command: python manage.py createsuperuser --username admin@example.com --password admin
 
 ## @section frontend
-
 frontend:
   ## @param frontend.image.repository Repository to use to pull desk's frontend container image
   ## @param frontend.image.tag desk's frontend container tag
@@ -182,6 +186,9 @@ frontend:
     repository: lasuite/people-frontend
     pullPolicy: IfNotPresent
     tag: "latest"
+
+  ## @param frontend.dpAnnotations Annotations to add to the frontend Deployment
+  dpAnnotations: {}
 
   ## @param frontend.command Override the frontend container command
   command: []

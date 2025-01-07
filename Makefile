@@ -361,3 +361,37 @@ tilt-up: ## start tilt - k8s local development
 release:  ## helper for release and deployment
 	python scripts/release.py
 .PHONY: release
+
+install-secret: ## install the kubernetes secrets from Vaultwarden
+	if kubectl -n desk get secrets bitwarden-cli-desk; then \
+		echo "Secret already present"; \
+	else \
+		echo "Please provide the following information:"; \
+		read -p "Enter your vaultwarden email login: " LOGIN; \
+		read -p "Enter your vaultwarden password: " PASSWORD; \
+		read -p "Enter your vaultwarden server url: " URL; \
+		echo "\nCreate vaultwarden secret"; \
+		echo "apiVersion: v1" > /tmp/secret.yaml; \
+		echo "kind: Secret" >> /tmp/secret.yaml; \
+		echo "metadata:" >> /tmp/secret.yaml; \
+		echo "  name: bitwarden-cli-desk" >> /tmp/secret.yaml; \
+		echo "  namespace: desk" >> /tmp/secret.yaml; \
+		echo "type: Opaque" >> /tmp/secret.yaml; \
+		echo "stringData:" >> /tmp/secret.yaml; \
+		echo "  BW_HOST: $$URL" >> /tmp/secret.yaml; \
+		echo "  BW_PASSWORD: $$PASSWORD" >> /tmp/secret.yaml; \
+		echo "  BW_USERNAME: $$LOGIN" >> /tmp/secret.yaml; \
+		kubectl -n desk apply -f /tmp/secret.yaml;\
+		rm -f /tmp/secret.yaml; \
+	fi; \
+	if kubectl get ns external-secrets; then \
+		echo "External secret already deployed"; \
+	else \
+		helm repo add external-secrets https://charts.external-secrets.io; \
+		helm upgrade --install external-secrets \
+      external-secrets/external-secrets \
+       -n external-secrets \
+       --create-namespace \
+       --set installCRDs=true; \
+	fi
+.PHONY: build-k8s-cluster

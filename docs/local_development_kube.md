@@ -92,7 +92,11 @@ make start-kind
 ### Deploy the application
 
 ```bash
-tilt up -f ./bin/Tiltfile
+# Pro Connect environment
+tilt up -f ./bin/Tiltfile 
+
+# Standalone environment with keycloak
+DEV_ENV=dev-keycloak tilt up -f ./bin/Tiltfile
 ```
 
 **or** run the equivalent using the makefile

@@ -1,3 +1,19 @@
+secrets:
+  - name: oidcLogin
+    itemId: 753d95be-f0d0-44ff-b8b9-bdd905f2ae1d
+    field: username
+    podVariable: OIDC_RP_CLIENT_ID
+    clusterSecretStore: bitwarden-login-desk
+  - name: oidcPass
+    itemId: 753d95be-f0d0-44ff-b8b9-bdd905f2ae1d
+    field: password
+    podVariable: OIDC_RP_CLIENT_SECRET
+    clusterSecretStore: bitwarden-login-desk
+  - name: mail_provisioning_api_credentials
+    itemId: 2fcb5d3c-d037-4ec5-967d-3d15b261e2ab
+    field: password
+    podVariable: MAIL_PROVISIONING_API_CREDENTIALS
+    clusterSecretStore: bitwarden-login-desk
 image:
   repository: localhost:5001/people-backend
   pullPolicy: Always
@@ -9,15 +25,10 @@ backend:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Local
     DJANGO_ALLOWED_HOSTS: "*"
-    DJANGO_SECRET_KEY:
-      secretKeyRef:
-        name: backend
-        key: DJANGO_SECRET_KEY
+    DJANGO_SECRET_KEY: changeme
     DJANGO_SETTINGS_MODULE: people.settings
-    DJANGO_SUPERUSER_PASSWORD:
-      secretKeyRef:
-        name: backend
-        key: DJANGO_SUPERUSER_PASSWORD
+    DJANGO_SUPERUSER_EMAIL: admin@example.com
+    DJANGO_SUPERUSER_PASSWORD: admin
     DJANGO_EMAIL_HOST: "mailcatcher"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
@@ -71,7 +82,7 @@ backend:
     command:
       - "/bin/sh"
       - "-c"
-      - python manage.py createsuperuser --username admin@example.com --password admin
+      - python manage.py createsuperuser --username ${DJANGO_SUPERUSER_EMAIL} --password ${DJANGO_SUPERUSER_PASSWORD} || echo ok
     restartPolicy: Never
 
 frontend:
