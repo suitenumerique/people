@@ -100,7 +100,7 @@ def test_api_contacts_list_authenticated_by_full_name():
     Authenticated users should be able to search users with a case insensitive and
     partial query on the full name.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(name="Prudence Crandall")
 
     dave = factories.BaseContactFactory(full_name="David Bowman")
     nicole = factories.BaseContactFactory(full_name="Nicole Foole")
