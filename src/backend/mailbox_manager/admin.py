@@ -99,6 +99,7 @@ class MailDomainAdmin(admin.ModelAdmin):
     )
     search_fields = ("name",)
     readonly_fields = ["created_at", "slug"]
+    list_filter = ("status",)
     inlines = (UserMailDomainAccessInline,)
     actions = (sync_mailboxes_from_dimail, fetch_domain_status_from_dimail)
 
