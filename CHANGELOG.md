@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(dimail) management command to fetch domain status
+
 ### Changed
 
 - ✨(scripts) adapts release script after moving the deployment part

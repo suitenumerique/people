@@ -403,3 +403,7 @@ install-secret: ## install the kubernetes secrets from Vaultwarden
        --set installCRDs=true; \
 	fi
 .PHONY: build-k8s-cluster
+
+fetch-domain-status:
+	@$(MANAGE) fetch_domain_status
+.PHONY: fetch-domain-status
