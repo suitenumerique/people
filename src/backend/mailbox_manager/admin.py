@@ -108,9 +108,10 @@ class MailDomainAdmin(admin.ModelAdmin):
 class MailboxAdmin(admin.ModelAdmin):
     """Admin for mailbox model."""
 
-    list_display = ("__str__", "domain", "status")
+    list_display = ("__str__", "domain", "status", "updated_at")
     list_filter = ("status",)
     search_fields = ("local_part", "domain__name")
+    readonly_fields = ["updated_at", "local_part", "domain"]
 
 
 @admin.register(models.MailDomainAccess)
