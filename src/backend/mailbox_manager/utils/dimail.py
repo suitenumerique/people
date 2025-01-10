@@ -116,15 +116,15 @@ class DimailAPIClient:
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
-            "givenName": mailbox["first_name"],
-            "surName": mailbox["last_name"],
-            "displayName": f"{mailbox['first_name']} {mailbox['last_name']}",
+            "givenName": mailbox.first_name,
+            "surName": mailbox.last_name,
+            "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
         headers = self.get_headers(user_sub)
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox['domain']}/mailboxes/{mailbox['local_part']}",
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
                 json=payload,
                 headers=headers,
                 verify=True,
@@ -141,7 +141,7 @@ class DimailAPIClient:
         if response.status_code == status.HTTP_201_CREATED:
             logger.info(
                 "Mailbox successfully created on domain %s by user %s",
-                str(mailbox["domain"]),
+                str(mailbox.domain),
                 user_sub,
             )
             return response
@@ -149,7 +149,7 @@ class DimailAPIClient:
         if response.status_code == status.HTTP_403_FORBIDDEN:
             logger.error(
                 "[DIMAIL] 403 Forbidden: you cannot access domain %s",
-                str(mailbox["domain"]),
+                str(mailbox.domain),
             )
             raise exceptions.PermissionDenied(
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
@@ -413,6 +413,7 @@ class DimailAPIClient:
                 domain.status != enums.MailDomainStatusChoices.ENABLED
                 and dimail_status == "ok"
             ):
+                self.enable_pending_mailboxes(domain)
                 domain.status = enums.MailDomainStatusChoices.ENABLED
                 domain.save()
             elif (
@@ -423,3 +424,22 @@ class DimailAPIClient:
                 domain.save()
             return response
         return self.raise_exception_for_unexpected_response(response)
+
+    def enable_pending_mailboxes(self, domain):
+        """Send requests for all pending mailboxes of a domain."""
+
+        for mailbox in domain.mailboxes.filter(
+            status=enums.MailboxStatusChoices.PENDING
+        ):
+            response = self.create_mailbox(mailbox)
+
+            # fix format to have actual json
+            dimail_data = json.loads(response.content.decode("utf-8").replace("'", '"'))
+            mailbox.status = enums.MailDomainStatusChoices.ENABLED
+            mailbox.save()
+
+            # send confirmation email
+            self.notify_mailbox_creation(
+                recipient=mailbox.secondary_email,
+                mailbox_data=dimail_data,
+            )

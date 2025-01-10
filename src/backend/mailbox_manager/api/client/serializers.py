@@ -36,23 +36,19 @@ class MailboxSerializer(serializers.ModelSerializer):
         Override create function to fire a request on mailbox creation.
         """
         mailbox = super().create(validated_data)
-        if validated_data["domain"].status == enums.MailDomainStatusChoices.ENABLED:
+        if mailbox.domain.status == enums.MailDomainStatusChoices.ENABLED:
             client = DimailAPIClient()
             # send new mailbox request to dimail
-            response = client.create_mailbox(
-                validated_data, self.context["request"].user.sub
-            )
+            response = client.create_mailbox(mailbox, self.context["request"].user.sub)
 
-            # fix format to have actual json, and remove uuid
-            mailbox_data = json.loads(
-                response.content.decode("utf-8").replace("'", '"')
-            )
+            # fix format to have actual json
+            dimail_data = json.loads(response.content.decode("utf-8").replace("'", '"'))
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox.save()
 
             # send confirmation email
             client.notify_mailbox_creation(
-                recipient=validated_data["secondary_email"], mailbox_data=mailbox_data
+                recipient=mailbox.secondary_email, mailbox_data=dimail_data
             )
 
         # actually save mailbox on our database

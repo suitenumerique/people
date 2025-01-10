@@ -3,6 +3,7 @@ Unit tests for dimail client
 """
 
 import json
+import logging
 import re
 from email.errors import HeaderParseError, NonASCIILocalPartDefect
 from logging import Logger
@@ -191,3 +192,69 @@ def test_dimail__fetch_domain_status_from_dimail():
         response = dimail_client.fetch_domain_status(domain)
         assert response.status_code == status.HTTP_200_OK
         assert domain.status == enums.MailDomainStatusChoices.ENABLED
+
+def test_dimail___enable_pending_mailboxes(caplog):
+    """Status of pending mailboxes should switch to "enabled" when calling enable_pending_mailboxes."""
+    caplog.set_level(logging.INFO)
+
+    domain = factories.MailDomainFactory()
+    mailbox1 = factories.MailboxFactory(
+        domain=domain, status=enums.MailboxStatusChoices.PENDING
+    )
+    mailbox2 = factories.MailboxFactory(
+        domain=domain, status=enums.MailboxStatusChoices.PENDING
+    )
+    factories.MailboxFactory.create_batch(
+        2, domain=domain, status=enums.MailboxStatusChoices.ENABLED
+    )
+
+    dimail_client = DimailAPIClient()
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body='{"access_token": "domain_owner_token"}',
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+            body=str(
+                {
+                    "email": f"mock@{domain.name}",
+                    "password": "newpass",
+                    "uuid": "uuid",
+                }
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        dimail_client.enable_pending_mailboxes(domain=domain)
+
+    mailbox1.refresh_from_db()
+    mailbox2.refresh_from_db()
+    assert mailbox1.status == enums.MailboxStatusChoices.ENABLED
+    assert mailbox2.status == enums.MailboxStatusChoices.ENABLED
+
+    assert len(caplog.records) == 6
+    assert (
+        caplog.records[0].message
+        == "Token succesfully granted by mail-provisioning API."
+    )
+    assert (
+        caplog.records[1].message
+        == f"Mailbox successfully created on domain {domain.name} by user None"
+    )
+    assert (
+        caplog.records[2].message
+        == f"Information for mailbox mock@{domain.name} sent to {mailbox1.secondary_email}."
+    )
+    assert (
+        caplog.records[4].message
+        == f"Mailbox successfully created on domain {domain.name} by user None"
+    )
+    assert (
+        caplog.records[5].message
+        == f"Information for mailbox mock@{domain.name} sent to {mailbox2.secondary_email}."
+    )
