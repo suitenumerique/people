@@ -47,7 +47,11 @@ export const MailDomainsActions = ({
     );
   };
 
-  if (mailbox.status === 'pending' || mailbox.status === 'failed') {
+  if (
+    mailbox.status === 'pending' ||
+    mailbox.status === 'failed' ||
+    mailDomain.abilities.post === false
+  ) {
     return null;
   }
 
