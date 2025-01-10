@@ -40,7 +40,7 @@ describe('AccountDropdown', () => {
     });
 
     renderAccountDropdown();
-    expect(screen.getByText('No Username')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
   it('opens the dropdown and shows logout button when clicked', async () => {

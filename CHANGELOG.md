@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) display email if no username #562
 - 🧑‍💻(oidc) add ability to pull registration ID (e.g. SIRET) from OIDC #577
 
 ### Fixed

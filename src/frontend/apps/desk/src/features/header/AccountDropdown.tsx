@@ -9,7 +9,7 @@ export const AccountDropdown = () => {
   const { t } = useTranslation();
   const { userData, logout } = useAuthStore();
 
-  const userName = userData?.name || t('No Username');
+  const userName = userData?.name || userData?.email || t('No Username');
   return (
     <DropButton
       button={
