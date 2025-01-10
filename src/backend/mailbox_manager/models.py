@@ -181,7 +181,7 @@ class Mailbox(BaseModel):
     domain = models.ForeignKey(
         MailDomain,
         on_delete=models.CASCADE,
-        related_name="mail_domain",
+        related_name="mailboxes",
         null=False,
         blank=False,
     )

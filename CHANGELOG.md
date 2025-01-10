@@ -8,9 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(dimail) send pending mailboxes upon domain activation
+
 ### Fixed
 
 - 🚑️(plugins) fix name from SIRET specific case #674
+
 
 ## [1.10.1] - 2025-01-27
 
