@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPropsWithRef, ReactHTML } from 'react';
+import { CSSProperties, ComponentPropsWithRef } from 'react';
 import styled from 'styled-components';
 
 import { tokens } from '@/cunningham';
@@ -10,7 +10,7 @@ type TextSizes = keyof typeof sizes;
 
 export interface TextProps extends BoxProps {
   as?: keyof Pick<
-    ReactHTML,
+    HTMLElementTagNameMap,
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
   $weight?: CSSProperties['fontWeight'];

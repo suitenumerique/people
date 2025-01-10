@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, ReactHTML } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import styled from 'styled-components';
 import { CSSProperties } from 'styled-components/dist/types';
 
@@ -9,7 +9,7 @@ import {
 } from '@/utils/styleBuilder';
 
 export interface BoxProps {
-  as?: keyof ReactHTML;
+  as?: keyof HTMLElementTagNameMap;
   $align?: CSSProperties['alignItems'];
   $background?: CSSProperties['background'];
   $color?: CSSProperties['color'];

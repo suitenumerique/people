@@ -17,7 +17,7 @@ export const InfiniteScroll = ({
   scrollContainer,
   ...boxProps
 }: PropsWithChildren<InfiniteScrollProps>) => {
-  const timeout = useRef<ReturnType<typeof setTimeout>>();
+  const timeout = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     if (!scrollContainer) {

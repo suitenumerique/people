@@ -126,7 +126,7 @@ describe('MailDomainAccessesPage', () => {
           mailDomain: mockMailDomain,
           currentRole: Role.OWNER,
         },
-        {}, // adding this empty object is necessary to load jest context
+        undefined, // adding this undefined value is necessary to load jest context
       );
     });
   });

@@ -119,7 +119,7 @@ describe('AccessAction', () => {
         slug: mockMailDomain.slug,
         onClose: expect.any(Function),
       }),
-      {},
+      undefined,
     );
   });
 
@@ -161,7 +161,7 @@ describe('AccessAction', () => {
         mailDomain: mockMailDomain,
         onClose: expect.any(Function),
       }),
-      {},
+      undefined,
     );
   });
 
