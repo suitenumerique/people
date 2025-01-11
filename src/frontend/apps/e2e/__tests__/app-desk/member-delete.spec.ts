@@ -139,8 +139,6 @@ test.describe('Members Delete', () => {
     // To not be the only owner
     await addNewMember(page, 0, 'Owner', 'E2E');
 
-    const username = await addNewMember(page, 0, 'Administration', 'Monique');
-
     const table = page.getByLabel('List members card').getByRole('table');
 
     // find row where regexp match the name
@@ -156,6 +154,7 @@ test.describe('Members Delete', () => {
     await radioGroup.getByRole('radio', { name: 'Administration' }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
+    const username = await addNewMember(page, 0, 'Administration', 'Monique');
     const cells = table
       .getByRole('row')
       .filter({ hasText: username })
