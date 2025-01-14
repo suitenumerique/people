@@ -2,6 +2,8 @@
 
 from logging import getLogger
 
+from django.contrib.auth.hashers import make_password
+
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
 
@@ -33,8 +35,16 @@ class MailboxSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """
         Override create function to fire a request on mailbox creation.
+
+        By default, we generate an unusable password for the mailbox, meaning that the mailbox
+        will not be able to be used as a login credential until the password is set.
         """
-        mailbox = super().create(validated_data)
+        mailbox = super().create(
+            validated_data
+            | {
+                "password": make_password(None),  # generate an unusable password
+            }
+        )
         if mailbox.domain.status == enums.MailDomainStatusChoices.ENABLED:
             client = DimailAPIClient()
             # send new mailbox request to dimail

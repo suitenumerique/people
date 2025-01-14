@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(oidc) people as an identity provider #638
+
 ### Fixed
 
 - 🧱(helm) add resource-server ingress path #743

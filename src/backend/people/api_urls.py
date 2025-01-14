@@ -9,6 +9,8 @@ from core.api.client import viewsets
 from core.authentication.urls import urlpatterns as oidc_urls
 from core.resource_server.urls import urlpatterns as resource_server_urls
 
+from mailbox_oauth2.urls import urlpatterns as mailbox_oauth2_urls
+
 # - Main endpoints
 router = DefaultRouter()
 router.register("contacts", viewsets.ContactViewSet, basename="contacts")
@@ -40,6 +42,7 @@ urlpatterns = [
         include(
             [
                 *router.urls,
+                *mailbox_oauth2_urls,
                 *oidc_urls,
                 *resource_server_urls,
                 re_path(

@@ -17,6 +17,8 @@ from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
 from configurations import Configuration, values
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 
@@ -196,12 +198,15 @@ class Base(Configuration):
         "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "mailbox_oauth2.middleware.one_time_email_authenticated_session",
+        "oauth2_provider.middleware.OAuth2TokenMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "dockerflow.django.middleware.DockerflowMiddleware",
     ]
 
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
+        "mailbox_oauth2.backends.MailboxModelBackend",
         "core.authentication.backends.OIDCAuthenticationBackend",
     ]
 
@@ -212,15 +217,17 @@ class Base(Configuration):
         "core",
         "demo",
         "mailbox_manager",
+        "mailbox_oauth2",
         "drf_spectacular",
         "drf_spectacular_sidecar",  # required for Django collectstatic discovery
         # Third party apps
         "corsheaders",
         "dockerflow.django",
-        "rest_framework",
-        "parler",
-        "treebeard",
         "easy_thumbnails",
+        "oauth2_provider",
+        "parler",
+        "rest_framework",
+        "treebeard",
         # Django
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -535,6 +542,26 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
+    OAUTH2_PROVIDER_GRANT_MODEL = "mailbox_oauth2.Grant"
+    OAUTH2_PROVIDER_ID_TOKEN_MODEL = "mailbox_oauth2.IDToken"  # noqa: S105
+    OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = "mailbox_oauth2.AccessToken"  # noqa: S105
+    OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "mailbox_oauth2.RefreshToken"  # noqa: S105
+
+    # Security settings for login attempts
+    # - Maximum number of failed login attempts before lockout
+    MAX_LOGIN_ATTEMPTS = values.IntegerValue(
+        default=5,
+        environ_name="MAX_LOGIN_ATTEMPTS",
+        environ_prefix=None,
+    )
+    # - Lockout time in seconds (default to 5 minutes)
+    ACCOUNT_LOCKOUT_TIME = values.IntegerValue(
+        default=5 * 60,
+        environ_name="ACCOUNT_LOCKOUT_TIME",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
@@ -593,6 +620,46 @@ class Base(Configuration):
                 "hide_untranslated": False,
             },
         }
+
+    @property
+    def OAUTH2_PROVIDER(self) -> dict:
+        """OAuth2 Provider settings."""
+        OIDC_ENABLED = values.BooleanValue(
+            default=False,
+            environ_name="OAUTH2_PROVIDER_OIDC_ENABLED",
+            environ_prefix=None,
+        )
+        OIDC_RSA_PRIVATE_KEY = values.Value(
+            environ_name="OAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY",
+            environ_prefix=None,
+        )
+        OAUTH2_VALIDATOR_CLASS = values.Value(
+            default="mailbox_oauth2.validators.BaseValidator",
+            environ_name="OAUTH2_PROVIDER_VALIDATOR_CLASS",
+            environ_prefix=None,
+        )
+        SCOPES = {
+            "openid": "OpenID Connect scope",
+            "email": "Email address",
+        }
+        if OAUTH2_VALIDATOR_CLASS == "mailbox_oauth2.validators.ProConnectValidator":
+            SCOPES["given_name"] = "First name"
+            SCOPES["usual_name"] = "Last name"
+            SCOPES["siret"] = "SIRET number"
+
+        return {
+            "OIDC_ENABLED": OIDC_ENABLED,
+            "OIDC_RSA_PRIVATE_KEY": OIDC_RSA_PRIVATE_KEY,
+            "SCOPES": SCOPES,
+            "OAUTH2_VALIDATOR_CLASS": OAUTH2_VALIDATOR_CLASS,
+        }
+
+    @property
+    def LOGIN_URL(self):
+        """
+        Define the LOGIN_URL (Django) for the OIDC provider (reuse LOGIN_REDIRECT_URL)
+        """
+        return f"{self.LOGIN_REDIRECT_URL}/login/"
 
     @classmethod
     def post_setup(cls):
