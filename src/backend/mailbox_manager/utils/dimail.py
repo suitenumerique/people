@@ -8,6 +8,7 @@ from email.headerregistry import Address
 from logging import getLogger
 
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.contrib.sites.models import Site
 from django.core import exceptions, mail
 from django.template.loader import render_to_string
@@ -341,6 +342,7 @@ class DimailAPIClient:
                             # secondary email is mandatory. Unfortunately, dimail doesn't
                             # store any. We temporarily give current email as secondary email.
                             status=enums.MailboxStatusChoices.ENABLED,
+                            password=make_password(None),  # unusable password
                         )
                         imported_mailboxes.append(str(mailbox))
                     else:
