@@ -19,7 +19,7 @@ def fill_dn_email(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailbox_manager', '0020_maildomain_organization'),
+        ('mailbox_manager', '0022_maildomain_organization'),
     ]
 
     operations = [

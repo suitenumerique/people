@@ -2,6 +2,7 @@
 Mailbox manager application factories
 """
 
+from django.contrib.auth.hashers import make_password
 from django.utils.text import slugify
 
 import factory.fuzzy
@@ -76,6 +77,7 @@ class MailboxFactory(factory.django.DjangoModelFactory):
     )
     domain = factory.SubFactory(MailDomainEnabledFactory)
     secondary_email = factory.Faker("email")
+    password = make_password("password")
 
 
 class MailboxEnabledFactory(MailboxFactory):
