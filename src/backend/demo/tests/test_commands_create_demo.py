@@ -3,7 +3,6 @@
 from unittest import mock
 
 from django.core.management import call_command
-from django.test import override_settings
 
 import pytest
 
@@ -11,6 +10,7 @@ from core import models
 
 from demo import defaults
 from mailbox_manager import models as mailbox_models
+from people.settings import Base
 
 pytestmark = pytest.mark.django_db
 
@@ -23,10 +23,13 @@ TEST_NB_OBJECTS = {
 }
 
 
-@override_settings(DEBUG=True)
 @mock.patch.dict(defaults.NB_OBJECTS, TEST_NB_OBJECTS)
-def test_commands_create_demo():
+def test_commands_create_demo(settings):
     """The create_demo management command should create objects as expected."""
+    settings.DEBUG = True
+    settings.OAUTH2_PROVIDER["OIDC_ENABLED"] = True
+    settings.OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
+
     call_command("create_demo")
 
     # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
@@ -37,7 +40,7 @@ def test_commands_create_demo():
 
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
-    assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"]
+    assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"] + 1
 
     # 3 domain access for each user with domain rights
     # 3 x 3 domain access for each user with both rights

@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from faker import Faker
+from oauth2_provider.models import Application
 from treebeard.mp_tree import MP_Node
 
 from core import models
@@ -131,6 +132,25 @@ class Timeit:
 
         self.__class__.total_time += elapsed_time
         return elapsed_time
+
+
+def create_oidc_people_idp_client():
+    """Configure the OIDC client for the People Identity Provider if missing."""
+    try:
+        Application.objects.get(client_id="people-idp")
+    except Application.DoesNotExist:
+        application = Application(
+            client_id="people-idp",
+            client_secret="local-tests-only",
+            client_type=Application.CLIENT_CONFIDENTIAL,
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            name="People Identity Provider",
+            algorithm=Application.RS256_ALGORITHM,
+            redirect_uris="http://localhost:8083/realms/people/broker/oidc-people-local/endpoint",
+            skip_authorization=True,
+        )
+        application.clean()
+        application.save()
 
 
 def create_demo(stdout):  # pylint: disable=too-many-locals
@@ -314,6 +334,10 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 )
 
         queue.flush()
+
+    # OIDC configuration
+    if settings.OAUTH2_PROVIDER.get("OIDC_ENABLED", False):
+        create_oidc_people_idp_client()
 
 
 class Command(BaseCommand):

@@ -1652,8 +1652,130 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
-  "identityProviderMappers": [],
+  "identityProviders": [
+    {
+      "alias": "oidc-people-local",
+      "displayName": "People OIDC (local)",
+      "internalId": "47aa6d7c-8ac5-4178-934e-66f78e510ee4",
+      "providerId": "oidc",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": false,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "hideOnLoginPage": "false",
+        "userInfoUrl": "http://app-dev:8000/o/userinfo/",
+        "validateSignature": "true",
+        "acceptsPromptNoneForwardFromClient": "false",
+        "clientId": "people-idp",
+        "tokenUrl": "http://app-dev:8000/o/token/",
+        "uiLocales": "false",
+        "jwksUrl": "http://app-dev:8000/o/.well-known/jwks.json",
+        "backchannelSupported": "false",
+        "issuer": "http://app-dev:8000/o",
+        "useJwksUrl": "true",
+        "loginHint": "true",
+        "pkceEnabled": "true",
+        "pkceMethod": "S256",
+        "authorizationUrl": "http://localhost:8071/o/authorize/",
+        "clientAuthMethod": "client_secret_post",
+        "disableUserInfo": "false",
+        "syncMode": "IMPORT",
+        "clientSecret": "local-tests-only",
+        "passMaxAge": "false",
+        "defaultScope": "openid given_name usual_name email siret",
+        "allowedClockSkew": "0"
+      }
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "id": "e55dc88c-7bb5-46fb-95ad-1df701a96282",
+      "name": "Sub",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "oidc-username-idp-mapper",
+      "config": {
+        "template": "${CLAIM.sub}",
+        "are.claim.values.regex": "false",
+        "claims": "[{\"key\":\"\",\"value\":\"\"}]",
+        "syncMode": "FORCE",
+        "attributes": "[]",
+        "target": "BROKER_ID"
+      }
+    },
+    {
+      "id": "7e489676-8cba-49e4-aa1e-dcd1462d33f7",
+      "name": "given_name",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "hardcoded-attribute-idp-mapper",
+      "config": {
+        "claims": "[{\"key\":\"\",\"value\":\"\"}]",
+        "syncMode": "FORCE",
+        "are.claim.values.regex": "false",
+        "attributes": "[]",
+        "attribute": "firstName"
+      }
+    },
+    {
+      "id": "30b6b3bc-5738-4936-bf88-c540b8805998",
+      "name": "usual_name",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "template": "${ALIAS}.${CLAIM.preferred_username}",
+        "are.claim.values.regex": "false",
+        "claims": "[{\"key\":\"profile\",\"value\":\"lastName\"}]",
+        "syncMode": "FORCE",
+        "claim": "profile",
+        "user.attribute": "lastName",
+        "attributes": "[]",
+        "target": "LOCAL"
+      }
+    },
+    {
+      "id": "b67caa26-4571-4cfe-9c15-68e022645fc5",
+      "name": "Username",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "oidc-username-idp-mapper",
+      "config": {
+        "template": "${CLAIM.email | lowercase}",
+        "are.claim.values.regex": "false",
+        "claims": "[{\"key\":\"\",\"value\":\"\"}]",
+        "syncMode": "FORCE",
+        "attributes": "[]",
+        "target": "BROKER_USERNAME"
+      }
+    },
+    {
+      "id": "4eef21ce-b5f7-4753-bd58-4e50eb2b5f31",
+      "name": "Email",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "are.claim.values.regex": "false",
+        "claims": "[{\"key\":\"\",\"value\":\"\"}]",
+        "syncMode": "FORCE",
+        "claim": "email",
+        "user.attribute": "email",
+        "attributes": "[]"
+      }
+    },
+    {
+      "id": "084cdd0e-0794-4388-8474-84c9a7c1b9c8",
+      "name": "siret",
+      "identityProviderAlias": "oidc-people-local",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "siret",
+        "user.attribute": "siret"
+      }
+    }
+  ],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
       {
@@ -2195,7 +2317,7 @@
           "authenticatorConfig": "review profile config",
           "authenticator": "idp-review-profile",
           "authenticatorFlow": false,
-          "requirement": "REQUIRED",
+          "requirement": "DISABLED",
           "priority": 10,
           "autheticatorFlow": false,
           "userSetupAllowed": false
