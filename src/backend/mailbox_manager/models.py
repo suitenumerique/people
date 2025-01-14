@@ -3,6 +3,7 @@ Declare and configure the models for the People additional application : mailbox
 """
 
 from django.conf import settings
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, validators
 from django.db import models
 from django.utils.text import slugify
@@ -87,6 +88,14 @@ class MailDomain(BaseModel):
             "delete": role == MailDomainRoleChoices.OWNER,
             "manage_accesses": is_owner_or_admin,
         }
+
+    def identity_provider_ready(self):
+        """
+        Check if the identity provider is ready to manage the domain.
+        """
+        return (
+            bool(self.organization) and self.status == MailDomainStatusChoices.ENABLED
+        )
 
 
 class MailDomainAccess(BaseModel):
@@ -182,7 +191,7 @@ class MailDomainAccess(BaseModel):
         }
 
 
-class Mailbox(BaseModel):
+class Mailbox(AbstractBaseUser, BaseModel):
     """Mailboxes for users from mail domain."""
 
     first_name = models.CharField(max_length=200, blank=False)
@@ -209,6 +218,9 @@ class Mailbox(BaseModel):
         choices=MailboxStatusChoices.choices,
         default=MailboxStatusChoices.PENDING,
     )
+    dn_email = models.EmailField(_("email"), blank=True, unique=True, editable=False)
+
+    USERNAME_FIELD = "dn_email"
 
     class Meta:
         db_table = "people_mail_box"
@@ -235,9 +247,19 @@ class Mailbox(BaseModel):
         Override save function to not allow to create or update mailbox of a disabled domain.
         """
         self.full_clean()
+        self.dn_email = self.get_email()
 
         if self.domain.status == MailDomainStatusChoices.DISABLED:
             raise exceptions.ValidationError(
                 _("You can't create or update a mailbox for a disabled domain.")
             )
         return super().save(*args, **kwargs)
+
+    @property
+    def is_active(self):
+        """Return True if the mailbox is enabled."""
+        return self.status == MailboxStatusChoices.ENABLED
+
+    def get_email(self):
+        """Return the email address of the mailbox."""
+        return f"{self.local_part}@{self.domain.name}"
