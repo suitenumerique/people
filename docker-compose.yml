@@ -129,6 +129,8 @@ services:
     image: quay.io/keycloak/keycloak:20.0.1
     volumes:
       - ./docker/auth/realm.json:/opt/keycloak/data/import/realm.json
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - start-dev
       - --features=preview

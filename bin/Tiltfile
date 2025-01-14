@@ -59,6 +59,35 @@ cmd_button('Migrate db',
            text='Run database migration',
 )
 
+# Command to reset DB
+reset_db = '''
+set -eu
+# get k8s pod name from tilt resource name
+POD_NAME="$(tilt get kubernetesdiscovery desk-backend -ojsonpath='{.status.pods[0].name}')"
+kubectl -n desk exec "$POD_NAME" -- python manage.py flush --no-input
+kubectl -n desk exec "$POD_NAME" -- python manage.py createsuperuser --username admin@example.com --password admin
+'''
+cmd_button('Reset DB',
+           argv=['sh', '-c', reset_db],
+           resource='desk-backend',
+           icon_name='developer_board',
+           text='Reset DB',
+)
+
+# Command to create demo data
+populate_people_with_demo_data = '''
+set -eu
+# get k8s pod name from tilt resource name
+POD_NAME="$(tilt get kubernetesdiscovery desk-backend -ojsonpath='{.status.pods[0].name}')"
+kubectl -n desk exec "$POD_NAME" -- python manage.py create_demo --force
+'''
+cmd_button('Populate with demo data',
+           argv=['sh', '-c', populate_people_with_demo_data],
+           resource='desk-backend',
+           icon_name='developer_board',
+           text='Populate with demo data',
+)
+
 # Command to created domain/users/access from people to dimail
 populate_dimail_from_people = '''
 set -eu
