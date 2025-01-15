@@ -1,12 +1,16 @@
 """Admin classes and registrations for People's core app."""
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
 
 from mailbox_manager.admin import MailDomainAccessInline
 
 from . import models
+from .plugins.loader import (
+    get_organization_plugins,
+    organization_plugins_run_after_create,
+)
 
 
 class TeamAccessInline(admin.TabularInline):
@@ -206,10 +210,23 @@ class OrganizationServiceProviderInline(admin.TabularInline):
     extra = 0
 
 
+@admin.action(description=_("Run post creation plugins"), permissions=["change"])
+def run_post_creation_plugins(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    """Run the post creation plugins for the selected organizations."""
+    for organization in queryset:
+        organization_plugins_run_after_create(organization)
+
+    messages.success(
+        request,
+        _("Post creation plugins have been run for the selected organizations."),
+    )
+
+
 @admin.register(models.Organization)
 class OrganizationAdmin(admin.ModelAdmin):
     """Admin interface for organizations."""
 
+    actions = [run_post_creation_plugins]
     list_display = (
         "name",
         "created_at",
@@ -218,6 +235,13 @@ class OrganizationAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     inlines = (OrganizationAccessInline, OrganizationServiceProviderInline)
     exclude = ("service_providers",)  # Handled by the inline
+
+    def get_actions(self, request):
+        """Adapt actions list to the context."""
+        actions = super().get_actions(request)
+        if not get_organization_plugins():
+            actions.pop("run_post_creation_plugins", None)
+        return actions
 
 
 @admin.register(models.OrganizationAccess)
