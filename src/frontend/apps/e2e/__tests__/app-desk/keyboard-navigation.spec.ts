@@ -25,9 +25,9 @@ const payloadGetTeams = {
   ],
 };
 
-const mockApiRequests = (page: Page) => {
-  void page.route('**/teams/?ordering=-created_at', (route) => {
-    void route.fulfill({
+const mockApiRequests = async (page: Page) => {
+  await page.route('**/teams/?ordering=-created_at', async (route) => {
+    await route.fulfill({
       json: payloadGetTeams.results,
     });
   });
@@ -40,10 +40,10 @@ test.describe('Keyboard navigation', () => {
   }) => {
     const page = await browser.newPage();
 
+    await mockApiRequests(page);
+
     await page.goto('/');
     await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
-
-    void mockApiRequests(page);
 
     const header = page.locator('header');
 

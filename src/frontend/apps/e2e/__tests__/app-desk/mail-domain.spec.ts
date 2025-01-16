@@ -142,11 +142,6 @@ test.describe('Mail domain', () => {
   });
 
   test.describe('user is administrator or owner', () => {
-    test.beforeEach(async ({ page, browserName }) => {
-      await page.goto('/');
-      await keyCloakSignIn(page, browserName, 'mail-owner');
-    });
-
     test.describe('mail domain is enabled', () => {
       const mailDomainsFixtures: MailDomain[] = [
         {
@@ -215,8 +210,11 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks if all tabs are visible', async ({ page }) => {
+      test('checks if all tabs are visible', async ({ page, browserName }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -230,8 +228,12 @@ test.describe('Mail domain', () => {
 
       test('checks all the elements are visible when domain exist but contains no mailboxes', async ({
         page,
+        browserName,
       }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -248,6 +250,7 @@ test.describe('Mail domain', () => {
 
       test('checks all the elements are visible when domain exists and contains 2 pages of mailboxes', async ({
         page,
+        browserName,
       }) => {
         const mailboxesFixtures = {
           domainFr: {
@@ -324,6 +327,9 @@ test.describe('Mail domain', () => {
 
         await interceptApiCalls();
 
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
+
         await clickOnMailDomainsNavButton(page);
 
         await assertMailDomainUpperElementsAreVisible(page);
@@ -360,8 +366,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -404,8 +416,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -447,8 +465,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -476,11 +500,6 @@ test.describe('Mail domain', () => {
   });
 
   test.describe('user is member', () => {
-    test.beforeEach(async ({ page, browserName }) => {
-      await page.goto('/');
-      await keyCloakSignIn(page, browserName, 'mail-member');
-    });
-
     test.describe('mail domain is enabled', () => {
       const mailDomainsFixtures: MailDomain[] = [
         {
@@ -551,8 +570,12 @@ test.describe('Mail domain', () => {
 
       test('checks all the elements are visible when domain exist but contains no mailboxes', async ({
         page,
+        browserName,
       }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -569,6 +592,7 @@ test.describe('Mail domain', () => {
 
       test('checks all the elements are visible when domain exists and contains 2 pages of mailboxes', async ({
         page,
+        browserName,
       }) => {
         const mailboxesFixtures = {
           domainFr: {
@@ -645,6 +669,9 @@ test.describe('Mail domain', () => {
 
         await interceptApiCalls();
 
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
+
         await clickOnMailDomainsNavButton(page);
 
         await assertMailDomainUpperElementsAreVisible(page);
@@ -681,8 +708,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -725,8 +758,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
 
         await clickOnMailDomainsNavButton(page);
 
@@ -768,8 +807,14 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks expected elements are visible', async ({ page }) => {
+      test('checks expected elements are visible', async ({
+        page,
+        browserName,
+      }) => {
         await interceptCommonApiCalls(page, mailDomainsFixtures);
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
 
         await clickOnMailDomainsNavButton(page);
 
