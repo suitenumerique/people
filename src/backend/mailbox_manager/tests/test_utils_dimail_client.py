@@ -16,7 +16,12 @@ from rest_framework import status
 from mailbox_manager import enums, factories, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
-from .fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
+from .fixtures.dimail import (
+    CHECK_DOMAIN_BROKEN,
+    CHECK_DOMAIN_OK,
+    TOKEN_OK,
+    response_mailbox_created,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -193,8 +198,10 @@ def test_dimail__fetch_domain_status_from_dimail():
         assert response.status_code == status.HTTP_200_OK
         assert domain.status == enums.MailDomainStatusChoices.ENABLED
 
+
 def test_dimail___enable_pending_mailboxes(caplog):
-    """Status of pending mailboxes should switch to "enabled" when calling enable_pending_mailboxes."""
+    """Status of pending mailboxes should switch to "enabled"
+    when calling enable_pending_mailboxes."""
     caplog.set_level(logging.INFO)
 
     domain = factories.MailDomainFactory()
@@ -213,20 +220,14 @@ def test_dimail___enable_pending_mailboxes(caplog):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"mock@{domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
-            ),
+            body=response_mailbox_created(f"mock@{domain.name}"),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
         )

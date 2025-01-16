@@ -1,6 +1,10 @@
 # pylint: disable=line-too-long
 """Define here some fake data from dimail, useful to mock dimail response"""
 
+import json
+
+## DOMAINS
+
 CHECK_DOMAIN_BROKEN = {
     "name": "example.fr",
     "state": "broken",
@@ -103,3 +107,14 @@ CHECK_DOMAIN_OK = {
     "ox": {"ok": True, "internal": True, "errors": []},
     "cert": {"ok": True, "internal": True, "errors": []},
 }
+
+## TOKEN
+
+TOKEN_OK = json.dumps({"access_token": "token", "token_type": "bearer"})
+
+## MAILBOXES
+
+
+def response_mailbox_created(email_address):
+    """mimic dimail response upon succesfull mailbox creation."""
+    return json.dumps({"email": email_address, "password": "password"})
