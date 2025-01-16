@@ -85,10 +85,13 @@ const mailboxesFixtures = {
   },
 };
 
-const interceptCommonApiRequests = (page: Page, mailDomains?: MailDomain[]) => {
+const interceptCommonApiRequests = async (
+  page: Page,
+  mailDomains?: MailDomain[],
+) => {
   const mailDomainsToUse = mailDomains ?? mailDomainsFixtures;
-  void page.route('**/api/v1.0/mail-domains/?page=*', (route) => {
-    void route.fulfill({
+  await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
+    await route.fulfill({
       json: {
         count: mailDomainsToUse.length,
         next: null,
@@ -98,28 +101,37 @@ const interceptCommonApiRequests = (page: Page, mailDomains?: MailDomain[]) => {
     });
   });
 
-  mailDomainsToUse.forEach((mailDomain) => {
-    void page.route(`**/api/v1.0/mail-domains/${mailDomain.slug}/`, (route) => {
-      void route.fulfill({
-        json: mailDomain,
-      });
-    });
+  await Promise.all(
+    mailDomainsToUse.map(async (mailDomain) => {
+      await page.route(
+        `**/api/v1.0/mail-domains/${mailDomain.slug}/`,
+        async (route) => {
+          await route.fulfill({
+            json: mailDomain,
+          });
+        },
+      );
+    }),
+  );
 
-    void page.route(
-      `**/api/v1.0/mail-domains/${mailDomain.slug}/mailboxes/?page=1**`,
-      (route) => {
-        void route.fulfill({
-          json: {
-            count: mailboxesFixtures.domainFr.page1.length,
-            next: null,
-            previous: null,
-            results: mailboxesFixtures.domainFr.page1,
-          },
-        });
-      },
-      { times: 1 },
-    );
-  });
+  await Promise.all(
+    mailDomainsToUse.map(async (mailDomain) => {
+      await page.route(
+        `**/api/v1.0/mail-domains/${mailDomain.slug}/mailboxes/?page=1**`,
+        async (route) => {
+          await route.fulfill({
+            json: {
+              count: mailboxesFixtures.domainFr.page1.length,
+              next: null,
+              previous: null,
+              results: mailboxesFixtures.domainFr.page1,
+            },
+          });
+        },
+        { times: 1 },
+      );
+    }),
+  );
 };
 
 const navigateToMailboxCreationFormForMailDomainFr = async (
@@ -131,19 +143,20 @@ const navigateToMailboxCreationFormForMailDomainFr = async (
 };
 
 test.describe('Mail domain create mailbox', () => {
-  test.beforeEach(async ({ page, browserName }) => {
-    await page.goto('/');
-    // Login with a user who has the visibility on the mail domains
-    await keyCloakSignIn(page, browserName, 'mail-member');
-  });
-
-  test('checks create mailbox button is visible or not', async ({ page }) => {
+  test('checks create mailbox button is visible or not', async ({
+    page,
+    browserName,
+  }) => {
     const domains = [...mailDomainsFixtures];
     domains[0].status = 'enabled';
     domains[1].status = 'pending';
     domains[2].status = 'disabled';
     domains[3].status = 'failed';
-    void interceptCommonApiRequests(page, domains);
+    await interceptCommonApiRequests(page, domains);
+
+    await page.goto('/');
+    // Login with a user who has the visibility on the mail domains
+    await keyCloakSignIn(page, browserName, 'mail-member');
 
     await page
       .locator('menu')
@@ -190,6 +203,7 @@ test.describe('Mail domain create mailbox', () => {
 
   test('checks user can create a mailbox when he has post ability', async ({
     page,
+    browserName,
   }) => {
     const newMailbox = {
       id: '04433733-c9b7-453a-8122-755ac115bb00',
@@ -197,13 +211,13 @@ test.describe('Mail domain create mailbox', () => {
       secondary_email: 'john.doe-complex2024@mail.com',
     };
 
-    const interceptRequests = (page: Page) => {
-      void interceptCommonApiRequests(page);
+    const interceptRequests = async (page: Page) => {
+      await interceptCommonApiRequests(page);
 
-      void page.route(
+      await page.route(
         '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
-        (route) => {
-          void route.fulfill({
+        async (route) => {
+          await route.fulfill({
             json: {
               count: [...mailboxesFixtures.domainFr.page1, newMailbox].length,
               next: null,
@@ -214,15 +228,15 @@ test.describe('Mail domain create mailbox', () => {
         },
       );
 
-      void page.route(
+      await page.route(
         '**/api/v1.0/mail-domains/domainfr/mailboxes/',
-        (route) => {
+        async (route) => {
           if (route.request().method() === 'POST') {
-            void route.fulfill({
+            await route.fulfill({
               json: newMailbox,
             });
           } else {
-            void route.continue();
+            await route.continue();
           }
         },
       );
@@ -249,8 +263,12 @@ test.describe('Mail domain create mailbox', () => {
       }
     });
 
-    void interceptRequests(page);
-    expect(true).toBeTruthy();
+    await interceptRequests(page);
+
+    await page.goto('/');
+    // Login with a user who has the visibility on the mail domains
+    await keyCloakSignIn(page, browserName, 'mail-member');
+
     await navigateToMailboxCreationFormForMailDomainFr(page);
 
     await page.getByRole('button', { name: 'Cancel' }).click();
@@ -315,15 +333,16 @@ test.describe('Mail domain create mailbox', () => {
 
   test('checks user is not allowed to create a mailbox when he is missing post ability', async ({
     page,
+    browserName,
   }) => {
     const localMailDomainsFixtures = [...mailDomainsFixtures];
     localMailDomainsFixtures[0].abilities.post = false;
     const localMailDomainDomainFr = localMailDomainsFixtures[0];
     const localMailboxFixtures = { ...mailboxesFixtures };
 
-    const interceptRequests = (page: Page) => {
-      void page.route('**/api/v1.0/mail-domains/?page=*', (route) => {
-        void route.fulfill({
+    const interceptRequests = async (page: Page) => {
+      await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
+        await route.fulfill({
           json: {
             count: localMailDomainsFixtures.length,
             next: null,
@@ -333,16 +352,16 @@ test.describe('Mail domain create mailbox', () => {
         });
       });
 
-      void page.route('**/api/v1.0/mail-domains/domainfr/', (route) => {
-        void route.fulfill({
+      await page.route('**/api/v1.0/mail-domains/domainfr/', async (route) => {
+        await route.fulfill({
           json: localMailDomainDomainFr,
         });
       });
 
-      void page.route(
+      await page.route(
         '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
-        (route) => {
-          void route.fulfill({
+        async (route) => {
+          await route.fulfill({
             json: {
               count: localMailboxFixtures.domainFr.page1.length,
               next: null,
@@ -355,7 +374,11 @@ test.describe('Mail domain create mailbox', () => {
       );
     };
 
-    void interceptRequests(page);
+    await interceptRequests(page);
+
+    await page.goto('/');
+    // Login with a user who has the visibility on the mail domains
+    await keyCloakSignIn(page, browserName, 'mail-member');
 
     await page
       .locator('menu')

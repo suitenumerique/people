@@ -46,6 +46,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(frontend) improve e2e tests avoiding race condition from mocks #641
 - 🐛(backend) fix flaky test with search contact #605
 - 🐛(backend) fix flaky test with team access #646
 - 🧑‍💻(dimail) remove 'NoneType: None' log in debug mode

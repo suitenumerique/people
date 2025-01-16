@@ -60,12 +60,6 @@ test.describe('Config', () => {
     page,
     browserName,
   }) => {
-    await page.goto('/');
-    // Login with a user who has the visibility on the groups should see groups
-    // It's now the backend that decides if the user can see the group menu and they
-    // should be redirected to the groups page in such case
-    await keyCloakSignIn(page, browserName, 'team-administrator');
-
     await page.route('**/api/v1.0/config/', async (route) => {
       const request = route.request();
       if (request.method().includes('GET')) {
@@ -82,6 +76,12 @@ test.describe('Config', () => {
         await route.continue();
       }
     });
+
+    await page.goto('/');
+    // Login with a user who has the visibility on the groups should see groups
+    // It's now the backend that decides if the user can see the group menu and they
+    // should be redirected to the groups page in such case
+    await keyCloakSignIn(page, browserName, 'team-administrator');
 
     await expect(page.locator('menu')).toBeHidden();
 

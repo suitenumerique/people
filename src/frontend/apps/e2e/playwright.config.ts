@@ -9,7 +9,7 @@ const baseURL = `http://localhost:${PORT}`;
  */
 export default defineConfig({
   // Timeout per test
-  timeout: 30 * 1000,
+  timeout: 10 * 1000,
   testDir: './__tests__',
   outputDir: './test-results',
 
