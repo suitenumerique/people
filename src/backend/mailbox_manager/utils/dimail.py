@@ -246,7 +246,10 @@ class DimailAPIClient:
             error_content = response.content.decode(response.encoding)
 
         logger.exception(
-            "[DIMAIL] unexpected error : %s %s", response.status_code, error_content
+            "[DIMAIL] unexpected error : %s %s",
+            response.status_code,
+            error_content,
+            exc_info=False,
         )
         raise requests.exceptions.HTTPError(
             f"Unexpected response from dimail: {response.status_code} "
