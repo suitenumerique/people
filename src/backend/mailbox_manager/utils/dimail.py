@@ -433,13 +433,11 @@ class DimailAPIClient:
         ):
             response = self.create_mailbox(mailbox)
 
-            # fix format to have actual json
-            dimail_data = json.loads(response.content.decode("utf-8").replace("'", '"'))
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox.save()
 
             # send confirmation email
             self.notify_mailbox_creation(
                 recipient=mailbox.secondary_email,
-                mailbox_data=dimail_data,
+                mailbox_data=response.json(),
             )

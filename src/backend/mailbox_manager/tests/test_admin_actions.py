@@ -15,7 +15,12 @@ from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
 
-from .fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
+from .fixtures.dimail import (
+    CHECK_DOMAIN_BROKEN,
+    CHECK_DOMAIN_OK,
+    TOKEN_OK,
+    response_mailbox_created,
+)
 
 
 @pytest.mark.django_db
@@ -92,7 +97,7 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )

@@ -1,6 +1,5 @@
 """Client serializers for People's mailbox manager app."""
 
-import json
 from logging import getLogger
 
 from requests.exceptions import HTTPError
@@ -41,14 +40,12 @@ class MailboxSerializer(serializers.ModelSerializer):
             # send new mailbox request to dimail
             response = client.create_mailbox(mailbox, self.context["request"].user.sub)
 
-            # fix format to have actual json
-            dimail_data = json.loads(response.content.decode("utf-8").replace("'", '"'))
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox.save()
 
             # send confirmation email
             client.notify_mailbox_creation(
-                recipient=mailbox.secondary_email, mailbox_data=dimail_data
+                recipient=mailbox.secondary_email, mailbox_data=response.json()
             )
 
         # actually save mailbox on our database

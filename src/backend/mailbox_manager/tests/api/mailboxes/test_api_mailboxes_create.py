@@ -19,6 +19,10 @@ from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
 from mailbox_manager.api.client import serializers
+from mailbox_manager.tests.fixtures.dimail import (
+    TOKEN_OK,
+    response_mailbox_created,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -102,19 +106,15 @@ def test_api_mailboxes__create_roles_success(role):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_values['local_part']}@{mail_domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_values['local_part']}@{mail_domain.name}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
@@ -161,19 +161,15 @@ def test_api_mailboxes__create_with_accent_success(role):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_values['local_part']}@{mail_domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_values['local_part']}@{mail_domain.name}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
@@ -287,7 +283,7 @@ def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
@@ -340,19 +336,15 @@ def test_api_mailboxes__same_local_part_on_different_domains():
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_values['local_part']}@{access.domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_values['local_part']}@{access.domain.name}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
@@ -485,7 +477,7 @@ def test_api_mailboxes__async_dimail_unauthorized(mock_error):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,  # user is in dimail-api
             content_type="application/json",
         )
@@ -538,19 +530,15 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsp = rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_data['local_part']}@{access.domain.name}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
@@ -657,7 +645,7 @@ def test_api_mailboxes__user_unrelated_to_domain():
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
@@ -702,7 +690,7 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
@@ -757,19 +745,15 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_data['local_part']}@{access.domain.name}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
@@ -818,19 +802,15 @@ def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
         rsps.add(
             rsps.GET,
             re.compile(r".*/token/"),
-            body='{"access_token": "domain_owner_token"}',
+            body=TOKEN_OK,
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
         rsps.add(
             rsps.POST,
             re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
+            body=response_mailbox_created(
+                f"{mailbox_data['local_part']}@{access.domain}"
             ),
             status=status.HTTP_201_CREATED,
             content_type="application/json",
