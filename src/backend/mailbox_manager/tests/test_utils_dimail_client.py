@@ -15,7 +15,7 @@ from rest_framework import status
 from mailbox_manager import enums, factories, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
-from .fixtures.dimail import CHECK_DOMAIN_BROKEN
+from .fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
 
 pytestmark = pytest.mark.django_db
 
@@ -163,12 +163,12 @@ def test_dimail__fetch_domain_status_from_dimail():
     """Request to dimail health status of a domain"""
     domain = factories.MailDomainEnabledFactory()
     with responses.RequestsMock() as rsps:
-        body_content_domain = CHECK_DOMAIN_BROKEN.copy()
-        body_content_domain["name"] = domain.name
+        body_content = CHECK_DOMAIN_BROKEN.copy()
+        body_content["name"] = domain.name
         rsps.add(
             rsps.GET,
             re.compile(rf".*/domains/{domain.name}/check/"),
-            body=json.dumps(body_content_domain),
+            body=json.dumps(body_content),
             status=status.HTTP_200_OK,
             content_type="application/json",
         )
@@ -176,3 +176,17 @@ def test_dimail__fetch_domain_status_from_dimail():
         response = dimail_client.fetch_domain_status(domain)
         assert response.status_code == status.HTTP_200_OK
         assert domain.status == enums.MailDomainStatusChoices.FAILED
+
+        # Now domain is ok again
+        body_content = CHECK_DOMAIN_OK.copy()
+        body_content["name"] = domain.name
+        rsps.add(
+            rsps.GET,
+            re.compile(rf".*/domains/{domain.name}/check/"),
+            body=json.dumps(body_content),
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        response = dimail_client.fetch_domain_status(domain)
+        assert response.status_code == status.HTTP_200_OK
+        assert domain.status == enums.MailDomainStatusChoices.ENABLED

@@ -14,7 +14,7 @@ from core import factories as core_factories
 
 from mailbox_manager import enums, factories
 
-from .fixtures.dimail import CHECK_DOMAIN_BROKEN
+from .fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
 
 
 @pytest.mark.django_db
@@ -61,7 +61,8 @@ def test_admin_action__fetch_domain_status_from_dimail(client):
         assert "Check domains done with success" in response.content.decode("utf-8")
 
         # check with a valid domain info from dimail
-        body_content_domain1["state"] = "ok"
+        body_content_domain1 = CHECK_DOMAIN_OK.copy()
+        body_content_domain1["name"] = domain1.name
         rsps.add(
             rsps.GET,
             re.compile(rf".*/domains/{domain1.name}/check/"),
