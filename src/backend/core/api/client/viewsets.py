@@ -1,5 +1,6 @@
 """API endpoints"""
 
+import datetime
 import operator
 from functools import reduce
 
@@ -24,6 +25,10 @@ from core import models
 from core.api import permissions
 from core.api.client import serializers
 from core.utils.raw_sql import gen_sql_filter_json_array
+
+from mailbox_manager import models as domains_models
+
+SIMILARITY_THRESHOLD = 0.04
 
 
 class NestedGenericViewSet(viewsets.GenericViewSet):
@@ -584,6 +589,28 @@ class ConfigView(views.APIView):
             dict_settings[setting] = getattr(settings, setting)
 
         return response.Response(dict_settings)
+
+
+class StatView(views.APIView):
+    """API ViewSet for sharing some public metrics."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """
+        GET /api/v1.0/stats/
+            Return a dictionary of public metrics.
+        """
+        context = {
+            "total_users": models.User.objects.all().count(),
+            "mau": models.User.objects.filter(
+                last_login__gte=datetime.datetime.now() - datetime.timedelta(30)
+            ).count(),
+            "teams": models.Team.objects.all().count(),
+            "domains": domains_models.MailDomain.objects.all().count(),
+            "mailboxes": domains_models.Mailbox.objects.all().count(),
+        }
+        return response.Response(context)
 
 
 class ServiceProviderFilter(filters.BaseFilterBackend):

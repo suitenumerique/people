@@ -51,4 +51,5 @@ urlpatterns = [
     ),
     path(f"api/{settings.API_VERSION}/", include("mailbox_manager.urls")),
     path(f"api/{settings.API_VERSION}/config/", viewsets.ConfigView.as_view()),
+    path(f"api/{settings.API_VERSION}/stats/", viewsets.StatView.as_view()),
 ]
