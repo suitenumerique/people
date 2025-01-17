@@ -102,10 +102,10 @@ def test_api_contacts_list_authenticated_by_full_name():
     """
     user = factories.UserFactory(name="Prudence Crandall")
 
-    dave = factories.BaseContactFactory(full_name="David Bowman")
-    nicole = factories.BaseContactFactory(full_name="Nicole Foole")
-    frank = factories.BaseContactFactory(full_name="Frank Poole")
-    factories.BaseContactFactory(full_name="Heywood Floyd")
+    dave = factories.BaseContactFactory(full_name="David Bowman", data={})
+    nicole = factories.BaseContactFactory(full_name="Nicole Foole", data={})
+    frank = factories.BaseContactFactory(full_name="Frank Poole", data={})
+    factories.BaseContactFactory(full_name="Heywood Floyd", data={})
 
     # Full query should work
     client = APIClient()

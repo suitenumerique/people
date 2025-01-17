@@ -25,8 +25,6 @@ from core.api import permissions
 from core.api.client import serializers
 from core.utils.raw_sql import gen_sql_filter_json_array
 
-SIMILARITY_THRESHOLD = 0.04
-
 
 class NestedGenericViewSet(viewsets.GenericViewSet):
     """
