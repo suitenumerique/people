@@ -17,6 +17,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(backend) fix flaky test with team access #646
 - 🧑‍💻(dimail) remove 'NoneType: None' log in debug mode
 - 🐛(frontend) fix flaky e2e test #636
 - 🐛(frontend) fix disable mailbox button display #631

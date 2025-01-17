@@ -338,14 +338,19 @@ def test_api_team_accesses_list_authenticated_ordering():
 def test_api_team_accesses_list_authenticated_ordering_user(ordering_field):
     """Team accesses can be ordered by user's fields."""
 
-    user = factories.UserFactory()
+    john = factories.UserFactory(email="john.doe@example.com", name="John Doe")
     team = factories.TeamFactory()
-    models.TeamAccess.objects.create(team=team, user=user)
+    models.TeamAccess.objects.create(team=team, user=john)
 
-    # create 20 new team members
-    for _ in range(20):
-        extra_user = factories.UserFactory()
-        factories.TeamAccessFactory(team=team, user=extra_user)
+    # create new team members
+    dave = factories.UserFactory(email="bowbow@example.com", name="David Bowman")
+    nicole = factories.UserFactory(
+        email="nicole_foole@example.com", name="Nicole Foole"
+    )
+    frank = factories.UserFactory(email="frank_poole@example.com", name="Frank Poole")
+    mary = factories.UserFactory(email="mary_pol@example.com", name="Mary Pol")
+    for user in (dave, nicole, frank, mary):
+        factories.TeamAccessFactory(team=team, user=user)
 
     client = APIClient()
     client.force_login(user)
@@ -354,14 +359,11 @@ def test_api_team_accesses_list_authenticated_ordering_user(ordering_field):
         f"/api/v1.0/teams/{team.id!s}/accesses/?ordering=user__{ordering_field}",
     )
     assert response.status_code == HTTP_200_OK
-    assert response.json()["count"] == 21
-
-    def normalize(x):
-        """Mimic Django order_by, which is case-insensitive and space-insensitive"""
-        return x.casefold().replace(" ", "")
-
-    results = [
-        team_access["user"][ordering_field]
-        for team_access in response.json()["results"]
+    assert response.json()["count"] == 5
+    assert [access["user"]["name"] for access in response.json()["results"]] == [
+        dave.name,
+        frank.name,
+        john.name,
+        mary.name,
+        nicole.name,
     ]
-    assert sorted(results, key=normalize) == results
