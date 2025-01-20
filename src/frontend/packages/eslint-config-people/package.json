@@ -6,19 +6,19 @@
     "lint": "eslint --ext .js ."
   },
   "dependencies": {
-    "@next/eslint-plugin-next": "15.1.4",
-    "@tanstack/eslint-plugin-query": "5.62.16",
-    "@typescript-eslint/eslint-plugin": "8.19.1",
-    "@typescript-eslint/parser": "8.19.1",
+    "@next/eslint-plugin-next": "15.1.5",
+    "@tanstack/eslint-plugin-query": "5.64.2",
+    "@typescript-eslint/eslint-plugin": "8.20.0",
+    "@typescript-eslint/parser": "8.20.0",
     "eslint": "8.57.0",
-    "eslint-config-next": "15.1.4",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-next": "15.1.5",
+    "eslint-config-prettier": "10.0.1",
     "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-jest": "28.10.0",
+    "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-playwright": "2.1.0",
-    "eslint-plugin-prettier": "5.2.1",
-    "eslint-plugin-react": "7.37.3",
+    "eslint-plugin-prettier": "5.2.3",
+    "eslint-plugin-react": "7.37.4",
     "eslint-plugin-testing-library": "7.1.1"
   }
 }
