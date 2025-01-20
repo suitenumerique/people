@@ -119,10 +119,7 @@ def test_commands_setup_dimail_db(settings):
 
     assert (
         f"{DIMAIL_URL}/users/",
-        (
-            b'{"name": "sub.toto.123", "password": "no", "is_admin": false, '
-            b'"perms": []}'
-        ),
+        (b'{"name": "sub.toto.123", "password": "no", "is_admin": false, "perms": []}'),
     ) in dimail_calls
 
     assert (

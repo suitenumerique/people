@@ -95,9 +95,9 @@ def test_api_teams_order():
     response_team_ids = [team["id"] for team in response_data]
 
     team_ids.reverse()
-    assert (
-        response_team_ids == team_ids
-    ), "created_at values are not sorted from newest to oldest"
+    assert response_team_ids == team_ids, (
+        "created_at values are not sorted from newest to oldest"
+    )
 
 
 def test_api_teams_order_param():
@@ -122,9 +122,9 @@ def test_api_teams_order_param():
     response_data = response.json()
     response_team_ids = [team["id"] for team in response_data]
 
-    assert (
-        response_team_ids == team_ids
-    ), "created_at values are not sorted from oldest to newest"
+    assert response_team_ids == team_ids, (
+        "created_at values are not sorted from oldest to newest"
+    )
 
 
 @pytest.mark.parametrize(

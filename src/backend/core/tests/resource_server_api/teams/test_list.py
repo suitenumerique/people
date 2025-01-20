@@ -192,9 +192,9 @@ def test_api_teams_order_param(client, force_login_via_resource_server):
     response_data = response.json()
     response_team_ids = [team["id"] for team in response_data["results"]]
 
-    assert (
-        response_team_ids == team_ids
-    ), "created_at values are not sorted from oldest to newest"
+    assert response_team_ids == team_ids, (
+        "created_at values are not sorted from oldest to newest"
+    )
 
 
 def test_api_teams_list_with_parent_teams(client, force_login_via_resource_server):
