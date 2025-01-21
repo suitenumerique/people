@@ -139,14 +139,21 @@ class CommuneCreation(BaseOrganizationPlugin):
         create_domain.params = {
             "name": inputs["name"],
             "delivery": "virtual",
-            "features": ["webmail"],
+            "features": ["webmail","mailbox"],
             "context_name": inputs["name"],
         }
         create_domain.headers = {
             "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
 
-        return [create_zone, create_domain]
+        spec_domain = ApiCall()
+        spec_domain.base = settings.MAIL_PROVISIONING_API_URL
+        spec_domain.url = f"/domains/{inputs["name"]}.collectivite.fr/spec"
+        spec_domain.headers = {
+            "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+        }
+
+        return [create_zone, create_domain, spec_domain]
 
     def run_after_create(self, organization):
         """After creating an organization, update the organization name."""
