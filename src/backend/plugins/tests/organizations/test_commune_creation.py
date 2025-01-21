@@ -88,10 +88,10 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
     assert tasks[1].url == "/domains"
     assert tasks[1].method == "POST"
     assert tasks[1].params == {
-        "name": "merlaut",
+        "name": "merlaut.collectivite.fr",
         "delivery": "virtual",
         "features": ["webmail", "mailbox"],
-        "context_name": "merlaut",
+        "context_name": "merlaut.collectivite.fr",
     }
     assert (
         tasks[1].headers["Authorization"]
