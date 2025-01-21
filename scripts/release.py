@@ -24,18 +24,6 @@ def update_files(version):
     with open(path, 'w+') as file:
         file.writelines(lines)
 
-    # helm files
-    sys.stdout.write("Update helm files...\n")
-    for env in ["preprod", "production"]:
-        path = f"src/helm/env.d/{env}/values.desk.yaml.gotmpl"
-        with open(path, 'r') as file:
-            lines = file.readlines()
-            for index, line in enumerate(lines):
-                if "tag:" in line:
-                    lines[index] = re.sub(r'\"(.*?)\"', f'"v{version}"', line)
-        with open(path, 'w+') as file:
-            file.writelines(lines)
-
     # frontend package.json
     sys.stdout.write("Update package.json...\n")
     files_to_modify = []
@@ -54,6 +42,16 @@ def update_files(version):
             file.writelines(lines)
     return
 
+
+def update_helm_files(path):
+    sys.stdout.write("Update helm files...\n")
+    with open(path, 'r') as file:
+        lines = file.readlines()
+        for index, line in enumerate(lines):
+            if "tag:" in line:
+                lines[index] = re.sub(r'\"(.*?)\"', f'"v{version}"', line)
+    with open(path, 'w+') as file:
+        file.writelines(lines)
 
 def update_changelog(path, version):
     """Update changelog file with release info
@@ -77,7 +75,44 @@ def update_changelog(path, version):
         file.writelines(lines)
 
 
-def prepare_release(version, kind):
+def deployment_part(version, kind):
+    """ Update helm file of preprod on deployment repository numerique-gouv/lasuite-deploiement
+    """
+    # Move to lasuite-deploiement repository
+    try:
+        os.chdir('../lasuite-deploiement')
+    except FileNotFoundError:
+        sys.stdout.write("\033[1;31m[Error] You must have a clone of https://github.com/numerique-gouv/lasuite-deploiement\x1b[0m")
+        sys.stdout.write("\033[0;32mPlease clone it and re-run script with option --only-deployment-part\x1b[0m")
+        sys.stdout.write("  >>> python scripts/release.py --only-deployment-part \x1b[0m")
+    else:
+        run_command("git checkout main", shell=True)
+        run_command("git pull", shell=True)
+        deployment_branch = f"regie/{version}/preprod"
+        run_command(f"git checkout -b {deployment_branch}", shell=True)
+        run_command("git pull --rebase origin main", shell=True)
+        path = f"manifests/regie/env.d/preprod/values.desk.yaml.gotmpl"
+        update_helm_files(path)
+        run_command(f"git add {path}", shell=True)
+        message = f"""🔖({RELEASE_KINDS[kind]}) release version {version}"""
+        run_command(f"git commit -m '{message}'", shell=True)
+        confirm = input(f"""\033[0;32m
+### DEPLOYMENT ###
+NEXT COMMAND on lasuite-deploiement repository: 
+    >> git push origin {deployment_branch}
+Continue ? (y,n) 
+\x1b[0m""")
+        if confirm == 'y':
+            run_command(f"git push origin {deployment_branch}", shell=True)
+        sys.stdout.write(f"""\033[1;34m
+PLEASE DO THE FOLLOWING INSTRUCTIONS: 
+--> Please submit PR {deployment_branch} and merge code to main
+\x1b[0m""")
+        sys.stdout.write(
+            f"""\033[1;34m--> Now please generate release on github interface for the current tag v{version}\n\x1b[0m""")
+
+def project_part(version, kind):
+    """Manage only la regie part with update of CHANGELOG, version files and tag"""
     sys.stdout.write('Let\'s go to create branch to release\n')
     branch_to_release = f"release/{version}"
     run_command(f"git checkout -b {branch_to_release}", shell=True)
@@ -90,25 +125,28 @@ def prepare_release(version, kind):
     run_command("git add src/", shell=True)
     message = f"""🔖({RELEASE_KINDS[kind]}) release version {version}
 
-    Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
+        Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
     run_command(f"git commit -m '{message}'", shell=True)
-    confirm = input(f"\nNEXT COMMAND: \n>> git push origin {branch_to_release}\nContinue ? (y,n) ")
+    confirm = input(f"""\033[0;32m
+### RELEASE ###
+NEXT COMMAND on current repository:
+    >> git push origin {branch_to_release}
+Continue ? (y,n)
+\x1b[0m""")
     if confirm == 'y':
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
-    PLEASE DO THE FOLLOWING INSTRUCTIONS:
-    --> Please submit PR and merge code to main 
-    --> Then do:
+\033[1;34mPLEASE DO THE FOLLOWING INSTRUCTIONS:
+--> Please submit PR {branch_to_release} and merge code to main 
+--> Then do:
     >> git checkout main
     >> git pull
     >> git tag v{version} 
     >> git push origin v{version} 
-    --> Please check and wait for the docker image v{version} to be published here: https://hub.docker.com/r/lasuite/people-backend/tags and https://hub.docker.com/r/lasuite/people-frontend/tags
-    >> git tag -d preprod
-    >> git tag preprod
-    >> git push -f origin preprod
-    --> Now please generate release on github interface for the current tag v{version}
-""")
+--> Please check and wait for the docker image v{version} to be published here:
+ - https://hub.docker.com/r/lasuite/people-backend/tags 
+ - https://hub.docker.com/r/lasuite/people-frontend/tags
+ \x1b[0m""")
 
 
 if __name__ == "__main__":
@@ -117,4 +155,6 @@ if __name__ == "__main__":
         version = input("Enter your release version:")
     while kind not in RELEASE_KINDS:
         kind = input("Enter kind of release (p:patch, m:minor, mj:major):")
-    prepare_release(version, kind)
+    if "--only-deployment-part" not in sys.argv:
+        project_part(version, kind)
+    deployment_part(version, kind)

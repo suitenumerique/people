@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- ✨(scripts) adapts release script after moving the deployment part
+
 ## [1.10.0] - 2025-01-21
 
 ### Added
