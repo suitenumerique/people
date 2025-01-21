@@ -137,10 +137,10 @@ class CommuneCreation(BaseOrganizationPlugin):
         create_domain.base = settings.MAIL_PROVISIONING_API_URL
         create_domain.url = "/domains"
         create_domain.params = {
-            "name": inputs["name"],
+            "name": f"{inputs["name"]}.collectivite.fr",
             "delivery": "virtual",
             "features": ["webmail","mailbox"],
-            "context_name": inputs["name"],
+            "context_name": f"{inputs["name"]}.collectivite.fr",
         }
         create_domain.headers = {
             "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
