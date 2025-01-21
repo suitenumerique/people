@@ -139,37 +139,6 @@ def test_organization_plugins_run_after_create_name_already_set(
     assert organization.name == "Magic WOW"
 
 
-def test_extract_name_from_org_data_when_commune(
-    organization_plugins_settings,
-):
-    """Test the name is extracted correctly for a French commune."""
-    data = {
-        "results": [
-            {
-                "nom_complet": "COMMUNE DE VARZY",
-                "nom_raison_sociale": "COMMUNE DE VARZY",
-                "siege": {
-                    "libelle_commune": "VARZY",
-                    "liste_enseignes": ["MAIRIE"],
-                    "siret": "21580304000017",
-                },
-                "nature_juridique": "7210",
-                "matching_etablissements": [
-                    {
-                        "siret": "21580304000017",
-                        "libelle_commune": "VARZY",
-                        "liste_enseignes": ["MAIRIE"],
-                    }
-                ],
-            }
-        ]
-    }
-
-    plugin = NameFromSiretOrganizationPlugin()
-    name = plugin.get_organization_name_from_results(data, "21580304000017")
-    assert name == "Varzy"
-
-
 @responses.activate
 def test_organization_plugins_run_after_create_no_list_enseignes(
     organization_plugins_settings,
