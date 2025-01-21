@@ -90,10 +90,25 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
     assert tasks[1].params == {
         "name": "merlaut",
         "delivery": "virtual",
-        "features": ["webmail"],
+        "features": ["webmail", "mailbox"],
         "context_name": "merlaut",
     }
     assert (
         tasks[1].headers["Authorization"]
+        == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+    )
+
+def test_tasks_on_commune_creation_include_fetching_spec():
+    """Test the third task in commune creation: asking Dimail for the spec"""
+    plugin = CommuneCreation()
+    name = "Loc-Eguiner"
+
+    tasks = plugin.complete_commune_creation(name)
+
+    assert tasks[2].base == settings.MAIL_PROVISIONING_API_URL
+    assert tasks[2].url == "/domains/loc-eguiner.collectivite.fr/spec"
+    assert tasks[2].method == "GET"
+    assert (
+        tasks[2].headers["Authorization"]
         == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
