@@ -156,6 +156,7 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
 
         mailbox = models.Mailbox.objects.get()
         assert mailbox.local_part == "oxadmin"
+        assert mailbox.status == enums.MailboxStatusChoices.ENABLED
         assert imported_mailboxes == [mailbox_valid["email"]]
 
 
