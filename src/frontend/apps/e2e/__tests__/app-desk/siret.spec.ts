@@ -14,7 +14,7 @@ test.describe('OIDC interop with SIRET', () => {
     );
     expect(response.ok()).toBeTruthy();
     expect(await response.json()).toMatchObject({
-      organization: { registration_id_list: ['21580304000017'] },
+      organization: { registration_id_list: ['21510339100011'] },
     });
   });
 });
@@ -28,6 +28,6 @@ test.describe('When a commune, display commune name below user name', () => {
       name: 'Marie Delamairie',
     });
 
-    await expect(logout.getByText('Varzy')).toBeVisible();
+    await expect(logout.getByText('Merlaut')).toBeVisible();
   });
 });

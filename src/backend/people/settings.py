@@ -657,8 +657,6 @@ class Development(Base):
 
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = "siret"
 
-    ORGANIZATION_PLUGINS = ["plugins.organizations.NameFromSiretOrganizationPlugin"]
-
     def __init__(self):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
@@ -705,8 +703,6 @@ class Test(Base):
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
 
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = "siret"
-
-    ORGANIZATION_PLUGINS = ["plugins.organizations.NameFromSiretOrganizationPlugin"]
 
     ORGANIZATION_REGISTRATION_ID_VALIDATORS = [
         {

@@ -9,6 +9,9 @@ from requests.adapters import HTTPAdapter, Retry
 
 from core.plugins.base import BaseOrganizationPlugin
 
+from mailbox_manager.enums import MailDomainRoleChoices
+from mailbox_manager.models import MailDomain, MailDomainAccess
+
 logger = logging.getLogger(__name__)
 
 
@@ -73,8 +76,9 @@ class NameFromSiretOrganizationPlugin(BaseOrganizationPlugin):
         organization.save(update_fields=["name", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
 
-    def run_after_grant_access(self, organization):
-        pass
+    def run_after_grant_access(self, organization_access):
+        """After granting an organization access, we don't need to do anything."""
+
 
 class ApiCall:
     """Encapsulates a call to an external API"""
@@ -85,18 +89,34 @@ class ApiCall:
     url: str = ""
     params: dict = {}
     headers: dict = {}
-    response = None
+    response_data = None
 
     def execute(self):
         """Call the specified API endpoint with supplied parameters and record response"""
-        if self.method == "POST":
-            self.response = requests.request(
+        if self.method in ("POST", "PATCH"):
+            response = requests.request(
                 method=self.method,
                 url=f"{self.base}/{self.url}",
                 json=self.params,
                 headers=self.headers,
                 timeout=5,
             )
+        else:
+            response = requests.request(
+                method=self.method,
+                url=f"{self.base}/{self.url}",
+                params=self.params,
+                headers=self.headers,
+                timeout=5,
+            )
+        self.response_data = response.json()
+        logger.info(
+            "API call: %s %s %s %s",
+            self.method,
+            self.url,
+            self.params,
+            self.response_data,
+        )
 
 
 class CommuneCreation(BaseOrganizationPlugin):
@@ -111,25 +131,31 @@ class CommuneCreation(BaseOrganizationPlugin):
         for result in data["results"]:
             nature = "nature_juridique"
             commune = nature in result and result[nature] == "7210"
-            for organization in result["matching_etablissements"]:
-                if organization.get("siret") == siret:
-                    if commune:
-                        return organization["libelle_commune"].title()
+            if commune:
+                return result["siege"]["libelle_commune"].title()
 
-        logger.warning("No organization name found for SIRET %s", siret)
+        logger.warning("Not a commune: SIRET %s", siret)
         return None
 
     def dns_call(self, spec):
         """Call to add a DNS record"""
         records = [
-            {"name": item["target"], "type": item["type"], "data": item["value"]}
-            for item in spec.response
+            {
+                "name": item["target"],
+                "type": item["type"].upper(),
+                "data": item["value"],
+                "ttl": 3600,
+            }
+            for item in spec.response_data
         ]
         result = ApiCall()
         result.method = "PATCH"
         result.base = "https://api.scaleway.com"
-        result.url = f"/domain/v2beta1/dns-zones/{spec.inputs["name"]}.collectivite.fr/records"
+        result.url = (
+            f"/domain/v2beta1/dns-zones/{spec.inputs['name']}.collectivite.fr/records"
+        )
         result.params = {"changes": [{"add": {"records": records}}]}
+        result.headers = {"X-Auth-Token": settings.DNS_PROVISIONING_API_CREDENTIALS}
         return result
 
     def complete_commune_creation(self, name: str) -> ApiCall:
@@ -160,7 +186,7 @@ class CommuneCreation(BaseOrganizationPlugin):
             "context_name": f"{inputs['name']}.collectivite.fr",
         }
         create_domain.headers = {
-            "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+            "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
 
         spec_domain = ApiCall()
@@ -168,7 +194,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         spec_domain.base = settings.MAIL_PROVISIONING_API_URL
         spec_domain.url = f"/domains/{inputs['name']}.collectivite.fr/spec"
         spec_domain.headers = {
-            "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+            "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
 
         return [create_zone, create_domain, spec_domain]
@@ -179,12 +205,13 @@ class CommuneCreation(BaseOrganizationPlugin):
 
     def run_after_create(self, organization):
         """After creating an organization, update the organization name."""
+        logger.info("In CommuneCreation")
         if not organization.registration_id_list:
             # No registration ID to convert...
             return
 
         # In the nominal case, there is only one registration ID because
-        # the organization as been created from it.
+        # the organization has been created from it.
         try:
             # Retry logic as the API may be rate limited
             s = requests.Session()
@@ -196,6 +223,7 @@ class CommuneCreation(BaseOrganizationPlugin):
             response.raise_for_status()
             data = response.json()
             name = self.get_organization_name_from_results(data, siret)
+            # Not a commune ?
             if not name:
                 return
         except requests.RequestException as exc:
@@ -206,5 +234,39 @@ class CommuneCreation(BaseOrganizationPlugin):
         organization.save(update_fields=["name", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
 
-    def run_after_grant_access(self, organization):
-        pass
+        MailDomain.objects.get_or_create(name=f"{name.lower()}.collectivite.fr")
+
+        # Compute and execute the rest of the process
+        tasks = self.complete_commune_creation(name)
+        for task in tasks:
+            task.execute()
+        last_task = self.complete_zone_creation(tasks[-1])
+        last_task.execute()
+
+    def run_after_grant_access(self, organization_access):
+        """After granting an organization access, check for needed domain access grant."""
+        orga = organization_access.organization
+        user = organization_access.user
+        zone_name = orga.name.lower() + ".collectivite.fr"
+
+        try:
+            domain = MailDomain.objects.get(domain=zone_name)
+        except MailDomain.DoesNotExist:
+            domain = None
+
+        if domain:
+            MailDomainAccess.objects.create(
+                domain=domain, user=user, role=MailDomainRoleChoices.OWNER
+            )
+            grant_access = ApiCall()
+            grant_access.method = "POST"
+            grant_access.base = settings.MAIL_PROVISIONING_API_URL
+            grant_access.url = "/allows"
+            grant_access.params = {
+                "user": user.sub,
+                "domain": zone_name,
+            }
+            grant_access.headers = {
+                "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+            }
+            grant_access.execute()
