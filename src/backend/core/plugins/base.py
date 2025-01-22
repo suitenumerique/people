@@ -11,3 +11,9 @@ class BaseOrganizationPlugin:
     def run_after_create(self, organization) -> None:
         """Method called after creating an organization."""
         raise NotImplementedError("Plugins must implement the run_after_create method")
+
+    def run_after_grant_access(self, organization_access) -> None:
+        """Method called after creating an organization."""
+        raise NotImplementedError(
+            "Plugins must implement the run_after_grant_access method"
+        )

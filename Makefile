@@ -72,6 +72,7 @@ data/static:
 create-env-files: ## Copy the dist env files to env files
 create-env-files: \
 	env.d/development/common \
+	env.d/development/france \
 	env.d/development/crowdin \
 	env.d/development/postgresql \
 	env.d/development/kc_postgresql
@@ -227,6 +228,9 @@ resetdb: ## flush database and create a superuser "admin"
 
 env.d/development/common:
 	cp -n env.d/development/common.dist env.d/development/common
+
+env.d/development/france:
+	cp -n env.d/development/france.dist env.d/development/france
 
 env.d/development/postgresql:
 	cp -n env.d/development/postgresql.dist env.d/development/postgresql

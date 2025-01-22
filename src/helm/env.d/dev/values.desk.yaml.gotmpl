@@ -51,7 +51,6 @@ backend:
     USER_OIDC_FIELDS_TO_NAME: "given_name,usual_name"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
-    ORGANIZATION_PLUGINS: "plugins.organizations.NameFromSiretOrganizationPlugin"
     ORGANIZATION_REGISTRATION_ID_VALIDATORS: '[{"NAME": "django.core.validators.RegexValidator", "OPTIONS": {"regex": "^[0-9]{14}$"}}]'
     LOGIN_REDIRECT_URL: https://desk.127.0.0.1.nip.io
     LOGIN_REDIRECT_URL_FAILURE: https://desk.127.0.0.1.nip.io
