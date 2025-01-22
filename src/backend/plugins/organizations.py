@@ -1,8 +1,8 @@
 """Organization related plugins."""
 
-from django.conf import settings
-
 import logging
+
+from django.conf import settings
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -73,9 +73,13 @@ class NameFromSiretOrganizationPlugin(BaseOrganizationPlugin):
         organization.save(update_fields=["name", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
 
+    def run_after_grant_access(self, organization):
+        pass
+
 class ApiCall:
     """Encapsulates a call to an external API"""
 
+    inputs: dict = {}
     method: str = "GET"
     base: str = ""
     url: str = ""
@@ -115,6 +119,19 @@ class CommuneCreation(BaseOrganizationPlugin):
         logger.warning("No organization name found for SIRET %s", siret)
         return None
 
+    def dns_call(self, spec):
+        """Call to add a DNS record"""
+        records = [
+            {"name": item["target"], "type": item["type"], "data": item["value"]}
+            for item in spec.response
+        ]
+        result = ApiCall()
+        result.method = "PATCH"
+        result.base = "https://api.scaleway.com"
+        result.url = f"/domain/v2beta1/dns-zones/{spec.inputs["name"]}.collectivite.fr/records"
+        result.params = {"changes": [{"add": {"records": records}}]}
+        return result
+
     def complete_commune_creation(self, name: str) -> ApiCall:
         """Specify the tasks to be completed after a commune is created."""
         inputs = {"name": name.lower()}
@@ -137,23 +154,28 @@ class CommuneCreation(BaseOrganizationPlugin):
         create_domain.base = settings.MAIL_PROVISIONING_API_URL
         create_domain.url = "/domains"
         create_domain.params = {
-            "name": f"{inputs["name"]}.collectivite.fr",
+            "name": f"{inputs['name']}.collectivite.fr",
             "delivery": "virtual",
-            "features": ["webmail","mailbox"],
-            "context_name": f"{inputs["name"]}.collectivite.fr",
+            "features": ["webmail", "mailbox"],
+            "context_name": f"{inputs['name']}.collectivite.fr",
         }
         create_domain.headers = {
             "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
 
         spec_domain = ApiCall()
+        spec_domain.inputs = inputs
         spec_domain.base = settings.MAIL_PROVISIONING_API_URL
-        spec_domain.url = f"/domains/{inputs["name"]}.collectivite.fr/spec"
+        spec_domain.url = f"/domains/{inputs['name']}.collectivite.fr/spec"
         spec_domain.headers = {
             "Authorization": f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
 
         return [create_zone, create_domain, spec_domain]
+
+    def complete_zone_creation(self, spec_call):
+        """Specify the tasks to be performed to set up the zone."""
+        return self.dns_call(spec_call)
 
     def run_after_create(self, organization):
         """After creating an organization, update the organization name."""
@@ -183,3 +205,6 @@ class CommuneCreation(BaseOrganizationPlugin):
         organization.name = name
         organization.save(update_fields=["name", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
+
+    def run_after_grant_access(self, organization):
+        pass

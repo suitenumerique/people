@@ -9,6 +9,7 @@ from plugins.organizations import ApiCall, CommuneCreation
 
 pytestmark = pytest.mark.django_db
 
+
 def test_extract_name_from_org_data_when_commune():
     """Test the name is extracted correctly for a French commune."""
     data = {
@@ -98,6 +99,7 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
         == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
 
+
 def test_tasks_on_commune_creation_include_fetching_spec():
     """Test the third task in commune creation: asking Dimail for the spec"""
     plugin = CommuneCreation()
@@ -112,3 +114,54 @@ def test_tasks_on_commune_creation_include_fetching_spec():
         tasks[2].headers["Authorization"]
         == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
+
+
+def test_tasks_on_commune_creation_include_dns_records():
+    """Test the next several tasks in commune creation: creating records"""
+    plugin = CommuneCreation()
+    name = "Abidos"
+
+    spec_response = [
+        {"target": "", "type": "mx", "value": "mx.dev.ox.numerique.gouv.fr."},
+        {
+            "target": "dimail._domainkey",
+            "type": "txt",
+            "value": "v=DKIM1; h=sha256; k=rsa; p=MIICIjANB<truncated>AAQ==",
+        },
+        {"target": "imap", "type": "cname", "value": "imap.dev.ox.numerique.gouv.fr."},
+        {"target": "smtp", "type": "cname", "value": "smtp.dev.ox.numerique.gouv.fr."},
+        {
+            "target": "",
+            "type": "txt",
+            "value": "v=spf1 include:_spf.dev.ox.numerique.gouv.fr -all",
+        },
+        {
+            "target": "webmail",
+            "type": "cname",
+            "value": "webmail.dev.ox.numerique.gouv.fr.",
+        },
+    ]
+
+    tasks = plugin.complete_commune_creation(name)
+    tasks[2].response = spec_response
+
+    expected = {
+        "changes": [
+            {
+                "add": {
+                    "records": [
+                        {
+                            "name": item["target"],
+                            "type": item["type"],
+                            "data": item["value"],
+                        }
+                        for item in spec_response
+                    ]
+                }
+            }
+        ]
+    }
+
+    zone_call = plugin.complete_zone_creation(tasks[2])
+    assert zone_call.params == expected
+    assert zone_call.url == "/domain/v2beta1/dns-zones/abidos.collectivite.fr/records"
