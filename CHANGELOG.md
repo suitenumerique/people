@@ -18,6 +18,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(dimail) fix imported mailboxes should be enabled instead of pending #659 
 - ⚡️(api) add missing cache for stats endpoint
 
 ## [1.10.0] - 2025-01-21

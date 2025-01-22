@@ -337,10 +337,10 @@ class DimailAPIClient:
                             last_name=dimail_mailbox["surName"],
                             local_part=address.username,
                             domain=domain,
-                            secondary_email=dimail_mailbox[
-                                "email"
-                            ],  # secondary email is mandatory. Unfortunately, dimail doesn't
+                            secondary_email=dimail_mailbox["email"],
+                            # secondary email is mandatory. Unfortunately, dimail doesn't
                             # store any. We temporarily give current email as secondary email.
+                            status=enums.MailboxStatusChoices.ENABLED,
                         )
                         imported_mailboxes.append(str(mailbox))
                     else:
