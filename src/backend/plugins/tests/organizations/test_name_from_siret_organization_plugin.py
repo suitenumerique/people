@@ -6,8 +6,6 @@ import responses
 from core.models import Organization
 from core.plugins.loader import get_organization_plugins
 
-from plugins.organizations import NameFromSiretOrganizationPlugin
-
 pytestmark = pytest.mark.django_db
 
 
