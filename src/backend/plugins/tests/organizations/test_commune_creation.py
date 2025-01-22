@@ -96,7 +96,7 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
     }
     assert (
         tasks[1].headers["Authorization"]
-        == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+        == f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
 
 
@@ -112,7 +112,7 @@ def test_tasks_on_commune_creation_include_fetching_spec():
     assert tasks[2].method == "GET"
     assert (
         tasks[2].headers["Authorization"]
-        == f"Basic: {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+        == f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
 
 
@@ -143,7 +143,7 @@ def test_tasks_on_commune_creation_include_dns_records():
     ]
 
     tasks = plugin.complete_commune_creation(name)
-    tasks[2].response = spec_response
+    tasks[2].response_data = spec_response
 
     expected = {
         "changes": [
@@ -152,8 +152,9 @@ def test_tasks_on_commune_creation_include_dns_records():
                     "records": [
                         {
                             "name": item["target"],
-                            "type": item["type"],
+                            "type": item["type"].upper(),
                             "data": item["value"],
+                            "ttl": 3600,
                         }
                         for item in spec_response
                     ]
@@ -165,3 +166,6 @@ def test_tasks_on_commune_creation_include_dns_records():
     zone_call = plugin.complete_zone_creation(tasks[2])
     assert zone_call.params == expected
     assert zone_call.url == "/domain/v2beta1/dns-zones/abidos.collectivite.fr/records"
+    assert (
+        zone_call.headers["X-Auth-Token"] == settings.DNS_PROVISIONING_API_CREDENTIALS
+    )

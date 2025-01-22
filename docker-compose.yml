@@ -27,6 +27,7 @@ services:
       - DJANGO_CONFIGURATION=Development
     env_file:
       - env.d/development/common
+      - env.d/development/france
       - env.d/development/postgresql
     ports:
       - "8071:8000"

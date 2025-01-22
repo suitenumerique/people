@@ -29,7 +29,10 @@ from timezone_field import TimeZoneField
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 
 from core.enums import WebhookStatusChoices
-from core.plugins.loader import organization_plugins_run_after_create
+from core.plugins.loader import (
+    organization_plugins_run_after_create,
+    organization_plugins_run_after_grant_access,
+)
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
 
@@ -295,6 +298,22 @@ class OrganizationManager(models.Manager):
         """
         instance = super().create(**kwargs)
         organization_plugins_run_after_create(instance)
+        return instance
+
+
+class OrganizationAccessManager(models.Manager):
+    """
+    Custom manager for the OrganizationAccess model, to manage complexity/automation.
+    """
+
+    def create(self, **kwargs):
+        """
+        Create an organization access with the given kwargs.
+
+        This method is overridden to call the Organization plugins.
+        """
+        instance = super().create(**kwargs)
+        organization_plugins_run_after_grant_access(instance)
         return instance
 
 
@@ -617,6 +636,8 @@ class OrganizationAccess(BaseModel):
         choices=OrganizationRoleChoices.choices,
         default=OrganizationRoleChoices.ADMIN,
     )
+
+    objects = OrganizationAccessManager()
 
     class Meta:
         db_table = "people_organization_access"
@@ -979,3 +1000,7 @@ class Invitation(BaseModel):
 
         except smtplib.SMTPException as exception:
             logger.error("invitation to %s was not sent: %s", self.email, exception)
+
+
+# It's not clear yet how best to split this file.
+# pylint: disable=C0302

@@ -1,0 +1,1 @@
+ORGANIZATION_PLUGINS=plugins.organizations.NameFromSiretOrganizationPlugin,plugins.organizations.CommuneCreation

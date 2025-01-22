@@ -30,3 +30,15 @@ def organization_plugins_run_after_create(organization):
     """
     for plugin_instance in get_organization_plugins():
         plugin_instance.run_after_create(organization)
+
+
+def organization_plugins_run_after_grant_access(organization_access):
+    """
+    Run the after grant access method for all organization plugins.
+
+    Each plugin will be called in the order they are listed in the settings.
+    Each plugin is responsible to save changes if needed, this is not optimized
+    but this could be easily improved later if needed.
+    """
+    for plugin_instance in get_organization_plugins():
+        plugin_instance.run_after_grant_access(organization_access)
