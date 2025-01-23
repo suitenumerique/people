@@ -7,6 +7,8 @@ from functools import reduce
 from django.conf import settings
 from django.db.models import OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from rest_framework import (
     decorators,
@@ -27,8 +29,6 @@ from core.api.client import serializers
 from core.utils.raw_sql import gen_sql_filter_json_array
 
 from mailbox_manager import models as domains_models
-
-SIMILARITY_THRESHOLD = 0.04
 
 
 class NestedGenericViewSet(viewsets.GenericViewSet):
@@ -596,19 +596,20 @@ class StatView(views.APIView):
 
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page(3600))
     def get(self, request):
         """
         GET /api/v1.0/stats/
             Return a dictionary of public metrics.
         """
         context = {
-            "total_users": models.User.objects.all().count(),
+            "total_users": models.User.objects.count(),
             "mau": models.User.objects.filter(
                 last_login__gte=datetime.datetime.now() - datetime.timedelta(30)
             ).count(),
-            "teams": models.Team.objects.all().count(),
-            "domains": domains_models.MailDomain.objects.all().count(),
-            "mailboxes": domains_models.Mailbox.objects.all().count(),
+            "teams": models.Team.objects.count(),
+            "domains": domains_models.MailDomain.objects.count(),
+            "mailboxes": domains_models.Mailbox.objects.count(),
         }
         return response.Response(context)
 

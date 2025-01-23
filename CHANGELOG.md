@@ -12,6 +12,10 @@ and this project adheres to
 
 - ✨(scripts) adapts release script after moving the deployment part
 
+### Fixed
+
+- ⚡️(api) add missing cache for stats endpoint
+
 ## [1.10.0] - 2025-01-21
 
 ### Added

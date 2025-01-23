@@ -2,6 +2,8 @@
 Test stats endpoint
 """
 
+from django.core.cache import cache
+
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -14,17 +16,34 @@ from mailbox_manager import models as domains_models
 pytestmark = pytest.mark.django_db
 
 
-def test_api_stats__anonymous():
+def test_api_stats__anonymous(django_assert_num_queries):
     """Stats endpoint should be available even when not connected."""
 
-    response = APIClient().get("/api/v1.0/stats/")
+    domains_factories.MailDomainFactory.create_batch(5)
+    core_factories.TeamFactory.create_batch(3)
+
+    # clear cache to allow stats count
+    cache.clear()
+    with django_assert_num_queries(5):
+        response = APIClient().get("/api/v1.0/stats/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "total_users": 0,
         "mau": 0,
-        "domains": 0,
+        "domains": 5,
         "mailboxes": 0,
-        "teams": 0,
+        "teams": 3,
+    }
+    # no new request made due to caching
+    with django_assert_num_queries(0):
+        response = APIClient().get("/api/v1.0/stats/")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "total_users": 0,
+        "mau": 0,
+        "domains": 5,
+        "mailboxes": 0,
+        "teams": 3,
     }
 
 
@@ -43,6 +62,8 @@ def test_api_stats__expected_count():
         10, domain=domains_models.MailDomain.objects.all()[1]
     )
 
+    # clear cache to allow stats count
+    cache.clear()
     response = APIClient().get("/api/v1.0/stats/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
