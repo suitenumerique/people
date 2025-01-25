@@ -221,6 +221,7 @@ class Base(Configuration):
         "parler",
         "treebeard",
         "easy_thumbnails",
+        "django_celery_results",
         # Django
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -320,7 +321,11 @@ class Base(Configuration):
 
     # Celery
     CELERY_BROKER_URL = values.Value("redis://redis:6379/0")
+    CELERY_RESULT_BACKEND = "django-db"
+    CELERY_CACHE_BACKEND = "django-cache"
     CELERY_BROKER_TRANSPORT_OPTIONS = values.DictValue({})
+    CELERY_RESULT_EXTENDED = True
+    CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24 * 30  # 30 days
 
     # Session
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
