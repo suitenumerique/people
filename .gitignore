@@ -58,6 +58,9 @@ src/frontend/tsclient
 # Logs
 *.log
 
+# Celery beat
+src/backend/celerybeat-schedule
+
 # Test & lint
 .coverage
 coverage.json
