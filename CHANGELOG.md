@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 🧑‍💻(docker) add celery beat to manage periodic tasks
 - ✨(dimail) management command to fetch domain status
 
 ### Changed
