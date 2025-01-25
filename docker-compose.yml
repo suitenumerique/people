@@ -57,6 +57,22 @@ services:
     depends_on:
       - app-dev
 
+  celery-beat-dev:
+    user: ${DOCKER_USER:-1000}
+    image: people:backend-development
+    command: ["celery", "-A", "people.celery_app", "beat", "-l", "DEBUG"]
+    environment:
+      - DJANGO_CONFIGURATION=Development
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    volumes:
+      - ./src/backend:/app
+      - ./data/media:/data/media
+      - ./data/static:/data/static
+    depends_on:
+      - app-dev
+
   app:
     build:
       context: .
