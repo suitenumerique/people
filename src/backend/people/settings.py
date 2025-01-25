@@ -220,12 +220,14 @@ class Base(Configuration):
         "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'
         "core",
         "demo",
-        "mailbox_manager",
+        "mailbox_manager.apps.MailboxManagerConfig",
         "mailbox_oauth2",
         "drf_spectacular",
         "drf_spectacular_sidecar",  # required for Django collectstatic discovery
         # Third party apps
         "corsheaders",
+        "django_celery_beat",
+        "django_celery_results",
         "dockerflow.django",
         "easy_thumbnails",
         "oauth2_provider",
@@ -331,7 +333,12 @@ class Base(Configuration):
 
     # Celery
     CELERY_BROKER_URL = values.Value("redis://redis:6379/0")
+    CELERY_RESULT_BACKEND = "django-db"
+    CELERY_CACHE_BACKEND = "django-cache"
     CELERY_BROKER_TRANSPORT_OPTIONS = values.DictValue({})
+    CELERY_RESULT_EXTENDED = True
+    CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24 * 30  # 30 days
+    CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
     # Session
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"

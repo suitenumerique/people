@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) add periodic tasks to fetch domain status
 - 🧑‍💻(docker) add celery beat to manage periodic tasks
 - ✨(organization) add metadata field #790
 - ⬆️(nginx) bump nginx-unprivileged to 1.27 #797
