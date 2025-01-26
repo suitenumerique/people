@@ -40,6 +40,18 @@ def fetch_domains_status():
         else:
             if old_status != domain.status:
                 update_count += 1
+                # Send notification to owners and admins of the domain
+                # when its status changes to failed or enabled
+                if domain.status == MailDomainStatusChoices.FAILED:
+                    domain.send_notification(
+                        subject="Domain status changed",
+                        message=f"Domain {domain.name} is down",
+                    )
+                elif domain.status == MailDomainStatusChoices.ENABLED:
+                    domain.send_notification(
+                        subject="Domain status changed",
+                        message=f"Domain {domain.name} is up",
+                    )
             else:
                 check_count += 1
     return f"Domains processed: {update_count} updated, {check_count} checked"

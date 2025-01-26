@@ -4,6 +4,9 @@ Unit tests for mailbox manager tasks.
 
 import json
 import re
+from unittest import mock
+
+from django.conf import settings
 
 import pytest
 import responses
@@ -21,13 +24,24 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
 
     domain_enabled1 = factories.MailDomainEnabledFactory()
     domain_enabled2 = factories.MailDomainEnabledFactory()
+    owner_domain_enabled2 = factories.MailDomainAccessFactory(
+        domain=domain_enabled2, role=enums.MailDomainRoleChoices.OWNER
+    ).user
+    admin_domain_enabled2 = factories.MailDomainAccessFactory(
+        domain=domain_enabled2, role=enums.MailDomainRoleChoices.ADMIN
+    ).user
     domain_disabled = factories.MailDomainFactory(
         status=enums.MailDomainStatusChoices.DISABLED
     )
     domain_failed = factories.MailDomainFactory(
         status=enums.MailDomainStatusChoices.FAILED
     )
-
+    owner_domain_failed = factories.MailDomainAccessFactory(
+        domain=domain_failed, role=enums.MailDomainRoleChoices.OWNER
+    ).user
+    admin_domain_failed = factories.MailDomainAccessFactory(
+        domain=domain_failed, role=enums.MailDomainRoleChoices.ADMIN
+    ).user
     body_content_ok1 = CHECK_DOMAIN_OK.copy()
     body_content_ok1["name"] = domain_enabled1.name
 
@@ -52,7 +66,8 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
             status=200,
             content_type="application/json",
         )
-    tasks.fetch_domains_status()
+    with mock.patch("django.core.mail.send_mail") as mock_send:
+        tasks.fetch_domains_status()
     domain_enabled1.refresh_from_db()
     domain_enabled2.refresh_from_db()
     domain_disabled.refresh_from_db()
@@ -63,6 +78,35 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
     assert domain_enabled2.status == enums.MailDomainStatusChoices.FAILED
     # Status of the failed domain has changed to enabled
     assert domain_failed.status == enums.MailDomainStatusChoices.ENABLED
+    # Check notification was sent to owners and admins
+    assert mock_send.call_count == 4
+    calls = [
+        mock.call(
+            "Domain status changed",
+            f"Domain {domain_enabled2.name} is down",
+            settings.DEFAULT_FROM_EMAIL,
+            [owner_domain_enabled2.email],
+        ),
+        mock.call(
+            "Domain status changed",
+            f"Domain {domain_enabled2.name} is down",
+            settings.DEFAULT_FROM_EMAIL,
+            [admin_domain_enabled2.email],
+        ),
+        mock.call(
+            "Domain status changed",
+            f"Domain {domain_failed.name} is up",
+            settings.DEFAULT_FROM_EMAIL,
+            [owner_domain_failed.email],
+        ),
+        mock.call(
+            "Domain status changed",
+            f"Domain {domain_failed.name} is up",
+            settings.DEFAULT_FROM_EMAIL,
+            [admin_domain_failed.email],
+        ),
+    ]
+    mock_send.assert_has_calls(calls, any_order=True)
     # Disabled domain was excluded
     assert domain_disabled.status == enums.MailDomainStatusChoices.DISABLED
 
