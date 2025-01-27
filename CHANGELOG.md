@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.10.1] - 2025-01-27
+
 ### Added
 
 - ✨(dimail) management command to fetch domain status
@@ -260,7 +262,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/numerique-gouv/people/compare/v1.10.0...main
+[unreleased]: https://github.com/numerique-gouv/people/compare/v1.10.1...main
+[1.10.1]: https://github.com/numerique-gouv/people/releases/v1.10.1
 [1.10.0]: https://github.com/numerique-gouv/people/releases/v1.10.0
 [1.9.1]: https://github.com/numerique-gouv/people/releases/v1.9.1
 [1.9.0]: https://github.com/numerique-gouv/people/releases/v1.9.0
