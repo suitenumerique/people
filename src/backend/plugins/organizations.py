@@ -250,7 +250,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         zone_name = orga.name.lower() + ".collectivite.fr"
 
         try:
-            domain = MailDomain.objects.get(domain=zone_name)
+            domain = MailDomain.objects.get(name=zone_name)
         except MailDomain.DoesNotExist:
             domain = None
 
