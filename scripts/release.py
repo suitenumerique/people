@@ -53,6 +53,7 @@ def update_helm_files(path):
     with open(path, 'w+') as file:
         file.writelines(lines)
 
+
 def update_changelog(path, version):
     """Update changelog file with release info
     """
@@ -108,8 +109,7 @@ Continue ? (y,n)
 PLEASE DO THE FOLLOWING INSTRUCTIONS: 
 --> Please submit PR {deployment_branch} and merge code to main
 \x1b[0m""")
-        sys.stdout.write(
-            f"""\033[1;34m--> Now please generate release on github interface for the current tag v{version}\n\x1b[0m""")
+
 
 def project_part(version, kind):
     """Manage only la regie part with update of CHANGELOG, version files and tag"""
@@ -146,6 +146,7 @@ Continue ? (y,n)
 --> Please check and wait for the docker image v{version} to be published here:
  - https://hub.docker.com/r/lasuite/people-backend/tags 
  - https://hub.docker.com/r/lasuite/people-frontend/tags
+--> Now please generate release on github interface for the current tag v{version}
  \x1b[0m""")
 
 
