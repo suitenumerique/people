@@ -7,6 +7,6 @@ entries:
     name: desk
     type: application
     urls:
-    - https://numerique-gouv.github.io/people/desk-0.0.1.tgz
+    - https://suitenumerique.github.io/people/desk-0.0.1.tgz
     version: 0.0.1
 generated: "2025-01-10T13:48:53.486107307Z"
