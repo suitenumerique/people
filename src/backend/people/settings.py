@@ -227,6 +227,7 @@ class Base(Configuration):
         "django.contrib.staticfiles",
         # OIDC third party
         "mozilla_django_oidc",
+        "django_celery_results",
     ]
 
     # Cache
@@ -316,6 +317,8 @@ class Base(Configuration):
 
     # Celery
     CELERY_BROKER_URL = values.Value("redis://redis:6379/0")
+    CELERY_RESULT_BACKEND = "django-db"
+    CELERY_CACHE_BACKEND = "django-cache"
     CELERY_BROKER_TRANSPORT_OPTIONS = values.DictValue({})
 
     # Session
