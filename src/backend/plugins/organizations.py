@@ -24,27 +24,22 @@ class NameFromSiretOrganizationPlugin(BaseOrganizationPlugin):
     _api_url = "https://recherche-entreprises.api.gouv.fr/search?q={siret}"
 
     @staticmethod
-    def _extract_name_from_organization_data(organization_data):
-        """Extract the name from the organization data."""
-        try:
-            return organization_data["liste_enseignes"][0].title()
-        except KeyError:
-            logger.warning("Missing key 'liste_enseignes' in %s", organization_data)
-        except IndexError:
-            logger.warning("Empty list 'liste_enseignes' in %s", organization_data)
-        return None
-
-    def get_organization_name_from_results(self, data, siret):
+    def get_organization_name_from_results(data, siret):
         """Return the organization name from the results of a SIRET search."""
         for result in data["results"]:
-            nature = "nature_juridique"
-            commune = nature in result and result[nature] == "7210"
+            is_commune = (
+                result.get("nature_juridique") == "7210"
+            )  # INSEE code for commune
             for organization in result["matching_etablissements"]:
                 if organization.get("siret") == siret:
-                    if commune:
+                    if is_commune:
                         return organization["libelle_commune"].title()
 
-                return self._extract_name_from_organization_data(organization)
+                    store_signs = organization.get("liste_enseignes") or []
+                    if store_signs:
+                        return store_signs[0].title()
+                    if name := result.get("nom_raison_sociale"):
+                        return name.title()
 
         logger.warning("No organization name found for SIRET %s", siret)
         return None
