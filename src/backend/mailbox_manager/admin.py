@@ -12,10 +12,17 @@ from mailbox_manager.utils.dimail import DimailAPIClient
 
 @admin.action(description=_("Synchronise from dimail"))
 def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
-    """Admin action to synchronize existing mailboxes from dimail to our database."""
+    """Admin action to synchronize existing mailboxes from dimail to our database.
+    Only works on enabled domains."""
+    excluded_domains = []
+
     client = DimailAPIClient()
 
     for domain in queryset:
+        if domain.status != enums.MailDomainStatusChoices.ENABLED:
+            excluded_domains.append(domain.name)
+            continue
+
         try:
             imported_mailboxes = client.import_mailboxes(domain)
         except exceptions.HTTPError as err:
@@ -31,6 +38,13 @@ def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disabl
                     f"Imported mailboxes: {', '.join(imported_mailboxes)}"
                 ),
             )
+    if excluded_domains:
+        messages.warning(
+            request,
+            _(
+                f"Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
+            ),
+        )
 
 
 @admin.action(description=_("Check and update status from dimail"))

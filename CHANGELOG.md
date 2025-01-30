@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 
 - 🚑️(plugins) fix name from SIRET specific case #674
+- 🐛(api) restrict mailbox sync to enabled domains
 
 
 ## [1.10.1] - 2025-01-27
