@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🚑️(teams) do not display add button when disallowed #676
 - 🚑️(plugins) fix name from SIRET specific case #674
 - 🐛(api) restrict mailbox sync to enabled domains
 

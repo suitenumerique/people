@@ -53,3 +53,18 @@ class AccessPermission(IsAuthenticated):
         """Check permission for a given object."""
         abilities = obj.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)
+
+
+class TeamPermission(IsAuthenticated):
+    """Permission class for team objects viewset."""
+
+    def has_permission(self, request, view):
+        """Check permission only when the user tries to create a new team."""
+        if not super().has_permission(request, view):
+            return False
+
+        if request.method != "POST":
+            return True
+
+        abilities = request.user.get_abilities()
+        return abilities["teams"]["can_create"]

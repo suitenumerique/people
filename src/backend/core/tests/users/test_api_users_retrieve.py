@@ -56,7 +56,7 @@ def test_api_users_retrieve_me_authenticated():
         "abilities": {
             "contacts": {"can_create": True, "can_view": True},
             "mailboxes": {"can_create": False, "can_view": False},
-            "teams": {"can_create": False, "can_view": False},
+            "teams": {"can_create": True, "can_view": True},
         },
         "organization": {
             "id": str(user.organization.pk),
@@ -66,11 +66,18 @@ def test_api_users_retrieve_me_authenticated():
     }
 
 
-def test_api_users_retrieve_me_authenticated_abilities():
+def test_api_users_retrieve_me_authenticated_abilities(settings):
     """
     Authenticated users should be able to retrieve their own user via the "/users/me" path
     with the proper abilities.
     """
+    settings.FEATURES = {
+        "TEAMS_DISPLAY": False,
+        "TEAMS_CREATE": True,
+        "CONTACTS_DISPLAY": True,
+        "CONTACTS_CREATE": True,
+        "MAILBOXES_CREATE": True,
+    }
     user = factories.UserFactory()
 
     client = APIClient()

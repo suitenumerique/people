@@ -6,6 +6,7 @@ import pytest
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
 )
 from rest_framework.test import APIClient
 
@@ -28,7 +29,7 @@ def test_api_teams_create_anonymous():
     assert not Team.objects.exists()
 
 
-def test_api_teams_create_authenticated():
+def test_api_teams_create_authenticated(settings):
     """
     Authenticated users should be able to create teams and should automatically be declared
     as the owner of the newly created team.
@@ -38,6 +39,14 @@ def test_api_teams_create_authenticated():
 
     client = APIClient()
     client.force_login(user)
+
+    settings.FEATURES = {
+        "TEAMS_DISPLAY": True,
+        "TEAMS_CREATE": True,
+        "CONTACTS_DISPLAY": False,
+        "CONTACTS_CREATE": False,
+        "MAILBOXES_CREATE": False,
+    }
 
     response = client.post(
         "/api/v1.0/teams/",
@@ -52,6 +61,36 @@ def test_api_teams_create_authenticated():
     assert team.name == "my team"
     assert team.organization == organization
     assert team.accesses.filter(role="owner", user=user).exists()
+
+
+def test_api_teams_create_authenticated_feature_disabled(settings):
+    """
+    Authenticated users should not be able to create teams when feature is disabled.
+    """
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
+
+    client = APIClient()
+    client.force_login(user)
+
+    settings.FEATURES = {
+        "TEAMS_DISPLAY": True,
+        "TEAMS_CREATE": False,
+        "CONTACTS_DISPLAY": False,
+        "CONTACTS_CREATE": False,
+        "MAILBOXES_CREATE": False,
+    }
+
+    response = client.post(
+        "/api/v1.0/teams/",
+        {
+            "name": "my team",
+        },
+        format="json",
+    )
+
+    assert response.status_code == HTTP_403_FORBIDDEN
+    assert not Team.objects.exists()
 
 
 def test_api_teams_create_cannot_override_organization():
