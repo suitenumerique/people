@@ -18,10 +18,11 @@ def setup_periodic_tasks(sender, **kwargs):
     Setup periodic tasks.
     """
     sender.add_periodic_task(
-        crontab(minute="*/5"), fetch_domains_status_task.s(), name="Fetch domains status"
+        crontab(minute="*/5"), fetch_domains_status_task.s()
     )
 
 
+# TODO: add parameters to use this function in management command too
 def fetch_domains_status():
     """
     Call dimail to check and update domains status.
@@ -41,12 +42,13 @@ def fetch_domains_status():
                 update_count += 1
             else:
                 check_count += 1
+    # todo: add more details to store more information in the database
     return f"Domains processed: {update_count} updated, {check_count} checked"
 
 
-@celery_app.task(name="Fetch domains status")
+@celery_app.task(name="Fetch domains status from dimail")
 def fetch_domains_status_task():
     """
-    Call dimail to check and update domains status.
+    Celery task to call dimail to check and update domains status.
     """
     return fetch_domains_status()

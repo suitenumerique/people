@@ -320,6 +320,10 @@ class Base(Configuration):
     CELERY_RESULT_BACKEND = "django-db"
     CELERY_CACHE_BACKEND = "django-cache"
     CELERY_BROKER_TRANSPORT_OPTIONS = values.DictValue({})
+    CELERY_RESULT_EXTENDED = True
+    # TODO: fix duration after testing
+    CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 1
+
 
     # Session
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
