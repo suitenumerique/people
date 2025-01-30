@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
+import { useAuthStore } from '@/core/auth';
 import { Team, useTeams } from '@/features/teams/team-management';
 
 import { useTeamStore } from '../store';
@@ -17,6 +18,9 @@ interface PanelTeamsStateProps {
 
 const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
   const { t } = useTranslation();
+  const { userData } = useAuthStore();
+
+  const can_create = userData?.abilities?.teams.can_create ?? false;
 
   if (isError) {
     return (
@@ -42,11 +46,13 @@ const TeamListState = ({ isLoading, isError, teams }: PanelTeamsStateProps) => {
         <Text as="p" $margin={{ vertical: 'none' }}>
           {t('0 group to display.')}
         </Text>
-        <Text as="p">
-          {t(
-            'Create your first team by clicking on the "Create a new team" button.',
-          )}
-        </Text>
+        {can_create && (
+          <Text as="p">
+            {t(
+              'Create your first team by clicking on the "Create a new team" button.',
+            )}
+          </Text>
+        )}
       </Box>
     );
   }

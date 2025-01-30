@@ -39,9 +39,18 @@ test.describe('Config', () => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName, 'mail-member');
 
-    await expect(page.locator('menu')).toBeHidden();
+    await page
+      .locator('menu')
+      .first()
+      .getByLabel(`Mail Domains button`)
+      .click();
+    await expect(page).toHaveURL(/mail-domains\//);
 
-    await expect(page.getByText('Mail Domains')).toBeVisible();
+    await expect(
+      page
+        .getByLabel('Mail domains panel', { exact: true })
+        .getByText('Mail Domains'),
+    ).toBeVisible();
   });
 
   test('it checks that the user abilities display teams', async ({

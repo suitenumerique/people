@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
+import { useAuthStore } from '@/core/auth';
 import { AppWrapper } from '@/tests/utils';
 
 import { Panel } from '../components/Panel';
@@ -23,6 +24,19 @@ describe('PanelTeams', () => {
   });
 
   it('renders with no team to display', async () => {
+    useAuthStore.setState({
+      userData: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        abilities: {
+          teams: { can_view: true, can_create: true },
+          mailboxes: { can_view: true },
+          contacts: { can_view: true },
+        },
+      },
+    });
+
     fetchMock.mock(`end:/teams/?ordering=-created_at`, []);
 
     render(<TeamList />, { wrapper: AppWrapper });
