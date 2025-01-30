@@ -76,7 +76,7 @@ class Base(Configuration):
     """
 
     DEBUG = False
-    USE_SWAGGER = False
+    USE_SWAGGER = True
 
     API_VERSION = "v1.0"
 
