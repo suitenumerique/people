@@ -303,7 +303,7 @@ class TeamViewSet(
 ):
     """Team ViewSet"""
 
-    permission_classes = [permissions.AccessPermission]
+    permission_classes = [permissions.TeamPermission, permissions.AccessPermission]
     serializer_class = serializers.TeamSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "name", "path"]
