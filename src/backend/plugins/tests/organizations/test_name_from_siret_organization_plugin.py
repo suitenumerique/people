@@ -168,3 +168,43 @@ def test_extract_name_from_org_data_when_commune(
     plugin = NameFromSiretOrganizationPlugin()
     name = plugin.get_organization_name_from_results(data, "21580304000017")
     assert name == "Varzy"
+
+
+@responses.activate
+def test_organization_plugins_run_after_create_no_list_enseignes(
+    organization_plugins_settings,
+):
+    """Test the run_after_create method of the organization plugins for nominal case."""
+    responses.add(
+        responses.GET,
+        "https://recherche-entreprises.api.gouv.fr/search?q=12345678901234",
+        json={
+            "results": [
+                {
+                    "nom_raison_sociale": "AMAZING ORGANIZATION",
+                    # skipping some fields
+                    "matching_etablissements": [
+                        # skipping some fields
+                        {
+                            "liste_enseignes": None,
+                            "siret": "12345678901234",
+                        }
+                    ],
+                }
+            ],
+            "total_results": 1,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        },
+        status=200,
+    )
+
+    organization = Organization.objects.create(
+        name="12345678901234", registration_id_list=["12345678901234"]
+    )
+    assert organization.name == "Amazing Organization"
+
+    # Check that the organization has been updated in the database also
+    organization.refresh_from_db()
+    assert organization.name == "Amazing Organization"

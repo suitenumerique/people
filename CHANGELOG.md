@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🚑️(plugins) fix name from SIRET specific case #674
+
 ## [1.10.1] - 2025-01-27
 
 ### Added
