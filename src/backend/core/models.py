@@ -573,7 +573,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             .get()
         )
 
-        teams_can_view = user_info.teams_can_view
+        teams_can_view = user_info.teams_can_view or settings.FEATURES["TEAMS_DISPLAY"]
         mailboxes_can_view = user_info.mailboxes_can_view
 
         return {
@@ -585,7 +585,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
                 ),
             },
             "teams": {
-                "can_view": teams_can_view and settings.FEATURES["TEAMS_DISPLAY"],
+                "can_view": teams_can_view,
                 "can_create": teams_can_view and settings.FEATURES["TEAMS_CREATE"],
             },
             "mailboxes": {
