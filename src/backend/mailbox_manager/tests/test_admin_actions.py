@@ -23,6 +23,38 @@ from .fixtures.dimail import (
 )
 
 
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.FAILED,
+        enums.MailDomainStatusChoices.DISABLED,
+    ],
+)
+@pytest.mark.django_db
+def test_sync_mailboxes__should_not_sync_if_domain_is_not_enabled(
+    domain_status, client
+):
+    """Mailboxes should not be sync'ed on non-enabled domains."""
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+    domain = factories.MailDomainFactory(status=domain_status)
+    data = {
+        "action": "sync_mailboxes_from_dimail",
+        "_selected_action": [domain.id],
+    }
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+
+    with responses.RequestsMock():
+        # No call expected
+        response = client.post(url, data, follow=True)
+    assert response.status_code == status.HTTP_200_OK
+    assert (
+        f"Sync require enabled domains. Excluded domains: {domain}"
+        in response.content.decode("utf-8")
+    )
+
+
 @pytest.mark.django_db
 def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client):
     """Test admin action to check health of some domains"""
