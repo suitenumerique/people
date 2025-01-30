@@ -37,7 +37,7 @@ age-keygen -o my-age.key
 **Install the SOPS key**
 
 Read the SOPS documentation on how to install the key in your environment.
-https://github.com/getsops/sops?tab=readme-ov-file#22encrypting-using-age
+https://github.com/getsops/sops?tab=readme-ov-file#23encrypting-using-age
 
 On Ubuntu it's like:
 
@@ -57,7 +57,7 @@ Update the [.sops.yaml](../.sops.yaml) file with the **public** key id you gener
 If you use helmfile in Docker, you may need an additional configuration to make 
 it work with you age key.
 
-You need to mount `-v "${HOME}/.config/sops/age/:/helm/.config/sops/age/"`
+You need to `mount -v "${HOME}/.config/sops/age/:/helm/.config/sops/age/"`
 
 ```bash
 #!/bin/sh
