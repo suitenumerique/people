@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailcatcher
+  labels:
+    app: mailcatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcatcher
+  template:
+    metadata:
+      labels:
+        app: mailcatcher
+    spec:
+      containers:
+        - name: mailcatcher
+          image: "{{ .Values.mailcatcher.image.repository }}:{{ .Values.mailcatcher.image.tag }}"
+          imagePullPolicy: {{ .Values.mailcatcher.image.pullPolicy }}
+          ports:
+            - name: smtp
+              containerPort: 1025
+            - name: http
+              containerPort: 1080
