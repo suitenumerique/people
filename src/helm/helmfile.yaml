@@ -100,3 +100,10 @@ releases:
     values:
       - env.d/{{ .Environment.Name }}/values.desk.yaml.gotmpl
 
+  - name: mailcatcher
+    installed: {{ regexMatch "^dev.*" .Environment.Name | toYaml }}
+    missingFileHandler: Warn
+    namespace: {{ .Namespace }}
+    chart: ./mailcatcher
+    values:
+      - env.d/{{ .Environment.Name }}/values.desk.yaml.gotmpl
