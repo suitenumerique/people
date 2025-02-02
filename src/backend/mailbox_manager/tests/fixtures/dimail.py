@@ -85,6 +85,62 @@ CHECK_DOMAIN_BROKEN = {
     },
 }
 
+
+CHECK_DOMAIN_BROKEN_INTERNAL = {
+    "name": "example.fr",
+    "state": "broken",
+    "valid": False,
+    "delivery": "virtual",
+    "features": ["webmail", "mailbox"],
+    "webmail_domain": None,
+    "imap_domain": None,
+    "smtp_domain": None,
+    "context_name": "example.fr",
+    "transport": None,
+    "domain_exist": {"ok": True, "internal": False, "errors": []},
+    "mx": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "cname_imap": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "cname_smtp": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "cname_webmail": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "spf": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "dkim": {
+        "ok": True,
+        "internal": False,
+        "errors": [],
+    },
+    "postfix": {"ok": True, "internal": True, "errors": []},
+    "ox": {"ok": True, "internal": True, "errors": []},
+    "cert": {
+        "ok": False,
+        "internal": True,
+        "errors": [
+            {"code": "no_cert", "detail": "Pas de certificat pour ce domaine (ls)"}
+        ],
+    },
+}
+
+
+
 CHECK_DOMAIN_OK = {
     "name": "example.fr",
     "state": "ok",
