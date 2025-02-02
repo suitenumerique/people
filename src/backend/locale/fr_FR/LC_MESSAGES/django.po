@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-03 10:25+0000\n"
+"POT-Creation-Date: 2025-02-03 10:27+0000\n"
 "PO-Revision-Date: 2024-01-03 23:15\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Failure"
 msgstr "En échec"
 
-#: core/enums.py:24 mailbox_manager/enums.py:21 mailbox_manager/enums.py:30
+#: core/enums.py:24 mailbox_manager/enums.py:21 mailbox_manager/enums.py:31
 msgid "Pending"
 msgstr "En attente"
 
@@ -568,17 +568,21 @@ msgstr ""
 msgid "Viewer"
 msgstr "Lecteur"
 
-#: mailbox_manager/enums.py:22 mailbox_manager/enums.py:31
+#: mailbox_manager/enums.py:22 mailbox_manager/enums.py:32
 msgid "Enabled"
 msgstr "Actif"
 
-#: mailbox_manager/enums.py:23 mailbox_manager/enums.py:32
+#: mailbox_manager/enums.py:23 mailbox_manager/enums.py:33
 msgid "Failed"
 msgstr "En échec"
 
-#: mailbox_manager/enums.py:24 mailbox_manager/enums.py:33
+#: mailbox_manager/enums.py:24 mailbox_manager/enums.py:34
 msgid "Disabled"
 msgstr "Désactivé"
+
+#: mailbox_manager/enums.py:25
+msgid "Action required"
+msgstr "Action requise"
 
 #: mailbox_manager/models.py:35
 msgid "Mail domain"
