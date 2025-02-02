@@ -25,7 +25,7 @@ class MailDomain(BaseModel):
     )
     slug = models.SlugField(null=False, blank=False, unique=True, max_length=80)
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         default=MailDomainStatusChoices.PENDING,
         choices=MailDomainStatusChoices.choices,
     )

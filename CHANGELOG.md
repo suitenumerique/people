@@ -10,13 +10,13 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) add action required status on MailDomain
 - ✨(dimail) send pending mailboxes upon domain activation
 
 ### Fixed
 
 - 🚑️(plugins) fix name from SIRET specific case #674
 - 🐛(api) restrict mailbox sync to enabled domains
-
 
 ## [1.10.1] - 2025-01-27
 

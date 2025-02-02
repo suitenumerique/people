@@ -22,6 +22,7 @@ class MailDomainStatusChoices(models.TextChoices):
     ENABLED = "enabled", _("Enabled")
     FAILED = "failed", _("Failed")
     DISABLED = "disabled", _("Disabled")
+    ACTION_REQUIRED = "action_required", _("Action required")
 
 
 class MailboxStatusChoices(models.TextChoices):
