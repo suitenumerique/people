@@ -29,6 +29,7 @@ class MailDomain(BaseModel):
         default=MailDomainStatusChoices.PENDING,
         choices=MailDomainStatusChoices.choices,
     )
+    support_email = models.EmailField(_("support email"), null=False, blank=False)
 
     class Meta:
         db_table = "people_mail_domain"

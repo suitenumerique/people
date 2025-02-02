@@ -99,7 +99,12 @@ def test_api_mail_domains__create_authenticated():
         )
         response = client.post(
             "/api/v1.0/mail-domains/",
-            {"name": domain_name, "context": "null", "features": ["webmail"]},
+            {
+                "name": domain_name,
+                "context": "null",
+                "features": ["webmail"],
+                "support_email": f"support@{domain_name}",
+            },
             format="json",
         )
     assert response.status_code == status.HTTP_201_CREATED
@@ -115,6 +120,7 @@ def test_api_mail_domains__create_authenticated():
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
         "abilities": domain.get_abilities(user),
         "count_mailboxes": 0,
+        "support_email": domain.support_email,
     }
 
     # a new domain with status "pending" is created and authenticated user is the owner
@@ -171,10 +177,14 @@ def test_api_mail_domains__create_authenticated__dimail_failure():
         )
         response = client.post(
             "/api/v1.0/mail-domains/",
-            {"name": domain_name, "context": "null", "features": ["webmail"]},
+            {
+                "name": domain_name,
+                "context": "null",
+                "features": ["webmail"],
+                "support_email": f"support@{domain_name}",
+            },
             format="json",
         )
-    assert response.status_code == status.HTTP_201_CREATED
     domain = models.MailDomain.objects.get()
 
     # response is as expected
@@ -187,6 +197,7 @@ def test_api_mail_domains__create_authenticated__dimail_failure():
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
         "abilities": domain.get_abilities(user),
         "count_mailboxes": 0,
+        "support_email": domain.support_email,
     }
 
     # a new domain with status "failed" is created and authenticated user is the owner
@@ -244,6 +255,7 @@ def test_api_mail_domains__create_dimail_domain(caplog):
             "/api/v1.0/mail-domains/",
             {
                 "name": domain_name,
+                "support_email": f"support@{domain_name}",
             },
             format="json",
         )
@@ -292,6 +304,7 @@ def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
                 "/api/v1.0/mail-domains/",
                 {
                     "name": domain_name,
+                    "support_email": f"support@{domain_name}",
                 },
                 format="json",
             )

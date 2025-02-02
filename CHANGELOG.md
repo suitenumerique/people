@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(domains) add support email field on domain
+
 ## [1.11.0] - 2025-02-07
 
 ### Added
