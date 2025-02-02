@@ -27,6 +27,7 @@ class MailDomainFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("domain_name")
     slug = factory.LazyAttribute(lambda o: slugify(o.name))
+    support_email = factory.Faker("email")
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):

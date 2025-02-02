@@ -70,6 +70,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "count_mailboxes",
+            "support_email",
         ]
         read_only_fields = [
             "id",

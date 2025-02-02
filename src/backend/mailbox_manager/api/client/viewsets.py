@@ -33,6 +33,7 @@ class MailDomainViewSet(
 
     POST /api/<version>/mail-domains/ with expected data:
         - name: str
+        - support_email: str
         Return newly created domain
     """
 

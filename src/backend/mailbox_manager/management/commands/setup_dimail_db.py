@@ -66,7 +66,11 @@ class Command(BaseCommand):
         # we create a domain and add John Doe to it
         domain_name = "test.domain.com"
         domain = MailDomain.objects.get_or_create(
-            name=domain_name, defaults={"status": enums.MailDomainStatusChoices.ENABLED}
+            name=domain_name,
+            defaults={
+                "status": enums.MailDomainStatusChoices.ENABLED,
+                "support_email": f"support@{domain_name}",
+            },
         )[0]
         self.create_domain(domain_name)
 
