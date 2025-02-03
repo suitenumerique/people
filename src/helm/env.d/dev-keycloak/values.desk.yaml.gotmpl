@@ -102,3 +102,11 @@ ingressAdmin:
   enabled: true
   host: desk.127.0.0.1.nip.io
 
+mailcatcher:
+  image:
+    repository: sj26/mailcatcher
+    tag: latest
+    pullPolicy: Always
+  ingress:
+    enabled: true
+    host: mailcatcher.127.0.0.1.nip.io
