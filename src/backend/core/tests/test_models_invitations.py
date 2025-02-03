@@ -257,10 +257,10 @@ def test_models_team_invitations_email():
     email = mail.outbox[0]
 
     assert email.to == [invitation.email]
-    assert email.subject == "Invitation to join Desk!"
+    assert email.subject == "Invitation to join La Régie!"
 
     email_content = " ".join(email.body.split())
-    assert "Invitation to join Desk!" in email_content
+    assert "Invitation to join La Régie!" in email_content
     assert "[//example.com]" in email_content
 
 

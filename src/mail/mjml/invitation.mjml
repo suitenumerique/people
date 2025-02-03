@@ -23,10 +23,10 @@
           <mj-image src="{% base64_static 'images/logo.png' %}" width="157px" align="left" alt="{%trans 'Logo' %}" />
 
           <!-- Main Message -->
-          <mj-text>{% trans "We are delighted to welcome you to our community on Régie, your new companion to simplify the management of your groups efficiently, intuitively, and securely." %}</mj-text>
+          <mj-text>{% trans "We are delighted to welcome you to our community on La Régie, your new companion to simplify the management of your groups efficiently, intuitively, and securely." %}</mj-text>
           <mj-text>{% trans "Our application is designed to help you organize, collaborate, and manage permissions." %}</mj-text>
           <mj-text>
-            {% trans "With Régie, you will be able to:" %}
+            {% trans "With La Régie, you will be able to:" %}
             <ul>
               <li>{% trans "Create customized groups according to your specific needs."%}</li>
               <li>{% trans "Invite members of your team or community in just a few clicks."%}</li>
@@ -36,9 +36,9 @@
             </ul>
           </mj-text>
           <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
-            {% trans "Visit Régie"%}
+            {% trans "Visit La Régie"%}
           </mj-button>
-          <mj-text>{% trans "We are confident that Régie will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
+          <mj-text>{% trans "We are confident that La Régie will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
           <mj-text>{% trans "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service." %}</mj-text>
           <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on this group management adventure." %}</mj-text>
 
