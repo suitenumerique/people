@@ -95,13 +95,12 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             )
 
         # Get user's full name from OIDC fields defined in settings
-        full_name = self.compute_full_name(user_info)
         email = user_info.get("email")
 
         claims = {
             "sub": sub,
             "email": email,
-            "name": full_name,
+            "name": self.compute_full_name(user_info),
         }
         if settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD:
             claims[settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD] = user_info.get(
