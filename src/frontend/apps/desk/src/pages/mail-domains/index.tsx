@@ -21,12 +21,7 @@ const Page: NextPageWithLayout = () => {
 
   return (
     <Box $align="center" $justify="center" $height="inherit">
-      {can_create && (
-        <StyledButton onClick={() => void router.push('/mail-domains/add')}>
-          {t('Add a mail domain')}
-        </StyledButton>
-      )}
-      {!can_create && <Text>{t('Click on mailbox to view details')}</Text>}
+      coucou
     </Box>
   );
 };
