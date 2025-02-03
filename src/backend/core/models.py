@@ -21,8 +21,8 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.translation import gettext, override
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import override
 
 import jsonschema
 from timezone_field import TimeZoneField
@@ -961,14 +961,15 @@ class Invitation(BaseModel):
         """Email invitation to the user."""
         try:
             with override(self.issuer.language):
+                subject = gettext("Invitation to join La Régie!")
                 template_vars = {
-                    "title": _("Invitation to join La Régie!"),
+                    "title": subject,
                     "site": Site.objects.get_current(),
                 }
                 msg_html = render_to_string("mail/html/invitation.html", template_vars)
                 msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
                 mail.send_mail(
-                    _("Invitation to join La Régie!"),
+                    subject,
                     msg_plain,
                     settings.EMAIL_FROM,
                     [self.email],
