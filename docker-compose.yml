@@ -1,6 +1,7 @@
 services:
   postgresql:
     image: postgres:16
+    platform: linux/amd64
     env_file:
       - env.d/development/postgresql
     ports:
@@ -100,6 +101,7 @@ services:
 
   dockerize:
     image: jwilder/dockerize
+    platform: linux/amd64
 
   crowdin:
     image: crowdin/cli:4.6.1

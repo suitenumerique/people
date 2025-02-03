@@ -1,74 +1,102 @@
+import { Button } from '@openfun/cunningham-react';
 import Image from 'next/image';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import { css } from 'styled-components';
 
-import { Box, LogoGouv, StyledLink, Text } from '@/components/';
-import { LaGaufre } from '@/features/header/LaGaufre';
+import { Box, Text, Icon, StyledLink } from '@/components/';
+import { ButtonLogin } from '@/core/auth';
+import { useCunninghamTheme } from '@/cunningham';
+import { LanguagePicker } from '@/features/language';
+import { useLeftPanelStore } from '@/features/left-panel';
 
-import { LanguagePicker } from '../language/';
+import { default as IconRegie } from '@/assets/logo-regie.svg?url';
 
-import { AccountDropdown } from './AccountDropdown';
-import { default as IconApplication } from './assets/icon-application.svg?url';
-
-export const HEADER_HEIGHT = '100px';
-
-const RedStripe = styled.div`
-  position: absolute;
-  height: 5px;
-  width: 100%;
-  background: var(--c--theme--colors--danger-500);
-  top: 0;
-`;
+import { LaGaufre } from './LaGaufre';
+export const HEADER_HEIGHT = '52px';
 
 export const Header = () => {
   const { t } = useTranslation();
+  const theme = useCunninghamTheme();
+  const { isPanelOpen, togglePanel } = useLeftPanelStore();
+
+  const spacings = theme.spacingsTokens();
+  const colors = theme.colorsTokens();
 
   return (
     <Box
       as="header"
-      $justify="center"
-      $width="100%"
-      $height={HEADER_HEIGHT}
-      $zIndex="100"
-      $css="box-shadow: 0 1px 4px #00000040;"
+      $css={`
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        height: var(--header-height);
+        min-height: var(--header-height);
+        padding: 0 ${spacings['base']};
+        background-color: ${colors['greyscale-000']};
+        border-bottom: 1px solid ${colors['greyscale-200']};
+      `}
     >
-      <RedStripe />
-      <Box
-        $margin={{ horizontal: 'xbig' }}
-        $align="center"
-        $justify="space-between"
-        $direction="row"
-      >
-        <Box $align="center" $gap="6rem" $direction="row">
-          <LogoGouv
-            textProps={{
-              $size: 't',
-              $css: `
-                line-height:11px;
-                text-transform: uppercase;
-              `,
-              $margin: { vertical: '3px' },
-              $maxWidth: '100px',
-            }}
-          >
-            République Française
-          </LogoGouv>
-          <StyledLink href="/">
-            <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconApplication} alt="" />
-              <Text $margin="none" as="h2" $theme="primary">
-                {t('Régie')}
-              </Text>
-            </Box>
-          </StyledLink>
+        <Button
+          className="md:hidden"
+          size="medium"
+          onClick={() => togglePanel()}
+          aria-label={t('Open the header menu')}
+          color="tertiary-text"
+          icon={
+            <Icon
+              $variation="800"
+              $theme="primary"
+              iconName={isPanelOpen ? 'close' : 'menu'}
+            />
+          }
+        />
+      <StyledLink href="/">
+        <Box
+          $align="center"
+          $gap={spacings['3xs']}
+          $direction="row"
+          $position="relative"
+          $height="fit-content"
+          $margin={{ top: 'auto' }}
+        >
+          <Image priority src={IconRegie} alt={t('La régie Logo')} width={25} />
+           <Box $direction="row" $align="center" $gap="4px">
+            <Text $margin="none" as="h2" $color="#000091" $zIndex={1} $size="1.30rem">
+              {t('La régie')}
+            </Text>
+            <Text
+              $padding={{ horizontal: '8px', vertical: '1px' }}
+              $size="11px"
+              $theme="primary"
+              $variation="500"
+              $weight="bold"
+              $radius="12px"
+              $background={colors['primary-200']}
+            >
+              BETA
+            </Text>
+          </Box>
         </Box>
-        <Box $align="center" $gap="1rem" $direction="row">
-          <AccountDropdown />
+      </StyledLink>
+      <div className="md:hidden">
+        <Box $direction="row" $gap={spacings['sm']}>
+          <LaGaufre />
+        </Box>
+      </div>
+      <div className="hidden md:block">
+        <Box $align="center" $gap={spacings['sm']} $direction="row">
+          <ButtonLogin />
           <LanguagePicker />
           <LaGaufre />
         </Box>
-      </Box>
+      </div>
+
     </Box>
   );
 };
