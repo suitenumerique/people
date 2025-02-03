@@ -88,14 +88,12 @@ export const ModalDelete = ({
       }
       size={ModalSize.MEDIUM}
       title={
-        <Box $align="center" $gap="1rem">
-          <Text $size="h3" $margin="none">
-            {t('Remove this access from the domain')}
-          </Text>
+        <Box $align="left" $gap="1rem">
+          <Text $margin="none">{t('Remove this access from the domain')}</Text>
         </Box>
       }
     >
-      <Box aria-label={t('Radio buttons to update the roles')}>
+      <Box $padding="md" aria-label={t('Radio buttons to update the roles')}>
         <Text>
           {t(
             'Are you sure you want to remove this access from the {{domain}} domain?',

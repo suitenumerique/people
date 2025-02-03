@@ -70,7 +70,7 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
           $direction="row"
           $justify="start"
           $css={`
-            border-top: 1px solid ${colorsTokens()['card-border']};
+            border-top: 1px solid ${colorsTokens()['greyscale-200']};
           `}
         >
           <Text $size="s" as="p">

@@ -1,255 +1,124 @@
-import {
-  Button,
-  Loader,
-  Modal,
-  ModalSize,
-  VariantType,
-  useToastProvider,
-} from '@openfun/cunningham-react';
+import { Button } from '@openfun/cunningham-react';
 import * as React from 'react';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
-import { CustomTabs } from '@/components/tabs/CustomTabs';
-import { AccessesContent } from '@/features/mail-domains/access-management';
+import { Box, Tag, Text } from '@/components';
+import { useCunninghamTheme } from '@/cunningham';
 import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
-import { MailDomain, Role } from '@/features/mail-domains/domains';
-import { MailDomainsContent } from '@/features/mail-domains/mailboxes';
-
-import { useFetchFromDimail } from '../api/useFetchMailDomain';
+import {
+  MailDomain,
+  MailDomainAccessesAction,
+  ModalRequiredActionDomain,
+  Role,
+} from '@/features/mail-domains/domains';
+import { MailBoxesView } from '@/features/mail-domains/mailboxes';
 
 type Props = {
   mailDomain: MailDomain;
+  currentRole: Role;
   onMailDomainUpdate?: (updatedDomain: MailDomain) => void;
 };
 
-export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
+export const MailDomainView = ({
+  mailDomain,
+  currentRole,
+  onMailDomainUpdate,
+}: Props) => {
   const { t } = useTranslation();
-  const { toast } = useToastProvider();
+  const { colorsTokens } = useCunninghamTheme();
   const [showModal, setShowModal] = React.useState(false);
-  const currentRole = mailDomain.abilities.delete
-    ? Role.OWNER
-    : mailDomain.abilities.manage_accesses
-      ? Role.ADMIN
-      : Role.VIEWER;
-
-  const tabs = useMemo(() => {
-    return [
-      {
-        ariaLabel: t('Go to mailbox management'),
-        id: 'mails',
-        iconName: 'mail',
-        label: t('Mailbox management'),
-        content: <MailDomainsContent mailDomain={mailDomain} />,
-      },
-      {
-        ariaLabel: t('Go to accesses management'),
-        id: 'accesses',
-        iconName: 'people',
-        label: t('Access management'),
-        content: (
-          <AccessesContent mailDomain={mailDomain} currentRole={currentRole} />
-        ),
-      },
-    ];
-  }, [t, currentRole, mailDomain]);
 
   const handleShowModal = () => {
     setShowModal(true);
   };
-  const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    toast(t('copy done'), VariantType.SUCCESS);
-  };
 
-  const { mutate: fetchMailDomain, isPending: fetchPending } =
-    useFetchFromDimail({
-      onSuccess: (data: MailDomain) => {
-        setShowModal(false);
-        toast(t('Domain data fetched successfully'), VariantType.SUCCESS);
-        onMailDomainUpdate?.(data);
-      },
-      onError: () => {
-        toast(t('Failed to fetch domain data'), VariantType.ERROR);
-      },
-    });
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   return (
     <>
-      {showModal && (
-        <Modal
-          isOpen
-          size={ModalSize.EXTRA_LARGE}
-          onClose={() => setShowModal(false)}
-          title={t('Required actions on domain')}
-        >
-          <pre>
-            {t(
-              'Actions are required on this domain. Please take the necessary actions to resolve those following issues.',
-            )}
-          </pre>
-          <h3>{t('Result of the diagnosis performed by the server')}</h3>
-
-          <pre>
-            {mailDomain.action_required_details &&
-              Object.entries(mailDomain.action_required_details).map(
-                ([check, value], index) => (
-                  <ul key={`action-required-list-${index}`}>
-                    <li key={`action-required-${index}`}>
-                      <b>{check}</b>: {value}
-                    </li>
-                  </ul>
-                ),
-              )}
-          </pre>
-          {mailDomain.expected_config && (
-            <Box $margin={{ bottom: 'medium' }}>
-              <pre>
-                <div
-                  style={{
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'break-word',
-                  }}
-                >
-                  {t(
-                    'You can resolve the above issues by applying the following configurations on your domain:',
-                  )}
-                  <ul>
-                    {mailDomain.expected_config.map((item, index) => (
-                      <li
-                        key={`dns-record-${index}`}
-                        style={{ marginBottom: '10px' }}
-                      >
-                        {item.target && (
-                          <>
-                            <b>{item.target}</b>{' '}
-                          </>
-                        )}
-                        <b style={{ color: 'purple' }}>
-                          IN {item.type.toUpperCase()}
-                        </b>{' '}
-                        <span style={{ backgroundColor: '#d4e5f5' }}>
-                          {item.value}
-                        </span>
-                        <button
-                          style={{
-                            padding: '2px 5px',
-                            marginLeft: '10px',
-                            backgroundColor: '#cccccc',
-                            border: 'none',
-                            color: 'white',
-                            cursor: 'pointer',
-                            fontWeight: '500',
-                            borderRadius: '5px',
-                          }}
-                          onClick={() => {
-                            void copyToClipboard(item.value);
-                          }}
-                        >
-                          {t('Copy')}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </pre>
-            </Box>
-          )}
-          <pre>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              {fetchPending ? (
-                <Loader />
-              ) : (
-                <Button
-                  onClick={() => {
-                    void fetchMailDomain(mailDomain.slug);
-                  }}
-                >
-                  {t('Re-run check')}
-                </Button>
-              )}
-            </div>
-          </pre>
-        </Modal>
-      )}
-      <Box $padding="big">
+      <div aria-label="Mail Domains panel" className="container">
         <Box
-          $width="100%"
-          $direction="row"
+          $padding={{ horizontal: 'md' }}
+          $background="white"
+          $justify="space-between"
+          $gap="8px"
           $align="center"
-          $gap="2.25rem"
-          $justify="center"
+          $radius="4px"
+          $direction="row"
+          $css={`
+          border: 1px solid ${colorsTokens()['greyscale-200']};
+        `}
         >
-          <Box
-            $direction="row"
-            $justify="center"
-            $margin={{ bottom: 'big' }}
-            $gap="0.5rem"
-          >
+          <Box $direction="row" $align="center" $gap="8px">
+            <Button
+              href="/mail-domains"
+              icon={<span className="material-icons">arrow_back</span>}
+              iconPosition="left"
+              color="secondary"
+              style={{
+                fontWeight: '500',
+              }}
+            >
+              {t('Domains')}
+            </Button>
             <MailDomainsLogo aria-hidden="true" />
-            <Text $margin="none" as="h3" $size="h3">
-              {mailDomain?.name}
+            <Text as="h5" $size="h5" $weight="bold" $theme="primary">
+              {mailDomain.name}
             </Text>
-            {/* TODO: remove when pending status will be removed */}
-            {mailDomain?.status === 'pending' && (
+
+            {(mailDomain?.status === 'pending' ||
+              mailDomain?.status === 'action_required' ||
+              mailDomain?.status) && (
               <button
+                data-testid="actions_required"
                 onClick={handleShowModal}
                 style={{
-                  padding: '5px 10px',
-                  marginLeft: '10px',
-                  backgroundColor: '#cccccc',
+                  backgroundColor: 'transparent',
                   border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  borderRadius: '5px',
                 }}
-                data-modal="mail-domain-status"
               >
-                {t('Pending')}
-              </button>
-            )}
-            {mailDomain?.status === 'action_required' && (
-              <button
-                onClick={handleShowModal}
-                style={{
-                  padding: '5px 10px',
-                  marginLeft: '10px',
-                  backgroundColor: '#f37802',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  borderRadius: '5px',
-                }}
-                data-modal="mail-domain-status"
-              >
-                {t('Actions required')}
-              </button>
-            )}
-            {mailDomain?.status === 'failed' && (
-              <button
-                onClick={handleShowModal}
-                style={{
-                  padding: '5px 10px',
-                  marginLeft: '10px',
-                  backgroundColor: '#e1000f',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  borderRadius: '5px',
-                }}
-                data-modal="mail-domain-status"
-              >
-                {t('Failed')}
+                <Tag
+                  showTooltip={true}
+                  status={mailDomain.status}
+                  tooltipType="domain"
+                  placement="bottom"
+                ></Tag>
               </button>
             )}
           </Box>
+          <Box $align="center">
+            <MailDomainAccessesAction
+              mailDomain={mailDomain}
+              currentRole={currentRole}
+            />
+          </Box>
         </Box>
-        <CustomTabs tabs={tabs} />
-      </Box>
+
+        {showModal && (
+          <ModalRequiredActionDomain
+            mailDomain={mailDomain}
+            onMailDomainUpdate={onMailDomainUpdate ?? (() => {})}
+            closeModal={closeModal}
+          />
+        )}
+
+        <Box
+          $padding={{ horizontal: 'md' }}
+          $margin={{ top: 'md' }}
+          $background="white"
+          $align="center"
+          $gap="8px"
+          $radius="4px"
+          $direction="row"
+          $css={`
+          border: 1px solid ${colorsTokens()['greyscale-200']};
+        `}
+        >
+          <MailBoxesView mailDomain={mailDomain} />
+        </Box>
+      </div>
     </>
   );
 };

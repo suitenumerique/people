@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <Head>
-        <title>{t('Régie')}</title>
+        <title>{t('La Régie')}</title>
         <meta
           name="description"
           content={t(

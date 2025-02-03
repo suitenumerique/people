@@ -3,115 +3,70 @@ import { Page, expect, test } from '@playwright/test';
 import { keyCloakSignIn, randomName } from './common';
 
 const getElements = (page: Page) => {
-  const panel = page.getByLabel('Mail domains panel').first();
-  const linkIndexPageAddDomain = page.getByRole('link', {
-    name: 'Add a mail domain',
-  });
-  const form = page.locator('form');
-  const inputName = form.getByLabel('Domain name');
-  const inputSupportEmail = form.getByLabel('Support email address');
-  const buttonSubmit = page.getByRole('button', {
-    name: 'Add the domain',
-  });
-
-  const buttonCancel = page.getByRole('button', {
-    name: 'Cancel',
-  });
+  const modal = page.getByRole('dialog');
+  const form = modal.locator('form');
+  const inputName = form.getByLabel(/Enter your domain/i);
+  const inputSupportEmail = form.getByLabel(/Support email address/i);
+  const buttonSubmit = modal.getByRole('button', { name: 'Add the domain' });
+  const buttonCancel = modal.getByRole('button', { name: 'Cancel' });
+  const buttonClose = modal.getByRole('button', { name: 'Close' });
 
   return {
-    panel,
-    linkIndexPageAddDomain,
+    modal,
     form,
     inputName,
     inputSupportEmail,
-    buttonCancel,
     buttonSubmit,
+    buttonCancel,
+    buttonClose,
   };
 };
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await keyCloakSignIn(page, browserName, 'mail-owner');
 });
 
 test.describe('Add Mail Domains', () => {
   test('checks all the elements are visible', async ({ page }) => {
     await page.goto('/mail-domains/');
 
-    const { linkIndexPageAddDomain, inputName } = getElements(page);
+    await page.getByTestId('button-new-domain').click();
 
-    await expect(linkIndexPageAddDomain).toBeVisible();
-    await linkIndexPageAddDomain.click();
+    const { modal, inputName, inputSupportEmail, buttonSubmit, buttonClose } =
+      getElements(page);
 
-    await expect(linkIndexPageAddDomain).toBeHidden();
+    await expect(buttonClose).toBeVisible();
 
-    await expect(
-      page.getByRole('heading', {
-        name: 'Add a mail domain',
-        level: 3,
-      }),
-    ).toBeVisible();
+    await page.getByRole('button', { name: /I have already domain/i }).click();
 
+    await expect(modal).toBeVisible();
     await expect(inputName).toBeVisible();
-    await expect(inputName).toBeVisible();
-
-    await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
-
-    await expect(
-      page.getByRole('button', {
-        name: 'Add the domain',
-      }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('button', {
-        name: 'Cancel',
-      }),
-    ).toBeVisible();
+    await expect(inputSupportEmail).toBeVisible();
+    await expect(buttonSubmit).toBeVisible();
   });
 
   test('checks the cancel button interaction', async ({ page }) => {
     await page.goto('/mail-domains/');
+    await page.getByTestId('button-new-domain').click();
 
-    const { linkIndexPageAddDomain, buttonCancel } = getElements(page);
+    const { modal, buttonClose } = getElements(page);
 
-    await linkIndexPageAddDomain.click();
-    await buttonCancel.click();
-
-    await expect(buttonCancel).toBeHidden();
-
-    await expect(linkIndexPageAddDomain).toBeVisible();
+    await buttonClose.click();
+    await expect(modal).toBeHidden();
   });
 
   test('checks form invalid status', async ({ page }) => {
     await page.goto('/mail-domains/');
+    await page.getByTestId('button-new-domain').click();
 
-    const {
-      linkIndexPageAddDomain,
-      inputName,
-      inputSupportEmail,
-      buttonSubmit,
-    } = getElements(page);
-
-    await linkIndexPageAddDomain.click();
-
-    await expect(inputName).toBeVisible();
-    await expect(inputSupportEmail).toBeVisible();
-    await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
-
-    await expect(
-      page.getByRole('button', {
-        name: 'Cancel',
-      }),
-    ).toBeEnabled();
+    await page.getByRole('button', { name: /I have already domain/i }).click();
+    const { inputName, buttonSubmit } = getElements(page);
 
     await expect(buttonSubmit).toBeDisabled();
 
     await inputName.fill('s');
-    await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
-
     await inputName.clear();
-
-    await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
   });
 
   test('checks the routing on new mail domain added', async ({
@@ -120,31 +75,21 @@ test.describe('Add Mail Domains', () => {
   }) => {
     const mailDomainName = randomName('versailles.fr', browserName, 1)[0];
     const mailDomainSupportMail = 'support@'.concat(mailDomainName);
-    const mailDomainSlug = mailDomainName.replace('.', '');
 
     await page.goto('/mail-domains/');
+    await page.getByTestId('button-new-domain').click();
 
-    const {
-      linkIndexPageAddDomain,
-      inputName,
-      inputSupportEmail,
-      buttonSubmit,
-    } = getElements(page);
+    await page.getByRole('button', { name: /I have already domain/i }).click();
 
-    await linkIndexPageAddDomain.click();
+    const { inputName, inputSupportEmail, buttonSubmit, modal } =
+      getElements(page);
 
     await inputName.fill(mailDomainName);
     await inputSupportEmail.fill(mailDomainSupportMail);
-
     await buttonSubmit.click();
 
-    await expect(page).toHaveURL(`/mail-domains/${mailDomainSlug}/`);
-
-    await expect(
-      page.getByRole('heading', {
-        name: mailDomainName,
-      }),
-    ).toBeVisible();
+    await expect(modal).toBeHidden(); // La modale doit disparaître après validation
+    await expect(page.getByText(mailDomainName)).toBeVisible(); // Vérifie que le nouveau domaine est bien ajouté
   });
 
   test('checks 404 on mail-domains/[slug] page', async ({ page }) => {

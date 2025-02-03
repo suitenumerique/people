@@ -27,12 +27,7 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
   return (
     <>
       <DropButton
-        button={
-          <IconOptions
-            isOpen={isDropOpen}
-            aria-label={t('Open the team options')}
-          />
-        }
+        button={<IconOptions aria-label={t('Open the team options')} />}
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}
       >

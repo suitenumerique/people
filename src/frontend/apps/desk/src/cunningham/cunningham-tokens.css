@@ -1,90 +1,104 @@
 :root {
-  --c--theme--colors--secondary-text: var(--c--theme--colors--greyscale-700);
-  --c--theme--colors--secondary-100: #f2f7fc;
-  --c--theme--colors--secondary-200: #ebf3fa;
-  --c--theme--colors--secondary-300: #e2eef8;
-  --c--theme--colors--secondary-400: #ddeaf7;
-  --c--theme--colors--secondary-500: #d4e5f5;
-  --c--theme--colors--secondary-600: #c1d0df;
-  --c--theme--colors--secondary-700: #97a3ae;
-  --c--theme--colors--secondary-800: #757e87;
-  --c--theme--colors--secondary-900: #596067;
-  --c--theme--colors--info-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--info-100: #ebf2fc;
-  --c--theme--colors--info-200: #8cb5ea;
-  --c--theme--colors--info-300: #5894e1;
-  --c--theme--colors--info-400: #377fdb;
-  --c--theme--colors--info-500: #055fd2;
-  --c--theme--colors--info-600: #0556bf;
-  --c--theme--colors--info-700: #044395;
-  --c--theme--colors--info-800: #033474;
-  --c--theme--colors--info-900: #022858;
-  --c--theme--colors--greyscale-100: #fafafb;
-  --c--theme--colors--greyscale-200: #f3f4f4;
-  --c--theme--colors--greyscale-300: #e7e8ea;
-  --c--theme--colors--greyscale-400: #c2c6ca;
-  --c--theme--colors--greyscale-500: #9ea3aa;
-  --c--theme--colors--greyscale-600: #79818a;
-  --c--theme--colors--greyscale-700: #555f6b;
-  --c--theme--colors--greyscale-800: #303c4b;
-  --c--theme--colors--greyscale-900: #0c1a2b;
+  --c--theme--colors--secondary-text: #fff;
+  --c--theme--colors--secondary-100: #fee9ea;
+  --c--theme--colors--secondary-200: #fedfdf;
+  --c--theme--colors--secondary-300: #fdbfbf;
+  --c--theme--colors--secondary-400: #e1020f;
+  --c--theme--colors--secondary-500: #c91a1f;
+  --c--theme--colors--secondary-600: #5e2b2b;
+  --c--theme--colors--secondary-700: #3b2424;
+  --c--theme--colors--secondary-800: #341f1f;
+  --c--theme--colors--secondary-900: #2b1919;
+  --c--theme--colors--info-text: #0078f3;
+  --c--theme--colors--info-100: #e8edff;
+  --c--theme--colors--info-200: #dde5ff;
+  --c--theme--colors--info-300: #bccdff;
+  --c--theme--colors--info-400: #518fff;
+  --c--theme--colors--info-500: #0078f3;
+  --c--theme--colors--info-600: #0063cb;
+  --c--theme--colors--info-700: #273961;
+  --c--theme--colors--info-800: #222a3f;
+  --c--theme--colors--info-900: #1d2437;
+  --c--theme--colors--greyscale-100: #eee;
+  --c--theme--colors--greyscale-200: #e5e5e5;
+  --c--theme--colors--greyscale-300: #cecece;
+  --c--theme--colors--greyscale-400: #929292;
+  --c--theme--colors--greyscale-500: #7c7c7c;
+  --c--theme--colors--greyscale-600: #666;
+  --c--theme--colors--greyscale-700: #3a3a3a;
+  --c--theme--colors--greyscale-800: #2a2a2a;
+  --c--theme--colors--greyscale-900: #242424;
   --c--theme--colors--greyscale-000: #fff;
-  --c--theme--colors--primary-100: #edf5fa;
-  --c--theme--colors--primary-200: #8cb5ea;
-  --c--theme--colors--primary-300: #5894e1;
-  --c--theme--colors--primary-400: #377fdb;
-  --c--theme--colors--primary-500: #055fd2;
-  --c--theme--colors--primary-600: #0556bf;
-  --c--theme--colors--primary-700: #044395;
-  --c--theme--colors--primary-800: #033474;
-  --c--theme--colors--primary-900: #022858;
-  --c--theme--colors--success-100: #effcd3;
-  --c--theme--colors--success-200: #dbfaa9;
-  --c--theme--colors--success-300: #bef27c;
-  --c--theme--colors--success-400: #a0e659;
-  --c--theme--colors--success-500: #76d628;
-  --c--theme--colors--success-600: #5ab81d;
-  --c--theme--colors--success-700: #419a14;
-  --c--theme--colors--success-800: #2c7c0c;
-  --c--theme--colors--success-900: #1d6607;
-  --c--theme--colors--warning-100: #fff8cd;
-  --c--theme--colors--warning-200: #ffef9b;
-  --c--theme--colors--warning-300: #ffe469;
-  --c--theme--colors--warning-400: #ffda43;
-  --c--theme--colors--warning-500: #ffc805;
-  --c--theme--colors--warning-600: #dba603;
-  --c--theme--colors--warning-700: #b78702;
-  --c--theme--colors--warning-800: #936901;
-  --c--theme--colors--warning-900: #7a5400;
-  --c--theme--colors--danger-100: #f4b0b0;
-  --c--theme--colors--danger-200: #ee8a8a;
-  --c--theme--colors--danger-300: #e65454;
-  --c--theme--colors--danger-400: #e13333;
-  --c--theme--colors--danger-500: #da0000;
-  --c--theme--colors--danger-600: #c60000;
-  --c--theme--colors--danger-700: #9b0000;
-  --c--theme--colors--danger-800: #780000;
-  --c--theme--colors--danger-900: #5c0000;
-  --c--theme--colors--primary-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--success-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--warning-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--danger-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--card-border: #ddd;
-  --c--theme--colors--primary-bg: #fafafa;
-  --c--theme--colors--primary-150: #e5eefa;
-  --c--theme--colors--info-150: #e5eefa;
-  --c--theme--font--sizes--h1: 2.2rem;
-  --c--theme--font--sizes--h2: 1.7rem;
-  --c--theme--font--sizes--h3: 1.37rem;
-  --c--theme--font--sizes--h4: 1.15rem;
-  --c--theme--font--sizes--h5: 1rem;
-  --c--theme--font--sizes--h6: 0.87rem;
+  --c--theme--colors--primary-100: #ececfe;
+  --c--theme--colors--primary-200: #e3e3fd;
+  --c--theme--colors--primary-300: #cacafb;
+  --c--theme--colors--primary-400: #8585f6;
+  --c--theme--colors--primary-500: #6a6af4;
+  --c--theme--colors--primary-600: #313178;
+  --c--theme--colors--primary-700: #272747;
+  --c--theme--colors--primary-800: #000091;
+  --c--theme--colors--primary-900: #21213f;
+  --c--theme--colors--success-100: #dffee6;
+  --c--theme--colors--success-200: #b8fec9;
+  --c--theme--colors--success-300: #88fdaa;
+  --c--theme--colors--success-400: #3bea7e;
+  --c--theme--colors--success-500: #1f8d49;
+  --c--theme--colors--success-600: #18753c;
+  --c--theme--colors--success-700: #204129;
+  --c--theme--colors--success-800: #1e2e22;
+  --c--theme--colors--success-900: #19281d;
+  --c--theme--colors--warning-100: #fff4f3;
+  --c--theme--colors--warning-200: #ffe9e6;
+  --c--theme--colors--warning-300: #ffded9;
+  --c--theme--colors--warning-400: #ffbeb4;
+  --c--theme--colors--warning-500: #d64d00;
+  --c--theme--colors--warning-600: #b34000;
+  --c--theme--colors--warning-700: #5e2c21;
+  --c--theme--colors--warning-800: #3e241e;
+  --c--theme--colors--warning-900: #361e19;
+  --c--theme--colors--danger-100: #ffe9e9;
+  --c--theme--colors--danger-200: #ffd;
+  --c--theme--colors--danger-300: #ffbdbd;
+  --c--theme--colors--danger-400: #ff5655;
+  --c--theme--colors--danger-500: #f60700;
+  --c--theme--colors--danger-600: #ce0500;
+  --c--theme--colors--danger-700: #642626;
+  --c--theme--colors--danger-800: #412121;
+  --c--theme--colors--danger-900: #391c1c;
+  --c--theme--colors--primary-text: #000091;
+  --c--theme--colors--success-text: #1f8d49;
+  --c--theme--colors--warning-text: #d64d00;
+  --c--theme--colors--danger-text: #fff;
+  --c--theme--colors--primary-050: #f5f5fe;
+  --c--theme--colors--primary-150: #f4f4fd;
+  --c--theme--colors--greyscale-text: #303c4b;
+  --c--theme--colors--greyscale-050: #f6f6f6;
+  --c--theme--colors--greyscale-250: #ddd;
+  --c--theme--colors--greyscale-350: #ddd;
+  --c--theme--colors--greyscale-750: #353535;
+  --c--theme--colors--greyscale-950: #1e1e1e;
+  --c--theme--colors--greyscale-1000: #161616;
+  --c--theme--font--sizes--h1: 2rem;
+  --c--theme--font--sizes--h2: 1.75rem;
+  --c--theme--font--sizes--h3: 1.5rem;
+  --c--theme--font--sizes--h4: 1.375rem;
+  --c--theme--font--sizes--h5: 1.25rem;
+  --c--theme--font--sizes--h6: 1.125rem;
   --c--theme--font--sizes--l: 1rem;
   --c--theme--font--sizes--m: 0.8125rem;
   --c--theme--font--sizes--s: 0.75rem;
+  --c--theme--font--sizes--xs: 0.75rem;
+  --c--theme--font--sizes--sm: 0.875rem;
+  --c--theme--font--sizes--md: 1rem;
+  --c--theme--font--sizes--lg: 1.125rem;
   --c--theme--font--sizes--ml: 0.938rem;
-  --c--theme--font--sizes--xl: 1.5rem;
+  --c--theme--font--sizes--xl: 1.25rem;
   --c--theme--font--sizes--t: 0.6875rem;
+  --c--theme--font--sizes--xl-alt: 5rem;
+  --c--theme--font--sizes--lg-alt: 4.5rem;
+  --c--theme--font--sizes--md-alt: 4rem;
+  --c--theme--font--sizes--sm-alt: 3.5rem;
+  --c--theme--font--sizes--xs-alt: 3rem;
   --c--theme--font--weights--thin: 100;
   --c--theme--font--weights--light: 300;
   --c--theme--font--weights--regular: 400;
@@ -92,8 +106,8 @@
   --c--theme--font--weights--bold: 600;
   --c--theme--font--weights--extrabold: 800;
   --c--theme--font--weights--black: 900;
-  --c--theme--font--families--base: 'Roboto Flex Variable', sans-serif;
-  --c--theme--font--families--accent: 'Roboto Flex Variable', sans-serif;
+  --c--theme--font--families--base: marianne;
+  --c--theme--font--families--accent: marianne;
   --c--theme--font--letterspacings--h1: normal;
   --c--theme--font--letterspacings--h2: normal;
   --c--theme--font--letterspacings--h3: normal;
@@ -104,7 +118,7 @@
   --c--theme--font--letterspacings--m: normal;
   --c--theme--font--letterspacings--s: normal;
   --c--theme--spacings--0: 0;
-  --c--theme--spacings--xl: 4rem;
+  --c--theme--spacings--xl: 2.5rem;
   --c--theme--spacings--l: 3rem;
   --c--theme--spacings--b: 1.625rem;
   --c--theme--spacings--s: 1rem;
@@ -114,6 +128,20 @@
   --c--theme--spacings--auto: auto;
   --c--theme--spacings--bx: 2.2rem;
   --c--theme--spacings--full: 100%;
+  --c--theme--spacings--4xs: 0.125rem;
+  --c--theme--spacings--3xs: 0.25rem;
+  --c--theme--spacings--2xs: 0.375rem;
+  --c--theme--spacings--xs: 0.5rem;
+  --c--theme--spacings--sm: 0.75rem;
+  --c--theme--spacings--base: 1rem;
+  --c--theme--spacings--md: 1.5rem;
+  --c--theme--spacings--lg: 2rem;
+  --c--theme--spacings--xxl: 3rem;
+  --c--theme--spacings--xxxl: 3.5rem;
+  --c--theme--spacings--4xl: 4rem;
+  --c--theme--spacings--5xl: 4.5rem;
+  --c--theme--spacings--6xl: 6rem;
+  --c--theme--spacings--7xl: 7.5rem;
   --c--theme--transitions--ease-in: cubic-bezier(0.32, 0, 0.67, 0);
   --c--theme--transitions--ease-out: cubic-bezier(0.33, 1, 0.68, 1);
   --c--theme--transitions--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -125,160 +153,269 @@
   --c--theme--breakpoints--xl: 1200px;
   --c--theme--breakpoints--xxl: 1400px;
   --c--theme--breakpoints--xxs: 320px;
-  --c--components--datagrid--header--weight: var(
-    --c--theme--font--weights--extrabold
+  --c--theme--breakpoints--mobile: 768px;
+  --c--theme--breakpoints--tablet: 1024px;
+  --c--theme--logo--src: /assets/logo-gouv.svg;
+  --c--theme--logo--widthheader: 110px;
+  --c--theme--logo--widthfooter: 220px;
+  --c--theme--logo--alt: gouvernement logo;
+  --c--components--modal--width-small: 342px;
+  --c--components--button--medium-height: 40px;
+  --c--components--button--medium-text-height: 40px;
+  --c--components--button--border-radius: 4px;
+  --c--components--button--small-height: 26px;
+  --c--components--button--primary--background--color: var(
+    --c--theme--colors--primary-text
   );
-  --c--components--datagrid--header--size: var(--c--theme--font--sizes--ml);
-  --c--components--datagrid--cell--color: var(--c--theme--colors--primary-500);
-  --c--components--datagrid--cell--size: var(--c--theme--font--sizes--ml);
-  --c--components--forms-checkbox--background-color--hover: #055fd214;
-  --c--components--forms-checkbox--color: var(--c--theme--colors--primary-500);
-  --c--components--forms-checkbox--font-size: var(--c--theme--font--sizes--ml);
-  --c--components--forms-datepicker--border-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--primary--background--color-hover: #1212ff;
+  --c--components--button--primary--background--color-active: #2323ff;
+  --c--components--button--primary--background--color-disabled: var(
+    --c--theme--colors--greyscale-100
   );
-  --c--components--forms-datepicker--value-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--primary--color: #fff;
+  --c--components--button--primary--color-hover: #fff;
+  --c--components--button--primary--color-active: #fff;
+  --c--components--button--primary--color-focus-visible: #fff;
+  --c--components--button--primary--disabled: var(
+    --c--theme--colors--greyscale-500
   );
-  --c--components--forms-datepicker--border-radius--hover: var(
-    --c--components--forms-datepicker--border-radius
+  --c--components--button--primary-text--background--color: var(
+    --c--theme--colors--primary-text
   );
-  --c--components--forms-datepicker--border-radius--focus: var(
-    --c--components--forms-datepicker--border-radius
+  --c--components--button--primary-text--background--color-hover: var(
+    --c--theme--colors--greyscale-100
   );
-  --c--components--forms-field--color: var(--c--theme--colors--primary-500);
-  --c--components--forms-field--value-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--primary-text--background--color-active: var(
+    --c--theme--colors--primary-100
   );
-  --c--components--forms-field--width: auto;
-  --c--components--forms-input--value-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--primary-text--background--color-focus-visible: #fff;
+  --c--components--button--primary-text--background--color-disabled: var(
+    --c--theme--colors--greyscale-000
   );
-  --c--components--forms-input--border-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--primary-text--color: var(
+    --c--theme--colors--primary-800
   );
-  --c--components--forms-input--color--error: var(
-    --c--theme--colors--danger-500
+  --c--components--button--primary-text--color-hover: var(
+    --c--theme--colors--primary-800
   );
-  --c--components--forms-input--color--error-hover: var(
-    --c--theme--colors--danger-500
-  );
-  --c--components--forms-input--color--box-shadow-error-hover: var(
-    --c--theme--colors--danger-500
-  );
-  --c--components--forms-labelledbox--label-color--small: var(
-    --c--theme--colors--primary-500
-  );
-  --c--components--forms-labelledbox--label-color--small-disabled: var(
+  --c--components--button--primary-text--disabled: var(
     --c--theme--colors--greyscale-400
   );
-  --c--components--forms-labelledbox--label-color--big--disabled: var(
-    --c--theme--colors--greyscale-400
+  --c--components--button--secondary--background--color-hover: #f6f6f6;
+  --c--components--button--secondary--background--color-active: #ededed;
+  --c--components--button--secondary--background--color-focus-visible: var(
+    --c--theme--colors--greyscale-000
   );
-  --c--components--forms-select--border-color: var(
-    --c--theme--colors--primary-500
+  --c--components--button--secondary--background--disabled: var(
+    --c--theme--colors--greyscale-000
   );
-  --c--components--forms-select--border-color-disabled-hover: var(
-    --c--theme--colors--greyscale-200
+  --c--components--button--secondary--color: var(
+    --c--theme--colors--primary-800
   );
-  --c--components--forms-select--border-radius--hover: var(
-    --c--components--forms-select--border-radius
-  );
-  --c--components--forms-select--border-radius--focus: var(
-    --c--components--forms-select--border-radius
-  );
-  --c--components--forms-select--font-size: var(--c--theme--font--sizes--ml);
-  --c--components--forms-select--menu-background-color: #fff;
-  --c--components--forms-select--item-background-color--hover: var(
-    --c--theme--colors--primary-300
-  );
-  --c--components--forms-switch--accent-color: var(
-    --c--theme--colors--primary-400
-  );
-  --c--components--forms-textarea--border-color: var(
-    --c--components--forms-textarea--border-color
-  );
-  --c--components--forms-textarea--border-color-hover: var(
-    --c--components--forms-textarea--border-color
-  );
-  --c--components--forms-textarea--border-radius--hover: var(
-    --c--components--forms-textarea--border-radius
-  );
-  --c--components--forms-textarea--border-radius--focus: var(
-    --c--components--forms-textarea--border-radius
-  );
-  --c--components--forms-textarea--color: var(--c--theme--colors--primary-500);
-  --c--components--forms-textarea--disabled--border-color-hover: var(
-    --c--theme--colors--greyscale-200
-  );
-  --c--components--modal--background-color: #fff;
-  --c--components--button--border-radius--active: var(
-    --c--components--button--border-radius
-  );
-  --c--components--button--medium-height: auto;
-  --c--components--button--small-height: auto;
-  --c--components--button--success--color: white;
-  --c--components--button--success--color-disabled: white;
-  --c--components--button--success--color-hover: white;
-  --c--components--button--success--background--color: var(
-    --c--theme--colors--success-600
-  );
-  --c--components--button--success--background--color-disabled: var(
+  --c--components--button--secondary--border--color: var(
     --c--theme--colors--greyscale-300
   );
-  --c--components--button--success--background--color-hover: var(
-    --c--theme--colors--success-800
+  --c--components--button--secondary--border--color-hover: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--button--secondary--border--color-disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--button--secondary--disabled: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--button--tertiary--background--color: var(
+    --c--theme--colors--primary-100
+  );
+  --c--components--button--tertiary--background--color-focus-visible: var(
+    --c--theme--colors--primary-100
+  );
+  --c--components--button--tertiary--background--color-hover: var(
+    --c--theme--colors--primary-300
+  );
+  --c--components--button--tertiary--background--color-active: var(
+    --c--theme--colors--primary-300
+  );
+  --c--components--button--tertiary--background--disabled: var(
+    --c--theme--colors--primary-050
+  );
+  --c--components--button--tertiary--color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--button--tertiary--disabled: var(
+    --c--theme--colors--primary-300
+  );
+  --c--components--button--tertiary-text--background--color-hover: var(
+    --c--theme--colors--greyscale-100
+  );
+  --c--components--button--tertiary-text--color-hover: var(
+    --c--theme--colors--primary-text
+  );
+  --c--components--button--tertiary-text--color: var(
+    --c--theme--colors--primary-600
   );
   --c--components--button--danger--color-hover: white;
   --c--components--button--danger--background--color: var(
-    --c--theme--colors--danger-400
+    --c--theme--colors--danger-600
   );
-  --c--components--button--danger--background--color-hover: var(
-    --c--theme--colors--danger-500
+  --c--components--button--danger--background--color-hover: #ff2725;
+  --c--components--button--danger--background--color-focus-visible: var(
+    --c--theme--colors--danger-600
   );
   --c--components--button--danger--background--color-disabled: var(
-    --c--theme--colors--danger-100
+    --c--theme--colors--greyscale-100
   );
-  --c--components--button--primary--color: var(
-    --c--theme--colors--primary-text
+  --c--components--button--danger--color-disabled: var(
+    --c--theme--colors--greyscale-400
   );
-  --c--components--button--primary--color-active: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--primary--background--color: var(
-    --c--theme--colors--primary-400
-  );
-  --c--components--button--primary--background--color-active: var(
-    --c--theme--colors--primary-500
-  );
-  --c--components--button--primary--border--color-active: transparent;
-  --c--components--button--secondary--color: var(
-    --c--theme--colors--primary-500
-  );
-  --c--components--button--secondary--color-hover: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--secondary--background--color: white;
-  --c--components--button--secondary--background--color-hover: var(
-    --c--theme--colors--primary-700
-  );
-  --c--components--button--secondary--border--color: var(
-    --c--theme--colors--primary-200
-  );
-  --c--components--button--tertiary--color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--tertiary--color-disabled: var(
+  --c--components--datagrid--header--color: var(
     --c--theme--colors--greyscale-600
   );
-  --c--components--button--tertiary--background--color-hover: var(
-    --c--theme--colors--primary-100
+  --c--components--datagrid--header--size: 12px;
+  --c--components--datagrid--header--weight: 500;
+  --c--components--datagrid--body--background-color-hover: var(
+    --c--theme--colors--greyscale-100
   );
-  --c--components--button--tertiary--background--color-disabled: var(
+  --c--components--forms-checkbox--border-radius: 4px;
+  --c--components--forms-checkbox--border-color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-checkbox--background-color--hover: var(
+    --c--theme--colors--greyscale-100
+  );
+  --c--components--forms-checkbox--border--color-disabled: var(
     --c--theme--colors--greyscale-200
   );
-  --c--components--button--disabled--color: white;
-  --c--components--button--disabled--background--color: #b3cef0;
+  --c--components--forms-checkbox--border--color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-checkbox--background--disabled: var(
+    --c--theme--colors--greyscale-200
+  );
+  --c--components--forms-checkbox--background--enable: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-checkbox--check--disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-checkbox--check--enable: var(
+    --c--theme--colors--greyscale-000
+  );
+  --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
+  --c--components--forms-checkbox--label--color: var(
+    --c--theme--colors--greyscale-1000
+  );
+  --c--components--forms-checkbox--label--size: var(
+    --c--theme--font--sizes--sm
+  );
+  --c--components--forms-checkbox--label--weight: 500;
+  --c--components--forms-checkbox--text--color: var(
+    --c--theme--colors--greyscale-600
+  );
+  --c--components--forms-checkbox--text--size: var(--c--theme--font--sizes--s);
+  --c--components--forms-checkbox--text--weight: 400;
+  --c--components--forms-checkbox--text--color-disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-labelledbox--label-color--small: var(
+    --c--theme--colors--greyscale-950
+  );
+  --c--components--forms-labelledbox--label-color--small--disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-labelledbox--label-color--big: var(
+    --c--theme--colors--greyscale-950
+  );
+  --c--components--forms-labelledbox--label-color--big--disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-radio--border-color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-radio--background-color: var(
+    --c--theme--colors--greyscale-000
+  );
+  --c--components--forms-radio--accent-color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-radio--accent-color-disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-switch--border--color-disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-switch--border--color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-switch--handle-background-color: white;
+  --c--components--forms-switch--handle-background-color--disabled: var(
+    --c--theme--colors--greyscale-000
+  );
+  --c--components--forms-switch--rail-background-color--disabled: var(
+    --c--theme--colors--greyscale-000
+  );
+  --c--components--forms-switch--accent-color: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-textarea--label-color--focus: var(
+    --c--theme--colors--greyscale-1000
+  );
+  --c--components--forms-textarea--border-radius: 4px;
+  --c--components--forms-textarea--border-color: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-textarea--box-shadow--color--hover: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-textarea--box-shadow--color--focus: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-textarea--value-color: var(
+    --c--theme--colors--greyscale-950
+  );
+  --c--components--forms-textarea--value-color--disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-textarea--font-size: 14px;
+  --c--components--forms-input--label-color--focus: var(
+    --c--theme--colors--greyscale-1000
+  );
+  --c--components--forms-input--border-radius: 4px;
+  --c--components--forms-input--border-color: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-input--box-shadow--color--hover: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-input--box-shadow--color--focus: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-input--value-color: var(
+    --c--theme--colors--greyscale-950
+  );
+  --c--components--forms-input--value-color--disabled: var(
+    --c--theme--colors--greyscale-300
+  );
+  --c--components--forms-input--font-size: 14px;
+  --c--components--forms-select--label-color--focus: var(
+    --c--theme--colors--greyscale-1000
+  );
+  --c--components--forms-select--item-font-size: 14px;
+  --c--components--forms-select--border-radius: 4px;
+  --c--components--forms-select--border-radius-hover: 4px;
+  --c--components--forms-select--border-color: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-select--box-shadow--color--hover: var(
+    --c--theme--colors--greyscale-400
+  );
+  --c--components--forms-select--box-shadow--color--focus: var(
+    --c--theme--colors--primary-800
+  );
+  --c--components--forms-select--value-color: var(
+    --c--theme--colors--greyscale-950
+  );
+  --c--components--forms-select--font-size: 14px;
 }
 
 .cunningham-theme--dark {
@@ -328,165 +465,6 @@
   --c--theme--colors--danger-700: #c36666;
   --c--theme--colors--danger-800: #ae6666;
   --c--theme--colors--danger-900: #9d6666;
-}
-
-.cunningham-theme--dsfr {
-  --c--theme--colors--card-border: #ddd;
-  --c--theme--colors--primary-text: #000091;
-  --c--theme--colors--primary-100: #f5f5fe;
-  --c--theme--colors--primary-150: #f4f4fd;
-  --c--theme--colors--primary-200: #ececfe;
-  --c--theme--colors--primary-300: #e3e3fd;
-  --c--theme--colors--primary-400: #cacafb;
-  --c--theme--colors--primary-500: #6a6af4;
-  --c--theme--colors--primary-600: #000091;
-  --c--theme--colors--primary-700: #272747;
-  --c--theme--colors--primary-800: #21213f;
-  --c--theme--colors--primary-900: #1c1a36;
-  --c--theme--colors--secondary-text: #fff;
-  --c--theme--colors--secondary-100: #fee9ea;
-  --c--theme--colors--secondary-200: #fedfdf;
-  --c--theme--colors--secondary-300: #fdbfbf;
-  --c--theme--colors--secondary-400: #e1020f;
-  --c--theme--colors--secondary-500: #c91a1f;
-  --c--theme--colors--secondary-600: #5e2b2b;
-  --c--theme--colors--secondary-700: #3b2424;
-  --c--theme--colors--secondary-800: #341f1f;
-  --c--theme--colors--secondary-900: #2b1919;
-  --c--theme--colors--greyscale-text: #303c4b;
-  --c--theme--colors--greyscale-000: #f6f6f6;
-  --c--theme--colors--greyscale-100: #eee;
-  --c--theme--colors--greyscale-200: #e5e5e5;
-  --c--theme--colors--greyscale-300: #e1e1e1;
-  --c--theme--colors--greyscale-400: #ddd;
-  --c--theme--colors--greyscale-500: #cecece;
-  --c--theme--colors--greyscale-600: #7b7b7b;
-  --c--theme--colors--greyscale-700: #666;
-  --c--theme--colors--greyscale-800: #2a2a2a;
-  --c--theme--colors--greyscale-900: #1e1e1e;
-  --c--theme--colors--success-text: #1f8d49;
-  --c--theme--colors--success-100: #dffee6;
-  --c--theme--colors--success-200: #b8fec9;
-  --c--theme--colors--success-300: #88fdaa;
-  --c--theme--colors--success-400: #3bea7e;
-  --c--theme--colors--success-500: #1f8d49;
-  --c--theme--colors--success-600: #18753c;
-  --c--theme--colors--success-700: #204129;
-  --c--theme--colors--success-800: #1e2e22;
-  --c--theme--colors--success-900: #19281d;
-  --c--theme--colors--info-text: #0078f3;
-  --c--theme--colors--info-100: #f4f6ff;
-  --c--theme--colors--info-200: #e8edff;
-  --c--theme--colors--info-300: #dde5ff;
-  --c--theme--colors--info-400: #bdcdff;
-  --c--theme--colors--info-500: #0078f3;
-  --c--theme--colors--info-600: #0063cb;
-  --c--theme--colors--info-700: #f4f6ff;
-  --c--theme--colors--info-800: #222a3f;
-  --c--theme--colors--info-900: #1d2437;
-  --c--theme--colors--warning-text: #d64d00;
-  --c--theme--colors--warning-100: #fff4f3;
-  --c--theme--colors--warning-200: #ffe9e6;
-  --c--theme--colors--warning-300: #ffded9;
-  --c--theme--colors--warning-400: #ffbeb4;
-  --c--theme--colors--warning-500: #d64d00;
-  --c--theme--colors--warning-600: #b34000;
-  --c--theme--colors--warning-700: #5e2c21;
-  --c--theme--colors--warning-800: #3e241e;
-  --c--theme--colors--warning-900: #361e19;
-  --c--theme--colors--danger-text: #e1000f;
-  --c--theme--colors--danger-100: #fef4f4;
-  --c--theme--colors--danger-200: #fee9e9;
-  --c--theme--colors--danger-300: #fddede;
-  --c--theme--colors--danger-400: #fcbfbf;
-  --c--theme--colors--danger-500: #e1000f;
-  --c--theme--colors--danger-600: #c9191e;
-  --c--theme--colors--danger-700: #642727;
-  --c--theme--colors--danger-800: #412121;
-  --c--theme--colors--danger-900: #3a1c1c;
-  --c--theme--font--families--accent: marianne;
-  --c--theme--font--families--base: marianne;
-  --c--components--alert--border-radius: 0;
-  --c--components--button--medium-height: 48px;
-  --c--components--button--border-radius: 4px;
-  --c--components--button--primary--background--color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--primary--background--color-hover: #1212ff;
-  --c--components--button--primary--background--color-active: #2323ff;
-  --c--components--button--primary--color: #fff;
-  --c--components--button--primary--color-hover: #fff;
-  --c--components--button--primary--color-active: #fff;
-  --c--components--button--primary-text--background--color-hover: var(
-    --c--theme--colors--primary-100
-  );
-  --c--components--button--primary-text--background--color-active: var(
-    --c--theme--colors--primary-100
-  );
-  --c--components--button--primary-text--color-hover: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--secondary--background--color-hover: #f6f6f6;
-  --c--components--button--secondary--background--color-active: #ededed;
-  --c--components--button--secondary--border--color: var(
-    --c--theme--colors--primary-600
-  );
-  --c--components--button--secondary--border--color-hover: var(
-    --c--theme--colors--primary-600
-  );
-  --c--components--button--secondary--color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--button--tertiary-text--background--color-hover: var(
-    --c--theme--colors--primary-100
-  );
-  --c--components--button--tertiary-text--color-hover: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--datagrid--header--color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--datagrid--header--size: var(--c--theme--font--sizes--s);
-  --c--components--datagrid--body--background-color: transparent;
-  --c--components--datagrid--body--background-color-hover: #f4f4fd;
-  --c--components--datagrid--pagination--background-color: transparent;
-  --c--components--datagrid--pagination--background-color-active: var(
-    --c--theme--colors--primary-300
-  );
-  --c--components--forms-checkbox--border-radius: 0;
-  --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
-  --c--components--forms-datepicker--border-radius: 0;
-  --c--components--forms-fileuploader--border-radius: 0;
-  --c--components--forms-field--color: var(--c--theme--colors--primary-text);
-  --c--components--forms-input--border-radius: 4px;
-  --c--components--forms-input--background-color: #fff;
-  --c--components--forms-input--border-color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-input--box-shadow-color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-input--value-color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-labelledbox--label-color--big: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-select--border-radius: 4px;
-  --c--components--forms-select--border-radius-hover: 4px;
-  --c--components--forms-select--background-color: #fff;
-  --c--components--forms-select--border-color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-select--border-color-hover: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-select--box-shadow-color: var(
-    --c--theme--colors--primary-text
-  );
-  --c--components--forms-switch--handle-border-radius: 2px;
-  --c--components--forms-switch--rail-border-radius: 4px;
-  --c--components--forms-textarea--border-radius: 0;
 }
 
 .clr-secondary-text {
@@ -769,20 +747,40 @@
   color: var(--c--theme--colors--danger-text);
 }
 
-.clr-card-border {
-  color: var(--c--theme--colors--card-border);
-}
-
-.clr-primary-bg {
-  color: var(--c--theme--colors--primary-bg);
+.clr-primary-050 {
+  color: var(--c--theme--colors--primary-050);
 }
 
 .clr-primary-150 {
   color: var(--c--theme--colors--primary-150);
 }
 
-.clr-info-150 {
-  color: var(--c--theme--colors--info-150);
+.clr-greyscale-text {
+  color: var(--c--theme--colors--greyscale-text);
+}
+
+.clr-greyscale-050 {
+  color: var(--c--theme--colors--greyscale-050);
+}
+
+.clr-greyscale-250 {
+  color: var(--c--theme--colors--greyscale-250);
+}
+
+.clr-greyscale-350 {
+  color: var(--c--theme--colors--greyscale-350);
+}
+
+.clr-greyscale-750 {
+  color: var(--c--theme--colors--greyscale-750);
+}
+
+.clr-greyscale-950 {
+  color: var(--c--theme--colors--greyscale-950);
+}
+
+.clr-greyscale-1000 {
+  color: var(--c--theme--colors--greyscale-1000);
 }
 
 .bg-secondary-text {
@@ -1065,20 +1063,40 @@
   background-color: var(--c--theme--colors--danger-text);
 }
 
-.bg-card-border {
-  background-color: var(--c--theme--colors--card-border);
-}
-
-.bg-primary-bg {
-  background-color: var(--c--theme--colors--primary-bg);
+.bg-primary-050 {
+  background-color: var(--c--theme--colors--primary-050);
 }
 
 .bg-primary-150 {
   background-color: var(--c--theme--colors--primary-150);
 }
 
-.bg-info-150 {
-  background-color: var(--c--theme--colors--info-150);
+.bg-greyscale-text {
+  background-color: var(--c--theme--colors--greyscale-text);
+}
+
+.bg-greyscale-050 {
+  background-color: var(--c--theme--colors--greyscale-050);
+}
+
+.bg-greyscale-250 {
+  background-color: var(--c--theme--colors--greyscale-250);
+}
+
+.bg-greyscale-350 {
+  background-color: var(--c--theme--colors--greyscale-350);
+}
+
+.bg-greyscale-750 {
+  background-color: var(--c--theme--colors--greyscale-750);
+}
+
+.bg-greyscale-950 {
+  background-color: var(--c--theme--colors--greyscale-950);
+}
+
+.bg-greyscale-1000 {
+  background-color: var(--c--theme--colors--greyscale-1000);
 }
 
 .fw-thin {
@@ -1154,6 +1172,26 @@
   letter-spacing: var(--c--theme--font--letterspacings--s);
 }
 
+.fs-xs {
+  font-size: var(--c--theme--font--sizes--xs);
+  letter-spacing: var(--c--theme--font--letterspacings--xs);
+}
+
+.fs-sm {
+  font-size: var(--c--theme--font--sizes--sm);
+  letter-spacing: var(--c--theme--font--letterspacings--sm);
+}
+
+.fs-md {
+  font-size: var(--c--theme--font--sizes--md);
+  letter-spacing: var(--c--theme--font--letterspacings--md);
+}
+
+.fs-lg {
+  font-size: var(--c--theme--font--sizes--lg);
+  letter-spacing: var(--c--theme--font--letterspacings--lg);
+}
+
 .fs-ml {
   font-size: var(--c--theme--font--sizes--ml);
   letter-spacing: var(--c--theme--font--letterspacings--ml);
@@ -1167,6 +1205,31 @@
 .fs-t {
   font-size: var(--c--theme--font--sizes--t);
   letter-spacing: var(--c--theme--font--letterspacings--t);
+}
+
+.fs-xl-alt {
+  font-size: var(--c--theme--font--sizes--xl-alt);
+  letter-spacing: var(--c--theme--font--letterspacings--xl-alt);
+}
+
+.fs-lg-alt {
+  font-size: var(--c--theme--font--sizes--lg-alt);
+  letter-spacing: var(--c--theme--font--letterspacings--lg-alt);
+}
+
+.fs-md-alt {
+  font-size: var(--c--theme--font--sizes--md-alt);
+  letter-spacing: var(--c--theme--font--letterspacings--md-alt);
+}
+
+.fs-sm-alt {
+  font-size: var(--c--theme--font--sizes--sm-alt);
+  letter-spacing: var(--c--theme--font--letterspacings--sm-alt);
+}
+
+.fs-xs-alt {
+  font-size: var(--c--theme--font--sizes--xs-alt);
+  letter-spacing: var(--c--theme--font--letterspacings--xs-alt);
 }
 
 .f-base {
@@ -1397,6 +1460,286 @@
   margin-right: var(--c--theme--spacings--full);
 }
 
+.m-4xs {
+  margin: var(--c--theme--spacings--4xs);
+}
+
+.mb-4xs {
+  margin-bottom: var(--c--theme--spacings--4xs);
+}
+
+.mt-4xs {
+  margin-top: var(--c--theme--spacings--4xs);
+}
+
+.ml-4xs {
+  margin-left: var(--c--theme--spacings--4xs);
+}
+
+.mr-4xs {
+  margin-right: var(--c--theme--spacings--4xs);
+}
+
+.m-3xs {
+  margin: var(--c--theme--spacings--3xs);
+}
+
+.mb-3xs {
+  margin-bottom: var(--c--theme--spacings--3xs);
+}
+
+.mt-3xs {
+  margin-top: var(--c--theme--spacings--3xs);
+}
+
+.ml-3xs {
+  margin-left: var(--c--theme--spacings--3xs);
+}
+
+.mr-3xs {
+  margin-right: var(--c--theme--spacings--3xs);
+}
+
+.m-2xs {
+  margin: var(--c--theme--spacings--2xs);
+}
+
+.mb-2xs {
+  margin-bottom: var(--c--theme--spacings--2xs);
+}
+
+.mt-2xs {
+  margin-top: var(--c--theme--spacings--2xs);
+}
+
+.ml-2xs {
+  margin-left: var(--c--theme--spacings--2xs);
+}
+
+.mr-2xs {
+  margin-right: var(--c--theme--spacings--2xs);
+}
+
+.m-xs {
+  margin: var(--c--theme--spacings--xs);
+}
+
+.mb-xs {
+  margin-bottom: var(--c--theme--spacings--xs);
+}
+
+.mt-xs {
+  margin-top: var(--c--theme--spacings--xs);
+}
+
+.ml-xs {
+  margin-left: var(--c--theme--spacings--xs);
+}
+
+.mr-xs {
+  margin-right: var(--c--theme--spacings--xs);
+}
+
+.m-sm {
+  margin: var(--c--theme--spacings--sm);
+}
+
+.mb-sm {
+  margin-bottom: var(--c--theme--spacings--sm);
+}
+
+.mt-sm {
+  margin-top: var(--c--theme--spacings--sm);
+}
+
+.ml-sm {
+  margin-left: var(--c--theme--spacings--sm);
+}
+
+.mr-sm {
+  margin-right: var(--c--theme--spacings--sm);
+}
+
+.m-base {
+  margin: var(--c--theme--spacings--base);
+}
+
+.mb-base {
+  margin-bottom: var(--c--theme--spacings--base);
+}
+
+.mt-base {
+  margin-top: var(--c--theme--spacings--base);
+}
+
+.ml-base {
+  margin-left: var(--c--theme--spacings--base);
+}
+
+.mr-base {
+  margin-right: var(--c--theme--spacings--base);
+}
+
+.m-md {
+  margin: var(--c--theme--spacings--md);
+}
+
+.mb-md {
+  margin-bottom: var(--c--theme--spacings--md);
+}
+
+.mt-md {
+  margin-top: var(--c--theme--spacings--md);
+}
+
+.ml-md {
+  margin-left: var(--c--theme--spacings--md);
+}
+
+.mr-md {
+  margin-right: var(--c--theme--spacings--md);
+}
+
+.m-lg {
+  margin: var(--c--theme--spacings--lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--c--theme--spacings--lg);
+}
+
+.mt-lg {
+  margin-top: var(--c--theme--spacings--lg);
+}
+
+.ml-lg {
+  margin-left: var(--c--theme--spacings--lg);
+}
+
+.mr-lg {
+  margin-right: var(--c--theme--spacings--lg);
+}
+
+.m-xxl {
+  margin: var(--c--theme--spacings--xxl);
+}
+
+.mb-xxl {
+  margin-bottom: var(--c--theme--spacings--xxl);
+}
+
+.mt-xxl {
+  margin-top: var(--c--theme--spacings--xxl);
+}
+
+.ml-xxl {
+  margin-left: var(--c--theme--spacings--xxl);
+}
+
+.mr-xxl {
+  margin-right: var(--c--theme--spacings--xxl);
+}
+
+.m-xxxl {
+  margin: var(--c--theme--spacings--xxxl);
+}
+
+.mb-xxxl {
+  margin-bottom: var(--c--theme--spacings--xxxl);
+}
+
+.mt-xxxl {
+  margin-top: var(--c--theme--spacings--xxxl);
+}
+
+.ml-xxxl {
+  margin-left: var(--c--theme--spacings--xxxl);
+}
+
+.mr-xxxl {
+  margin-right: var(--c--theme--spacings--xxxl);
+}
+
+.m-4xl {
+  margin: var(--c--theme--spacings--4xl);
+}
+
+.mb-4xl {
+  margin-bottom: var(--c--theme--spacings--4xl);
+}
+
+.mt-4xl {
+  margin-top: var(--c--theme--spacings--4xl);
+}
+
+.ml-4xl {
+  margin-left: var(--c--theme--spacings--4xl);
+}
+
+.mr-4xl {
+  margin-right: var(--c--theme--spacings--4xl);
+}
+
+.m-5xl {
+  margin: var(--c--theme--spacings--5xl);
+}
+
+.mb-5xl {
+  margin-bottom: var(--c--theme--spacings--5xl);
+}
+
+.mt-5xl {
+  margin-top: var(--c--theme--spacings--5xl);
+}
+
+.ml-5xl {
+  margin-left: var(--c--theme--spacings--5xl);
+}
+
+.mr-5xl {
+  margin-right: var(--c--theme--spacings--5xl);
+}
+
+.m-6xl {
+  margin: var(--c--theme--spacings--6xl);
+}
+
+.mb-6xl {
+  margin-bottom: var(--c--theme--spacings--6xl);
+}
+
+.mt-6xl {
+  margin-top: var(--c--theme--spacings--6xl);
+}
+
+.ml-6xl {
+  margin-left: var(--c--theme--spacings--6xl);
+}
+
+.mr-6xl {
+  margin-right: var(--c--theme--spacings--6xl);
+}
+
+.m-7xl {
+  margin: var(--c--theme--spacings--7xl);
+}
+
+.mb-7xl {
+  margin-bottom: var(--c--theme--spacings--7xl);
+}
+
+.mt-7xl {
+  margin-top: var(--c--theme--spacings--7xl);
+}
+
+.ml-7xl {
+  margin-left: var(--c--theme--spacings--7xl);
+}
+
+.mr-7xl {
+  margin-right: var(--c--theme--spacings--7xl);
+}
+
 .p-0 {
   padding: var(--c--theme--spacings--0);
 }
@@ -1615,4 +1958,284 @@
 
 .pr-full {
   padding-right: var(--c--theme--spacings--full);
+}
+
+.p-4xs {
+  padding: var(--c--theme--spacings--4xs);
+}
+
+.pb-4xs {
+  padding-bottom: var(--c--theme--spacings--4xs);
+}
+
+.pt-4xs {
+  padding-top: var(--c--theme--spacings--4xs);
+}
+
+.pl-4xs {
+  padding-left: var(--c--theme--spacings--4xs);
+}
+
+.pr-4xs {
+  padding-right: var(--c--theme--spacings--4xs);
+}
+
+.p-3xs {
+  padding: var(--c--theme--spacings--3xs);
+}
+
+.pb-3xs {
+  padding-bottom: var(--c--theme--spacings--3xs);
+}
+
+.pt-3xs {
+  padding-top: var(--c--theme--spacings--3xs);
+}
+
+.pl-3xs {
+  padding-left: var(--c--theme--spacings--3xs);
+}
+
+.pr-3xs {
+  padding-right: var(--c--theme--spacings--3xs);
+}
+
+.p-2xs {
+  padding: var(--c--theme--spacings--2xs);
+}
+
+.pb-2xs {
+  padding-bottom: var(--c--theme--spacings--2xs);
+}
+
+.pt-2xs {
+  padding-top: var(--c--theme--spacings--2xs);
+}
+
+.pl-2xs {
+  padding-left: var(--c--theme--spacings--2xs);
+}
+
+.pr-2xs {
+  padding-right: var(--c--theme--spacings--2xs);
+}
+
+.p-xs {
+  padding: var(--c--theme--spacings--xs);
+}
+
+.pb-xs {
+  padding-bottom: var(--c--theme--spacings--xs);
+}
+
+.pt-xs {
+  padding-top: var(--c--theme--spacings--xs);
+}
+
+.pl-xs {
+  padding-left: var(--c--theme--spacings--xs);
+}
+
+.pr-xs {
+  padding-right: var(--c--theme--spacings--xs);
+}
+
+.p-sm {
+  padding: var(--c--theme--spacings--sm);
+}
+
+.pb-sm {
+  padding-bottom: var(--c--theme--spacings--sm);
+}
+
+.pt-sm {
+  padding-top: var(--c--theme--spacings--sm);
+}
+
+.pl-sm {
+  padding-left: var(--c--theme--spacings--sm);
+}
+
+.pr-sm {
+  padding-right: var(--c--theme--spacings--sm);
+}
+
+.p-base {
+  padding: var(--c--theme--spacings--base);
+}
+
+.pb-base {
+  padding-bottom: var(--c--theme--spacings--base);
+}
+
+.pt-base {
+  padding-top: var(--c--theme--spacings--base);
+}
+
+.pl-base {
+  padding-left: var(--c--theme--spacings--base);
+}
+
+.pr-base {
+  padding-right: var(--c--theme--spacings--base);
+}
+
+.p-md {
+  padding: var(--c--theme--spacings--md);
+}
+
+.pb-md {
+  padding-bottom: var(--c--theme--spacings--md);
+}
+
+.pt-md {
+  padding-top: var(--c--theme--spacings--md);
+}
+
+.pl-md {
+  padding-left: var(--c--theme--spacings--md);
+}
+
+.pr-md {
+  padding-right: var(--c--theme--spacings--md);
+}
+
+.p-lg {
+  padding: var(--c--theme--spacings--lg);
+}
+
+.pb-lg {
+  padding-bottom: var(--c--theme--spacings--lg);
+}
+
+.pt-lg {
+  padding-top: var(--c--theme--spacings--lg);
+}
+
+.pl-lg {
+  padding-left: var(--c--theme--spacings--lg);
+}
+
+.pr-lg {
+  padding-right: var(--c--theme--spacings--lg);
+}
+
+.p-xxl {
+  padding: var(--c--theme--spacings--xxl);
+}
+
+.pb-xxl {
+  padding-bottom: var(--c--theme--spacings--xxl);
+}
+
+.pt-xxl {
+  padding-top: var(--c--theme--spacings--xxl);
+}
+
+.pl-xxl {
+  padding-left: var(--c--theme--spacings--xxl);
+}
+
+.pr-xxl {
+  padding-right: var(--c--theme--spacings--xxl);
+}
+
+.p-xxxl {
+  padding: var(--c--theme--spacings--xxxl);
+}
+
+.pb-xxxl {
+  padding-bottom: var(--c--theme--spacings--xxxl);
+}
+
+.pt-xxxl {
+  padding-top: var(--c--theme--spacings--xxxl);
+}
+
+.pl-xxxl {
+  padding-left: var(--c--theme--spacings--xxxl);
+}
+
+.pr-xxxl {
+  padding-right: var(--c--theme--spacings--xxxl);
+}
+
+.p-4xl {
+  padding: var(--c--theme--spacings--4xl);
+}
+
+.pb-4xl {
+  padding-bottom: var(--c--theme--spacings--4xl);
+}
+
+.pt-4xl {
+  padding-top: var(--c--theme--spacings--4xl);
+}
+
+.pl-4xl {
+  padding-left: var(--c--theme--spacings--4xl);
+}
+
+.pr-4xl {
+  padding-right: var(--c--theme--spacings--4xl);
+}
+
+.p-5xl {
+  padding: var(--c--theme--spacings--5xl);
+}
+
+.pb-5xl {
+  padding-bottom: var(--c--theme--spacings--5xl);
+}
+
+.pt-5xl {
+  padding-top: var(--c--theme--spacings--5xl);
+}
+
+.pl-5xl {
+  padding-left: var(--c--theme--spacings--5xl);
+}
+
+.pr-5xl {
+  padding-right: var(--c--theme--spacings--5xl);
+}
+
+.p-6xl {
+  padding: var(--c--theme--spacings--6xl);
+}
+
+.pb-6xl {
+  padding-bottom: var(--c--theme--spacings--6xl);
+}
+
+.pt-6xl {
+  padding-top: var(--c--theme--spacings--6xl);
+}
+
+.pl-6xl {
+  padding-left: var(--c--theme--spacings--6xl);
+}
+
+.pr-6xl {
+  padding-right: var(--c--theme--spacings--6xl);
+}
+
+.p-7xl {
+  padding: var(--c--theme--spacings--7xl);
+}
+
+.pb-7xl {
+  padding-bottom: var(--c--theme--spacings--7xl);
+}
+
+.pt-7xl {
+  padding-top: var(--c--theme--spacings--7xl);
+}
+
+.pl-7xl {
+  padding-left: var(--c--theme--spacings--7xl);
+}
+
+.pr-7xl {
+  padding-right: var(--c--theme--spacings--7xl);
 }

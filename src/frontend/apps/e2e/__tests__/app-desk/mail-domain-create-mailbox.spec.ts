@@ -137,71 +137,14 @@ const interceptCommonApiRequests = async (
 const navigateToMailboxCreationFormForMailDomainFr = async (
   page: Page,
 ): Promise<void> => {
-  await page.locator('menu').first().getByLabel(`Mail Domains button`).click();
-  await page.getByRole('listbox').first().getByText('domain.fr').click();
-  await page.getByRole('button', { name: 'Create a mailbox' }).click();
+  await page.goto('/mail-domains');
+  await page.getByLabel(`domain.fr listboxDomains button`).click();
+  await page.getByRole('button', { name: 'New mail address' }).click();
 };
 
 test.describe('Mail domain create mailbox', () => {
-  test('checks create mailbox button is visible or not', async ({
-    page,
-    browserName,
-  }) => {
-    const domains = [...mailDomainsFixtures];
-    domains[0].status = 'enabled';
-    domains[1].status = 'pending';
-    domains[2].status = 'disabled';
-    domains[3].status = 'failed';
-    await interceptCommonApiRequests(page, domains);
 
-    await page.goto('/');
-    // Login with a user who has the visibility on the mail domains
-    await keyCloakSignIn(page, browserName, 'mail-member');
-
-    await page
-      .locator('menu')
-      .first()
-      .getByLabel(`Mail Domains button`)
-      .click();
-    const domainFr = page.getByRole('listbox').first().getByText('domain.fr');
-    const mailsFr = page.getByRole('listbox').first().getByText('mails.fr');
-    const versaillesNet = page
-      .getByRole('listbox')
-      .first()
-      .getByText('versailles.net');
-    const parisFr = page.getByRole('listbox').first().getByText('paris.fr');
-
-    await expect(domainFr).toBeVisible();
-    await expect(mailsFr).toBeVisible();
-    await expect(versaillesNet).toBeVisible();
-    await expect(parisFr).toBeVisible();
-
-    // Check that the button is enabled when the domain is enabled
-    await domainFr.click();
-    await expect(
-      page.getByRole('button', { name: 'Create a mailbox' }),
-    ).toBeEnabled();
-
-    // Check that the button is enabled when the domain is pending
-    await mailsFr.click();
-    await expect(
-      page.getByRole('button', { name: 'Create a mailbox' }),
-    ).toBeEnabled();
-
-    // Check that the button is disabled when the domain is disabled
-    await versaillesNet.click();
-    await expect(
-      page.getByRole('button', { name: 'Create a mailbox' }),
-    ).toBeDisabled();
-
-    // Check that the button is disabled when the domain is failed
-    await parisFr.click();
-    await expect(
-      page.getByRole('button', { name: 'Create a mailbox' }),
-    ).toBeDisabled();
-  });
-
-  test('checks user can create a mailbox when he has post ability', async ({
+  test('checks user can New mail address when he has post ability', async ({
     page,
     browserName,
   }) => {
@@ -263,33 +206,25 @@ test.describe('Mail domain create mailbox', () => {
       }
     });
 
-    await interceptRequests(page);
-
     await page.goto('/');
     // Login with a user who has the visibility on the mail domains
     await keyCloakSignIn(page, browserName, 'mail-member');
 
-    await navigateToMailboxCreationFormForMailDomainFr(page);
+    await page.goto('/mail-domains/');
 
-    await page.getByRole('button', { name: 'Cancel' }).click();
+    await page.getByLabel(`domain.fr listboxDomains button`).click();
 
-    await expect(page.getByTitle('Create a mailbox')).toBeHidden();
-
-    await page.getByRole('button', { name: 'Create a mailbox' }).click();
-
-    await expect(page.getByTitle('Create a mailbox')).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Create a mailbox' }),
-    ).toBeVisible();
+      page.getByRole('button', { name: 'New mail address' }),
+    ).click();
+
+    await expect(page.getByText('New email account')).toBeVisible();
 
     const inputFirstName = page.getByLabel('First name');
     const inputLastName = page.getByLabel('Last name');
-    const inputLocalPart = page.getByLabel('Email address prefix');
-    const instructionInputLocalPart = page.getByText(
-      'It must not contain spaces, accents or special characters (except "." or "-"). E.g.: jean.dupont',
-    );
+    const inputLocalPart = page.getByLabel('Name of the new address');
     const inputSecondaryEmailAddress = page.getByLabel(
-      'Secondary email address',
+      'Personal email address',
     );
 
     await expect(inputFirstName).toHaveAttribute('aria-required', 'true');
@@ -308,14 +243,12 @@ test.describe('Mail domain create mailbox', () => {
     await inputLastName.fill('Doe');
     await inputLocalPart.fill('john.doe');
 
-    await expect(instructionInputLocalPart).toBeVisible();
     await expect(page.locator('span').getByText('@domain.fr')).toBeVisible();
     await inputSecondaryEmailAddress.fill('john.doe@mail.com');
 
-    await page.getByRole('button', { name: 'Create the mailbox' }).click();
+    await page.getByRole('button', { name: 'Create' }).click();
 
     expect(isCreateMailboxRequestSentWithExpectedPayload).toBeTruthy();
-    await expect(page.getByTitle('Create a mailbox')).toBeHidden();
     await expect(page.getByText('Mailbox created!')).toBeVisible({
       timeout: 1500,
     });
@@ -331,7 +264,7 @@ test.describe('Mail domain create mailbox', () => {
     );
   });
 
-  test('checks user is not allowed to create a mailbox when he is missing post ability', async ({
+  test('checks user is not allowed to New mail address when he is missing post ability', async ({
     page,
     browserName,
   }) => {
@@ -380,15 +313,12 @@ test.describe('Mail domain create mailbox', () => {
     // Login with a user who has the visibility on the mail domains
     await keyCloakSignIn(page, browserName, 'mail-member');
 
-    await page
-      .locator('menu')
-      .first()
-      .getByLabel(`Mail Domains button`)
-      .click();
-    await page.getByRole('listbox').first().getByText('domain.fr').click();
+    await page.goto('/mail-domains');
+
+    await page.getByLabel(`domain.fr listboxDomains button`).click();
 
     await expect(
-      page.getByRole('button', { name: 'Create a mailbox' }),
-    ).not.toBeInViewport();
+      page.getByTestId('button-new-mailbox')
+    ).toBeDisabled();
   });
 });

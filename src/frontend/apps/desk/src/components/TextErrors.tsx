@@ -20,8 +20,7 @@ export const TextErrors = ({
         causes.map((cause, i) => (
           <Text
             key={`causes-${i}`}
-            $margin={{ top: 'small' }}
-            $theme="danger"
+            $color="red"
             $textAlign="center"
             {...textProps}
           >

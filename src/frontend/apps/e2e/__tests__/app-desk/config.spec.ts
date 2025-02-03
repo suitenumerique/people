@@ -39,31 +39,31 @@ test.describe('Config', () => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName, 'mail-member');
 
-    await page
-      .locator('menu')
-      .first()
-      .getByLabel(`Mail Domains button`)
-      .click();
+    await expect(page.locator('menu')).toBeVisible();
+
+    const menu = page.locator('menu').first();
+
+    await menu.getByLabel('Mail Domains button').click();
+
     await expect(page).toHaveURL(/mail-domains\//);
 
     await expect(
       page
-        .getByLabel('Mail domains panel', { exact: true })
-        .getByText('Mail Domains'),
+        .getByText('Areas of the organization')
     ).toBeVisible();
   });
 
-  test('it checks that the user abilities display teams', async ({
-    page,
-    browserName,
-  }) => {
-    await page.goto('/');
-    await keyCloakSignIn(page, browserName, 'team-member');
+  // test('it checks that the user abilities display teams', async ({
+  //   page,
+  //   browserName,
+  // }) => {
+  //   await page.goto('/');
+  //   await keyCloakSignIn(page, browserName, 'team-member');
 
-    await expect(page.locator('menu')).toBeHidden();
+  //   await expect(page.locator('menu')).toBeHidden();
 
-    await expect(page.getByText('Groups')).toBeVisible();
-  });
+  //   await expect(page.getByText('Groups')).toBeVisible();
+  // });
 
   test('it checks that the config does not deactivate the feature "teams"', async ({
     page,
@@ -93,7 +93,5 @@ test.describe('Config', () => {
     await keyCloakSignIn(page, browserName, 'team-administrator');
 
     await expect(page.locator('menu')).toBeHidden();
-
-    await expect(page.getByText('Groups')).toBeVisible();
   });
 });

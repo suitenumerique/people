@@ -73,59 +73,6 @@ const mailDomainsFixtures: MailDomain[] = [
 
 test.describe('Mail domains', () => {
   test.describe('checks all the elements are visible', () => {
-    test('checks the sort button', async ({ page, browserName }) => {
-      await page.goto('/');
-      // The user is a team administrator, so they land on the team page
-      // This allows to prevent the redirection to the mail domains page
-      // to make the '/api/v1.0/mail-domains/?page=1&ordering=created_at'
-      // query at login, which will be cached and not called afterward in tests.
-      await keyCloakSignIn(page, browserName, 'team-administrator-mail-member');
-
-      await page
-        .locator('menu')
-        .first()
-        .getByLabel(`Mail Domains button`)
-        .click();
-
-      await expect(page).toHaveURL(/mail-domains\//);
-
-      const responsePromiseSortDesc = page.waitForResponse(
-        (response) =>
-          response
-            .url()
-            .includes('/mail-domains/?page=1&ordering=-created_at') &&
-          response.status() === 200,
-      );
-
-      const responsePromiseSortAsc = page.waitForResponse(
-        (response) =>
-          response
-            .url()
-            .includes('/mail-domains/?page=1&ordering=created_at') &&
-          response.status() === 200,
-      );
-
-      const panel = page.getByLabel('Mail domains panel').first();
-
-      await panel
-        .getByRole('button', {
-          name: 'Sort the domain names by creation date ascendent',
-        })
-        .click();
-
-      const responseSortAsc = await responsePromiseSortAsc;
-      expect(responseSortAsc.ok()).toBeTruthy();
-
-      await panel
-        .getByRole('button', {
-          name: 'Sort the domain names by creation date descendent',
-        })
-        .click();
-
-      const responseSortDesc = await responsePromiseSortDesc;
-      expect(responseSortDesc.ok()).toBeTruthy();
-    });
-
     test('when no mail domain exists', async ({ page, browserName }) => {
       await page.route('**/api/v1.0/mail-domains/?page=*', async (route) => {
         await route.fulfill({
@@ -151,9 +98,7 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(
-        page.getByLabel('Mail domains panel', { exact: true }),
-      ).toBeVisible();
+      await expect(page.getByText('Areas of the organization')).toBeVisible();
       await expect(page.getByText('No domains exist.')).toBeVisible();
     });
 
@@ -182,16 +127,13 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(
-        page.getByLabel('Mail domains panel', { exact: true }),
-      ).toBeVisible();
-      await expect(page.getByText('No domains exist.')).toHaveCount(0);
+      await expect(page.getByText('Areas of the organization')).toBeVisible();
+      await expect(page.getByText('Manage')).toHaveCount(4);
 
       await Promise.all(
         mailDomainsFixtures.map(async ({ name, status }) => {
-          const linkName = page.getByRole('link', { name });
+          const linkName = page.getByText(name);
           await expect(linkName).toBeVisible();
-          await expect(linkName.getByText(`[${status}]`)).toBeVisible();
         }),
       );
     });

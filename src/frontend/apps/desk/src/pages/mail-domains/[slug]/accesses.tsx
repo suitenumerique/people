@@ -5,10 +5,8 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { AccessesContent } from '@/features/mail-domains/access-management';
 import {
   MailDomainsLayout,
-  Role,
   useMailDomain,
 } from '@/features/mail-domains/domains';
 import { NextPageWithLayout } from '@/types/next';
@@ -24,12 +22,7 @@ const MailDomainAccessesPage: NextPageWithLayout = () => {
 
   const navigate = useNavigate();
 
-  const {
-    data: mailDomain,
-    error,
-    isError,
-    isLoading,
-  } = useMailDomain({ slug: String(slug) });
+  const { error, isError, isLoading } = useMailDomain({ slug: String(slug) });
 
   if (error?.status === 404) {
     navigate.replace(`/404`);
@@ -45,18 +38,6 @@ const MailDomainAccessesPage: NextPageWithLayout = () => {
       <Box $align="center" $justify="center" $height="100%">
         <Loader />
       </Box>
-    );
-  }
-
-  if (mailDomain) {
-    const currentRole = mailDomain.abilities.delete
-      ? Role.OWNER
-      : mailDomain.abilities.manage_accesses
-        ? Role.ADMIN
-        : Role.VIEWER;
-
-    return (
-      <AccessesContent mailDomain={mailDomain} currentRole={currentRole} />
     );
   }
 

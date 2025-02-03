@@ -1,9 +1,9 @@
 import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
-import { MainLayout } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 import { Panel } from '@/features/teams/teams-panel';
+import { MainLayout } from '@/layouts';
 
 export function TeamLayout({ children }: PropsWithChildren) {
   const { colorsTokens } = useCunninghamTheme();
@@ -13,7 +13,7 @@ export function TeamLayout({ children }: PropsWithChildren) {
       <Box $height="inherit" $direction="row">
         <Panel />
         <Box
-          $background={colorsTokens()['primary-bg']}
+          $background={colorsTokens()['greyscale-050']}
           $width="100%"
           $height="inherit"
         >
