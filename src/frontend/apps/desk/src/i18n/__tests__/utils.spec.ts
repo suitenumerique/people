@@ -26,7 +26,7 @@ describe('i18n utils', () => {
     expect(getLanguage()).toEqual('en');
 
     localStorage.setItem(LANGUAGE_LOCAL_STORAGE, 'xx_XX');
-    expect(getLanguage()).toEqual('fr');
+    expect(getLanguage()).toEqual('en');
   });
 
   it('checks that we get expected language from browser', () => {
@@ -50,6 +50,6 @@ describe('i18n utils', () => {
       writable: false,
       configurable: true,
     });
-    expect(getLanguage()).toEqual('fr');
+    expect(getLanguage()).toEqual('en');
   });
 });

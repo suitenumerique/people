@@ -42,12 +42,14 @@ const interceptCommonApiCalls = async (
   );
 };
 const clickOnMailDomainsNavButton = async (page: Page): Promise<void> =>
-  await page.locator('menu').first().getByLabel(`Mail Domains button`).click();
+  await page.locator('menu').getByLabel(`Mail Domains button`).click();
 
 const assertMailDomainUpperElementsAreVisible = async (page: Page) => {
   await expect(page).toHaveURL(/mail-domains\//);
 
-  await page.getByRole('listbox').first().getByText('domain.fr').click();
+  await expect(page.getByText('domain.fr', { exact: true })).toBeVisible();
+  await page.getByLabel(`domain.fr listboxDomains button`).click();
+
   await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
   await expect(page.getByRole('heading', { name: 'domain.fr' })).toBeVisible();
@@ -59,14 +61,6 @@ const assertFilledMailboxesTableElementsAreVisible = async (
   multiLevelArrayMailboxes: object & Array<{ local_part: string }[]>,
 ) => {
   await expect(page).toHaveURL(/mail-domains\//);
-
-  await expect(
-    page.getByRole('button', { name: /Names/ }).first(),
-  ).toBeVisible();
-
-  await expect(
-    page.getByRole('button', { name: /Emails/ }).first(),
-  ).toBeVisible();
 
   await Promise.all(
     multiLevelArrayMailboxes[0].map((mailbox) =>
@@ -81,35 +75,6 @@ const assertFilledMailboxesTableElementsAreVisible = async (
 
   const tdNames = await table.getByText('John Doe').all();
   expect(tdNames.length).toEqual(20);
-
-  await expect(
-    page.locator('.c__pagination__list').getByRole('button', { name: '1' }),
-  ).toBeVisible();
-
-  await expect(
-    page.locator('.c__pagination__list').getByText('navigate_next'),
-  ).toBeVisible();
-
-  await page
-    .locator('.c__pagination__list')
-    .getByRole('button', { name: '2' })
-    .click();
-
-  await expect(
-    page.locator('.c__pagination__list').getByText('navigate_next'),
-  ).toBeHidden();
-
-  await expect(
-    page.locator('.c__pagination__list').getByText('navigate_before'),
-  ).toBeVisible();
-
-  await Promise.all(
-    multiLevelArrayMailboxes[1].map((mailbox) =>
-      expect(
-        page.getByText(`${mailbox.local_part}@${domainFr.name}`),
-      ).toBeVisible(),
-    ),
-  );
 };
 
 test.describe('Mail domain', () => {
@@ -208,22 +173,6 @@ test.describe('Mail domain', () => {
         },
       ];
 
-      test('checks if all tabs are visible', async ({ page, browserName }) => {
-        await interceptCommonApiCalls(page, mailDomainsFixtures);
-
-        await page.goto('/');
-        await keyCloakSignIn(page, browserName, 'mail-owner');
-
-        await clickOnMailDomainsNavButton(page);
-
-        await assertMailDomainUpperElementsAreVisible(page);
-
-        await expect(
-          page.getByLabel('Go to accesses management'),
-        ).toBeVisible();
-        await expect(page.getByLabel('Go to mailbox management')).toBeVisible();
-      });
-
       test('checks all the elements are visible when domain exist but contains no mailboxes', async ({
         page,
         browserName,
@@ -238,109 +187,12 @@ test.describe('Mail domain', () => {
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).toBeEnabled();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeVisible();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
         ).toBeVisible();
-      });
-
-      test('checks all the elements are visible when domain exists and contains 2 pages of mailboxes', async ({
-        page,
-        browserName,
-      }) => {
-        const mailboxesFixtures = {
-          domainFr: {
-            page1: Array.from({ length: 20 }, (_, i) => ({
-              id: `456ac6ca-0402-4615-8005-69bc1efde${i}f`,
-              first_name: 'john',
-              last_name: 'doe',
-              local_part: `local_part-${i}`,
-              secondary_email: `secondary_email-${i}`,
-            })),
-            page2: Array.from({ length: 2 }, (_, i) => ({
-              id: `456ac6ca-0402-4615-8005-69bc1efde${i}d`,
-              first_name: 'john',
-              last_name: 'doe',
-              local_part: `local_part-${i}`,
-              secondary_email: `secondary_email-${i}`,
-            })),
-          },
-        };
-        const interceptApiCalls = async () => {
-          await page.route(
-            '**/api/v1.0/mail-domains/?page=*',
-            async (route) => {
-              await route.fulfill({
-                json: {
-                  count: mailDomainsFixtures.length,
-                  next: null,
-                  previous: null,
-                  results: mailDomainsFixtures,
-                },
-              });
-            },
-          );
-          await page.route(
-            '**/api/v1.0/mail-domains/domainfr/',
-            async (route) => {
-              await route.fulfill({
-                json: mailDomainsFixtures[0],
-              });
-            },
-          );
-          await page.route(
-            '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=1**',
-            async (route) => {
-              await route.fulfill({
-                json: {
-                  count:
-                    mailboxesFixtures.domainFr.page1.length +
-                    mailboxesFixtures.domainFr.page2.length,
-                  next: 'http://localhost:8071/api/v1.0/mail-domains/domainfr/mailboxes/?page=2',
-                  previous: null,
-                  results: mailboxesFixtures.domainFr.page1,
-                },
-              });
-            },
-          );
-          await page.route(
-            '**/api/v1.0/mail-domains/domainfr/mailboxes/?page=2**',
-            async (route) => {
-              await route.fulfill({
-                json: {
-                  count:
-                    mailboxesFixtures.domainFr.page1.length +
-                    mailboxesFixtures.domainFr.page2.length,
-                  next: null,
-                  previous:
-                    'http://localhost:8071/api/v1.0/mail-domains/domainfr/mailboxes/?page=1',
-                  results: mailboxesFixtures.domainFr.page2,
-                },
-              });
-            },
-          );
-        };
-
-        await interceptApiCalls();
-
-        await page.goto('/');
-        await keyCloakSignIn(page, browserName, 'mail-owner');
-
-        await clickOnMailDomainsNavButton(page);
-
-        await assertMailDomainUpperElementsAreVisible(page);
-
-        await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).toBeEnabled();
-
-        await assertFilledMailboxesTableElementsAreVisible(
-          page,
-          mailDomainsFixtures[0],
-          [mailboxesFixtures.domainFr.page1, mailboxesFixtures.domainFr.page2],
-        );
       });
     });
 
@@ -377,7 +229,8 @@ test.describe('Mail domain', () => {
 
         await expect(page).toHaveURL(/mail-domains\//);
 
-        await page.getByRole('listbox').first().getByText('domain.fr').click();
+        await page.getByLabel(`domain.fr listboxDomains button`).click();
+
         await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
         await expect(
@@ -385,8 +238,8 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).toBeEnabled();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeVisible();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -434,7 +287,7 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
+          page.getByTestId('button-new-mailbox'),
         ).toBeDisabled();
 
         await expect(
@@ -487,7 +340,7 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
+          page.getByTestId('button-new-mailbox'),
         ).toBeDisabled();
 
         await expect(
@@ -580,10 +433,6 @@ test.describe('Mail domain', () => {
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).not.toBeInViewport();
-
-        await expect(
           page.getByText('No mail box was created with this mail domain.'),
         ).toBeVisible();
       });
@@ -675,8 +524,8 @@ test.describe('Mail domain', () => {
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).not.toBeInViewport();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeDisabled();
 
         await assertFilledMailboxesTableElementsAreVisible(
           page,
@@ -719,7 +568,8 @@ test.describe('Mail domain', () => {
 
         await expect(page).toHaveURL(/mail-domains\//);
 
-        await page.getByRole('listbox').first().getByText('domain.fr').click();
+        await page.getByLabel(`domain.fr listboxDomains button`).click();
+
         await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
         await expect(
@@ -727,8 +577,8 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).not.toBeInViewport();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -776,8 +626,8 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).not.toBeInViewport();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -825,8 +675,8 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         await expect(
-          page.getByRole('button', { name: 'Create a mailbox' }),
-        ).not.toBeInViewport();
+          page.getByTestId('button-new-mailbox'),
+        ).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),

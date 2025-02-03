@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef } from 'react';
 import styled from 'styled-components';
-import { CSSProperties } from 'styled-components/dist/types';
+import { CSSProperties, RuleSet } from 'styled-components/dist/types';
 
 import {
   MarginPadding,
@@ -8,26 +8,35 @@ import {
   stylesPadding,
 } from '@/utils/styleBuilder';
 
+import { hideEffect, showEffect } from './Effect';
+
 export interface BoxProps {
   as?: keyof HTMLElementTagNameMap;
   $align?: CSSProperties['alignItems'];
   $background?: CSSProperties['background'];
   $color?: CSSProperties['color'];
-  $css?: string;
+  $css?: string | RuleSet<object>;
   $direction?: CSSProperties['flexDirection'];
   $display?: CSSProperties['display'];
-  $flex?: boolean;
+  $effect?: 'show' | 'hide';
+  $flex?: CSSProperties['flex'];
   $gap?: CSSProperties['gap'];
+  $hasTransition?: boolean | 'slow';
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
   $overflow?: CSSProperties['overflow'];
-  $maxWidth?: CSSProperties['maxWidth'];
   $margin?: MarginPadding;
+  $maxHeight?: CSSProperties['maxHeight'];
+  $minHeight?: CSSProperties['minHeight'];
+  $maxWidth?: CSSProperties['maxWidth'];
   $minWidth?: CSSProperties['minWidth'];
   $padding?: MarginPadding;
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
+  $shrink?: CSSProperties['flexShrink'];
+  $transition?: CSSProperties['transition'];
   $width?: CSSProperties['width'];
+  $wrap?: CSSProperties['flexWrap'];
   $zIndex?: CSSProperties['zIndex'];
 }
 
@@ -41,18 +50,48 @@ export const Box = styled('div')<BoxProps>`
   ${({ $color }) => $color && `color: ${$color};`}
   ${({ $direction }) => $direction && `flex-direction: ${$direction};`}
   ${({ $display }) => $display && `display: ${$display};`}
-  ${({ $flex }) => $flex === false && `display: block;`}
+  ${({ $flex }) => $flex && `flex: ${$flex};`}
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
+  ${({ $hasTransition }) =>
+    $hasTransition && $hasTransition === 'slow'
+      ? `transition: all 0.5s ease-in-out;`
+      : $hasTransition
+        ? `transition: all 0.3s ease-in-out;`
+        : ''}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
   ${({ $margin }) => $margin && stylesMargin($margin)}
+  ${({ $maxHeight }) => $maxHeight && `max-height: ${$maxHeight};`}
+  ${({ $minHeight }) => $minHeight && `min-height: ${$minHeight};`}
+  ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
+  ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $overflow }) => $overflow && `overflow: ${$overflow};`}
   ${({ $padding }) => $padding && stylesPadding($padding)}
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
+  ${({ $shrink }) => $shrink && `flex-shrink: ${$shrink};`}
+  ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
-  ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
-  ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
-  ${({ $css }) => $css && `${$css};`}
+  ${({ $wrap }) => $wrap && `flex-wrap: ${$wrap};`}
+  ${({ $css }) => $css && (typeof $css === 'string' ? `${$css};` : $css)}
   ${({ $zIndex }) => $zIndex && `z-index: ${$zIndex};`}
+  ${({ $effect }) => {
+    let effect;
+    switch ($effect) {
+      case 'show':
+        effect = showEffect;
+        break;
+      case 'hide':
+        effect = hideEffect;
+        break;
+    }
+
+    return (
+      effect &&
+      ` 
+        transition: all 0.3s ease-in-out;
+        ${effect}
+      `
+    );
+  }}
 `;

@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
-import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
+import { useCunninghamTheme } from '@/cunningham';
 
 import { useUpdateTeam } from '../api';
 import IconEdit from '../assets/icon-edit.svg';

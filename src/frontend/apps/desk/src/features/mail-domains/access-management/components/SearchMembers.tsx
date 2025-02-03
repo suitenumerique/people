@@ -35,19 +35,21 @@ export const SearchMembers = ({
     mailDomain: mailDomain.slug,
   });
 
-  const options = data;
+  const options = data || [];
 
   useEffect(() => {
     if (!resolveOptionsRef.current || !options) {
       return;
     }
 
-    const optionsFiltered = options.filter(
-      (user) =>
-        !selectedMembers?.find(
-          (selectedUser) => selectedUser.value.email === user.email,
-        ),
-    );
+    const optionsFiltered =
+      options &&
+      options.filter(
+        (user) =>
+          !selectedMembers?.find(
+            (selectedUser) => selectedUser.value.email === user.email,
+          ),
+      );
 
     let users: OptionsSelect = optionsFiltered.map((user) => ({
       value: user,

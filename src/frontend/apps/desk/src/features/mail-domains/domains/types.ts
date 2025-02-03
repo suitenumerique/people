@@ -3,6 +3,7 @@ import { UUID } from 'crypto';
 export interface MailDomain {
   id: UUID;
   name: string;
+  count_mailboxes?: number;
   created_at: string;
   updated_at: string;
   slug: string;

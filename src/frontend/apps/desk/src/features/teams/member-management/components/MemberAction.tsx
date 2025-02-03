@@ -36,12 +36,7 @@ export const MemberAction = ({
   return (
     <>
       <DropButton
-        button={
-          <IconOptions
-            isOpen={isDropOpen}
-            aria-label={t('Open the member options modal')}
-          />
-        }
+        button={<IconOptions aria-label={t('Open the member options modal')} />}
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}
       >

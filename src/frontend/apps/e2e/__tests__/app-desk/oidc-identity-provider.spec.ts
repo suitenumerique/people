@@ -4,7 +4,7 @@ test.describe('Login to people as Identity Provider', () => {
   test('checks a user with mailbox can login via people', async ({ page }) => {
     // go to people index page, wait for the redirection to keycloak
     await page.goto('/');
-    await page.locator('h1').first().textContent({
+    await page.locator('h2').first().textContent({
       timeout: 5000,
     });
 

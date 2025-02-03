@@ -27,6 +27,8 @@ export interface OptionNewMember {
 
 export type OptionSelect = OptionNewMember | OptionInvitation;
 
+export type OptionsSelect = readonly OptionSelect[];
+
 export interface Invitation {
   id: string;
   created_at: string;
