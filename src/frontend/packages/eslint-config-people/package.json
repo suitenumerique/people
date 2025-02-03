@@ -7,9 +7,9 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "15.1.6",
-    "@tanstack/eslint-plugin-query": "5.64.2",
-    "@typescript-eslint/eslint-plugin": "8.21.0",
-    "@typescript-eslint/parser": "8.21.0",
+    "@tanstack/eslint-plugin-query": "5.66.0",
+    "@typescript-eslint/eslint-plugin": "8.22.0",
+    "@typescript-eslint/parser": "8.22.0",
     "eslint": "8.57.0",
     "eslint-config-next": "15.1.6",
     "eslint-config-prettier": "10.0.1",
