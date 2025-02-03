@@ -962,13 +962,13 @@ class Invitation(BaseModel):
         try:
             with override(self.issuer.language):
                 template_vars = {
-                    "title": _("Invitation to join Desk!"),
+                    "title": _("Invitation to join La Régie!"),
                     "site": Site.objects.get_current(),
                 }
                 msg_html = render_to_string("mail/html/invitation.html", template_vars)
                 msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
                 mail.send_mail(
-                    _("Invitation to join Desk!"),
+                    _("Invitation to join La Régie!"),
                     msg_plain,
                     settings.EMAIL_FROM,
                     [self.email],
