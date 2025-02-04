@@ -71,6 +71,7 @@ def test_api_mail_domains__retrieve_authenticated_related():
 
     domain = factories.MailDomainEnabledFactory()
     factories.MailDomainAccessFactory(domain=domain, user=user)
+    factories.MailboxFactory.create_batch(10, domain=domain)
 
     response = client.get(
         f"/api/v1.0/mail-domains/{domain.slug}/",
@@ -85,4 +86,5 @@ def test_api_mail_domains__retrieve_authenticated_related():
         "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
         "abilities": domain.get_abilities(user),
+        "count_mailboxes": 10,
     }
