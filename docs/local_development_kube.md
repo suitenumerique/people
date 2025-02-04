@@ -21,37 +21,34 @@ This guide assumes you have the following tools installed:
   * [helmfile](https://github.com/helmfile/helmfile)
   * [secrets](https://github.com/jkroepke/helm-secrets/wiki/Installation)
 
-## Getting started
+[Install_prereq script](https://github.com/numerique-gouv/dk8s/blob/main/scripts/install-prereq.sh) (not tested).
 
-### Create the kubernetes cluster
+## Create the kubernetes cluster
 
 Run the following command to create a kubernetes cluster using kind:
 
 ```bash
 make start-kind
-```
 
-### Install the secret
-
-You might not need to do this if you are run the stack with keycloak. 
-
-```bash
+# import your secrets from credentials manager
+# ! don't forget "https" before your url
 make install-external-secrets
-```
-
-### Deploy the application
-
-```bash
-# Pro Connect environment
-make tilt-up
-
-# Standalone environment with keycloak
-make start-tilt-keycloak
 ```
 
 That's it! You should now have a local development environment for Kubernetes.
 
-Wait for front-end image to build and you can access the application at https://desk.127.0.0.1.nip.io (it can take up to a few minutes)
+## Start the application
+
+```bash
+# You can either start :
+# ProConnect stack (but secrets must be set on your local cluster)
+make tilt-up
+
+# or standalone environment with keycloak
+make start-tilt-keycloak
+```
+
+Access your application at https://desk.127.0.0.1.nip.io 
 
 ## Management
 
