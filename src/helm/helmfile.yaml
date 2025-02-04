@@ -17,7 +17,7 @@ releases:
     missingFileHandler: Warn
     namespace: {{ .Namespace }}
     chart: bitnami/keycloak
-    version: 17.3.6
+    version: 24.4.8
     values:
       - postgresql:
           auth:
@@ -39,6 +39,7 @@ releases:
       - auth:
           adminUser: su
           adminPassword: su
+      - customCaExistingSecret: "certifi"
       - proxy: edge
       - ingress:
           enabled: true
@@ -50,7 +51,7 @@ releases:
             name: desk-keycloak
           data:
             desk.json: |
-{{ readFile "../../docker/auth/realm.json" | replace "http://localhost:3200" "https://desk.127.0.0.1.nip.io" | indent 14 }}
+{{ readFile "../../docker/auth/realm.json" | replace "http://localhost:3200" "https://desk.127.0.0.1.nip.io" | replace "http://app-dev:8000" "https://desk.127.0.0.1.nip.io" | replace "http://localhost:8071" "https://desk.127.0.0.1.nip.io" | indent 14 }}
 
   - name: postgres
     installed: {{ regexMatch "^dev.*" .Environment.Name | toYaml }}
