@@ -8,9 +8,13 @@ from django.core.management import call_command
 
 import pytest
 import responses
+from rest_framework import status
 
 from mailbox_manager import enums, factories
-from mailbox_manager.tests.fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
+from mailbox_manager.tests.fixtures.dimail import (
+    CHECK_DOMAIN_BROKEN,
+    CHECK_DOMAIN_OK,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -48,7 +52,7 @@ def test_fetch_domain_status():
             responses.GET,
             re.compile(rf".*/domains/{domain.name}/check/"),
             body=json.dumps(body_content),
-            status=200,
+            status=status.HTTP_200_OK,
             content_type="application/json",
         )
     output = StringIO()
@@ -59,8 +63,8 @@ def test_fetch_domain_status():
     domain_failed.refresh_from_db()
     # nothing change for the first domain enable
     assert domain_enabled1.status == enums.MailDomainStatusChoices.ENABLED
-    # status of the second activated domain has changed to failure
-    assert domain_enabled2.status == enums.MailDomainStatusChoices.FAILED
+    # status of the second activated domain has changed to action required
+    assert domain_enabled2.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
     # status of the failed domain has changed to enabled
     assert domain_failed.status == enums.MailDomainStatusChoices.ENABLED
     # disabled domain was excluded

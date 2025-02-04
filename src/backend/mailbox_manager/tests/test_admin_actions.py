@@ -55,6 +55,7 @@ def test_sync_mailboxes__should_not_sync_if_domain_is_not_enabled(
     )
 
 
+@responses.activate
 @pytest.mark.django_db
 def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client):
     """Test admin action to check health of some domains"""
@@ -70,35 +71,34 @@ def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client)
         ],
     }
     url = reverse("admin:mailbox_manager_maildomain_changelist")
-
-    with responses.RequestsMock() as rsps:
-        body_content_domain1 = CHECK_DOMAIN_BROKEN.copy()
-        body_content_domain1["name"] = domain1.name
-        body_content_domain2 = CHECK_DOMAIN_BROKEN.copy()
-        body_content_domain2["name"] = domain2.name
-        rsps.add(
-            rsps.GET,
-            re.compile(rf".*/domains/{domain1.name}/check/"),
-            body=json.dumps(body_content_domain1),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.GET,
-            re.compile(rf".*/domains/{domain2.name}/check/"),
-            body=json.dumps(body_content_domain2),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        response = client.post(url, data, follow=True)
-        assert response.status_code == status.HTTP_200_OK
-        domain1.refresh_from_db()
-        domain2.refresh_from_db()
-        assert domain1.status == enums.MailDomainStatusChoices.FAILED
-        assert domain2.status == enums.MailDomainStatusChoices.FAILED
-        assert "Check domains done with success" in response.content.decode("utf-8")
+    body_content_domain1 = CHECK_DOMAIN_BROKEN.copy()
+    body_content_domain1["name"] = domain1.name
+    body_content_domain2 = CHECK_DOMAIN_BROKEN.copy()
+    body_content_domain2["name"] = domain2.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain1.name}/check/"),
+        body=json.dumps(body_content_domain1),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain2.name}/check/"),
+        body=json.dumps(body_content_domain2),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    response = client.post(url, data, follow=True)
+    assert response.status_code == status.HTTP_200_OK
+    domain1.refresh_from_db()
+    domain2.refresh_from_db()
+    assert domain1.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+    assert domain2.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+    assert "Check domains done with success" in response.content.decode("utf-8")
 
 
+@responses.activate
 @pytest.mark.django_db
 def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
     """Test admin action should switch domain state to ENABLED
@@ -115,33 +115,33 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
     }
     url = reverse("admin:mailbox_manager_maildomain_changelist")
 
-    with responses.RequestsMock() as rsps:
-        body_content_domain1 = CHECK_DOMAIN_OK.copy()
-        body_content_domain1["name"] = domain1.name
+    body_content_domain1 = CHECK_DOMAIN_OK.copy()
+    body_content_domain1["name"] = domain1.name
 
-        rsps.add(
-            rsps.GET,
-            re.compile(rf".*/domains/{domain1.name}/check/"),
-            body=json.dumps(body_content_domain1),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{domain1.name}/mailboxes/"),
-            body=response_mailbox_created(f"truc@{domain1.name}"),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain1.name}/check/"),
+        body=json.dumps(body_content_domain1),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    # we need to get a token to create mailboxes
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{domain1.name}/mailboxes/"),
+        body=response_mailbox_created(f"truc@{domain1.name}"),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
 
-        response = client.post(url, data, follow=True)
+    response = client.post(url, data, follow=True)
     assert response.status_code == status.HTTP_200_OK
     domain1.refresh_from_db()
     domain2.refresh_from_db()

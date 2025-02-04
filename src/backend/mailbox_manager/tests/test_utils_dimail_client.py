@@ -18,6 +18,8 @@ from mailbox_manager.utils.dimail import DimailAPIClient
 
 from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
+    CHECK_DOMAIN_BROKEN_EXTERNAL,
+    CHECK_DOMAIN_BROKEN_INTERNAL,
     CHECK_DOMAIN_OK,
     TOKEN_OK,
     response_mailbox_created,
@@ -166,40 +168,180 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
         assert imported_mailboxes == [mailbox_valid["email"]]
 
 
-def test_dimail__fetch_domain_status_from_dimail():
-    """Request to dimail health status of a domain"""
-    domain = factories.MailDomainEnabledFactory()
-    with responses.RequestsMock() as rsps:
-        body_content = CHECK_DOMAIN_BROKEN.copy()
-        body_content["name"] = domain.name
-        rsps.add(
-            rsps.GET,
-            re.compile(rf".*/domains/{domain.name}/check/"),
-            body=json.dumps(body_content),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        dimail_client = DimailAPIClient()
-        response = dimail_client.fetch_domain_status(domain)
-        assert response.status_code == status.HTTP_200_OK
-        assert domain.status == enums.MailDomainStatusChoices.FAILED
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.ACTION_REQUIRED,
+        enums.MailDomainStatusChoices.FAILED,
+        enums.MailDomainStatusChoices.ENABLED,
+    ],
+)
+@responses.activate
+def test_dimail__fetch_domain_status__switch_to_enabled(domain_status):
+    """Domains should be enabled when dimail check returns ok status"""
+    domain = factories.MailDomainFactory(status=domain_status)
+    body_content = CHECK_DOMAIN_OK.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    dimail_client = DimailAPIClient()
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ENABLED
 
-        # Now domain is ok again
-        body_content = CHECK_DOMAIN_OK.copy()
-        body_content["name"] = domain.name
-        rsps.add(
-            rsps.GET,
-            re.compile(rf".*/domains/{domain.name}/check/"),
-            body=json.dumps(body_content),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        response = dimail_client.fetch_domain_status(domain)
-        assert response.status_code == status.HTTP_200_OK
-        assert domain.status == enums.MailDomainStatusChoices.ENABLED
+    # call again, should be ok
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ENABLED
 
 
-def test_dimail___enable_pending_mailboxes(caplog):
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.ENABLED,
+        enums.MailDomainStatusChoices.ACTION_REQUIRED,
+        enums.MailDomainStatusChoices.FAILED,
+    ],
+)
+@responses.activate
+def test_dimail__fetch_domain_status__switch_to_action_required(
+    domain_status,
+):
+    """Domains should be in status action required when dimail check
+    returns broken status for external checks."""
+    domain = factories.MailDomainFactory(status=domain_status)
+    body_content = CHECK_DOMAIN_BROKEN_EXTERNAL.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    dimail_client = DimailAPIClient()
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+
+    # Support team fixes their part of the problem
+    # Now domain is OK again
+    body_content = CHECK_DOMAIN_OK.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ENABLED
+
+
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.ENABLED,
+        enums.MailDomainStatusChoices.ACTION_REQUIRED,
+    ],
+)
+@responses.activate
+def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
+    """Domains should be in status failed when dimail check returns broken status
+    for only internal checks dispite a fix call."""
+    domain = factories.MailDomainFactory(status=domain_status)
+    # nothing can be done by support team, domain should be in failed
+    body_content = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    # the endpoint fix is called and still returns KO for internal checks
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/fix/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    dimail_client = DimailAPIClient()
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.FAILED
+
+
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.ENABLED,
+        enums.MailDomainStatusChoices.ACTION_REQUIRED,
+    ],
+)
+@responses.activate
+def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
+    """Domains should be enabled when dimail check returns ok status
+    after a fix call."""
+    domain = factories.MailDomainFactory(status=domain_status)
+    # with all checks KO, domain should be in action required
+    body_content = CHECK_DOMAIN_BROKEN.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    dimail_client = DimailAPIClient()
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+
+    # We assume that the support has fixed their part.
+    # So now dimail returns OK for external checks but still KO for internal checks.
+    # A call to dimail fix endpoint is necessary and will be done by
+    # the fetch_domain_status call
+    body_content = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/check/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    # the endpoint fix is called and returns OK. Hooray!
+    body_content = CHECK_DOMAIN_OK.copy()
+    body_content["name"] = domain.name
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/fix/"),
+        body=json.dumps(body_content),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+    dimail_client.fetch_domain_status(domain)
+    domain.refresh_from_db()
+    assert domain.status == enums.MailDomainStatusChoices.ENABLED
+
+
+def test_dimail__enable_pending_mailboxes(caplog):
     """Status of pending mailboxes should switch to "enabled"
     when calling enable_pending_mailboxes."""
     caplog.set_level(logging.INFO)
