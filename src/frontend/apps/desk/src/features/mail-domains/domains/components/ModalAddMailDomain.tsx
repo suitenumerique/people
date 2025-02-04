@@ -6,6 +6,7 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
+import { APIError } from '@/api';
 import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Text, TextErrors } from '@/components';
 import { Modal } from '@/components/Modal';
@@ -23,12 +24,14 @@ export const ModalAddMailDomain = () => {
 
   const addMailDomainValidationSchema = z.object({
     name: z.string().min(1, t('Example: saint-laurent.fr')),
+    supportEmail: z.string().email(t('Please enter a valid email address')),
   });
 
-  const methods = useForm<{ name: string }>({
+  const methods = useForm<{ name: string; supportEmail: string }>({
     delayError: 0,
     defaultValues: {
       name: '',
+      supportEmail: '',
     },
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -39,7 +42,7 @@ export const ModalAddMailDomain = () => {
     onSuccess: (mailDomain) => {
       router.push(`/mail-domains/${mailDomain.slug}`);
     },
-    onError: (error) => {
+    onError: (error: APIError) => {
       const unhandledCauses = parseAPIError({
         error,
         errorParams: [
@@ -87,8 +90,8 @@ export const ModalAddMailDomain = () => {
   const onSubmitCallback = (event: React.FormEvent) => {
     event.preventDefault();
 
-    void methods.handleSubmit(({ name }) => {
-      void addMailDomain(name);
+    void methods.handleSubmit(({ name, supportEmail }) => {
+      void addMailDomain({ name, supportEmail });
     })();
   };
 
@@ -167,6 +170,27 @@ export const ModalAddMailDomain = () => {
               />
             )}
           />
+          <Box $margin={{ vertical: '10px' }}>
+            <Controller
+              control={methods.control}
+              name="supportEmail"
+              render={({ fieldState }) => (
+                <Input
+                  aria-invalid={!!fieldState.error}
+                  aria-required
+                  required
+                  label={t('Support email address')}
+                  state={fieldState.error ? 'error' : 'default'}
+                  text={
+                    fieldState?.error?.message
+                      ? fieldState.error.message
+                      : t('E.g. : support@saint-laurent.fr')
+                  }
+                  {...methods.register('supportEmail')}
+                />
+              )}
+            />
+          </Box>
         </form>
 
         {isPending && (

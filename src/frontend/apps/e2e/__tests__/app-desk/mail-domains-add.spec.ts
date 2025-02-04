@@ -9,6 +9,7 @@ const getElements = (page: Page) => {
   });
   const form = page.locator('form');
   const inputName = form.getByLabel('Domain name');
+  const inputSupportEmail = form.getByLabel('Support email address');
   const buttonSubmit = page.getByRole('button', {
     name: 'Add the domain',
   });
@@ -22,6 +23,7 @@ const getElements = (page: Page) => {
     linkIndexPageAddDomain,
     form,
     inputName,
+    inputSupportEmail,
     buttonCancel,
     buttonSubmit,
   };
@@ -50,6 +52,7 @@ test.describe('Add Mail Domains', () => {
       }),
     ).toBeVisible();
 
+    await expect(inputName).toBeVisible();
     await expect(inputName).toBeVisible();
 
     await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
@@ -82,12 +85,17 @@ test.describe('Add Mail Domains', () => {
   test('checks form invalid status', async ({ page }) => {
     await page.goto('/mail-domains/');
 
-    const { linkIndexPageAddDomain, inputName, buttonSubmit } =
-      getElements(page);
+    const {
+      linkIndexPageAddDomain,
+      inputName,
+      inputSupportEmail,
+      buttonSubmit,
+    } = getElements(page);
 
     await linkIndexPageAddDomain.click();
 
     await expect(inputName).toBeVisible();
+    await expect(inputSupportEmail).toBeVisible();
     await expect(page.getByText('Example: saint-laurent.fr')).toBeVisible();
 
     await expect(
@@ -111,16 +119,23 @@ test.describe('Add Mail Domains', () => {
     browserName,
   }) => {
     const mailDomainName = randomName('versailles.fr', browserName, 1)[0];
+    const mailDomainSupportMail = 'support@'.concat(mailDomainName);
     const mailDomainSlug = mailDomainName.replace('.', '');
 
     await page.goto('/mail-domains/');
 
-    const { linkIndexPageAddDomain, inputName, buttonSubmit } =
-      getElements(page);
+    const {
+      linkIndexPageAddDomain,
+      inputName,
+      inputSupportEmail,
+      buttonSubmit,
+    } = getElements(page);
 
     await linkIndexPageAddDomain.click();
 
     await inputName.fill(mailDomainName);
+    await inputSupportEmail.fill(mailDomainSupportMail);
+
     await buttonSubmit.click();
 
     await expect(page).toHaveURL(`/mail-domains/${mailDomainSlug}/`);
