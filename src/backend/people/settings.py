@@ -686,6 +686,24 @@ class Base(Configuration):
             # Ignore the logs added by the DockerflowMiddleware
             ignore_logger("request.summary")
 
+    @classmethod
+    def generate_temporary_rsa_key(cls):
+        """Generate a temporary RSA key for OIDC Provider."""
+
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=4096,
+        )
+
+        # - Serialize private key to PEM format
+        private_key_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+
+        return private_key_pem.decode("utf-8")
+
 
 class Build(Base):
     """Settings used when the application is built.
@@ -731,6 +749,14 @@ class Development(Base):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
         self.INSTALLED_APPS += ["django_extensions"]
+
+    @property
+    def OAUTH2_PROVIDER(self):
+        """OAuth2 Provider settings."""
+        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
+        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
+            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
+        return OAUTH2_PROVIDER
 
 
 class Test(Base):
@@ -894,6 +920,14 @@ class Local(Production):
 
     nota bene: it should inherit from the Production environment.
     """
+
+    @property
+    def OAUTH2_PROVIDER(self):
+        """OAuth2 Provider settings."""
+        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
+        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
+            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
+        return OAUTH2_PROVIDER
 
 
 class Staging(Production):
