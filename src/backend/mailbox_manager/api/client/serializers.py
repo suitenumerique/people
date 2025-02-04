@@ -56,6 +56,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
     """Serialize mail domain."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
+    count_mailboxes = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.MailDomain
@@ -68,6 +69,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "abilities",
             "created_at",
             "updated_at",
+            "count_mailboxes",
         ]
         read_only_fields = [
             "id",
@@ -76,6 +78,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "abilities",
             "created_at",
             "updated_at",
+            "count_mailboxes",
         ]
 
     def get_abilities(self, domain) -> dict:
@@ -84,6 +87,10 @@ class MailDomainSerializer(serializers.ModelSerializer):
         if request:
             return domain.get_abilities(request.user)
         return {}
+
+    def get_count_mailboxes(self, domain) -> int:
+        """Return count of mailboxes for the domain."""
+        return domain.mailboxes.count()
 
     def create(self, validated_data):
         """

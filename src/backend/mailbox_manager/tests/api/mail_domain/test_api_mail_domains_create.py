@@ -114,6 +114,7 @@ def test_api_mail_domains__create_authenticated():
         "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
         "abilities": domain.get_abilities(user),
+        "count_mailboxes": 0,
     }
 
     # a new domain with status "pending" is created and authenticated user is the owner
@@ -185,6 +186,7 @@ def test_api_mail_domains__create_authenticated__dimail_failure():
         "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
         "abilities": domain.get_abilities(user),
+        "count_mailboxes": 0,
     }
 
     # a new domain with status "failed" is created and authenticated user is the owner

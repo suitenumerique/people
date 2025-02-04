@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(api) add count mailboxes to MailDomain serializer
 - ✨(dimail) manage 'action required' status for MailDomain
 - ✨(domains) add action required status on MailDomain
 - ✨(dimail) send pending mailboxes upon domain activation
