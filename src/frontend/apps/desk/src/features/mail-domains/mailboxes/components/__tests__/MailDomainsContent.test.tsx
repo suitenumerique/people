@@ -14,6 +14,7 @@ const mockMailDomain: MailDomain = {
   name: 'example.com',
   slug: 'example-com',
   status: 'enabled',
+  support_email: 'support@example.com',
   abilities: {
     get: true,
     patch: true,
@@ -31,6 +32,7 @@ const mockMailDomainAsViewer: MailDomain = {
   name: 'example.com',
   slug: 'example-com',
   status: 'enabled',
+  support_email: 'support@example.com',
   abilities: {
     get: true,
     patch: false,

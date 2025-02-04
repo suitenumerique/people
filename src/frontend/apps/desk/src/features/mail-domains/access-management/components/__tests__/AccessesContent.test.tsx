@@ -31,6 +31,7 @@ describe('AccessesContent', () => {
     status: 'enabled',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    support_email: 'support@example.com',
     abilities: {
       get: true,
       patch: true,

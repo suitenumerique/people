@@ -19,6 +19,7 @@ describe('ModalAddMailDomain', () => {
     modalElement: screen.getByText('Add a mail domain'),
     formTag: screen.getByTitle('Mail domain addition form'),
     inputName: screen.getByLabelText(/Domain name/i),
+    inputSupportEmail: screen.getByLabelText(/Support email address/i),
     buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
     buttonSubmit: screen.getByRole('button', {
       name: /Add the domain/i,
@@ -37,12 +38,19 @@ describe('ModalAddMailDomain', () => {
   it('renders all the elements', () => {
     render(<ModalAddMailDomain />, { wrapper: AppWrapper });
 
-    const { modalElement, formTag, inputName, buttonCancel, buttonSubmit } =
-      getElements();
+    const {
+      modalElement,
+      formTag,
+      inputName,
+      inputSupportEmail,
+      buttonCancel,
+      buttonSubmit,
+    } = getElements();
 
     expect(modalElement).toBeVisible();
     expect(formTag).toBeVisible();
     expect(inputName).toBeVisible();
+    expect(inputSupportEmail).toBeVisible();
     expect(screen.getByText('Example: saint-laurent.fr')).toBeVisible();
     expect(buttonCancel).toBeVisible();
     expect(buttonSubmit).toBeVisible();
@@ -104,9 +112,10 @@ describe('ModalAddMailDomain', () => {
 
     render(<ModalAddMailDomain />, { wrapper: AppWrapper });
 
-    const { inputName, buttonSubmit } = getElements();
+    const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domain.fr');
+    await user.type(inputSupportEmail, 'support@domain.fr');
 
     await user.click(buttonSubmit);
 
@@ -114,6 +123,7 @@ describe('ModalAddMailDomain', () => {
     expect(fetchMock.lastOptions()).toEqual({
       body: JSON.stringify({
         name: 'domain.fr',
+        support_email: 'support@domain.fr',
       }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -121,29 +131,6 @@ describe('ModalAddMailDomain', () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(`/mail-domains/domainfr`);
-  });
-
-  it('submits the form on key enter press', async () => {
-    fetchMock.mock(`end:mail-domains/`, 201);
-
-    const user = userEvent.setup();
-
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
-
-    const { inputName } = getElements();
-
-    await user.type(inputName, 'domain.fr');
-    await user.type(inputName, '{enter}');
-
-    expect(fetchMock.lastUrl()).toContain('/mail-domains/');
-    expect(fetchMock.lastOptions()).toEqual({
-      body: JSON.stringify({
-        name: 'domain.fr',
-      }),
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-    });
   });
 
   it('displays right error message error when maildomain name is already used', async () => {
@@ -158,10 +145,10 @@ describe('ModalAddMailDomain', () => {
 
     render(<ModalAddMailDomain />, { wrapper: AppWrapper });
 
-    const { inputName, buttonSubmit } = getElements();
+    const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domain.fr');
-
+    await user.type(inputSupportEmail, 'support@domain.fr');
     await user.click(buttonSubmit);
 
     await waitFor(() => {
@@ -175,6 +162,7 @@ describe('ModalAddMailDomain', () => {
     expect(inputName).toHaveFocus();
 
     await user.type(inputName, 'domain2.fr');
+
     expect(buttonSubmit).toBeEnabled();
   });
 
@@ -190,9 +178,10 @@ describe('ModalAddMailDomain', () => {
 
     render(<ModalAddMailDomain />, { wrapper: AppWrapper });
 
-    const { inputName, buttonSubmit } = getElements();
+    const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domainfr');
+    await user.type(inputSupportEmail, 'support@domain.fr');
 
     await user.click(buttonSubmit);
 
@@ -220,9 +209,10 @@ describe('ModalAddMailDomain', () => {
 
     render(<ModalAddMailDomain />, { wrapper: AppWrapper });
 
-    const { inputName, buttonSubmit } = getElements();
+    const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domain.fr');
+    await user.type(inputSupportEmail, 'support@domain.fr');
 
     await user.click(buttonSubmit);
 

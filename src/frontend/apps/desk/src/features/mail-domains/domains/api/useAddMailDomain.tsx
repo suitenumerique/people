@@ -8,16 +8,16 @@ import { KEY_LIST_MAIL_DOMAIN } from './useMailDomains';
 
 export interface AddMailDomainParams {
   name: string;
+  supportEmail: string;
 }
 
-export const addMailDomain = async (
-  name: AddMailDomainParams['name'],
-): Promise<MailDomain> => {
+export const addMailDomain = async ({
+  name,
+  supportEmail,
+}: AddMailDomainParams): Promise<MailDomain> => {
   const response = await fetchAPI(`mail-domains/`, {
     method: 'POST',
-    body: JSON.stringify({
-      name,
-    }),
+    body: JSON.stringify({ name, support_email: supportEmail }),
   });
 
   if (!response.ok) {
@@ -38,7 +38,7 @@ export const useAddMailDomain = ({
   onError: (error: APIError) => void;
 }) => {
   const queryClient = useQueryClient();
-  return useMutation<MailDomain, APIError, string>({
+  return useMutation<MailDomain, APIError, AddMailDomainParams>({
     mutationFn: addMailDomain,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({
