@@ -42,7 +42,7 @@ export const LeftPanelHeader = ({ children }: PropsWithChildren) => {
                   <Icon $variation="800" $theme="primary" iconName="house" />
                 }
               />
-              {auth.authenticated && (
+{/*              {auth.authenticated && (
                 <Button
                   onClick={searchModal.open}
                   size="medium"
@@ -51,7 +51,7 @@ export const LeftPanelHeader = ({ children }: PropsWithChildren) => {
                     <Icon $variation="800" $theme="primary" iconName="search" />
                   }
                 />
-              )}
+              )}*/}
             </Box>
 {/*            {auth.authenticated && (
               <Button onClick={createNewDoc}>{t('New doc')}</Button>

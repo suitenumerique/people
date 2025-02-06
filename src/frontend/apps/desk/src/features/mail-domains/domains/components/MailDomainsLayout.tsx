@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
-import { MainLayout } from '@/layouts';
+import { MainLayout } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { Panel } from './panel';
