@@ -1,8 +1,10 @@
 """Organization related plugins."""
 
 import logging
+import re
 
 from django.conf import settings
+from django.utils.text import slugify
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -139,6 +141,8 @@ class CommuneCreation(BaseOrganizationPlugin):
 
     def dns_call(self, spec):
         """Call to add a DNS record"""
+        zone_name = self.zone_name(spec.inputs["name"])
+
         records = [
             {
                 "name": item["target"],
@@ -151,16 +155,24 @@ class CommuneCreation(BaseOrganizationPlugin):
         result = ApiCall()
         result.method = "PATCH"
         result.base = "https://api.scaleway.com"
-        result.url = (
-            f"/domain/v2beta1/dns-zones/{spec.inputs['name']}.collectivite.fr/records"
-        )
+        result.url = f"/domain/v2beta1/dns-zones/{zone_name}/records"
         result.params = {"changes": [{"add": {"records": records}}]}
         result.headers = {"X-Auth-Token": settings.DNS_PROVISIONING_API_CREDENTIALS}
         return result
 
+    def normalize_name(self, name: str) -> str:
+        """Map the name to a standard form"""
+        name = re.sub("'", "-", name)
+        return slugify(name)
+
+    def zone_name(self, name: str) -> str:
+        """Derive the zone name from the commune name"""
+        normalized = self.normalize_name(name)
+        return f"{normalized}.collectivite.fr"
+
     def complete_commune_creation(self, name: str) -> ApiCall:
         """Specify the tasks to be completed after a commune is created."""
-        inputs = {"name": name.lower()}
+        inputs = {"name": self.normalize_name(name)}
 
         create_zone = ApiCall()
         create_zone.method = "POST"
@@ -175,15 +187,17 @@ class CommuneCreation(BaseOrganizationPlugin):
             "X-Auth-Token": settings.DNS_PROVISIONING_API_CREDENTIALS
         }
 
+        zone_name = self.zone_name(inputs["name"])
+
         create_domain = ApiCall()
         create_domain.method = "POST"
         create_domain.base = settings.MAIL_PROVISIONING_API_URL
         create_domain.url = "/domains"
         create_domain.params = {
-            "name": f"{inputs['name']}.collectivite.fr",
+            "name": zone_name,
             "delivery": "virtual",
             "features": ["webmail", "mailbox"],
-            "context_name": f"{inputs['name']}.collectivite.fr",
+            "context_name": zone_name,
         }
         create_domain.headers = {
             "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
@@ -192,7 +206,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         spec_domain = ApiCall()
         spec_domain.inputs = inputs
         spec_domain.base = settings.MAIL_PROVISIONING_API_URL
-        spec_domain.url = f"/domains/{inputs['name']}.collectivite.fr/spec"
+        spec_domain.url = f"/domains/{zone_name}/spec"
         spec_domain.headers = {
             "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
         }
@@ -234,7 +248,9 @@ class CommuneCreation(BaseOrganizationPlugin):
         organization.save(update_fields=["name", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
 
-        MailDomain.objects.get_or_create(name=f"{name.lower()}.collectivite.fr")
+        zone_name = self.zone_name(name)
+        support = f"support@{zone_name}"
+        MailDomain.objects.get_or_create(name=zone_name, support_email=support)
 
         # Compute and execute the rest of the process
         tasks = self.complete_commune_creation(name)
@@ -247,7 +263,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         """After granting an organization access, check for needed domain access grant."""
         orga = organization_access.organization
         user = organization_access.user
-        zone_name = orga.name.lower() + ".collectivite.fr"
+        zone_name = self.zone_name(orga.name)
 
         try:
             domain = MailDomain.objects.get(name=zone_name)
