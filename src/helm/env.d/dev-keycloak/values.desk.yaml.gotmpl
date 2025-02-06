@@ -17,6 +17,7 @@ backend:
     DJANGO_EMAIL_HOST: "maildev"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
+    DJANGO_SENTRY_DSN: null
     OIDC_RS_CLIENT_ID: changeme
     OIDC_RS_CLIENT_SECRET: changeme
     OIDC_RS_PRIVATE_KEY_STR: "lkj"
@@ -50,7 +51,6 @@ backend:
     WEBMAIL_URL: "https://onestendev.yapasdewebmail.fr"
     MAIL_PROVISIONING_API_URL: "http://dimail:8000"
     MAIL_PROVISIONING_API_CREDENTIALS: changeme
-    SENTRY_DSN: "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171"
   command:
     - "gunicorn"
     - "-c"
