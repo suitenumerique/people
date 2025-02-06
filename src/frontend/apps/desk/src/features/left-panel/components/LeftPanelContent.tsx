@@ -26,7 +26,6 @@ export const LeftPanelContent = () => {
             $css="overflow-y: auto; overflow-x: hidden;"
           >
           </Box>
-          <div> Coucou </div>
         </>
       )}
     </>

@@ -83,12 +83,12 @@ export const LeftPanel = () => {
               $css={css`
                 width: 100%;
                 justify-content: center;
-                align-items: center;
                 gap: ${spacings['base']};
               `}
               className="md:hidden"
             >
               <LeftPanelHeader />
+              <LeftPanelTargetFilters />
               <LeftPanelContent />
               <SeparatedSection showSeparator={false}>
                 <Box $justify="center" $align="center" $gap={spacings['sm']}>

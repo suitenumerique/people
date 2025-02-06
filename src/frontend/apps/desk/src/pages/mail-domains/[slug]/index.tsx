@@ -5,8 +5,9 @@ import React, { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
+import { MainLayout } from '@/layouts';
+
 import {
-  MailDomainsLayout,
   useMailDomain,
 } from '@/features/mail-domains/domains';
 import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
@@ -55,7 +56,7 @@ const MailboxesPage: NextPageWithLayout = () => {
 };
 
 MailboxesPage.getLayout = function getLayout(page: ReactElement) {
-  return <MailDomainsLayout>{page}</MailDomainsLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default MailboxesPage;
