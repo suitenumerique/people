@@ -32,6 +32,7 @@ backend:
     DJANGO_EMAIL_HOST: "maildev"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
+    DJANGO_SENTRY_DSN: null
     OIDC_OP_JWKS_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/jwks
     OIDC_OP_AUTHORIZATION_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/authorize
     OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
@@ -71,7 +72,6 @@ backend:
       secretKeyRef:
         name: backend
         key: MAIL_PROVISIONING_API_CREDENTIALS
-    SENTRY_DSN: "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171"
   command:
     - "gunicorn"
     - "-c"
