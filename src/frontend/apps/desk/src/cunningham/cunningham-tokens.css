@@ -181,7 +181,7 @@
   --c--theme--logo--widthfooter: ;
   --c--theme--logo--alt: ;
   --c--components--datagrid--header--weight: var(
-    --c--theme--font--weights--medium
+    --c--theme--font--weights--regular
   );
   --c--components--datagrid--header--size: var(--c--theme--font--sizes--ml);
   --c--components--datagrid--cell--color: var(--c--theme--colors--primary-500);
