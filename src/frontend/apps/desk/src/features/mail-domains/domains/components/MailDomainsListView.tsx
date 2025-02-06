@@ -40,6 +40,8 @@ export function MailDomainsListView({ children }: PropsWithChildren) {
     }, [] as MailDomain[]);
   }, [data?.pages]);
 
+  console.log(mailDomains);
+
   return (
     <div>
         {mailDomains && mailDomains.length ? (
@@ -48,7 +50,7 @@ export function MailDomainsListView({ children }: PropsWithChildren) {
               field: "name",
               headerName: "Domaine",
             }, {
-              field: "id",
+              field: "count_mailboxes",
               headerName: "Nombre d'adresses",
               enableSorting: true,
             },
@@ -90,7 +92,10 @@ export function MailDomainsListView({ children }: PropsWithChildren) {
               }
             }
             ]
-          } />) : null
+          } defaultSortModel={[{
+      field: "name",
+      sort: "desc"
+    }]}  isLoading={isLoading} />) : null
         }
       </div>
   );

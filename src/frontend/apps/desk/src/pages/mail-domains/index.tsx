@@ -54,6 +54,7 @@ const Page: NextPageWithLayout = () => {
         as="h2"
         $weight="700"
         $size="h4"
+        $variation="1000"
         $margin={{ top: '0px', bottom: '20px' }}
         >
         Domaines de l’organisation
