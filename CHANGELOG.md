@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(plugin) add CommuneCreation plugin with domain provisioning #658
 - ✨(frontend) display action required status on domain
 - ✨(domains) store last health check details on MailDomain
 - ✨(domains) add support email field on domain
