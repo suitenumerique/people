@@ -2,9 +2,10 @@ import React, { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import {
-  MailDomainsLayout,
   ModalAddMailDomain,
 } from '@/features/mail-domains/domains';
+import { MainLayout } from '@/layouts';
+
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
@@ -16,7 +17,7 @@ const Page: NextPageWithLayout = () => {
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <MailDomainsLayout>{page}</MailDomainsLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default Page;

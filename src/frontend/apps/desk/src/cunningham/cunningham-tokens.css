@@ -15,7 +15,7 @@
   --c--theme--colors--info-300: #5894e1;
   --c--theme--colors--info-400: #377fdb;
   --c--theme--colors--info-500: #055fd2;
-  --c--theme--colors--info-600: #0556bf;
+  --c--theme--colors--info-600: #0063CB;
   --c--theme--colors--info-700: #044395;
   --c--theme--colors--info-800: #033474;
   --c--theme--colors--info-900: #022858;
@@ -24,7 +24,7 @@
   --c--theme--colors--greyscale-300: #e7e8ea;
   --c--theme--colors--greyscale-400: #c2c6ca;
   --c--theme--colors--greyscale-500: #9ea3aa;
-  --c--theme--colors--greyscale-600: #79818a;
+  --c--theme--colors--greyscale-600: #666666;
   --c--theme--colors--greyscale-700: #555f6b;
   --c--theme--colors--greyscale-800: #303c4b;
   --c--theme--colors--greyscale-900: #0c1a2b;
@@ -113,7 +113,7 @@
   --c--theme--font--sizes--h5: 1.25rem;
   --c--theme--font--sizes--h6: 1.125rem;
   --c--theme--font--sizes--l: 1rem;
-  --c--theme--font--sizes--m: 0.8125rem;
+  --c--theme--font--sizes--m: 0.88rem;
   --c--theme--font--sizes--s: 0.75rem;
   --c--theme--font--sizes--xs: 0.75rem;
   --c--theme--font--sizes--sm: 0.875rem;
@@ -181,7 +181,7 @@
   --c--theme--logo--widthfooter: ;
   --c--theme--logo--alt: ;
   --c--components--datagrid--header--weight: var(
-    --c--theme--font--weights--extrabold
+    --c--theme--font--weights--medium
   );
   --c--components--datagrid--header--size: var(--c--theme--font--sizes--ml);
   --c--components--datagrid--cell--color: var(--c--theme--colors--primary-500);
@@ -519,11 +519,11 @@
     --c--theme--colors--primary-600
   );
   --c--components--datagrid--header--color: var(
-    --c--theme--colors--primary-text
+    --c--theme--colors--greyscale-600
   );
   --c--components--datagrid--header--size: var(--c--theme--font--sizes--s);
   --c--components--datagrid--body--background-color: transparent;
-  --c--components--datagrid--body--background-color-hover: #f4f4fd;
+  --c--components--datagrid--body--background-color-hover: var(--c--theme--colors--greyscale-100);
   --c--components--datagrid--pagination--background-color: transparent;
   --c--components--datagrid--pagination--background-color-active: var(
     --c--theme--colors--primary-300

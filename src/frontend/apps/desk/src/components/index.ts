@@ -7,6 +7,7 @@ export * from './DropButton';
 export * from './IconOptions';
 export * from './Link';
 export * from './LogoGouv';
+export * from './Tag';
 export * from './Text';
 export * from './TextErrors';
 export * from './separators';
