@@ -169,3 +169,23 @@ def test_tasks_on_commune_creation_include_dns_records():
     assert (
         zone_call.headers["X-Auth-Token"] == settings.DNS_PROVISIONING_API_CREDENTIALS
     )
+
+
+def test_normalize_name():
+    """Test name normalization"""
+    plugin = CommuneCreation()
+    assert plugin.normalize_name("Asnières-sur-Saône") == "asnieres-sur-saone"
+    assert plugin.normalize_name("Bâgé-le-Châtel") == "bage-le-chatel"
+    assert plugin.normalize_name("Courçais") == "courcais"
+    assert plugin.normalize_name("Moÿ-de-l'Aisne") == "moy-de-l-aisne"
+    assert plugin.normalize_name("Salouël") == "salouel"
+    assert (
+        plugin.normalize_name("Bors (Canton de Tude-et-Lavalette)")
+        == "bors-canton-de-tude-et-lavalette"
+    )
+
+
+def test_zone_name():
+    """Test transforming a commune name to a sub-zone of collectivite.fr"""
+    plugin = CommuneCreation()
+    assert plugin.zone_name("Bâgé-le-Châtel") == "bage-le-chatel.collectivite.fr"
