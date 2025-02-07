@@ -16,7 +16,7 @@
   "volta": {
     "node": "16.15.1"
   },
-  "repository": "https://github.com/numerique-gouv/people",
+  "repository": "https://github.com/suitenumerique/people",
   "author": "DINUM",
   "license": "MIT"
 }
