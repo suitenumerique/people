@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel
+from core import models as core_models
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,
@@ -17,7 +17,7 @@ from mailbox_manager.enums import (
 )
 
 
-class MailDomain(BaseModel):
+class MailDomain(core_models.BaseModel):
     """Domain names from which we will create email addresses (mailboxes)."""
 
     name = models.CharField(
@@ -81,7 +81,7 @@ class MailDomain(BaseModel):
         }
 
 
-class MailDomainAccess(BaseModel):
+class MailDomainAccess(core_models.BaseModel):
     """Allow to manage users' accesses to mail domains."""
 
     user = models.ForeignKey(
@@ -173,7 +173,7 @@ class MailDomainAccess(BaseModel):
         }
 
 
-class Mailbox(BaseModel):
+class Mailbox(core_models.BaseModel):
     """Mailboxes for users from mail domain."""
 
     first_name = models.CharField(max_length=200, blank=False)
@@ -231,3 +231,64 @@ class Mailbox(BaseModel):
                 _("You can't create or update a mailbox for a disabled domain.")
             )
         return super().save(*args, **kwargs)
+
+
+class DomainInvitation(core_models.BaseInvitation):
+    """User invitation to teams."""
+
+    issuer = models.ForeignKey(
+        core_models.User,
+        on_delete=models.CASCADE,
+        related_name="domain_invitations",
+    )
+    domain = models.ForeignKey(
+        MailDomain,
+        on_delete=models.CASCADE,
+        related_name="domain_invitations",
+    )
+    role = models.CharField(
+        max_length=20,
+        choices=MailDomainRoleChoices.choices,
+        default=MailDomainRoleChoices.VIEWER,
+    )
+
+    class Meta:
+        db_table = "people_domain_invitation"
+        verbose_name = _("Domain invitation")
+        verbose_name_plural = _("Domain invitations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "domain"], name="email_and_domain_unique_together"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.email} invited to {self.domain}"
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        can_delete = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.user_role
+            except AttributeError:
+                try:
+                    role = self.domain.accesses.filter(user=user).values("role")[0][
+                        "role"
+                    ]
+                except (self._meta.model.DoesNotExist, IndexError):
+                    role = None
+
+            can_delete = role in [
+                MailDomainRoleChoices.OWNER,
+                MailDomainRoleChoices.ADMIN,
+            ]
+
+        return {
+            "delete": can_delete,
+            "get": bool(role),
+            "patch": False,
+            "put": False,
+        }
