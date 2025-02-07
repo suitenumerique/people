@@ -56,10 +56,10 @@ dependencies = [
 ]
 
 [project.urls]
-"Bug Tracker" = "https://github.com/numerique-gouv/people/issues/new"
-"Changelog" = "https://github.com/numerique-gouv/people/blob/main/CHANGELOG.md"
-"Homepage" = "https://github.com/numerique-gouv/people"
-"Repository" = "https://github.com/numerique-gouv/people"
+"Bug Tracker" = "https://github.com/suitenumerique/people/issues/new"
+"Changelog" = "https://github.com/suitenumerique/people/blob/main/CHANGELOG.md"
+"Homepage" = "https://github.com/suitenumerique/people"
+"Repository" = "https://github.com/suitenumerique/people"
 
 [project.optional-dependencies]
 dev = [

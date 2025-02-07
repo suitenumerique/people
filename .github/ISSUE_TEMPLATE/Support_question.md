@@ -9,9 +9,9 @@ We primarily use GitHub as an issue tracker. If however you're encountering an i
 
 ---
 
-Please make sure you have read our [main Readme](https://github.com/numerique-gouv/people).
+Please make sure you have read our [main Readme](https://github.com/suitenumerique/people).
 
-Also make sure it was not already answered in [an open or close issue](https://github.com/numerique-gouv/people/issues).
+Also make sure it was not already answered in [an open or close issue](https://github.com/suitenumerique/people/issues).
 
 If your question was not covered, and you feel like it should be, fire away! We'd love to improve our docs! 👌
 
