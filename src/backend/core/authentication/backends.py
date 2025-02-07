@@ -120,7 +120,7 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         # Data cleaning, to be removed when user organization is null=False
         # or all users have an organization.
-        # See https://github.com/numerique-gouv/people/issues/504
+        # See https://github.com/suitenumerique/people/issues/504
         if not user.organization_id:
             organization_registration_id = claims.get(
                 settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD

@@ -62,7 +62,7 @@ export const LanguagePicker = () => {
 
   /**
    * @description prevent select div to receive focus on keyboard navigation so the focus goes directly to inner button
-   * @see https://github.com/numerique-gouv/people/pull/379
+   * @see https://github.com/suitenumerique/people/pull/379
    */
   useEffect(() => {
     if (!document) {

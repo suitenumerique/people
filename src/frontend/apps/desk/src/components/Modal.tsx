@@ -15,7 +15,7 @@ export const Modal: React.FC<ModalProps> = ({ children, ...props }) => {
 /**
  * @description used to prevent elements to be navigable by keyboard when only a DOM mutation causes the elements to be
  * in the document
- * @see https://github.com/numerique-gouv/people/pull/379
+ * @see https://github.com/suitenumerique/people/pull/379
  */
 export const usePreventFocusVisible = (elements: string[]) => {
   useEffect(() => {
