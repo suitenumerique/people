@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-03 10:27+0000\n"
+"POT-Creation-Date: 2025-02-07 20:49+0000\n"
 "PO-Revision-Date: 2024-01-03 23:15\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
@@ -312,7 +312,7 @@ msgstr "Invitations d'équipe"
 msgid "This email is already associated to a registered user."
 msgstr "Cette adresse email est déjà associée à un utilisateur enregistré."
 
-#: core/models.py:965 core/models.py:971
+#: core/models.py:964
 msgid "Invitation to join La Régie!"
 msgstr "Invitation à rejoindre La Régie!"
 
@@ -523,42 +523,49 @@ msgstr "Cette mail a été envoyée à %(email)s par %(name)s [%(href)s]"
 msgid "Synchronise from dimail"
 msgstr "Synchroniser à partir de dimail"
 
-#: mailbox_manager/admin.py:24
+#: mailbox_manager/admin.py:31
 #, python-brace-format
 msgid "Synchronisation failed for {domain.name} with message: [{err}]"
 msgstr "Synchronisation échouée pour {domain.name} avec le message: [{err}]"
 
-#: mailbox_manager/admin.py:30
+#: mailbox_manager/admin.py:37
 #, python-brace-format
 msgid "Synchronisation succeed for {domain.name}. "
 msgstr "Synchronisation réussie pour {domain.name}. "
 
-#: mailbox_manager/admin.py:36
+#: mailbox_manager/admin.py:45
+msgid ""
+"Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
+msgstr ""
+"Le synchro nécessite des domaines activés. Les domaines exclus sont : "
+"{', '.join(excluded_domains)}"
+
+#: mailbox_manager/admin.py:50
 msgid "Check and update status from dimail"
 msgstr "Vérification et mise à jour de l'état à partir de dimail"
 
-#: mailbox_manager/admin.py:52
+#: mailbox_manager/admin.py:66
 #, python-brace-format
 msgid "- <b>{domain.name}</b> with message: '{err}'"
 msgstr "- <b>{domain.name}</b> avec le message: '{err}'"
 
-#: mailbox_manager/admin.py:63
+#: mailbox_manager/admin.py:77
 msgid "Check domains done with success."
 msgstr "Vérification des domains réalisée avec success."
 
-#: mailbox_manager/admin.py:64
+#: mailbox_manager/admin.py:78
 msgid "Domains updated: {', '.join(domains_updated)}"
 msgstr "Domaines mis à jour : {', '.join(domains_updated)}"
 
-#: mailbox_manager/admin.py:66
+#: mailbox_manager/admin.py:80
 msgid "No domain updated."
 msgstr "Aucun domain n'a été mis à jour."
 
-#: mailbox_manager/admin.py:70
+#: mailbox_manager/admin.py:84
 msgid "Check domain failed for:"
 msgstr "La vérification de domain a échoué pour :"
 
-#: mailbox_manager/admin.py:76
+#: mailbox_manager/admin.py:90
 msgid "Domains disabled are excluded from check: {', '.join(excluded_domains)}"
 msgstr ""
 "Les domains désactivés sont exclus de la vérification : {', '."
