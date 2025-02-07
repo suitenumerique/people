@@ -110,6 +110,10 @@ describe('ModalAddMailDomain', () => {
 
     await user.click(buttonSubmit);
 
+    await waitFor(() => {
+      expect(fetchMock.calls().length).toBe(1);
+    });
+
     expect(fetchMock.lastUrl()).toContain('/mail-domains/');
     expect(fetchMock.lastOptions()).toEqual({
       body: JSON.stringify({
