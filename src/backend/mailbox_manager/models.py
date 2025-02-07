@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel, Organization
+from core.models import BaseInvitation, BaseModel, Organization, User
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,
@@ -273,3 +273,64 @@ class Mailbox(AbstractBaseUser, BaseModel):
     def get_email(self):
         """Return the email address of the mailbox."""
         return f"{self.local_part}@{self.domain.name}"
+
+
+class DomainInvitation(BaseInvitation):
+    """User invitation to teams."""
+
+    issuer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="domain_invitations",
+    )
+    domain = models.ForeignKey(
+        MailDomain,
+        on_delete=models.CASCADE,
+        related_name="domain_invitations",
+    )
+    role = models.CharField(
+        max_length=20,
+        choices=MailDomainRoleChoices.choices,
+        default=MailDomainRoleChoices.VIEWER,
+    )
+
+    class Meta:
+        db_table = "people_domain_invitation"
+        verbose_name = _("Domain invitation")
+        verbose_name_plural = _("Domain invitations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "domain"], name="email_and_domain_unique_together"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.email} invited to {self.domain}"
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        can_delete = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.user_role
+            except AttributeError:
+                try:
+                    role = self.domain.accesses.filter(user=user).values("role")[0][
+                        "role"
+                    ]
+                except (self._meta.model.DoesNotExist, IndexError):
+                    role = None
+
+            can_delete = role in [
+                MailDomainRoleChoices.OWNER,
+                MailDomainRoleChoices.ADMIN,
+            ]
+
+        return {
+            "delete": can_delete,
+            "get": bool(role),
+            "patch": False,
+            "put": False,
+        }

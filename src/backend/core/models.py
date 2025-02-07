@@ -895,18 +895,10 @@ class TeamWebhook(BaseModel):
         return headers
 
 
-class Invitation(BaseModel):
-    """User invitation to teams."""
+class BaseInvitation(BaseModel):
+    """Abstract base invitation model, surcharged for teams or domains."""
 
     email = models.EmailField(_("email address"), null=False, blank=False)
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="invitations",
-    )
-    role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
-    )
     issuer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -914,17 +906,7 @@ class Invitation(BaseModel):
     )
 
     class Meta:
-        db_table = "people_invitation"
-        verbose_name = _("Team invitation")
-        verbose_name_plural = _("Team invitations")
-        constraints = [
-            models.UniqueConstraint(
-                fields=["email", "team"], name="email_and_team_unique_together"
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.email} invited to {self.team}"
+        abstract = True
 
     def save(self, *args, **kwargs):
         """Make invitations read-only."""
@@ -953,31 +935,6 @@ class Invitation(BaseModel):
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
         return timezone.now() > (self.created_at + validity_duration)
 
-    def get_abilities(self, user):
-        """Compute and return abilities for a given user."""
-        can_delete = False
-        role = None
-
-        if user.is_authenticated:
-            try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self.team.accesses.filter(user=user).values("role")[0][
-                        "role"
-                    ]
-                except (self._meta.model.DoesNotExist, IndexError):
-                    role = None
-
-            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
-        return {
-            "delete": can_delete,
-            "get": bool(role),
-            "patch": False,
-            "put": False,
-        }
-
     def email_invitation(self):
         """Email invitation to the user."""
         try:
@@ -1002,5 +959,52 @@ class Invitation(BaseModel):
             logger.error("invitation to %s was not sent: %s", self.email, exception)
 
 
-# It's not clear yet how best to split this file.
-# pylint: disable=C0302
+class Invitation(BaseInvitation):
+    """User invitation to teams."""
+
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name="invitations",
+    )
+    role = models.CharField(
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+    )
+
+    class Meta:
+        db_table = "people_invitation"
+        verbose_name = _("Team invitation")
+        verbose_name_plural = _("Team invitations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "team"], name="email_and_team_unique_together"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.email} invited to {self.team}"
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        can_delete = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.user_role
+            except AttributeError:
+                try:
+                    role = self.team.accesses.filter(user=user).values("role")[0][
+                        "role"
+                    ]
+                except (self._meta.model.DoesNotExist, IndexError):
+                    role = None
+
+            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
+
+        return {
+            "delete": can_delete,
+            "get": bool(role),
+            "patch": False,
+            "put": False,
+        }
