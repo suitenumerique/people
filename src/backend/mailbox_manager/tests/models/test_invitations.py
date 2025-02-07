@@ -1,0 +1,103 @@
+"""
+Unit tests for the Domain Invitation model
+"""
+
+import re
+import time
+
+from django.conf import settings
+from django.core import exceptions
+
+import pytest
+import responses
+from freezegun import freeze_time
+from rest_framework import status
+
+from core import factories as core_factories
+
+from mailbox_manager import enums, factories, models
+from mailbox_manager.tests.fixtures import dimail
+
+pytestmark = pytest.mark.django_db
+
+
+def test_models_domain_invitations_readonly_after_create():
+    """Existing invitations should be readonly."""
+    invitation = factories.DomainInvitationFactory()
+    with pytest.raises(exceptions.PermissionDenied):
+        invitation.save()
+
+
+def test_models_domain_invitations__is_expired():
+    """
+    The 'is_expired' property should return False until validity duration
+    is exceeded and True afterwards.
+    """
+    expired_invitation = factories.DomainInvitationFactory()
+    assert expired_invitation.is_expired is False
+
+    settings.INVITATION_VALIDITY_DURATION = 1
+    time.sleep(1)
+
+    assert expired_invitation.is_expired is True
+
+
+def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_joining():
+    """
+    Upon creating a new user, domain invitations linked to that email
+    should be converted to accesses and then deleted.
+    """
+    # Two invitations to the same mail but to different domains
+    email = "future_admin@example.com"
+    invitation_to_domain1 = factories.DomainInvitationFactory(
+        email=email, role=enums.MailDomainRoleChoices.OWNER
+    )
+    invitation_to_domain2 = factories.DomainInvitationFactory(email=email)
+
+    # an expired invitation that should not be converted
+    with freeze_time("1985-10-30"):
+        expired_invitation = factories.DomainInvitationFactory(email=email)
+
+    # another person invited to domain2
+    other_invitation = factories.DomainInvitationFactory(
+        domain=invitation_to_domain2.domain
+    )
+
+    new_user = core_factories.UserFactory.build(email=email)
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/users/"),
+            body=dimail.response_user_created("sub"),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/allows/"),
+            body=dimail.response_allows_created(
+                "sub", invitation_to_domain1.domain.name
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        new_user = core_factories.UserFactory(email=email)
+
+    assert models.MailDomainAccess.objects.filter(
+        domain=invitation_to_domain1.domain, user=new_user
+    ).exists()
+    assert models.MailDomainAccess.objects.filter(
+        domain=invitation_to_domain2.domain, user=new_user
+    ).exists()
+    assert not models.DomainInvitation.objects.filter(
+        domain=invitation_to_domain1.domain, email=email
+    ).exists()  # invitation "consumed"
+    assert not models.DomainInvitation.objects.filter(
+        domain=invitation_to_domain2.domain, email=email
+    ).exists()  # invitation "consumed"
+    assert models.DomainInvitation.objects.filter(
+        domain=expired_invitation.domain, email=email
+    ).exists()  # expired invitation remains
+    assert models.DomainInvitation.objects.filter(
+        domain=invitation_to_domain2.domain, email=other_invitation.email
+    ).exists()  # the other invitation remains

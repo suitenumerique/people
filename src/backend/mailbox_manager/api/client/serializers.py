@@ -267,3 +267,35 @@ class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):
             "role",
             "can_set_role_to",
         ]
+
+
+class DomainInvitationSerializer(serializers.ModelSerializer):
+    """Serialize invitations."""
+
+    class Meta:
+        model = models.DomainInvitation
+        fields = ["id", "created_at", "email", "domain", "role", "issuer", "is_expired"]
+        read_only_fields = ["id", "created_at", "domain", "issuer", "is_expired"]
+
+    def validate(self, attrs):
+        """Validate and restrict invitation to new user based on email."""
+
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        try:
+            domain_slug = self.context["domain_slug"]
+        except KeyError as exc:
+            raise exceptions.ValidationError(
+                "You must set a domain slug in kwargs to create a new domain management invitation."
+            ) from exc
+
+        domain = models.MailDomain.objects.get(slug=domain_slug)
+        if not domain.get_abilities(user)["manage_accesses"]:
+            raise exceptions.PermissionDenied(
+                "You are not allowed to manage invitations for this domain."
+            )
+
+        attrs["domain"] = domain
+        attrs["issuer"] = user
+        return attrs
