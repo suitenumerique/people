@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-people",
-  "version": "1.10.1",
+  "version": "1.11.0",
   "license": "MIT",
   "scripts": {
     "lint": "eslint --ext .js ."
