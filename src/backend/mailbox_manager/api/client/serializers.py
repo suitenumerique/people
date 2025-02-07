@@ -5,8 +5,8 @@ from logging import getLogger
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
 
+from core import models as core_models
 from core.api.client.serializers import UserSerializer
-from core.models import User
 
 from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
@@ -199,7 +199,7 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                 raise exceptions.PermissionDenied(
                     "Only owners of a domain can assign other users as owners."
                 )
-            attrs["user"] = User.objects.get(pk=self.initial_data["user"])
+            attrs["user"] = core_models.User.objects.get(pk=self.initial_data["user"])
             attrs["domain"] = models.MailDomain.objects.get(
                 slug=self.context["domain_slug"]
             )
@@ -246,3 +246,41 @@ class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):
             "role",
             "can_set_role_to",
         ]
+
+
+class DomainInvitationSerializer(serializers.ModelSerializer):
+    """Serialize invitations."""
+
+    class Meta:
+        model = models.DomainInvitation
+        fields = ["id", "created_at", "email", "domain", "role", "issuer", "is_expired"]
+        read_only_fields = ["id", "created_at", "domain", "issuer", "is_expired"]
+
+    def validate(self, attrs):
+        """Validate and restrict invitation to new user based on email."""
+
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        try:
+            domain_slug = self.context["domain_slug"]
+        except KeyError as exc:
+            raise exceptions.ValidationError(
+                "You must set a domain slug in kwargs to create a new domain management invitation."
+            ) from exc
+
+        if not models.MailDomainAccess.objects.filter(
+            domain__slug=domain_slug,
+            user=user,
+            role__in=[
+                enums.MailDomainRoleChoices.OWNER,
+                enums.MailDomainRoleChoices.ADMIN,
+            ],
+        ).exists():
+            raise exceptions.PermissionDenied(
+                "You are not allowed to manage invitations for this domain."
+            )
+
+        attrs["domain"] = models.MailDomain.objects.get(slug=domain_slug)
+        attrs["issuer"] = user
+        return attrs
