@@ -84,3 +84,17 @@ class MailboxEnabledFactory(MailboxFactory):
     """A factory to create mailbox enabled."""
 
     status = enums.MailboxStatusChoices.ENABLED
+
+
+class DomainInvitationFactory(factory.django.DjangoModelFactory):
+    """A factory to create invitations for a user"""
+
+    class Meta:
+        model = models.DomainInvitation
+
+    domain = factory.SubFactory(MailDomainEnabledFactory)
+    email = factory.Faker("email")
+    role = factory.fuzzy.FuzzyChoice(
+        [role[0] for role in enums.MailDomainRoleChoices.choices]
+    )
+    issuer = factory.SubFactory(core_factories.UserFactory)

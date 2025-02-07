@@ -49,7 +49,7 @@ class MailDomainViewSet(
     queryset = models.MailDomain.objects.all()
 
     def get_queryset(self):
-        """Restrict results to the current user's team."""
+        """Restrict results to the current user's domain."""
         return self.queryset.filter(accesses__user=self.request.user)
 
     def perform_create(self, serializer):
@@ -292,3 +292,66 @@ class MailBoxViewSet(
         mailbox.status = enums.MailboxStatusChoices.ENABLED
         mailbox.save()
         return Response(serializers.MailboxSerializer(mailbox).data)
+
+
+class DomainInvitationViewset(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for user invitations to domain management.
+
+    GET /api/<version>/mail-domains/<domain_slug>/invitations/:<invitation_id>/
+        Return list of invitations related to that domain or one
+        domain access if an id is provided.
+
+    POST /api/<version>/mail-domains/<domain_slug>/invitations/ with expected data:
+        - email: str
+        - role: str [owner|admin|member]
+        - issuer : User, automatically added from user making query, if allowed
+        - domain : Domain, automatically added from requested URI
+        Return a newly created invitation
+
+    PUT / PATCH : Not permitted. Instead of updating your invitation,
+        delete and create a new one.
+    """
+
+    lookup_field = "id"
+    permission_classes = [permissions.AccessPermission]
+    queryset = (
+        models.DomainInvitation.objects.all()
+        .select_related("domain")
+        .order_by("-created_at")
+    )
+    serializer_class = serializers.DomainInvitationSerializer
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(domain__slug=self.kwargs["domain_slug"])
+
+        if self.action == "list":
+            # Determine which role the logged-in user has in the domain
+            user_role_query = models.MailDomainAccess.objects.filter(
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
+            ).values("role")
+
+            queryset = (
+                # The logged-in user should be part of a domain to see its accesses
+                queryset.filter(
+                    domain__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each domain access
+                .annotate(user_role=Subquery(user_role_query))
+                .distinct()
+            )
+
+        return queryset

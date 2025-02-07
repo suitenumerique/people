@@ -24,6 +24,12 @@ maildomain_related_router.register(
     basename="mailboxes",
 )
 
+maildomain_related_router.register(
+    "invitations",
+    viewsets.DomainInvitationViewset,
+    basename="invitations",
+)
+
 
 urlpatterns = [
     path(

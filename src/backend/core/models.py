@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the People core application
 """
+# pylint: disable=too-many-lines import-outside-toplevel
 
 import json
 import os
@@ -35,6 +36,8 @@ from core.plugins.loader import (
 )
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
+
+from mailbox_manager import enums
 
 logger = getLogger(__name__)
 
@@ -512,11 +515,12 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     def save(self, *args, **kwargs):
         """
-        If it's a new user, give her access to the relevant teams.
+        If it's a new user, give them access to the relevant teams.
         """
 
         if self._state.adding:
-            self._convert_valid_invitations()
+            self._convert_valid_team_invitations()
+            self._convert_valid_domain_invitations()
 
         super().save(*args, **kwargs)
 
@@ -526,7 +530,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         if self.email:
             self.email = User.objects.normalize_email(self.email)
 
-    def _convert_valid_invitations(self):
+    def _convert_valid_team_invitations(self):
         """
         Convert valid invitations to team accesses.
         Expired invitations are ignored.
@@ -550,6 +554,53 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             ]
         )
         valid_invitations.delete()
+
+    def _convert_valid_domain_invitations(self):
+        """
+        Convert valid domain invitations to domain accesses.
+        Expired invitations are ignored.
+        """
+
+        from mailbox_manager.models import DomainInvitation, MailDomainAccess
+        from mailbox_manager.utils.dimail import DimailAPIClient
+
+        valid_domain_invitations = DomainInvitation.objects.filter(
+            email=self.email,
+            created_at__gte=(
+                timezone.now()
+                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
+            ),
+        )
+
+        if not valid_domain_invitations.exists():
+            return
+
+        MailDomainAccess.objects.bulk_create(
+            [
+                MailDomainAccess(
+                    user=self, domain=invitation.domain, role=invitation.role
+                )
+                for invitation in valid_domain_invitations
+            ]
+        )
+
+        management_role = set(valid_domain_invitations.values_list("role", flat="True"))
+        if (
+            enums.MailDomainRoleChoices.OWNER in management_role
+            or enums.MailDomainRoleChoices.ADMIN in management_role
+        ):
+            # Sync with dimail
+            dimail = DimailAPIClient()
+            dimail.create_user(self.sub)
+
+            for invitation in valid_domain_invitations:
+                if invitation.role in [
+                    enums.MailDomainRoleChoices.OWNER,
+                    enums.MailDomainRoleChoices.ADMIN,
+                ]:
+                    dimail.create_allow(self.sub, invitation.domain.name)
+
+        valid_domain_invitations.delete()
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Email this user."""
