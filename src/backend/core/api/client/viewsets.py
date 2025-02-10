@@ -7,6 +7,7 @@ from functools import reduce
 from django.conf import settings
 from django.db.models import OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
@@ -605,7 +606,7 @@ class StatView(views.APIView):
         context = {
             "total_users": models.User.objects.count(),
             "mau": models.User.objects.filter(
-                last_login__gte=datetime.datetime.now() - datetime.timedelta(30)
+                last_login__gte=timezone.now() - datetime.timedelta(30)
             ).count(),
             "teams": models.Team.objects.count(),
             "domains": domains_models.MailDomain.objects.count(),

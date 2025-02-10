@@ -140,6 +140,12 @@ python_files = [
     "test_*.py",
     "tests.py",
 ]
+filterwarnings = [
+    # This one can be removed when upgrading to Django 6.0
+    'ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.',
+    # This one can be removed after upgrading DRF to 3.16
+    "ignore:Converter 'drf_format_suffix'"
+]
 
 [tool.coverage.run]
 branch = true
