@@ -31,6 +31,8 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
         return t('[disabled]');
       case 'failed':
         return t('[failed]');
+      case 'action_required':
+        return t('[action required]');
     }
   };
 
