@@ -27,6 +27,9 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) add notification when domain status changes
+- ✨(domains) add periodic tasks to fetch domain status
+- 🧑‍💻(docker) add celery beat to manage periodic tasks
 - ✨(dimail) management command to fetch domain status
 
 ### Changed
