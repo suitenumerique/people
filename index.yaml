@@ -2,6 +2,14 @@ apiVersion: v1
 entries:
   desk:
   - apiVersion: v2
+    created: "2025-02-10T11:07:06.529791151Z"
+    digest: fd98df8a48d776dba464ac9ccd64f7af88e3bdcd063d3ee63efc8eec7069eeb0
+    name: desk
+    type: application
+    urls:
+    - https://suitenumerique.github.io/people/desk-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     created: "2025-01-10T13:48:53.486954486Z"
     digest: 455fb4075627754032d285ab9a0ece7fa7ab8976b779c9e22e7c635023313916
     name: desk
@@ -9,4 +17,4 @@ entries:
     urls:
     - https://suitenumerique.github.io/people/desk-0.0.1.tgz
     version: 0.0.1
-generated: "2025-01-10T13:48:53.486107307Z"
+generated: "2025-02-10T11:07:06.528118416Z"
