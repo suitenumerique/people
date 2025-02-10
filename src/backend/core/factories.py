@@ -240,7 +240,7 @@ class TeamWebhookFactory(factory.django.DjangoModelFactory):
         model = models.TeamWebhook
 
     team = factory.SubFactory(TeamFactory)
-    url = factory.Sequence(lambda n: f"https://example.com/Groups/{n!s}")
+    url = factory.Sequence(lambda n: f"https://nosuchdomain.xyz/Groups/{n!s}")
 
 
 class InvitationFactory(factory.django.DjangoModelFactory):
