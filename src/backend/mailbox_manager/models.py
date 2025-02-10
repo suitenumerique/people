@@ -30,6 +30,12 @@ class MailDomain(BaseModel):
         choices=MailDomainStatusChoices.choices,
     )
     support_email = models.EmailField(_("support email"), null=False, blank=False)
+    last_check_details = models.JSONField(
+        null=True,
+        blank=True,
+        verbose_name=_("last check details"),
+        help_text=_("A JSON object containing the last health check details"),
+    )
 
     class Meta:
         db_table = "people_mail_domain"
