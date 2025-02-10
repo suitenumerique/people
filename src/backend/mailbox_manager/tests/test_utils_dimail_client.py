@@ -194,11 +194,13 @@ def test_dimail__fetch_domain_status__switch_to_enabled(domain_status):
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ENABLED
+    assert domain.last_check_details == body_content
 
     # call again, should be ok
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ENABLED
+    assert domain.last_check_details == body_content
 
 
 @pytest.mark.parametrize(
@@ -217,12 +219,12 @@ def test_dimail__fetch_domain_status__switch_to_action_required(
     """Domains should be in status action required when dimail check
     returns broken status for external checks."""
     domain = factories.MailDomainFactory(status=domain_status)
-    body_content = CHECK_DOMAIN_BROKEN_EXTERNAL.copy()
-    body_content["name"] = domain.name
+    body_domain_broken = CHECK_DOMAIN_BROKEN_EXTERNAL.copy()
+    body_domain_broken["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_broken),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -230,21 +232,23 @@ def test_dimail__fetch_domain_status__switch_to_action_required(
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+    assert domain.last_check_details == body_domain_broken
 
     # Support team fixes their part of the problem
     # Now domain is OK again
-    body_content = CHECK_DOMAIN_OK.copy()
-    body_content["name"] = domain.name
+    body_domain_ok = CHECK_DOMAIN_OK.copy()
+    body_domain_ok["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_ok),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ENABLED
+    assert domain.last_check_details == body_domain_ok
 
 
 @pytest.mark.parametrize(
@@ -261,12 +265,12 @@ def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
     for only internal checks dispite a fix call."""
     domain = factories.MailDomainFactory(status=domain_status)
     # nothing can be done by support team, domain should be in failed
-    body_content = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
-    body_content["name"] = domain.name
+    body_domain_broken = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
+    body_domain_broken["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_broken),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -274,7 +278,7 @@ def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/fix/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_broken),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -282,6 +286,7 @@ def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.FAILED
+    assert domain.last_check_details == body_domain_broken
 
 
 @pytest.mark.parametrize(
@@ -298,12 +303,12 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     after a fix call."""
     domain = factories.MailDomainFactory(status=domain_status)
     # with all checks KO, domain should be in action required
-    body_content = CHECK_DOMAIN_BROKEN.copy()
-    body_content["name"] = domain.name
+    body_domain_broken = CHECK_DOMAIN_BROKEN.copy()
+    body_domain_broken["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_broken),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -311,27 +316,28 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ACTION_REQUIRED
+    assert domain.last_check_details == body_domain_broken
 
     # We assume that the support has fixed their part.
     # So now dimail returns OK for external checks but still KO for internal checks.
     # A call to dimail fix endpoint is necessary and will be done by
     # the fetch_domain_status call
-    body_content = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
-    body_content["name"] = domain.name
+    body_domain_broken_internal = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
+    body_domain_broken_internal["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_broken_internal),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
     # the endpoint fix is called and returns OK. Hooray!
-    body_content = CHECK_DOMAIN_OK.copy()
-    body_content["name"] = domain.name
+    body_domain_ok = CHECK_DOMAIN_OK.copy()
+    body_domain_ok["name"] = domain.name
     responses.add(
         responses.GET,
         re.compile(rf".*/domains/{domain.name}/fix/"),
-        body=json.dumps(body_content),
+        body=json.dumps(body_domain_ok),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -339,6 +345,7 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     dimail_client.fetch_domain_status(domain)
     domain.refresh_from_db()
     assert domain.status == enums.MailDomainStatusChoices.ENABLED
+    assert domain.last_check_details == body_domain_ok
 
 
 def test_dimail__enable_pending_mailboxes(caplog):

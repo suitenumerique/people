@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) store last health check details on MailDomain
 - ✨(domains) add support email field on domain
 
 ## [1.11.0] - 2025-02-07

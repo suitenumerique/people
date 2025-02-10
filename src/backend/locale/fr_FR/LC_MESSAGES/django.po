@@ -591,39 +591,47 @@ msgstr "Désactivé"
 msgid "Action required"
 msgstr "Action requise"
 
-#: mailbox_manager/models.py:35
+#: mailbox_manager/models.py:33
+msgid "last check details"
+msgstr "détails de la dernière vérification"
+
+#: mailbox_manager/models.py:34
+msgid "A JSON object containing the last health check details"
+msgstr "Un objet JSON contenant les détails de la dernière vérification"
+
+#: mailbox_manager/models.py:39
 msgid "Mail domain"
 msgstr "Domaine de messagerie"
 
-#: mailbox_manager/models.py:36
+#: mailbox_manager/models.py:40
 msgid "Mail domains"
 msgstr "Domaines de messagerie"
 
-#: mailbox_manager/models.py:102
+#: mailbox_manager/models.py:106
 msgid "User/mail domain relation"
 msgstr "Relation entre un utilisateur et un domaine de mail"
 
-#: mailbox_manager/models.py:103
+#: mailbox_manager/models.py:107
 msgid "User/mail domain relations"
 msgstr "Relations entre un utilisateur et un domaine de mail"
 
-#: mailbox_manager/models.py:175
+#: mailbox_manager/models.py:179
 msgid "local_part"
 msgstr "local_part"
 
-#: mailbox_manager/models.py:189
+#: mailbox_manager/models.py:193
 msgid "secondary email address"
 msgstr "adresse email secondaire"
 
-#: mailbox_manager/models.py:199
+#: mailbox_manager/models.py:203
 msgid "Mailbox"
 msgstr "Boîte mail"
 
-#: mailbox_manager/models.py:200
+#: mailbox_manager/models.py:204
 msgid "Mailboxes"
 msgstr "Boîtes mails"
 
-#: mailbox_manager/models.py:224
+#: mailbox_manager/models.py:228
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
 "Vous ne pouvez pas créer ou modifier une boîte mail pour un domain désactivé."

@@ -456,6 +456,7 @@ class DimailAPIClient:
         ):
             self.enable_pending_mailboxes(domain)
             domain.status = enums.MailDomainStatusChoices.ENABLED
+            domain.last_check_details = dimail_response
             domain.save()
         # if dimail returns broken status, we need to extract external and internal checks
         # and manage the case where the domain has to be fixed by support
@@ -465,6 +466,7 @@ class DimailAPIClient:
             # manage the case where the domain has to be fixed by support
             if not all(external_checks.values()):
                 domain.status = enums.MailDomainStatusChoices.ACTION_REQUIRED
+                domain.last_check_details = dimail_response
                 domain.save()
             # if all external checks are ok but not internal checks, we need to fix internal checks
             elif all(external_checks.values()) and not all(internal_checks.values()):
@@ -479,12 +481,20 @@ class DimailAPIClient:
                 )
                 if all(external_checks.values()) and all(internal_checks.values()):
                     domain.status = enums.MailDomainStatusChoices.ENABLED
+                    domain.last_check_details = dimail_response
                     domain.save()
                 elif all(external_checks.values()) and not all(
                     internal_checks.values()
                 ):
                     domain.status = enums.MailDomainStatusChoices.FAILED
+                    domain.last_check_details = dimail_response
                     domain.save()
+
+        # if no health check data is stored on the domain, we store it now
+        if not domain.last_check_details:
+            domain.last_check_details = dimail_response
+            domain.save()
+
         return dimail_response
 
     def _get_dimail_checks(self, dimail_response, internal: bool):
