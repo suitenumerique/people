@@ -115,16 +115,18 @@ class MailDomainAdmin(admin.ModelAdmin):
 
     list_display = (
         "name",
+        "organization",
         "created_at",
         "updated_at",
         "slug",
         "status",
     )
-    search_fields = ("name",)
+    search_fields = ("name", "organization__name")
     readonly_fields = ["created_at", "slug"]
     list_filter = ("status",)
     inlines = (UserMailDomainAccessInline,)
     actions = (sync_mailboxes_from_dimail, fetch_domain_status_from_dimail)
+    autocomplete_fields = ["organization"]
 
 
 @admin.register(models.Mailbox)
