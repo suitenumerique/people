@@ -48,7 +48,7 @@ class Command(BaseCommand):
         # protected behind admin rights but dimail allows to create a first user
         # when database is empty
         self.create_user(
-            auth=(None, None),
+            auth=("", ""),
             name=admin["username"],
             password=admin["password"],
             perms=[],

@@ -1,13 +1,16 @@
 """Admin classes and registrations for People's mailbox manager app."""
 
 from django.contrib import admin, messages
-from django.utils.html import format_html
+from django.utils.html import format_html_join, mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from requests import exceptions
 
 from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
+
+# Prevent Ruff complaining about mark_safe below
+# ruff: noqa: S308
 
 
 @admin.action(description=_("Synchronise from dimail"))
@@ -79,10 +82,16 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
             if domains_updated
             else _("No domain updated."),
         ]
-        messages.success(request, format_html("<br> ".join(map(str, msg_success))))
+        messages.success(
+            request,
+            format_html_join(mark_safe("<br> "), "{}", ([str(m)] for m in msg_success)),
+        )
     if msg_error:
         msg_error.insert(0, _("Check domain failed for:"))
-        messages.error(request, format_html("<br> ".join(map(str, msg_error))))
+        messages.error(
+            request,
+            format_html_join(mark_safe("<br> "), "{}", ([str(m)] for m in msg_error)),
+        )
     if excluded_domains:
         messages.warning(
             request,
