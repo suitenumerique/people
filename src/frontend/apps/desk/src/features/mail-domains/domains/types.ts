@@ -6,7 +6,7 @@ export interface MailDomain {
   created_at: string;
   updated_at: string;
   slug: string;
-  status: 'pending' | 'enabled' | 'failed' | 'disabled';
+  status: 'pending' | 'enabled' | 'failed' | 'disabled' | 'action_required';
   support_email: string;
   abilities: {
     get: boolean;
