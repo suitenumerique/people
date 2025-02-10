@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel
+from core.models import BaseModel, Organization
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,
@@ -22,6 +22,13 @@ class MailDomain(BaseModel):
 
     name = models.CharField(
         _("name"), max_length=150, null=False, blank=False, unique=True
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.PROTECT,
+        related_name="mail_domains",
+        null=True,
+        blank=True,
     )
     slug = models.SlugField(null=False, blank=False, unique=True, max_length=80)
     status = models.CharField(
