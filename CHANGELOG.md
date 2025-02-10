@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) feature modal add new access role to domain 
 - ✨(api) allow invitations for domain management #708
 
 ## [1.13.1] - 2025-03-04
