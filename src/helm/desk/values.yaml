@@ -72,6 +72,10 @@ ingressAdmin:
 ## @section backend
 
 backend:
+  ## @param backend.pdb.enabled Enable pdb on backend
+  pdb:
+    enabled: true
+
   ## @param backend.dpAnnotations Annotations to add to the backend Deployment
   dpAnnotations: {}
 
@@ -179,6 +183,10 @@ backend:
 
 ## @section frontend
 frontend:
+  ## @param frontend.pdb.enabled Enable pdb on backend
+  pdb:
+    enabled: true
+
   ## @param frontend.image.repository Repository to use to pull desk's frontend container image
   ## @param frontend.image.tag desk's frontend container tag
   ## @param frontend.image.pullPolicy frontend container image pull policy

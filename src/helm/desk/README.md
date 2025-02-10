@@ -37,6 +37,7 @@
 
 | Name                                                  | Description                                                                        | Value                                                                            |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `backend.pdb.enabled`                                 | Enable pdb on backend                                                              | `true`                                                                           |
 | `backend.dpAnnotations`                               | Annotations to add to the backend Deployment                                       | `{}`                                                                             |
 | `backend.command`                                     | Override the backend container command                                             | `[]`                                                                             |
 | `backend.args`                                        | Override the backend container args                                                | `[]`                                                                             |
@@ -86,6 +87,7 @@
 
 | Name                                                   | Description                                                                         | Value                     |
 | ------------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------- |
+| `frontend.pdb.enabled`                                 | Enable pdb on backend                                                               | `true`                    |
 | `frontend.image.repository`                            | Repository to use to pull desk's frontend container image                           | `lasuite/people-frontend` |
 | `frontend.image.tag`                                   | desk's frontend container tag                                                       | `latest`                  |
 | `frontend.image.pullPolicy`                            | frontend container image pull policy                                                | `IfNotPresent`            |
