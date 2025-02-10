@@ -3,10 +3,6 @@ run-name: Release Chart
 
 on:
   push:
-    branches:
-      - 'main'
-    paths:
-      - ./src/helm/desk/**
 
 jobs:
   release:
@@ -20,7 +16,11 @@ jobs:
           fetch-depth: 0
 
       - name: Cleanup
-        run: rm -rf ./src/helm/extra
+        run: |
+          rm -rf ./src/helm/extra
+          rm -rf ./src/helm/dimail
+          rm -rf ./src/helm/mailcatcher
+
 
       - name: Install Helm
         uses: azure/setup-helm@v4
