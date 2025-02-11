@@ -33,14 +33,14 @@ export const AccessesContent = ({
         <Box $display="flex" $direction="row">
           {mailDomain?.abilities.post && (
             <Button
-              aria-label={t('Create a new access in {{name}} domain', {
+              aria-label={t('Add a new access in {{name}} domain', {
                 name: mailDomain?.name,
               })}
               onClick={() => {
                 setIsModalAccessOpen(true);
               }}
             >
-              {t('Create a new access')}
+              {t('Add a new access')}
             </Button>
           )}
         </Box>

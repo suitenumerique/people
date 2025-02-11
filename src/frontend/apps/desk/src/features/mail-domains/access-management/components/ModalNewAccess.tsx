@@ -45,16 +45,15 @@ export const ModalNewAccess = ({
   const { mutateAsync: postMailDomainAccess} = usePostMailDomainAccess();
 
   const onSuccess = (option: OptionSelect) => {
-    console.log(option);
-    const message = !isOptionNewMember(option)
+    const message = !option.user
       ? t('Invitation sent to {{email}}', {
           email: option.value.email,
         })
-      : t('Member {{name}} added to the team', {
-          name: option.value.name,
+      : t('Access added to {{name}}', {
+          name: option.user.name,
         });
 
-    toast(message, VariantType.SUCCESS, toastOptions);
+    toast(message, VariantType.SUCCESS);
   };
 
   const onError = (dataError: APIErrorMember['data']) => {
@@ -63,7 +62,7 @@ export const ModalNewAccess = ({
         ? t(`Failed to create the invitation for {{email}}`, {
             email: dataError?.value,
           })
-        : t(`Failed to add {{name}} in the team`, {
+        : t(`Failed to added access to {{name}}`, {
             name: dataError?.value,
           });
 
@@ -71,10 +70,9 @@ export const ModalNewAccess = ({
   };
 
   const switchActions = (members: OptionsSelect) => {
-    console.log(mailDomain, role);
     return members.map((member) => {
       if (member.type === OptionType.INVITATION) {
-        return createInvitation.mutateAsync({ email: member.value, teamId: mailDomain.id });
+        return createInvitation.mutateAsync({ email: member.value.email, mailDomainSlug: mailDomain.slug, role: role });
       } else {
         return postMailDomainAccess({
           slug: mailDomain.slug,

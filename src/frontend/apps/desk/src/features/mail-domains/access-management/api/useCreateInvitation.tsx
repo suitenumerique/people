@@ -2,22 +2,22 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
-import { Role, Team } from '@/features/teams/team-management';
+import { Role, MailDomain } from '../../domains';
 
 import { Invitation, OptionType } from '../types';
 
 interface CreateInvitationParams {
   email: User['email'];
   role: Role;
-  teamId: Team['id'];
+  mailDomainSlug: MailDomain['slug'];
 }
 
 export const createInvitation = async ({
   email,
   role,
-  teamId,
+  mailDomainSlug,
 }: CreateInvitationParams): Promise<Invitation> => {
-  const response = await fetchAPI(`teams/${teamId}/invitations/`, {
+  const response = await fetchAPI(`mail-domains/${mailDomainSlug}/invitations/`, {
     method: 'POST',
     body: JSON.stringify({
       email,

@@ -105,9 +105,9 @@ export const SearchMembers = ({
       defaultOptions={[]}
       onInputChange={onInputChangeHandle}
       inputValue={input}
-      placeholder={t('Search new members (name or email)')}
+      placeholder={t('Search for members to assign them a role (name or email)')}
       noOptionsMessage={() =>
-        t('Invite new members to {{name}}', { name: mailDomain.name })
+        t('Invite new members with roles', { name: mailDomain.name })
       }
       onChange={(value) => {
         setInput('');
