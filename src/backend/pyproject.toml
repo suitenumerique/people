@@ -25,11 +25,11 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.36.11",
+    "boto3==1.36.17",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
     "django-configurations==2.5.1",
-    "django-cors-headers==4.6.0",
+    "django-cors-headers==4.7.0",
     "django-countries==7.6.1",
     "django-parler==2.3",
     "django-treebeard==4.7.1",
@@ -37,7 +37,7 @@ dependencies = [
     "django-redis==5.4.0",
     "django-storages==1.14.4",
     "django-timezone-field>=5.1",
-    "django==5.1.5",
+    "django==5.1.6",
     "djangorestframework==3.15.2",
     "drf_spectacular==0.28.0",
     "dockerflow==2024.4.2",
@@ -48,10 +48,10 @@ dependencies = [
     "nested-multipart-parser==1.5.0",
     "psycopg[binary]==3.2.4",
     "PyJWT==2.10.1",
-    "joserfc==1.0.2",
+    "joserfc==1.0.3",
     "requests==2.32.3",
     "sentry-sdk[django]==2.20.0",
-    "whitenoise==6.8.2",
+    "whitenoise==6.9.0",
     "mozilla-django-oidc==4.0.1",
 ]
 
@@ -72,12 +72,12 @@ dev = [
     "pylint-django==2.6.1",
     "pylint==3.3.4",
     "pytest-cov==6.0.0",
-    "pytest-django==4.9.0",
+    "pytest-django==4.10.0",
     "pytest==8.3.4",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.6.1",
     "responses==0.25.6",
-    "ruff==0.9.4",
+    "ruff==0.9.6",
     "types-requests==2.32.0.20241016",
     "freezegun==1.5.1",
 ]
