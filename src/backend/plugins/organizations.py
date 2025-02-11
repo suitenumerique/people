@@ -249,7 +249,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         logger.info("Organization %s name updated to %s", organization, name)
 
         zone_name = self.zone_name(name)
-        support = f"support@{zone_name}"
+        support = "support-regie@numerique.gouv.fr"
         MailDomain.objects.get_or_create(name=zone_name, support_email=support)
 
         # Compute and execute the rest of the process
