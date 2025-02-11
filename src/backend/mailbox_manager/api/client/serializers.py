@@ -57,6 +57,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
 
     abilities = serializers.SerializerMethodField(read_only=True)
     count_mailboxes = serializers.SerializerMethodField(read_only=True)
+    action_required_details = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.MailDomain
@@ -71,6 +72,8 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "updated_at",
             "count_mailboxes",
             "support_email",
+            "last_check_details",
+            "action_required_details",
         ]
         read_only_fields = [
             "id",
@@ -80,7 +83,22 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "count_mailboxes",
+            "last_check_details",
+            "action_required_details",
         ]
+
+    def get_action_required_details(self, domain) -> dict:
+        """Return last check details of the domain."""
+        details = {}
+        if domain.last_check_details:
+            for check, value in domain.last_check_details.items():
+                if (
+                    isinstance(value, dict)
+                    and value.get("ok") is False
+                    and value.get("internal") is False
+                ):
+                    details[check] = value["errors"][0].get("detail")
+        return details
 
     def get_abilities(self, domain) -> dict:
         """Return abilities of the logged-in user on the instance."""
