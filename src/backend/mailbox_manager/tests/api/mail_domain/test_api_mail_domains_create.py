@@ -121,6 +121,8 @@ def test_api_mail_domains__create_authenticated():
         "abilities": domain.get_abilities(user),
         "count_mailboxes": 0,
         "support_email": domain.support_email,
+        "last_check_details": None,
+        "action_required_details": {},
     }
 
     # a new domain with status "pending" is created and authenticated user is the owner
@@ -198,6 +200,8 @@ def test_api_mail_domains__create_authenticated__dimail_failure():
         "abilities": domain.get_abilities(user),
         "count_mailboxes": 0,
         "support_email": domain.support_email,
+        "last_check_details": None,
+        "action_required_details": {},
     }
 
     # a new domain with status "failed" is created and authenticated user is the owner
