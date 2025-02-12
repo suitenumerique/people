@@ -60,7 +60,17 @@ class UserAdmin(auth_admin.UserAdmin):
                 )
             },
         ),
-        (_("Personal info"), {"fields": ("name", "email", "language", "timezone")}),
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "name",
+                    "email",
+                    "language",
+                    "timezone",
+                )
+            },
+        ),
         (
             _("Permissions"),
             {

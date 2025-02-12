@@ -9,17 +9,19 @@ from uuid import uuid4
 
 from django import db
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from faker import Faker
+from oauth2_provider.models import Application
 from treebeard.mp_tree import MP_Node
 
 from core import models
 
 from demo import defaults
 from mailbox_manager import models as mailbox_models
-from mailbox_manager.enums import MailDomainStatusChoices
+from mailbox_manager.enums import MailboxStatusChoices, MailDomainStatusChoices
 
 fake = Faker()
 
@@ -131,6 +133,48 @@ class Timeit:
 
         self.__class__.total_time += elapsed_time
         return elapsed_time
+
+
+def create_oidc_people_idp_client():
+    """Configure the OIDC client for the People Identity Provider if missing."""
+    try:
+        Application.objects.get(client_id="people-idp")
+    except Application.DoesNotExist:
+        application = Application(
+            client_id="people-idp",
+            client_secret="local-tests-only",
+            client_type=Application.CLIENT_CONFIDENTIAL,
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            name="People Identity Provider",
+            algorithm=Application.RS256_ALGORITHM,
+            redirect_uris="http://localhost:8083/realms/people/broker/oidc-people-local/endpoint",
+            skip_authorization=True,
+        )
+        application.clean()
+        application.save()
+
+
+def create_oidc_people_idp_client_user():
+    """Provide a user for the People Identity Provider OIDC client."""
+    organization, _created = models.Organization.objects.get_or_create(
+        name="13002526500013",
+        registration_id_list=["13002526500013"],
+    )
+    mail_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+        name="example.com",
+        organization=organization,
+        status=MailDomainStatusChoices.ENABLED,
+        support_email="support@example.com",
+    )
+    _mailbox, _created = mailbox_models.Mailbox.objects.get_or_create(
+        first_name="IdP User",
+        last_name="E2E",
+        domain=mail_domain,
+        local_part="user-e2e",
+        status=MailboxStatusChoices.ENABLED,
+        password=make_password("password-user-e2e"),
+        secondary_email="not-used@example.com",
+    )
 
 
 def create_demo(stdout):  # pylint: disable=too-many-locals
@@ -314,6 +358,12 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 )
 
         queue.flush()
+
+    # OIDC configuration
+    if settings.OAUTH2_PROVIDER.get("OIDC_ENABLED", False):
+        stdout.write("Creating OIDC client for People Identity Provider")
+        create_oidc_people_idp_client()
+        create_oidc_people_idp_client_user()
 
 
 class Command(BaseCommand):

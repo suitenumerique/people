@@ -2,6 +2,8 @@
 
 from logging import getLogger
 
+from django.contrib.auth.hashers import make_password
+
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
 
@@ -34,7 +36,7 @@ class MailboxSerializer(serializers.ModelSerializer):
         """
         Override create function to fire a request on mailbox creation.
         """
-        mailbox = super().create(validated_data)
+        mailbox = super().create(validated_data | {"password": make_password(None)})
         if mailbox.domain.status == enums.MailDomainStatusChoices.ENABLED:
             client = DimailAPIClient()
             # send new mailbox request to dimail
