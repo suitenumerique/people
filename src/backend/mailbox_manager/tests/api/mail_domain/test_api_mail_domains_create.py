@@ -15,7 +15,11 @@ from rest_framework.test import APIClient
 from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
-from mailbox_manager.tests.fixtures.dimail import CHECK_DOMAIN_BROKEN, CHECK_DOMAIN_OK
+from mailbox_manager.tests.fixtures.dimail import (
+    CHECK_DOMAIN_BROKEN,
+    CHECK_DOMAIN_OK,
+    DOMAIN_SPEC,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -108,6 +112,13 @@ def test_api_mail_domains__create_authenticated():
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain_name}/spec/"),
+        body=json.dumps(DOMAIN_SPEC),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
     response = client.post(
         "/api/v1.0/mail-domains/",
         {
@@ -145,6 +156,7 @@ def test_api_mail_domains__create_authenticated():
             "or je trouve example-fr.mail.protection.outlook.com.",
             "spf": "Le SPF record ne contient pas include:_spf.ox.numerique.gouv.fr",
         },
+        "expected_config": DOMAIN_SPEC,
     }
 
     # a new domain with status "action required" is created and authenticated user is the owner
@@ -212,6 +224,7 @@ def test_api_mail_domains__create_authenticated__dimail_failure(caplog):
         status=dimail_error["status_code"],
         content_type="application/json",
     )
+
     response = client.post(
         "/api/v1.0/mail-domains/",
         {
@@ -237,6 +250,7 @@ def test_api_mail_domains__create_authenticated__dimail_failure(caplog):
         "support_email": domain.support_email,
         "last_check_details": None,
         "action_required_details": {},
+        "expected_config": None,
     }
 
     # a new domain with status "failed" is created and authenticated user is the owner
@@ -299,6 +313,13 @@ def test_api_mail_domains__create_dimail_domain(caplog):
         responses.GET,
         re.compile(rf".*/domains/{domain_name}/check/"),
         body=json.dumps(body_content_domain1),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain_name}/spec/"),
+        body=json.dumps(DOMAIN_SPEC),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )

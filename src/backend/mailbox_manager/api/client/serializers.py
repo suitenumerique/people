@@ -74,6 +74,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "support_email",
             "last_check_details",
             "action_required_details",
+            "expected_config",
         ]
         read_only_fields = [
             "id",
@@ -85,6 +86,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
             "count_mailboxes",
             "last_check_details",
             "action_required_details",
+            "expected_config",
         ]
 
     def get_action_required_details(self, domain) -> dict:
@@ -122,6 +124,7 @@ class MailDomainSerializer(serializers.ModelSerializer):
         # check domain status and update it
         try:
             client.fetch_domain_status(domain)
+            client.fetch_domain_expected_config(domain)
         except HTTPError as e:
             logger.exception(
                 "[DIMAIL] domain status fetch after creation failed %s with error %s",

@@ -255,6 +255,25 @@ CHECK_DOMAIN_OK = {
     "cert": {"ok": True, "internal": True, "errors": []},
 }
 
+# pylint: disable=line-too-long
+DOMAIN_SPEC = [
+    {"target": "", "type": "mx", "value": "mx.ox.numerique.gouv.fr."},
+    {
+        "target": "dimail._domainkey",
+        "type": "txt",
+        "value": "v=DKIM1; h=sha256; k=rsa; p=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    },
+    {"target": "imap", "type": "cname", "value": "imap.ox.numerique.gouv.fr."},
+    {"target": "smtp", "type": "cname", "value": "smtp.ox.numerique.gouv.fr."},
+    {
+        "target": "",
+        "type": "txt",
+        "value": "v=spf1 include:_spf.ox.numerique.gouv.fr -all",
+    },
+    {"target": "webmail", "type": "cname", "value": "webmail.ox.numerique.gouv.fr."},
+]
+
+
 ## TOKEN
 
 TOKEN_OK = json.dumps({"access_token": "token", "token_type": "bearer"})
