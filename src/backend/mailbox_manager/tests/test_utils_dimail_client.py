@@ -398,7 +398,7 @@ def test_dimail__enable_pending_mailboxes(caplog):
     )
     assert (
         caplog.records[2].message
-        == f"Information for mailbox mock@{domain.name} sent to {mailbox1.secondary_email}."
+        == f"Information for mailbox mock@{domain.name} sent to {mailbox2.secondary_email}."
     )
     assert (
         caplog.records[4].message
@@ -406,5 +406,5 @@ def test_dimail__enable_pending_mailboxes(caplog):
     )
     assert (
         caplog.records[5].message
-        == f"Information for mailbox mock@{domain.name} sent to {mailbox2.secondary_email}."
+        == f"Information for mailbox mock@{domain.name} sent to {mailbox1.secondary_email}."
     )
