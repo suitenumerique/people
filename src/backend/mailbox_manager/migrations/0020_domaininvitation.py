@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailbox_manager', '0017_alter_maildomain_status'),
+        ('mailbox_manager', '0019_maildomain_last_check_details'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
