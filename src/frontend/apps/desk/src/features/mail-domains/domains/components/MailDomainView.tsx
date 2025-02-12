@@ -1,4 +1,9 @@
-import { Modal, ModalSize } from '@openfun/cunningham-react';
+import {
+  Modal,
+  ModalSize,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +20,7 @@ type Props = {
 };
 export const MailDomainView = ({ mailDomain }: Props) => {
   const { t } = useTranslation();
+  const { toast } = useToastProvider();
   const [showModal, setShowModal] = React.useState(false);
   const currentRole = mailDomain.abilities.delete
     ? Role.OWNER
@@ -46,6 +52,10 @@ export const MailDomainView = ({ mailDomain }: Props) => {
   const handleShowModal = () => {
     setShowModal(true);
   };
+  const copyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    toast(t('copy done'), VariantType.SUCCESS);
+  };
 
   return (
     <>
@@ -62,18 +72,69 @@ export const MailDomainView = ({ mailDomain }: Props) => {
             )}
           </p>
           <h3>{t('Actions required detail')}</h3>
+
           <pre>
             {mailDomain.action_required_details &&
               Object.entries(mailDomain.action_required_details).map(
-                ([check, value]) => (
-                  <ul key={check}>
-                    <li>
+                ([check, value], index) => (
+                  <ul key={`action-required-list-${index}`}>
+                    <li key={`action-required-${index}`}>
                       <b>{check}</b>: {value}
                     </li>
                   </ul>
                 ),
               )}
           </pre>
+          {mailDomain.expected_config && (
+            <Box $margin={{ bottom: 'medium' }}>
+              <h3>{t('DNS Configuration Required:')}</h3>
+              <pre>
+                <div
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'break-word',
+                  }}
+                >
+                  {t('Add the following DNS values:')}
+                  <ul>
+                    {mailDomain.expected_config.map((item, index) => (
+                      <li
+                        key={`dns-record-${index}`}
+                        style={{ marginBottom: '10px' }}
+                      >
+                        {item.target && (
+                          <>
+                            <b>{item.target.toUpperCase()}</b> -{' '}
+                          </>
+                        )}
+                        <b>{item.type.toUpperCase()}</b> {t('with value:')}{' '}
+                        <span style={{ backgroundColor: '#d4e5f5' }}>
+                          {item.value}
+                        </span>
+                        <button
+                          style={{
+                            padding: '2px 5px',
+                            marginLeft: '10px',
+                            backgroundColor: '#cccccc',
+                            border: 'none',
+                            color: 'white',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            borderRadius: '5px',
+                          }}
+                          onClick={() => {
+                            void copyToClipboard(item.value);
+                          }}
+                        >
+                          {t('Copy')}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </pre>
+            </Box>
+          )}
         </Modal>
       )}
       <Box $padding="big">
