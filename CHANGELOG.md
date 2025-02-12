@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) check status after creation
 - ✨(domains) display required actions to do on domain
 - ✨(plugin) add CommuneCreation plugin with domain provisioning #658
 - ✨(frontend) display action required status on domain
