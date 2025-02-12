@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) display DNS config expected for domain with required actions
 - ✨(domains) check status after creation
 - ✨(domains) display required actions to do on domain
 - ✨(plugin) add CommuneCreation plugin with domain provisioning #658

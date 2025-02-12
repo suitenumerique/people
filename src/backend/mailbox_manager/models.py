@@ -36,6 +36,12 @@ class MailDomain(BaseModel):
         verbose_name=_("last check details"),
         help_text=_("A JSON object containing the last health check details"),
     )
+    expected_config = models.JSONField(
+        null=True,
+        blank=True,
+        verbose_name=_("expected config"),
+        help_text=_("A JSON object containing the expected config"),
+    )
 
     class Meta:
         db_table = "people_mail_domain"

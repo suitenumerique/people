@@ -519,3 +519,48 @@ class DimailAPIClient:
             if isinstance(value, dict) and value.get("internal") is internal
         }
         return {key: value.get("ok", False) for key, value in checks.items()}
+
+    def fetch_domain_expected_config(self, domain):
+        """Send a request to dimail to get domain specification for DNS configuration."""
+        try:
+            response = session.get(
+                f"{self.API_URL}/domains/{domain.name}/spec/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                verify=True,
+                timeout=10,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.exception(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            return []
+        if response.status_code == status.HTTP_200_OK:
+            # format the response to log an error if api response changed
+            try:
+                dimail_expected_config = [
+                    {
+                        "target": item["target"],
+                        "type": item["type"],
+                        "value": item["value"],
+                    }
+                    for item in response.json()
+                ]
+                domain.expected_config = dimail_expected_config
+                domain.save()
+                return dimail_expected_config
+            except KeyError as error:
+                logger.exception(
+                    "[DIMAIL] spec expected response format changed: %s",
+                    error,
+                )
+                return []
+        else:
+            logger.exception(
+                "[DIMAIL] unexpected error : %s %s",
+                response.status_code,
+                response.content,
+                exc_info=False,
+            )
+            return []
