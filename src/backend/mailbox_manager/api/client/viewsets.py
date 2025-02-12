@@ -332,7 +332,7 @@ class DomainInvitationViewset(
         if self.action == "list":
             # Determine which role the logged-in user has in the domain
             user_role_query = models.MailDomainAccess.objects.filter(
-                user=self.request.user, domain=self.kwargs["domain_slug"]
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
             ).values("role")[:1]
 
             queryset = (
@@ -345,4 +345,5 @@ class DomainInvitationViewset(
                 .annotate(user_role=Subquery(user_role_query))
                 .distinct()
             )
+
         return queryset
