@@ -184,7 +184,7 @@ export const ModalAddMailDomain = () => {
                   text={
                     fieldState?.error?.message
                       ? fieldState.error.message
-                      : t('E.g. : support@saint-laurent.fr')
+                      : t('E.g. : support@example.fr')
                   }
                   {...methods.register('supportEmail')}
                 />
