@@ -10,7 +10,7 @@ PYTHONPATH=/app
 # People settings
 
 # Mail
-DJANGO_EMAIL_HOST="mailcatcher"
+DJANGO_EMAIL_HOST="maildev"
 DJANGO_EMAIL_PORT=1025
 
 # Backend url
