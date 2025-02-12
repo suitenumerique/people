@@ -66,7 +66,7 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
         try:
             response = client.fetch_domain_status(domain)
         except exceptions.HTTPError as err:
-            msg_error.append(_(f"""- <b>{domain.name}</b> with message: '{err}'"""))
+            msg_error.append(_(f"- {domain.name} with message: '{err}'"))
         else:
             success = True
             # temporary (or not?) display content of the dimail response to debug broken state
