@@ -323,6 +323,42 @@ class Base(Configuration):
     SESSION_CACHE_ALIAS = "default"
     SESSION_COOKIE_AGE = 60 * 60 * 12  # 12 hours to match Agent Connect
 
+    # Python loggers configuration (and env var overrides)
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {
+                "format": "{asctime} {name} {levelname} {message}",
+                "style": "{",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "simple",
+            },
+        },
+        # Override root logger to send it to console
+        "root": {
+            "handlers": ["console"],
+            "level": values.Value(
+                "INFO", environ_name="LOGGING_LEVEL_LOGGERS_ROOT", environ_prefix=None
+            ),
+        },
+        "loggers": {
+            "core": {
+                "handlers": ["console"],
+                "level": values.Value(
+                    "INFO",
+                    environ_name="LOGGING_LEVEL_LOGGERS_APP",
+                    environ_prefix=None,
+                ),
+                "propagate": False,
+            },
+        },
+    }
+
     # OIDC - Authorization Code Flow
     OIDC_CREATE_USER = values.BooleanValue(
         default=True,
@@ -616,41 +652,6 @@ class Development(Base):
     SESSION_COOKIE_NAME = "people_sessionid"
 
     USE_SWAGGER = True
-
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "simple": {
-                "format": "{asctime} {name} {levelname} {message}",
-                "style": "{",
-            },
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "simple",
-            },
-        },
-        # Override root logger to send it to console
-        "root": {
-            "handlers": ["console"],
-            "level": values.Value(
-                "INFO", environ_name="LOGGING_LEVEL_LOGGERS_ROOT", environ_prefix=None
-            ),
-        },
-        "loggers": {
-            "core": {
-                "handlers": ["console"],
-                "level": values.Value(
-                    "INFO",
-                    environ_name="LOGGING_LEVEL_LOGGERS_APP",
-                    environ_prefix=None,
-                ),
-                "propagate": False,
-            },
-        },
-    }
 
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
