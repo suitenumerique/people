@@ -17,6 +17,11 @@ export interface MailDomain {
     delete: boolean;
     manage_accesses: boolean;
   };
+  expected_config?: Array<{
+    target: string;
+    type: string;
+    value: string;
+  }>;
 }
 
 export enum Role {
