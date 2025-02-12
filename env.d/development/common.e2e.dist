@@ -1,3 +1,6 @@
 # For the CI job test-e2e
 SUSTAINED_THROTTLE_RATES="200/hour"
 BURST_THROTTLE_RATES="200/minute"
+
+OAUTH2_PROVIDER_OIDC_ENABLED = True
+OAUTH2_PROVIDER_VALIDATOR_CLASS: "mailbox_oauth2.validators.ProConnectValidator"
