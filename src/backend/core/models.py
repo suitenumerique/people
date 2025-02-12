@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the People core application
 """
+# pylint: disable=too-many-lines
 
 import json
 import os
@@ -528,7 +529,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     def _convert_valid_invitations(self):
         """
-        Convert valid invitations to team accesses.
+        Convert valid invitations to team accesses and/or domain accesses.
         Expired invitations are ignored.
         """
 
@@ -540,7 +541,18 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             ),
         ).select_related("team")
 
-        if not valid_invitations.exists():
+        from mailbox_manager.models import DomainInvitation, MailDomainAccess
+        valid_domain_invitations = DomainInvitation.objects.filter(
+            email=self.email,
+            created_at__gte=(
+                timezone.now()
+                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
+            ),
+        ).select_related("domain")
+
+
+        import pdb; pdb.set_trace()
+        if not valid_invitations.exists() and not valid_domain_invitations.exists():
             return
 
         TeamAccess.objects.bulk_create(
@@ -550,6 +562,14 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             ]
         )
         valid_invitations.delete()
+
+        for invitation in valid_domain_invitations:
+            MailDomainAccess.objects.create(
+                MailDomainAccess(user=self, domain=invitation.domain, role=invitation.role))
+            # get_or_create dimail user
+            # create access
+        valid_domain_invitations.delete()
+
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Email this user."""
