@@ -9,8 +9,8 @@ services:
   redis:
     image: redis:5
 
-  mailcatcher:
-    image: sj26/mailcatcher:latest
+  maildev:
+    image: maildev/maildev:latest
     ports:
       - "1081:1080"
 
@@ -38,7 +38,7 @@ services:
     depends_on:
         - dimail
         - postgresql
-        - mailcatcher
+        - maildev
         - redis
   
   celery-dev:
