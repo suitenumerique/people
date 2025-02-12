@@ -41,6 +41,7 @@ class MailDomain(BaseModel):
         db_table = "people_mail_domain"
         verbose_name = _("Mail domain")
         verbose_name_plural = _("Mail domains")
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
@@ -109,6 +110,7 @@ class MailDomainAccess(BaseModel):
         verbose_name = _("User/mail domain relation")
         verbose_name_plural = _("User/mail domain relations")
         unique_together = ("user", "domain")
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"Access of user {self.user} on domain {self.domain}."
@@ -206,6 +208,7 @@ class Mailbox(BaseModel):
         verbose_name = _("Mailbox")
         verbose_name_plural = _("Mailboxes")
         unique_together = ("local_part", "domain")
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.local_part!s}@{self.domain.name:s}"
