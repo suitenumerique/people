@@ -118,9 +118,10 @@ class MailDomainSerializer(serializers.ModelSerializer):
         # send new domain request to dimail
         client = DimailAPIClient()
         client.create_domain(validated_data["name"], self.context["request"].user.sub)
-
-        # no exception raised ? Then actually save domain on our database
-        return super().create(validated_data)
+        domain = super().create(validated_data)
+        # check domain status and update it
+        client.fetch_domain_status(domain)
+        return domain
 
 
 class MailDomainAccessSerializer(serializers.ModelSerializer):
