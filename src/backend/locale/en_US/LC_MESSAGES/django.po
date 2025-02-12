@@ -1,150 +1,142 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: lasuite-people\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 08:30+0000\n"
-"PO-Revision-Date: 2024-01-03 23:15\n"
-"Last-Translator: \n"
-"Language-Team: French\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2025-02-13 07:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Crowdin-Project: lasuite-people\n"
-"X-Crowdin-Project-ID: 637934\n"
-"X-Crowdin-Language: fr\n"
-"X-Crowdin-File: backend.pot\n"
-"X-Crowdin-File-ID: 2\n"
 
 #: core/admin.py:63
 msgid "Personal info"
-msgstr "Informations personnelles"
+msgstr ""
 
 #: core/admin.py:65
 msgid "Permissions"
-msgstr "Permissions"
+msgstr ""
 
 #: core/admin.py:77
 msgid "Important dates"
-msgstr "Dates importantes"
+msgstr ""
 
 #: core/admin.py:116
 msgid "User"
-msgstr "Utilisateur"
+msgstr ""
 
 #: core/admin.py:218
 msgid "Run post creation plugins"
-msgstr "Exécuter les plugins de post-création"
+msgstr ""
 
 #: core/admin.py:226
 msgid "Post creation plugins have been run for the selected organizations."
 msgstr ""
-"Les plugins de post-création ont été exécutés pour les organisations "
-"sélectionnées."
 
 #: core/authentication/backends.py:94
 msgid "User info contained no recognizable user identification"
 msgstr ""
-"Les informations de l'utilisateur ne contiennent aucune identification "
-"reconnaissable"
 
 #: core/authentication/backends.py:115
 msgid "User account is disabled"
-msgstr "Le compte de l'utilisateur est désactivé"
+msgstr ""
 
 #: core/authentication/backends.py:161
 msgid "Claims contained no recognizable user identification"
 msgstr ""
-"Les claims ne contiennent aucune identification reconnaissable pour "
-"l'utilisateur"
 
 #: core/authentication/backends.py:180
 msgid "Claims contained no recognizable organization identification"
 msgstr ""
-"Les claims ne contiennent aucune identification reconnaissable pour "
-"l'organisation"
 
 #: core/enums.py:23
 msgid "Failure"
-msgstr "En échec"
+msgstr ""
 
 #: core/enums.py:24 mailbox_manager/enums.py:21 mailbox_manager/enums.py:31
 msgid "Pending"
-msgstr "En attente"
+msgstr ""
 
 #: core/enums.py:25
 msgid "Success"
-msgstr "Réussi"
+msgstr ""
 
 #: core/models.py:50
 msgid "Member"
-msgstr "Membre"
+msgstr ""
 
 #: core/models.py:51 core/models.py:63 mailbox_manager/enums.py:14
 msgid "Administrator"
-msgstr "Administrateur"
+msgstr ""
 
 #: core/models.py:52 mailbox_manager/enums.py:15
 msgid "Owner"
-msgstr "Propriétaire"
+msgstr ""
 
 #: core/models.py:75
 msgid "id"
-msgstr "identifiant"
+msgstr ""
 
 #: core/models.py:76
 msgid "primary key for the record as UUID"
-msgstr "Clé primaire pour l'enregistrement en tant que UUID"
+msgstr ""
 
 #: core/models.py:82
 msgid "created at"
-msgstr "Créé le"
+msgstr ""
 
 #: core/models.py:83
 msgid "date and time at which a record was created"
-msgstr "Date et heure de création de l'enregistrement"
+msgstr ""
 
 #: core/models.py:88
 msgid "updated at"
-msgstr "mis à jour le"
+msgstr ""
 
 #: core/models.py:89
 msgid "date and time at which a record was last updated"
-msgstr "date et heure de la dernière mise à jour de l'enregistrement"
+msgstr ""
 
 #: core/models.py:128
 msgid "full name"
-msgstr "nom complet"
+msgstr ""
 
 #: core/models.py:129
 msgid "short name"
-msgstr "nom court"
+msgstr ""
 
 #: core/models.py:132
 msgid "notes"
-msgstr "notes"
+msgstr ""
 
 #: core/models.py:134
 msgid "contact information"
-msgstr "informations de contact"
+msgstr ""
 
 #: core/models.py:135
 msgid "A JSON object containing the contact information"
-msgstr "Un objet JSON contenant les informations de contact"
+msgstr ""
 
 #: core/models.py:149
 msgid "contact"
-msgstr "contact"
+msgstr ""
 
 #: core/models.py:150
 msgid "contacts"
-msgstr "contacts"
+msgstr ""
 
 #: core/models.py:224 core/models.py:338 core/models.py:460
 #: mailbox_manager/models.py:24
 msgid "name"
-msgstr "nom"
+msgstr ""
 
 #: core/models.py:226
 msgid "audience id"
@@ -152,77 +144,71 @@ msgstr ""
 
 #: core/models.py:231
 msgid "service provider"
-msgstr "fournisseur de service"
+msgstr ""
 
 #: core/models.py:232
 msgid "service providers"
-msgstr "fournisseurs de service"
+msgstr ""
 
 #: core/models.py:346
 msgid "registration ID list"
-msgstr "liste d'identifiants d'inscription"
+msgstr ""
 
 #: core/models.py:353
 msgid "domain list"
-msgstr "liste de domaines"
+msgstr ""
 
 #: core/models.py:369
 msgid "organization"
-msgstr "organisation"
+msgstr ""
 
 #: core/models.py:370
 msgid "organizations"
-msgstr "organisations"
+msgstr ""
 
 #: core/models.py:377
 msgid "An organization must have at least a registration ID or a domain."
 msgstr ""
-"Une organisation doit avoir au moins un identifiant d'inscription ou un "
-"domaine."
 
 #: core/models.py:445
 msgid ""
 "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/"
 "_ characters."
 msgstr ""
-"Entrez une sub valide. Cette valeur peut contenir uniquement des lettres, "
-"des chiffres et des caractères @/./+/-/_"
 
 #: core/models.py:451
 msgid "sub"
-msgstr "sub"
+msgstr ""
 
 #: core/models.py:453
 msgid ""
 "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ "
 "characters only."
 msgstr ""
-"Requis. 255 caractères ou moins. Lettres, chiffres et caractères @/./+/-/_ "
-"uniquement."
 
 #: core/models.py:459 core/models.py:901
 msgid "email address"
-msgstr "adresse email"
+msgstr ""
 
 #: core/models.py:465
 msgid "language"
-msgstr "langue"
+msgstr ""
 
 #: core/models.py:466
 msgid "The language in which the user wants to see the interface."
-msgstr "La langue dans laquelle l'utilisateur souhaite voir l'interface."
+msgstr ""
 
 #: core/models.py:472
 msgid "The timezone in which the user wants to see times."
-msgstr "Le fuseau horaire dans lequel l'utilisateur souhaite voir les heures."
+msgstr ""
 
 #: core/models.py:475
 msgid "device"
-msgstr "appareil"
+msgstr ""
 
 #: core/models.py:477
 msgid "Whether the user is a device or a real user."
-msgstr "Si l'utilisateur est un appareil ou un utilisateur réel."
+msgstr ""
 
 #: core/models.py:480
 msgid "staff status"
@@ -230,7 +216,7 @@ msgstr ""
 
 #: core/models.py:482
 msgid "Whether the user can log into this admin site."
-msgstr "Si l'utilisateur peut se connecter à cette interface d'administration."
+msgstr ""
 
 #: core/models.py:485
 msgid "active"
@@ -241,124 +227,121 @@ msgid ""
 "Whether this user should be treated as active. Unselect this instead of "
 "deleting accounts."
 msgstr ""
-"Si cet utilisateur doit être considéré comme actif. Désélectionnez cette "
-"option au lieu de supprimer les comptes."
 
 #: core/models.py:507
 msgid "user"
-msgstr "utilisateur"
+msgstr ""
 
 #: core/models.py:508
 msgid "users"
-msgstr "utilisateurs"
+msgstr ""
 
 #: core/models.py:644
 msgid "Organization/user relation"
-msgstr "Relation entre une organisation et un utilisateur"
+msgstr ""
 
 #: core/models.py:645
 msgid "Organization/user relations"
-msgstr "Relations entre une organisation et un utilisateur"
+msgstr ""
 
 #: core/models.py:650
 msgid "This user is already in this organization."
-msgstr "Cet utilisateur est déjà dans cette organisation."
+msgstr ""
 
 #: core/models.py:727
 msgid "Team"
-msgstr "Equipe"
+msgstr ""
 
 #: core/models.py:728
 msgid "Teams"
-msgstr "Equipes"
+msgstr ""
 
 #: core/models.py:779
 msgid "Team/user relation"
-msgstr "Relation entre une équipe et un utilisateur"
+msgstr ""
 
 #: core/models.py:780
 msgid "Team/user relations"
-msgstr "Relations entre une équipe et un utilisateur"
+msgstr ""
 
 #: core/models.py:785
 msgid "This user is already in this team."
-msgstr "Cet utilisateur est déjà dans cette équipe."
+msgstr ""
 
 #: core/models.py:874
 msgid "url"
-msgstr "url"
+msgstr ""
 
 #: core/models.py:875
 msgid "secret"
-msgstr "secret"
+msgstr ""
 
 #: core/models.py:884
 msgid "Team webhook"
-msgstr "Webhook d'équipe"
+msgstr ""
 
 #: core/models.py:885
 msgid "Team webhooks"
-msgstr "Webhooks d'équipe"
+msgstr ""
 
 #: core/models.py:918
 msgid "Team invitation"
-msgstr "Invitation d'équipe"
+msgstr ""
 
 #: core/models.py:919
 msgid "Team invitations"
-msgstr "Invitations d'équipe"
+msgstr ""
 
 #: core/models.py:944
 msgid "This email is already associated to a registered user."
-msgstr "Cette adresse email est déjà associée à un utilisateur enregistré."
+msgstr ""
 
 #: core/models.py:985
 msgid "Invitation to join La Régie!"
-msgstr "Invitation à rejoindre La Régie!"
+msgstr ""
 
 #: core/templates/mail/html/hello.html:159 core/templates/mail/text/hello.txt:3
 msgid "Company logo"
-msgstr "Logo de l'entreprise"
+msgstr ""
 
 #: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
 #, python-format
 msgid "Hello %(name)s"
-msgstr "Bonjour %(name)s"
+msgstr ""
 
 #: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
 msgid "Hello"
-msgstr "Bonjour"
+msgstr ""
 
 #: core/templates/mail/html/hello.html:189 core/templates/mail/text/hello.txt:6
 msgid "Thank you very much for your visit!"
-msgstr "Merci beaucoup pour votre visite!"
+msgstr ""
 
 #: core/templates/mail/html/hello.html:221
 #, python-format
 msgid ""
 "This mail has been sent to %(email)s by <a href=\"%(href)s\">%(name)s</a>"
 msgstr ""
-"Cette mail a été envoyée à %(email)s par <a href=\"%(href)s\">%(name)s</a>"
 
 #: core/templates/mail/html/invitation.html:160
 #: core/templates/mail/text/invitation.txt:3
 msgid "La Suite Numérique"
-msgstr "La Suite Numérique"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:190
 #: core/templates/mail/text/invitation.txt:5
 msgid "Invitation to join a team"
-msgstr "Invitation à rejoindre une équipe"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:198
 #: core/templates/mail/text/invitation.txt:8
 msgid "Welcome to"
-msgstr "Bienvenue sur"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:216
 #: core/templates/mail/text/invitation.txt:12
 msgid "Logo"
-msgstr "Logo"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:226
 #: core/templates/mail/text/invitation.txt:14
@@ -367,9 +350,6 @@ msgid ""
 "companion to simplify the management of your groups efficiently, "
 "intuitively, and securely."
 msgstr ""
-"Nous sommes ravis de vous accueillir dans notre communauté sur Régie, votre "
-"nouveau compagnon pour simplifier la gestion de vos groupes de manière "
-"efficace, intuitive et sécurisée."
 
 #: core/templates/mail/html/invitation.html:231
 #: core/templates/mail/text/invitation.txt:15
@@ -377,25 +357,21 @@ msgid ""
 "Our application is designed to help you organize, collaborate, and manage "
 "permissions."
 msgstr ""
-"Notre application est conçue pour vous aider à organiser, collaborer et "
-"gérer les permissions."
 
 #: core/templates/mail/html/invitation.html:236
 #: core/templates/mail/text/invitation.txt:16
 msgid "With La Régie, you will be able to:"
-msgstr "Avec La Régie, vous pourrez :"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:237
 #: core/templates/mail/text/invitation.txt:17
 msgid "Create customized groups according to your specific needs."
 msgstr ""
-"Créer des groupes personnalisés en fonction de vos besoins spécifiques."
 
 #: core/templates/mail/html/invitation.html:238
 #: core/templates/mail/text/invitation.txt:18
 msgid "Invite members of your team or community in just a few clicks."
 msgstr ""
-"Inviter des membres de votre équipe ou de votre communauté en quelques clics."
 
 #: core/templates/mail/html/invitation.html:239
 #: core/templates/mail/text/invitation.txt:19
@@ -403,15 +379,11 @@ msgid ""
 "Plan events, meetings, or activities effortlessly with our integrated "
 "calendar."
 msgstr ""
-"Planifier des événements, des réunions ou des activités sans effort avec "
-"notre calendrier intégré."
 
 #: core/templates/mail/html/invitation.html:240
 #: core/templates/mail/text/invitation.txt:20
 msgid "Share documents, photos, and important information securely."
 msgstr ""
-"Partager des documents, des photos et des informations importantes de "
-"manière sécurisée."
 
 #: core/templates/mail/html/invitation.html:241
 #: core/templates/mail/text/invitation.txt:21
@@ -419,13 +391,11 @@ msgid ""
 "Facilitate exchanges and communication with our messaging and group "
 "discussion tools."
 msgstr ""
-"Faciliter les échanges et la communication avec nos outils de messagerie et "
-"de discussion de groupe."
 
 #: core/templates/mail/html/invitation.html:252
 #: core/templates/mail/text/invitation.txt:23
 msgid "Visit La Régie"
-msgstr "Visiter La Régie"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:261
 #: core/templates/mail/text/invitation.txt:25
@@ -433,8 +403,6 @@ msgid ""
 "We are confident that La Régie will help you increase efficiency and "
 "productivity while strengthening the bond among members."
 msgstr ""
-"Nous sommes convaincus que La Régie vous aidera à augmenter l'efficacité et "
-"la productivité tout en renforçant le lien entre les membres."
 
 #: core/templates/mail/html/invitation.html:266
 #: core/templates/mail/text/invitation.txt:26
@@ -443,10 +411,6 @@ msgid ""
 "feedback and suggestions with us. Your feedback is valuable to us and will "
 "enable us to continually improve our service."
 msgstr ""
-"N'hésitez pas à explorer toutes les fonctionnalités de l'application et à "
-"partager vos commentaires et suggestions avec nous. Vos retours sont "
-"précieux pour nous et nous permettront de continuer à améliorer notre "
-"service."
 
 #: core/templates/mail/html/invitation.html:271
 #: core/templates/mail/text/invitation.txt:27
@@ -454,200 +418,193 @@ msgid ""
 "Once again, welcome aboard! We are eager to accompany you on this group "
 "management adventure."
 msgstr ""
-"Encore une fois, bienvenue parmi nous ! Nous sommes impatients de vous "
-"accompagner dans cette aventure de gestion de groupe."
 
 #: core/templates/mail/html/invitation.html:278
 #: core/templates/mail/html/new_mailbox.html:272
 #: core/templates/mail/text/invitation.txt:29
 #: core/templates/mail/text/new_mailbox.txt:15
 msgid "Sincerely,"
-msgstr "Cordialement,"
+msgstr ""
 
 #: core/templates/mail/html/invitation.html:279
 #: core/templates/mail/text/invitation.txt:31
 msgid "The La Suite Numérique Team"
-msgstr "L'équipe de La Suite Numérique"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:159
 #: core/templates/mail/text/new_mailbox.txt:3
 msgid "La Messagerie"
-msgstr "La Messagerie"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:188
 #: core/templates/mail/text/new_mailbox.txt:5
 msgid "Welcome to La Messagerie"
-msgstr "Bienvenue dans La Messagerie"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:193
 #: core/templates/mail/text/new_mailbox.txt:6
 msgid "La Messagerie is the email solution of La Suite."
-msgstr "La Messagerie est la solution de mail de La Suite."
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:199
 #: core/templates/mail/text/new_mailbox.txt:7
 msgid "Your mailbox has been created."
-msgstr "Votre boîte mail a été créée."
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:204
 #: core/templates/mail/text/new_mailbox.txt:8
 msgid "Please find below your login info: "
-msgstr "Voici vos identifiants de connexion :"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:228
 #: core/templates/mail/text/new_mailbox.txt:10
 msgid "Email address: "
-msgstr "Adresse email : "
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:233
 #: core/templates/mail/text/new_mailbox.txt:11
 msgid "Temporary password (to be modify on first login): "
-msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:261
 #: core/templates/mail/text/new_mailbox.txt:13
 msgid "Go to La Messagerie"
-msgstr "Accéder à La Messagerie"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:273
 #: core/templates/mail/text/new_mailbox.txt:17
 msgid "La Suite Team"
-msgstr "L'équipe de La Suite"
+msgstr ""
 
 #: core/templates/mail/text/hello.txt:8
 #, python-format
 msgid "This mail has been sent to %(email)s by %(name)s [%(href)s]"
-msgstr "Cette mail a été envoyée à %(email)s par %(name)s [%(href)s]"
+msgstr ""
 
 #: mailbox_manager/admin.py:16
 msgid "Synchronise from dimail"
-msgstr "Synchroniser à partir de dimail"
+msgstr ""
 
 #: mailbox_manager/admin.py:34
 #, python-brace-format
 msgid "Synchronisation failed for {domain.name} with message: [{err}]"
-msgstr "Synchronisation échouée pour {domain.name} avec le message: [{err}]"
+msgstr ""
 
 #: mailbox_manager/admin.py:40
 #, python-brace-format
 msgid "Synchronisation succeed for {domain.name}. "
-msgstr "Synchronisation réussie pour {domain.name}. "
+msgstr ""
 
 #: mailbox_manager/admin.py:48
 msgid ""
 "Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
 msgstr ""
-"Le synchro nécessite des domaines activés. Les domaines exclus sont : {', '."
-"join(excluded_domains)}"
 
 #: mailbox_manager/admin.py:53
 msgid "Check and update status from dimail"
-msgstr "Vérification et mise à jour de l'état à partir de dimail"
+msgstr ""
 
 #: mailbox_manager/admin.py:69
 #, python-brace-format
 msgid "- {domain.name} with message: '{err}'"
-msgstr "- {domain.name} avec le message: '{err}'"
+msgstr ""
 
 #: mailbox_manager/admin.py:80
 msgid "Check domains done with success."
-msgstr "Vérification des domains réalisée avec success."
+msgstr ""
 
 #: mailbox_manager/admin.py:81
 msgid "Domains updated: {', '.join(domains_updated)}"
-msgstr "Domaines mis à jour : {', '.join(domains_updated)}"
+msgstr ""
 
 #: mailbox_manager/admin.py:83
 msgid "No domain updated."
-msgstr "Aucun domain n'a été mis à jour."
+msgstr ""
 
 #: mailbox_manager/admin.py:90
 msgid "Check domain failed for:"
-msgstr "La vérification de domain a échoué pour :"
+msgstr ""
 
 #: mailbox_manager/admin.py:99
 msgid "Domains disabled are excluded from check: {', '.join(excluded_domains)}"
 msgstr ""
-"Les domains désactivés sont exclus de la vérification : {', '."
-"join(excluded_domains)}"
 
 #: mailbox_manager/enums.py:13
 msgid "Viewer"
-msgstr "Lecteur"
+msgstr ""
 
 #: mailbox_manager/enums.py:22 mailbox_manager/enums.py:32
 msgid "Enabled"
-msgstr "Actif"
+msgstr ""
 
 #: mailbox_manager/enums.py:23 mailbox_manager/enums.py:33
 msgid "Failed"
-msgstr "En échec"
+msgstr ""
 
 #: mailbox_manager/enums.py:24 mailbox_manager/enums.py:34
 msgid "Disabled"
-msgstr "Désactivé"
+msgstr ""
 
 #: mailbox_manager/enums.py:25
 msgid "Action required"
-msgstr "Action requise"
+msgstr ""
 
 #: mailbox_manager/models.py:32
 msgid "support email"
-msgstr "adresse email du support"
+msgstr ""
 
 #: mailbox_manager/models.py:36
 msgid "last check details"
-msgstr "détails de la dernière vérification"
+msgstr ""
 
 #: mailbox_manager/models.py:37
 msgid "A JSON object containing the last health check details"
-msgstr "Un objet JSON contenant les détails de la dernière vérification"
+msgstr ""
 
 #: mailbox_manager/models.py:42
 msgid "Mail domain"
-msgstr "Domaine de messagerie"
+msgstr ""
 
 #: mailbox_manager/models.py:43
 msgid "Mail domains"
-msgstr "Domaines de messagerie"
+msgstr ""
 
 #: mailbox_manager/models.py:110
 msgid "User/mail domain relation"
-msgstr "Relation entre un utilisateur et un domaine de mail"
+msgstr ""
 
 #: mailbox_manager/models.py:111
 msgid "User/mail domain relations"
-msgstr "Relations entre un utilisateur et un domaine de mail"
+msgstr ""
 
 #: mailbox_manager/models.py:184
 msgid "local_part"
-msgstr "local_part"
+msgstr ""
 
 #: mailbox_manager/models.py:198
 msgid "secondary email address"
-msgstr "adresse email secondaire"
+msgstr ""
 
 #: mailbox_manager/models.py:208
 msgid "Mailbox"
-msgstr "Boîte mail"
+msgstr ""
 
 #: mailbox_manager/models.py:209
 msgid "Mailboxes"
-msgstr "Boîtes mails"
+msgstr ""
 
 #: mailbox_manager/models.py:234
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
-"Vous ne pouvez pas créer ou modifier une boîte mail pour un domain désactivé."
 
 #: mailbox_manager/utils/dimail.py:266
 msgid "Your new mailbox information"
-msgstr "Informations concernant votre nouvelle boîte mail"
+msgstr ""
 
 #: people/settings.py:146
 msgid "English"
-msgstr "Anglais"
+msgstr ""
 
 #: people/settings.py:147
 msgid "French"
-msgstr "Français"
+msgstr ""
