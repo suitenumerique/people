@@ -520,6 +520,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         """
         If it's a new user, give them access to the relevant teams.
         """
+
         if self._state.adding:
             self._convert_valid_team_invitations()
             self._convert_valid_domain_invitations()
@@ -562,8 +563,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         Convert valid domain invitations to domain accesses.
         Expired invitations are ignored.
         """
-        from mailbox_manager.models import DomainInvitation, MailDomainAccess
-        from mailbox_manager.utils.dimail import DimailAPIClient
+        from mailbox_manager.models import DomainInvitation, MailDomainAccess # noqa C0415
 
         valid_domain_invitations = DomainInvitation.objects.filter(
             email=self.email,
@@ -576,26 +576,32 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         if not valid_domain_invitations.exists():
             return
 
-        # Convert domain management invitations
-        # Creating dimail user now, if needed at all
+        MailDomainAccess.objects.bulk_create(
+            [
+                MailDomainAccess(
+                    user=self, domain=invitation.domain, role=invitation.role
+                )
+                for invitation in valid_domain_invitations
+            ]
+        )
+
         management_role = set(valid_domain_invitations.values_list("role", flat="True"))
         if (
             enums.MailDomainRoleChoices.OWNER in management_role
             or enums.MailDomainRoleChoices.ADMIN in management_role
         ):
+            # Sync with dimail
             dimail = DimailAPIClient()
             dimail.create_user(self.sub)
+            import pdb; pdb.set_trace()
 
-        for invitation in valid_domain_invitations:
-            MailDomainAccess.objects.create(
-                user=self, domain=invitation.domain, role=invitation.role
-            )
+            for invitation in valid_domain_invitations:
+                if invitation.role in [
+                    enums.MailDomainRoleChoices.OWNER,
+                    enums.MailDomainRoleChoices.ADMIN,
+                ]:
+                    dimail.create_allow(self.sub, invitation.domain.name)
 
-            if role in [
-                enums.MailDomainRoleChoices.OWNER,
-                enums.MailDomainRoleChoices.ADMIN,
-            ]:
-                dimail.create_allow(self.sub, invitation.domain.name)
         valid_domain_invitations.delete()
 
     def email_user(self, subject, message, from_email=None, **kwargs):

@@ -10,6 +10,7 @@ from django.core import exceptions
 
 import pytest
 import responses
+from freezegun import freeze_time
 from rest_framework import status
 
 from core import factories as core_factories
@@ -54,10 +55,8 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
     invitation_to_domain2 = factories.DomainInvitationFactory(email=email)
 
     # an expired invitation that should not be converted
-    settings.INVITATION_VALIDITY_DURATION = 1
-    expired_invitation = factories.DomainInvitationFactory(email=email)
-    time.sleep(1)
-    settings.INVITATION_VALIDITY_DURATION = 60
+    with freeze_time("1985-10-30"):
+        expired_invitation = factories.DomainInvitationFactory(email=email) 
 
     # another person invited to domain2
     other_invitation = factories.DomainInvitationFactory(
@@ -85,7 +84,7 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
                     status=status.HTTP_201_CREATED,
                     content_type="application/json",
                 )
-        new_user = core_factories.UserFactory.create(email=email)
+    new_user = core_factories.UserFactory.create(email=email)
 
     assert models.MailDomainAccess.objects.filter(
         domain=invitation_to_domain1.domain, user=new_user
