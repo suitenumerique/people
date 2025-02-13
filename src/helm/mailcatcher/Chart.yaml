@@ -1,5 +1,0 @@
-apiVersion: v2
-name: mailcatcher
-description: A simple SMTP server with a web interface for testing email in development
-version: 1.0.0
-type: application
