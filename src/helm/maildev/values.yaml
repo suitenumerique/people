@@ -1,0 +1,40 @@
+image:
+  repository: maildev/maildev
+  tag: "2.2.1"
+  pullPolicy: IfNotPresent
+
+ports:
+  # MAILDEV_SMTP_PORT
+  smtp: 1025
+  # MAILDEV_WEB_PORT
+  web: 1080
+
+# MAILDEV_HTTPS
+https:
+  enabled:
+  # MAILDEV_HTTPS_KEY
+  # key:
+  # MAILDEV_HTTPS_KEY
+  # cert:
+
+# Web interface
+web:
+  # MAILDEV_DISABLE_WEB
+  disable: false
+  # MAILDEV_WEB_USER
+  user:
+  # MAILDEV_WEB_PASS
+  pass:
+
+incoming:
+  # MAILDEV_INCOMING_USER
+  # user:
+  # MAILDEV_INCOMING_PASS
+  # pass:
+
+ingress:
+  enabled: false
+  host: ""
+  path: /
+
+resources:

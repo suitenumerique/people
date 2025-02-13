@@ -29,7 +29,7 @@ backend:
     DJANGO_SETTINGS_MODULE: people.settings
     DJANGO_SUPERUSER_EMAIL: admin@example.com
     DJANGO_SUPERUSER_PASSWORD: admin
-    DJANGO_EMAIL_HOST: "mailcatcher"
+    DJANGO_EMAIL_HOST: "maildev"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
     OIDC_OP_JWKS_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/jwks
@@ -107,12 +107,3 @@ ingress:
 ingressAdmin:
   enabled: true
   host: desk.127.0.0.1.nip.io
-
-mailcatcher:
-  image:
-    repository: sj26/mailcatcher
-    tag: latest
-    pullPolicy: Always
-  ingress:
-    enabled: true
-    host: mailcatcher.127.0.0.1.nip.io

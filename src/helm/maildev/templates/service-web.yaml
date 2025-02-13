@@ -1,0 +1,17 @@
+{{- if .Values.ports.web }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: maildev-web
+  labels:
+    app: maildev
+spec:
+  type: ClusterIP
+  ports:
+    - name: web-{{ .Values.ports.web }}-tcp
+      port: {{ .Values.ports.web }}
+      protocol: TCP
+      targetPort: {{ .Values.ports.web }}
+  selector:
+    app: maildev
+{{- end }}
