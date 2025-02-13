@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maildev
+  labels:
+    app: maildev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maildev
+  template:
+    metadata:
+      labels:
+        app: maildev
+    spec:
+      containers:
+        - name: maildev
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - name: smtp-port
+            containerPort: {{ .Values.ports.smtp }}
+            protocol: TCP
+          - name: web-port
+            containerPort: {{ .Values.ports.web }}
+            protocol: TCP
+          env:
+          {{- if or .Values.web.user .Values.web.pass}}
+          - name: MAILDEV_WEB_USER
+            value: "{{ .Values.web.user }}"
+          - name: MAILDEV_WEB_PASS
+            value: "{{ .Values.web.pass }}"
+          {{- end }}
+          - name: MAILDEV_SMTP_PORT
+            value: "{{ .Values.ports.smtp }}"
+          - name: MAILDEV_WEB_PORT
+            value: "{{ .Values.ports.web }}"
+          - name: MAILDEV_HTTPS
+            value: "{{ .Values.https.enabled }}"
+          {{- if .Values.https.key }}
+          - name: MAILDEV_HTTPS_KEY
+            value: "{{ .Values.https.key }}"
+          {{- end }}
+          {{- if .Values.https.cert }}
+          - name: MAILDEV_HTTPS_CERT
+            value:  "{{ .Values.https.cert }}"
+          {{- end }}
+          {{- if .Values.incoming }}
+          - name: MAILDEV_INCOMING_USER
+            value: "{{ .Values.incoming.user }}"
+          - name: MAILDEV_INCOMING_PASS
+            value:  "{{ .Values.incoming.pass }}"
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.ports.web }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.ports.web }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

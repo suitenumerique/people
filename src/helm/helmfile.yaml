@@ -100,10 +100,10 @@ releases:
     values:
       - env.d/{{ .Environment.Name }}/values.desk.yaml.gotmpl
 
-  - name: mailcatcher
+  - name: maildev
     installed: {{ regexMatch "^dev.*" .Environment.Name | toYaml }}
     missingFileHandler: Warn
     namespace: {{ .Namespace }}
-    chart: ./mailcatcher
+    chart: ./maildev
     values:
-      - env.d/{{ .Environment.Name }}/values.desk.yaml.gotmpl
+      - env.d/values.maildev.yaml.gotmpl

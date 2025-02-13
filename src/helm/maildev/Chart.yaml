@@ -1,0 +1,5 @@
+apiVersion: v2
+name: maildev
+description: SMTP Server + Web Interface for viewing and testing emails during development.
+version: 1.0.0
+type: application
