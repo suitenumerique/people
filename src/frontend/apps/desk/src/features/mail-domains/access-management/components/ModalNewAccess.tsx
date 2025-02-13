@@ -16,9 +16,10 @@ import { OptionsSelect, SearchMembers } from './SearchMembers';
 import { MailDomain, Role } from '../../domains';
 import { Access } from '../types';
 
-import { ChooseRoleNewAccess } from './ChooseRoleNewAccess';
+import { ChooseRole } from './ChooseRole';
 
 interface ModalNewAccessProps {
+  access: Access;
   mailDomain: MailDomain;
   currentRole: Role;
   onClose: () => void;
@@ -37,12 +38,14 @@ export const ModalNewAccess = ({
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const [selectedMembers, setSelectedMembers] = useState<OptionsSelect>([]);
-  const [role, setRole] = useState<Role>(Role.VIEWER);
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [role, setRole] = useState<Role>(Role.VIEWER);
 
   const createInvitation = useCreateInvitation();
 
   const { mutateAsync: postMailDomainAccess} = usePostMailDomainAccess();
+  console.log(currentRole);
+  const setAvailableRole = [];
 
   const onSuccess = (option: OptionSelect) => {
     const message = !option.user
@@ -59,10 +62,10 @@ export const ModalNewAccess = ({
   const onError = (dataError: APIErrorMember['data']) => {
     const messageError =
       dataError?.type === OptionType.INVITATION
-        ? t(`Failed to create the invitation for {{email}}`, {
+        ? t(`Failed to create the invitation`, {
             email: dataError?.value,
           })
-        : t(`Failed to added access to {{name}}`, {
+        : t(`Failed to added access`, {
             name: dataError?.value,
           });
 
@@ -142,10 +145,11 @@ export const ModalNewAccess = ({
             <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
               {t('Choose a role')}
             </Text>
-            <ChooseRoleNewAccess 
+            <ChooseRole 
               defaultRole={Role.VIEWER} 
-              disabled={false} 
-              currentRole={Role.ADMIN} 
+              disabled={false}
+              availableRoles={[Role.VIEWER, Role.ADMIN, Role.OWNER]}
+              currentRole={currentRole} 
               setRole={setRole} 
             />
           </Box>
