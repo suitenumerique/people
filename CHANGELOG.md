@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🌐(backend) synchronize translations with crowdin again
+
 ## [1.12.1] - 2025-02-20
 
 ### Fixed

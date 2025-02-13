@@ -1,21 +1,21 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 07:41+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2025-02-18 08:15+0000\n"
+"PO-Revision-Date: 2025-02-18 08:22\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: lasuite-people\n"
+"X-Crowdin-Project-ID: 637934\n"
+"X-Crowdin-Language: en\n"
+"X-Crowdin-File: backend.pot\n"
+"X-Crowdin-File-ID: 2\n"
 
 #: core/admin.py:63
 msgid "Personal info"
@@ -171,9 +171,7 @@ msgid "An organization must have at least a registration ID or a domain."
 msgstr ""
 
 #: core/models.py:445
-msgid ""
-"Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/"
-"_ characters."
+msgid "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/_ characters."
 msgstr ""
 
 #: core/models.py:451
@@ -181,9 +179,7 @@ msgid "sub"
 msgstr ""
 
 #: core/models.py:453
-msgid ""
-"Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ "
-"characters only."
+msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
 msgstr ""
 
 #: core/models.py:459 core/models.py:901
@@ -223,9 +219,7 @@ msgid "active"
 msgstr ""
 
 #: core/models.py:488
-msgid ""
-"Whether this user should be treated as active. Unselect this instead of "
-"deleting accounts."
+msgid "Whether this user should be treated as active. Unselect this instead of deleting accounts."
 msgstr ""
 
 #: core/models.py:507
@@ -319,8 +313,7 @@ msgstr ""
 
 #: core/templates/mail/html/hello.html:221
 #, python-format
-msgid ""
-"This mail has been sent to %(email)s by <a href=\"%(href)s\">%(name)s</a>"
+msgid "This mail has been sent to %(email)s by <a href=\"%(href)s\">%(name)s</a>"
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:160
@@ -345,17 +338,12 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:226
 #: core/templates/mail/text/invitation.txt:14
-msgid ""
-"We are delighted to welcome you to our community on La Régie, your new "
-"companion to simplify the management of your groups efficiently, "
-"intuitively, and securely."
+msgid "We are delighted to welcome you to our community on La Régie, your new companion to simplify the management of your groups efficiently, intuitively, and securely."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:231
 #: core/templates/mail/text/invitation.txt:15
-msgid ""
-"Our application is designed to help you organize, collaborate, and manage "
-"permissions."
+msgid "Our application is designed to help you organize, collaborate, and manage permissions."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:236
@@ -375,9 +363,7 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:239
 #: core/templates/mail/text/invitation.txt:19
-msgid ""
-"Plan events, meetings, or activities effortlessly with our integrated "
-"calendar."
+msgid "Plan events, meetings, or activities effortlessly with our integrated calendar."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:240
@@ -387,9 +373,7 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:241
 #: core/templates/mail/text/invitation.txt:21
-msgid ""
-"Facilitate exchanges and communication with our messaging and group "
-"discussion tools."
+msgid "Facilitate exchanges and communication with our messaging and group discussion tools."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:252
@@ -399,24 +383,17 @@ msgstr ""
 
 #: core/templates/mail/html/invitation.html:261
 #: core/templates/mail/text/invitation.txt:25
-msgid ""
-"We are confident that La Régie will help you increase efficiency and "
-"productivity while strengthening the bond among members."
+msgid "We are confident that La Régie will help you increase efficiency and productivity while strengthening the bond among members."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:266
 #: core/templates/mail/text/invitation.txt:26
-msgid ""
-"Feel free to explore all the features of the application and share your "
-"feedback and suggestions with us. Your feedback is valuable to us and will "
-"enable us to continually improve our service."
+msgid "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:271
 #: core/templates/mail/text/invitation.txt:27
-msgid ""
-"Once again, welcome aboard! We are eager to accompany you on this group "
-"management adventure."
+msgid "Once again, welcome aboard! We are eager to accompany you on this group management adventure."
 msgstr ""
 
 #: core/templates/mail/html/invitation.html:278
@@ -496,8 +473,7 @@ msgid "Synchronisation succeed for {domain.name}. "
 msgstr ""
 
 #: mailbox_manager/admin.py:48
-msgid ""
-"Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
+msgid "Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
 msgstr ""
 
 #: mailbox_manager/admin.py:53
@@ -527,6 +503,24 @@ msgstr ""
 
 #: mailbox_manager/admin.py:99
 msgid "Domains disabled are excluded from check: {', '.join(excluded_domains)}"
+msgstr ""
+
+#: mailbox_manager/admin.py:104
+msgid "Fetch domain expected config from dimail"
+msgstr ""
+
+#: mailbox_manager/admin.py:118
+#, python-brace-format
+msgid "Domain expected config fetched with success for {domain.name}."
+msgstr ""
+
+#: mailbox_manager/admin.py:122
+#, python-brace-format
+msgid "Failed to fetch domain expected config for {domain.name}."
+msgstr ""
+
+#: mailbox_manager/admin.py:128
+msgid "Domains disabled are excluded from fetch: {', '.join(excluded_domains)}"
 msgstr ""
 
 #: mailbox_manager/enums.py:13
@@ -562,38 +556,46 @@ msgid "A JSON object containing the last health check details"
 msgstr ""
 
 #: mailbox_manager/models.py:42
-msgid "Mail domain"
+msgid "expected config"
 msgstr ""
 
 #: mailbox_manager/models.py:43
+msgid "A JSON object containing the expected config"
+msgstr ""
+
+#: mailbox_manager/models.py:48
+msgid "Mail domain"
+msgstr ""
+
+#: mailbox_manager/models.py:49
 msgid "Mail domains"
 msgstr ""
 
-#: mailbox_manager/models.py:110
+#: mailbox_manager/models.py:116
 msgid "User/mail domain relation"
 msgstr ""
 
-#: mailbox_manager/models.py:111
+#: mailbox_manager/models.py:117
 msgid "User/mail domain relations"
 msgstr ""
 
-#: mailbox_manager/models.py:184
+#: mailbox_manager/models.py:190
 msgid "local_part"
 msgstr ""
 
-#: mailbox_manager/models.py:198
+#: mailbox_manager/models.py:204
 msgid "secondary email address"
 msgstr ""
 
-#: mailbox_manager/models.py:208
+#: mailbox_manager/models.py:214
 msgid "Mailbox"
 msgstr ""
 
-#: mailbox_manager/models.py:209
+#: mailbox_manager/models.py:215
 msgid "Mailboxes"
 msgstr ""
 
-#: mailbox_manager/models.py:234
+#: mailbox_manager/models.py:240
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
 
@@ -608,3 +610,4 @@ msgstr ""
 #: people/settings.py:147
 msgid "French"
 msgstr ""
+
