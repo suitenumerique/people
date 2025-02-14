@@ -76,7 +76,10 @@ class Base(Configuration):
     """
 
     DEBUG = False
-    USE_SWAGGER = False
+    USE_SWAGGER = values.BooleanValue(
+        default=False,
+        environ_name="USE_SWAGGER",
+    )
 
     API_VERSION = "v1.0"
 
@@ -650,8 +653,6 @@ class Development(Base):
     DEBUG = True
 
     SESSION_COOKIE_NAME = "people_sessionid"
-
-    USE_SWAGGER = True
 
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
