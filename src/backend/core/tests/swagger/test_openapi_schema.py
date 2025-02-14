@@ -16,6 +16,7 @@ pytestmark = pytest.mark.django_db
 def test_openapi_client_schema():
     """
     Generated and served OpenAPI client schema should be correct.
+    The spectacular command reloads test env.
     """
     # Start by generating the swagger.json file
     output = StringIO()
