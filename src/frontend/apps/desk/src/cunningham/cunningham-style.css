@@ -327,7 +327,7 @@ input:-webkit-autofill:focus {
   outline: var(--c--theme--colors--primary-600) solid 2px;
 }
 
-.c__radio input:before {
+.c__radio input::before {
   box-shadow: inset 1em 1em var(--c--theme--colors--primary-600);
 }
 
