@@ -35,7 +35,7 @@ export const SearchMembers = ({
     mailDomain: mailDomain.slug,
   });
 
-  const options = data?.results;
+  const options = data;
 
   useEffect(() => {
     if (!resolveOptionsRef.current || !options) {

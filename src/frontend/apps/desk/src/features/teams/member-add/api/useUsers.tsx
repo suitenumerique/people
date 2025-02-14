@@ -25,7 +25,7 @@ export const getUsers = async ({
   if (!response.ok) {
     throw new APIError('Failed to get the users', await errorCauses(response));
   }
-
+  console.log(response);
   return response.json() as Promise<UsersResponse>;
 };
 

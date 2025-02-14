@@ -11,17 +11,17 @@ import { Access } from '../types';
 
 import { KEY_LIST_MAIL_DOMAIN_ACCESSES } from './useMailDomainAccesses';
 
-interface PostMailDomainAccessProps {
+interface CreateMailDomainAccessProps {
   slug: string;
   user: string;
   role: Role;
 }
 
-export const postMailDomainAccess = async ({
+export const createMailDomainAccess = async ({
   slug,
   user,
   role,
-}: PostMailDomainAccessProps): Promise<Access> => {
+}: CreateMailDomainAccessProps): Promise<Access> => {
   const response = await fetchAPI(`mail-domains/${slug}/accesses/`, {
     method: 'POST',
     body: JSON.stringify({ user, role }),
@@ -34,19 +34,19 @@ export const postMailDomainAccess = async ({
   return response.json() as Promise<Access>;
 };
 
-type UsePostMailDomainAccessOptions = UseMutationOptions<
+type UseCreateMailDomainAccessOptions = UseMutationOptions<
   Access,
   APIError,
-  PostMailDomainAccessProps
+  CreateMailDomainAccessProps
 >;
 
-export const usePostMailDomainAccess = (
-  options?: UsePostMailDomainAccessOptions,
+export const useCreateMailDomainAccess = (
+  options?: UseCreateMailDomainAccessOptions,
 ) => {
   const queryClient = useQueryClient();
 
-  return useMutation<Access, APIError, PostMailDomainAccessProps>({
-    mutationFn: postMailDomainAccess,
+  return useMutation<Access, APIError, CreateMailDomainAccessProps>({
+    mutationFn: createMailDomainAccess,
     ...options,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({

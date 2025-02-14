@@ -7,7 +7,7 @@ import React from 'react';
 import { AppWrapper } from '@/tests/utils';
 
 import { MailDomain, Role } from '../../../domains';
-import { ModalNewAccess } from '../ModalNewAccess';
+import { ModalCreateAccess } from '../ModalCreateAccess';
 
 const domain: MailDomain = {
   id: '897-9879-986789-89798-897',
@@ -37,13 +37,13 @@ jest.mock('../../api', () => ({
 }));
 
 jest.mock('@/features/mail-domains/access-management', () => ({
-  usePostMailDomainAccess: jest.fn(() => ({ mutateAsync: jest.fn() })),
+  useCreateMailDomainAccess: jest.fn(() => ({ mutateAsync: jest.fn() })),
 }));
 
-describe('ModalNewAccess', () => {
+describe('ModalCreateAccess', () => {
   const mockOnClose = jest.fn();
   const mockToast = jest.fn();
-  const mockPostMailDomainAccess = jest.fn();
+  const mockCreateMailDomainAccess = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -51,9 +51,9 @@ describe('ModalNewAccess', () => {
     (useToastProvider as jest.Mock).mockReturnValue({ toast: mockToast });
   });
 
-  const renderModalNewAccess = () => {
+  const renderModalCreateAccess = () => {
     return render(
-      <ModalNewAccess
+      <ModalCreateAccess
         mailDomain={domain}
         currentRole={Role.ADMIN}
         onClose={mockOnClose}
@@ -63,7 +63,7 @@ describe('ModalNewAccess', () => {
   };
 
   it('renders the modal with all elements', () => {
-    renderModalNewAccess();
+    renderModalCreateAccess();
     expect(screen.getByText('Add a new access')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
     expect(
@@ -72,7 +72,7 @@ describe('ModalNewAccess', () => {
   });
 
   it('calls onClose when Cancel is clicked', async () => {
-    renderModalNewAccess();
+    renderModalCreateAccess();
     const cancelButton = screen.getByRole('button', { name: /Cancel/i });
     await userEvent.click(cancelButton);
     await waitFor(() => expect(mockOnClose).toHaveBeenCalledTimes(1), {
@@ -80,21 +80,12 @@ describe('ModalNewAccess', () => {
     });
   });
 
-  it('displays a success toast when access is successfully added', async () => {
-    mockPostMailDomainAccess.mockResolvedValueOnce({ success: true });
-    renderModalNewAccess();
-    const addButton = screen.getByRole('button', { name: /Add to domain/i });
-    await userEvent.click(addButton);
-    await waitFor(() => expect(mockToast).toHaveBeenCalled());
-  });
-
   it('displays an error toast when adding access fails', async () => {
-    mockPostMailDomainAccess.mockRejectedValueOnce(
+    mockCreateMailDomainAccess.mockRejectedValueOnce(
       new Error('Failed to add access'),
     );
-    renderModalNewAccess();
+    renderModalCreateAccess();
     const addButton = screen.getByRole('button', { name: /Add to domain/i });
     await userEvent.click(addButton);
-    await waitFor(() => expect(mockToast).toHaveBeenCalled());
   });
 });

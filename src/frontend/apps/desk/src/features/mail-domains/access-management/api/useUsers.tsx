@@ -17,10 +17,8 @@ export const getUsers = async ({
 }: UsersParams): Promise<UsersResponse> => {
   const queriesParams = [];
   queriesParams.push(query ? `q=${query}` : '');
-  queriesParams.push(mailDomain ? `domain_slug=${mailDomain}` : '');
-  const queryParams = queriesParams.filter(Boolean).join('&');
 
-  const response = await fetchAPI(`users/?${queryParams}`);
+  const response = await fetchAPI(`mail-domains/${mailDomain}/accesses/users/?${queriesParams}`);
 
   if (!response.ok) {
     throw new APIError('Failed to get the users', await errorCauses(response));

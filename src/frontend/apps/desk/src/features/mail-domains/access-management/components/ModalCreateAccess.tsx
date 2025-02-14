@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
-import { usePostMailDomainAccess } from '@/features/mail-domains/access-management';
+import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
 import {
   OptionSelect,
   OptionType,
@@ -23,7 +23,7 @@ import { useCreateInvitation } from '../api';
 import { ChooseRole } from './ChooseRole';
 import { OptionsSelect, SearchMembers } from './SearchMembers';
 
-interface ModalNewAccessProps {
+interface ModalCreateAccessProps {
   mailDomain: MailDomain;
   currentRole: Role;
   onClose: () => void;
@@ -34,18 +34,18 @@ type APIErrorMember = APIError<{
   type: OptionType;
 }>;
 
-export const ModalNewAccess = ({
+export const ModalCreateAccess = ({
   mailDomain,
   currentRole,
   onClose,
-}: ModalNewAccessProps) => {
+}: ModalCreateAccessProps) => {
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const [selectedMembers, setSelectedMembers] = useState<OptionsSelect>([]);
   const [role, setRole] = useState<Role>(Role.VIEWER);
 
   const createInvitation = useCreateInvitation();
-  const { mutateAsync: postMailDomainAccess } = usePostMailDomainAccess();
+  const { mutateAsync: createMailDomainAccess } = useCreateMailDomainAccess();
 
   const onSuccess = (option: OptionSelect) => {
     const message = !isOptionNewMember(option)
@@ -79,7 +79,7 @@ export const ModalNewAccess = ({
           break;
 
         default:
-          await postMailDomainAccess({
+          await createMailDomainAccess({
             slug: mailDomain.slug,
             user: selectedMember.value.id,
             role,

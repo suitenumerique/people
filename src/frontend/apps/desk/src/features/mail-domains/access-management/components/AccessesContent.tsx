@@ -7,7 +7,7 @@ import { AccessesGrid } from '@/features/mail-domains/access-management/componen
 
 import { MailDomain, Role } from '../../domains';
 
-import { ModalNewAccess } from './ModalNewAccess';
+import { ModalCreateAccess } from './ModalCreateAccess';
 
 export const AccessesContent = ({
   mailDomain,
@@ -18,7 +18,6 @@ export const AccessesContent = ({
 }) => {
   const { t } = useTranslation();
 
-  console.log(currentRole);
   const [isModalAccessOpen, setIsModalAccessOpen] = useState(false);
 
   return (
@@ -46,7 +45,7 @@ export const AccessesContent = ({
       </Box>
       <AccessesGrid mailDomain={mailDomain} currentRole={currentRole} />
       {isModalAccessOpen && mailDomain && (
-        <ModalNewAccess
+        <ModalCreateAccess
           mailDomain={mailDomain}
           currentRole={currentRole}
           onClose={() => setIsModalAccessOpen(false)}
