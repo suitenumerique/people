@@ -28,7 +28,7 @@ def test_models_domain_invitations_readonly_after_create():
         invitation.save()
 
 
-def test_models_domain_invitations__is_expired(settings):
+def test_models_domain_invitations__is_expired():
     """
     The 'is_expired' property should return False until validity duration
     is exceeded and True afterwards.
@@ -56,13 +56,14 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
 
     # an expired invitation that should not be converted
     with freeze_time("1985-10-30"):
-        expired_invitation = factories.DomainInvitationFactory(email=email) 
+        expired_invitation = factories.DomainInvitationFactory(email=email)
 
     # another person invited to domain2
     other_invitation = factories.DomainInvitationFactory(
         domain=invitation_to_domain2.domain
     )
 
+    new_user = core_factories.UserFactory.build(email=email)
     with responses.RequestsMock() as rsps:
         rsps.add(
             rsps.POST,
@@ -71,20 +72,16 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
             status=status.HTTP_201_CREATED,
             content_type="application/json",
         )
-        for invitation in [
-            invitation_to_domain1,
-            invitation_to_domain2,
-            expired_invitation,
-        ]:
-            if invitation.role != enums.MailDomainRoleChoices.VIEWER:
-                rsps.add(
-                    rsps.POST,
-                    re.compile(r".*/allows/"),
-                    body=dimail.response_allows_created("sub", invitation.domain.name),
-                    status=status.HTTP_201_CREATED,
-                    content_type="application/json",
-                )
-    new_user = core_factories.UserFactory.create(email=email)
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/allows/"),
+            body=dimail.response_allows_created(
+                "sub", invitation_to_domain1.domain.name
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+        new_user = core_factories.UserFactory(email=email)
 
     assert models.MailDomainAccess.objects.filter(
         domain=invitation_to_domain1.domain, user=new_user
@@ -99,8 +96,8 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
         domain=invitation_to_domain2.domain, email=email
     ).exists()  # invitation "consumed"
     assert models.DomainInvitation.objects.filter(
+        domain=expired_invitation.domain, email=email
+    ).exists()  # expired invitation remains
+    assert models.DomainInvitation.objects.filter(
         domain=invitation_to_domain2.domain, email=other_invitation.email
     ).exists()  # the other invitation remains
-    assert models.DomainInvitation.objects.filter(
-        domain=expired_invitation.domain, email=other_invitation.email
-    ).exists()  # expired invitation remains

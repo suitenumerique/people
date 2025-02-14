@@ -1,7 +1,7 @@
 """
 Declare and configure the models for the People core application
 """
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines import-outside-toplevel
 
 import json
 import os
@@ -38,9 +38,6 @@ from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
 
 from mailbox_manager import enums
-
-# from mailbox_manager.utils.dimail import DimailAPIClient
-
 
 logger = getLogger(__name__)
 
@@ -563,7 +560,9 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         Convert valid domain invitations to domain accesses.
         Expired invitations are ignored.
         """
-        from mailbox_manager.models import DomainInvitation, MailDomainAccess # noqa C0415
+
+        from mailbox_manager.models import DomainInvitation, MailDomainAccess
+        from mailbox_manager.utils.dimail import DimailAPIClient
 
         valid_domain_invitations = DomainInvitation.objects.filter(
             email=self.email,
@@ -593,7 +592,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             # Sync with dimail
             dimail = DimailAPIClient()
             dimail.create_user(self.sub)
-            import pdb; pdb.set_trace()
 
             for invitation in valid_domain_invitations:
                 if invitation.role in [
