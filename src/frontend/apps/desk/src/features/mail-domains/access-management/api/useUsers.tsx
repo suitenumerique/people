@@ -2,11 +2,11 @@ import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
-import { Team } from '@/features/teams/team-management';
+import { MailDomain } from '@/features/mail-domains/domains/types';
 
 export type UsersParams = {
   query: string;
-  teamId: Team['id'];
+  mailDomain: MailDomain['slug'];
 };
 
 type UsersResponse = APIList<User>;
@@ -17,7 +17,7 @@ export const getUsers = async ({
 }: UsersParams): Promise<UsersResponse> => {
   const queriesParams = [];
   queriesParams.push(query ? `q=${query}` : '');
-  queriesParams.push(mailDomain ? `domain_slug=${mailDomain.slug}` : '');
+  queriesParams.push(mailDomain ? `domain_slug=${mailDomain}` : '');
   const queryParams = queriesParams.filter(Boolean).join('&');
 
   const response = await fetchAPI(`users/?${queryParams}`);

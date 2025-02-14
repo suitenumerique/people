@@ -29,7 +29,6 @@ export const ModalRole = ({
   onClose,
   slug,
 }: ModalRoleProps) => {
-
   const { t } = useTranslation();
   const [localRole, setLocalRole] = useState(access.role);
   const { toast } = useToastProvider();

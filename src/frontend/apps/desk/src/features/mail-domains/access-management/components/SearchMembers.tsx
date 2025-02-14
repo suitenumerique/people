@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Options } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
-import { MailDomain } from '@/features/mail-domains/';
+import { MailDomain } from '@/features/mail-domains/domains/types';
+import { OptionSelect, OptionType } from '@/features/teams/member-add/types';
 import { isValidEmail } from '@/utils';
 
-import { KEY_LIST_USER, useUsers } from '../api/useUsers';
-import { OptionSelect, OptionType } from '@/features/teams/member-add/types';
+import { useUsers } from '../api/useUsers';
 
 export type OptionsSelect = Options<OptionSelect>;
 
@@ -30,9 +30,10 @@ export const SearchMembers = ({
   const resolveOptionsRef = useRef<((value: OptionsSelect) => void) | null>(
     null,
   );
-  const { data } = useUsers(
-    { query: userQuery, mailDomain: mailDomain }
-  );
+  const { data } = useUsers({
+    query: userQuery,
+    mailDomain: mailDomain.slug,
+  });
 
   const options = data?.results;
 
@@ -105,7 +106,10 @@ export const SearchMembers = ({
       defaultOptions={[]}
       onInputChange={onInputChangeHandle}
       inputValue={input}
-      placeholder={t('Search for members to assign them a role (name or email)')}
+      placeholder={t(
+        'Search for members to assign them a role (name or email)',
+        {},
+      )}
       noOptionsMessage={() =>
         t('Invite new members with roles', { name: mailDomain.name })
       }

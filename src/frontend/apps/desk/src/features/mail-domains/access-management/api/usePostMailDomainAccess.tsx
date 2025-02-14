@@ -8,6 +8,7 @@ import { APIError, errorCauses, fetchAPI } from '@/api';
 import { KEY_MAIL_DOMAIN, Role } from '@/features/mail-domains/domains';
 
 import { Access } from '../types';
+
 import { KEY_LIST_MAIL_DOMAIN_ACCESSES } from './useMailDomainAccesses';
 
 interface PostMailDomainAccessProps {
@@ -39,14 +40,18 @@ type UsePostMailDomainAccessOptions = UseMutationOptions<
   PostMailDomainAccessProps
 >;
 
-export const usePostMailDomainAccess = (options?: UsePostMailDomainAccessOptions) => {
+export const usePostMailDomainAccess = (
+  options?: UsePostMailDomainAccessOptions,
+) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<Access, APIError, PostMailDomainAccessProps>({
     mutationFn: postMailDomainAccess,
     ...options,
     onSuccess: (data, variables, context) => {
-      void queryClient.invalidateQueries({ queryKey: [KEY_LIST_MAIL_DOMAIN_ACCESSES] });
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_MAIL_DOMAIN_ACCESSES],
+      });
       void queryClient.invalidateQueries({ queryKey: [KEY_MAIL_DOMAIN] });
       options?.onSuccess?.(data, variables, context);
     },

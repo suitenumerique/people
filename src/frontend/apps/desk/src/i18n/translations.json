@@ -84,7 +84,7 @@
       "Enable mailbox": "Activer la boîte mail",
       "Enter the new name of the selected team": "Entrez le nouveau nom du groupe sélectionné",
       "Example: saint-laurent.fr": "Exemple : saint-laurent.fr",
-      "Failed to added access to {{name}}": "Impossible d'ajouter les accès à {{name}}",
+      "Failed to add access": "Impossible d'ajouter les accès",
       "Failed to add {{name}} in the team": "Impossible d'ajouter {{name}} au groupe",
       "Failed to create the invitation for {{email}}": "Impossible de créer l'invitation pour {{email}}",
       "Failed to update mailbox status": "Impossible de mettre à jour le statut de la boîte mail",

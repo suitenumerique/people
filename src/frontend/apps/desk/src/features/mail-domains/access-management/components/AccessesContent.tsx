@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
 import { Button } from '@openfun/cunningham-react';
-import { AccessesGrid } from '@/features/mail-domains/access-management/components/AccessesGrid';
-import { Box } from '@/components';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Box } from '@/components';
+import { AccessesGrid } from '@/features/mail-domains/access-management/components/AccessesGrid';
+
 import { MailDomain, Role } from '../../domains';
+
 import { ModalNewAccess } from './ModalNewAccess';
 
 export const AccessesContent = ({
@@ -19,12 +21,9 @@ export const AccessesContent = ({
   console.log(currentRole);
   const [isModalAccessOpen, setIsModalAccessOpen] = useState(false);
 
-  const access = {
-    'role': Role.MEMBER,
-  }
   return (
     <>
-    <Box
+      <Box
         $direction="row"
         $justify="flex-end"
         $margin={{ bottom: 'small' }}
@@ -45,14 +44,14 @@ export const AccessesContent = ({
           )}
         </Box>
       </Box>
-       <AccessesGrid mailDomain={mailDomain} currentRole={currentRole} />
-        {isModalAccessOpen &&
-        mailDomain && (
+      <AccessesGrid mailDomain={mailDomain} currentRole={currentRole} />
+      {isModalAccessOpen && mailDomain && (
         <ModalNewAccess
           mailDomain={mailDomain}
           currentRole={currentRole}
           onClose={() => setIsModalAccessOpen(false)}
         />
-        )}
-       </>
-   )};
+      )}
+    </>
+  );
+};

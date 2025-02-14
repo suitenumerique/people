@@ -7,28 +7,32 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, TextErrors, Text } from '@/components';
+import { APIError } from '@/api';
+import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
 import { usePostMailDomainAccess } from '@/features/mail-domains/access-management';
-import { useCreateInvitation } from '../api';
-import { OptionsSelect, SearchMembers } from './SearchMembers';
+import {
+  OptionSelect,
+  OptionType,
+  isOptionNewMember,
+} from '@/features/teams/member-add/types';
 
 import { MailDomain, Role } from '../../domains';
-import { Access } from '../types';
+import { useCreateInvitation } from '../api';
 
 import { ChooseRole } from './ChooseRole';
+import { OptionsSelect, SearchMembers } from './SearchMembers';
 
 interface ModalNewAccessProps {
-  access: Access;
   mailDomain: MailDomain;
   currentRole: Role;
   onClose: () => void;
 }
 
-export enum OptionType {
-  INVITATION = 'invitation',
-  NEW_MEMBER = 'new_member',
-}
+type APIErrorMember = APIError<{
+  value: string;
+  type: OptionType;
+}>;
 
 export const ModalNewAccess = ({
   mailDomain,
@@ -38,22 +42,18 @@ export const ModalNewAccess = ({
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const [selectedMembers, setSelectedMembers] = useState<OptionsSelect>([]);
-  const [isPending, setIsPending] = useState<boolean>(false);
   const [role, setRole] = useState<Role>(Role.VIEWER);
 
   const createInvitation = useCreateInvitation();
-
-  const { mutateAsync: postMailDomainAccess} = usePostMailDomainAccess();
-  console.log(currentRole);
-  const setAvailableRole = [];
+  const { mutateAsync: postMailDomainAccess } = usePostMailDomainAccess();
 
   const onSuccess = (option: OptionSelect) => {
-    const message = !option.user
+    const message = !isOptionNewMember(option)
       ? t('Invitation sent to {{email}}', {
           email: option.value.email,
         })
       : t('Access added to {{name}}', {
-          name: option.user.name,
+          name: option.value.name,
         });
 
     toast(message, VariantType.SUCCESS);
@@ -62,32 +62,38 @@ export const ModalNewAccess = ({
   const onError = (dataError: APIErrorMember['data']) => {
     const messageError =
       dataError?.type === OptionType.INVITATION
-        ? t(`Failed to create the invitation`, {
-            email: dataError?.value,
-          })
-        : t(`Failed to added access`, {
-            name: dataError?.value,
-          });
-
+        ? t('Failed to create the invitation')
+        : t('Failed to add access');
     toast(messageError, VariantType.ERROR);
   };
 
-  const switchActions = (members: OptionsSelect) => {
-    return members.map((member) => {
-      if (member.type === OptionType.INVITATION) {
-        return createInvitation.mutateAsync({ email: member.value.email, mailDomainSlug: mailDomain.slug, role: role });
-      } else {
-        return postMailDomainAccess({
-          slug: mailDomain.slug,
-          user: member.value.id,
-          role: role
-        });
+  const switchActions = (selectedMembers: OptionsSelect) =>
+    selectedMembers.map(async (selectedMember) => {
+      switch (selectedMember.type) {
+        case OptionType.INVITATION:
+          await createInvitation.mutateAsync({
+            email: selectedMember.value.email,
+            mailDomainSlug: mailDomain.slug,
+            role,
+          });
+          break;
+
+        default:
+          await postMailDomainAccess({
+            slug: mailDomain.slug,
+            user: selectedMember.value.id,
+            role,
+          });
+          break;
       }
+
+      return selectedMember;
     });
-  };
 
   const handleValidate = async () => {
-    const settledPromises = await Promise.allSettled(switchActions(selectedMembers));
+    const settledPromises = await Promise.allSettled(
+      switchActions(selectedMembers),
+    );
 
     onClose();
 
@@ -119,7 +125,7 @@ export const ModalNewAccess = ({
         <Button
           color="primary"
           fullWidth
-          disabled={!selectedMembers.length || isPending}
+          disabled={!selectedMembers.length}
           onClick={() => void handleValidate()}
         >
           {t('Add to domain')}
@@ -145,12 +151,12 @@ export const ModalNewAccess = ({
             <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
               {t('Choose a role')}
             </Text>
-            <ChooseRole 
-              defaultRole={Role.VIEWER} 
+            <ChooseRole
+              roleAccess={currentRole}
               disabled={false}
               availableRoles={[Role.VIEWER, Role.ADMIN, Role.OWNER]}
-              currentRole={currentRole} 
-              setRole={setRole} 
+              currentRole={currentRole}
+              setRole={setRole}
             />
           </Box>
         )}
