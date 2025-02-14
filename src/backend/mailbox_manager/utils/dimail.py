@@ -210,6 +210,7 @@ class DimailAPIClient:
                 verify=True,
                 timeout=10,
             )
+
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",

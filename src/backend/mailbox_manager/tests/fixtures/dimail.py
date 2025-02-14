@@ -3,6 +3,21 @@
 
 import json
 
+## USERS
+
+
+def response_user_created(user_sub):
+    """mimic dimail response upon succesfull user creation."""
+    return json.dumps(
+        {
+            "name": user_sub,
+            "is_admin": "false",
+            "uuid": "user-uuid-on-dimail",
+            "perms": [],
+        }
+    )
+
+
 ## DOMAINS
 
 CHECK_DOMAIN_BROKEN = {
@@ -254,6 +269,15 @@ CHECK_DOMAIN_OK = {
     "ox": {"ok": True, "internal": True, "errors": []},
     "cert": {"ok": True, "internal": True, "errors": []},
 }
+
+## ALLOWS
+
+
+def response_allows_created(user_name, domain_name):
+    """mimic dimail response upon succesfull allows creation.
+    Dimail expects a name but our names are ProConnect's uuids."""
+    return json.dumps({"user": user_name, "domain": domain_name})
+
 
 ## TOKEN
 
