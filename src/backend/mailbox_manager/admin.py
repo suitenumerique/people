@@ -101,6 +101,35 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
         )
 
 
+@admin.action(description=_("Fetch domain expected config from dimail"))
+def fetch_domain_expected_config_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    """Admin action to fetch domain expected config from dimail."""
+    client = DimailAPIClient()
+    excluded_domains = []
+    for domain in queryset:
+        # do not check disabled domains
+        if domain.status == enums.MailDomainStatusChoices.DISABLED:
+            excluded_domains.append(domain.name)
+            continue
+        response = client.fetch_domain_expected_config(domain)
+        if response:
+            messages.success(
+                request,
+                _(f"Domain expected config fetched with success for {domain.name}."),
+            )
+        else:
+            messages.error(
+                request, _(f"Failed to fetch domain expected config for {domain.name}.")
+            )
+    if excluded_domains:
+        messages.warning(
+            request,
+            _(
+                f"Domains disabled are excluded from fetch: {', '.join(excluded_domains)}"
+            ),
+        )
+
+
 class UserMailDomainAccessInline(admin.TabularInline):
     """Inline admin class for mail domain accesses."""
 
@@ -124,7 +153,11 @@ class MailDomainAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "slug"]
     list_filter = ("status",)
     inlines = (UserMailDomainAccessInline,)
-    actions = (sync_mailboxes_from_dimail, fetch_domain_status_from_dimail)
+    actions = (
+        sync_mailboxes_from_dimail,
+        fetch_domain_status_from_dimail,
+        fetch_domain_expected_config_from_dimail,
+    )
 
 
 @admin.register(models.Mailbox)
