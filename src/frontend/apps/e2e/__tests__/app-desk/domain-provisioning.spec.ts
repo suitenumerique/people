@@ -8,7 +8,9 @@ test.beforeEach(async ({ page, browserName }) => {
 });
 
 test.describe('When a commune, domain is created on first login via ProConnect', () => {
-  test('it checks the domain has been created', async ({ page }) => {
+  test('it checks the domain has been created and is operational', async ({
+    page,
+  }) => {
     const header = page.locator('header').first();
     await expect(header.getByAltText('Marianne Logo')).toBeVisible();
 

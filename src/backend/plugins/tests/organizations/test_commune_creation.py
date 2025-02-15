@@ -86,7 +86,7 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
     tasks = plugin.complete_commune_creation(name)
 
     assert tasks[1].base == settings.MAIL_PROVISIONING_API_URL
-    assert tasks[1].url == "/domains"
+    assert tasks[1].url == "/domains/"
     assert tasks[1].method == "POST"
     assert tasks[1].params == {
         "name": "merlaut.collectivite.fr",
@@ -168,6 +168,39 @@ def test_tasks_on_commune_creation_include_dns_records():
     assert zone_call.url == "/domain/v2beta1/dns-zones/abidos.collectivite.fr/records"
     assert (
         zone_call.headers["X-Auth-Token"] == settings.DNS_PROVISIONING_API_CREDENTIALS
+    )
+
+
+def test_tasks_on_grant_access():
+    """Test the final tasks after making user admin of an org"""
+    plugin = CommuneCreation()
+
+    tasks = plugin.complete_grant_access("some-sub", "mezos.collectivite.fr")
+
+    assert tasks[0].base == settings.MAIL_PROVISIONING_API_URL
+    assert tasks[0].url == "/users/"
+    assert tasks[0].method == "POST"
+    assert tasks[0].params == {
+        "name": "some-sub",
+        "password": "no",
+        "is_admin": False,
+        "perms": [],
+    }
+    assert (
+        tasks[0].headers["Authorization"]
+        == f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+    )
+
+    assert tasks[1].base == settings.MAIL_PROVISIONING_API_URL
+    assert tasks[1].url == "/allows/"
+    assert tasks[1].method == "POST"
+    assert tasks[1].params == {
+        "user": "some-sub",
+        "domain": "mezos.collectivite.fr",
+    }
+    assert (
+        tasks[1].headers["Authorization"]
+        == f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
     )
 
 

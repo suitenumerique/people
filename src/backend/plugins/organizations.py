@@ -192,7 +192,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         create_domain = ApiCall()
         create_domain.method = "POST"
         create_domain.base = settings.MAIL_PROVISIONING_API_URL
-        create_domain.url = "/domains"
+        create_domain.url = "/domains/"
         create_domain.params = {
             "name": zone_name,
             "delivery": "virtual",
@@ -259,6 +259,36 @@ class CommuneCreation(BaseOrganizationPlugin):
         last_task = self.complete_zone_creation(tasks[-1])
         last_task.execute()
 
+    def complete_grant_access(self, sub, zone_name):
+        """Specify the tasks to be completed after making a user admin"""
+        create_user = ApiCall()
+        create_user.method = "POST"
+        create_user.base = settings.MAIL_PROVISIONING_API_URL
+        create_user.url = "/users/"
+        create_user.params = {
+            "name": sub,
+            "password": "no",
+            "is_admin": False,
+            "perms": [],
+        }
+        create_user.headers = {
+            "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+        }
+
+        grant_access = ApiCall()
+        grant_access.method = "POST"
+        grant_access.base = settings.MAIL_PROVISIONING_API_URL
+        grant_access.url = "/allows/"
+        grant_access.params = {
+            "user": sub,
+            "domain": zone_name,
+        }
+        grant_access.headers = {
+            "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
+        }
+
+        return [create_user, grant_access]
+
     def run_after_grant_access(self, organization_access):
         """After granting an organization access, check for needed domain access grant."""
         orga = organization_access.organization
@@ -274,15 +304,7 @@ class CommuneCreation(BaseOrganizationPlugin):
             MailDomainAccess.objects.create(
                 domain=domain, user=user, role=MailDomainRoleChoices.OWNER
             )
-            grant_access = ApiCall()
-            grant_access.method = "POST"
-            grant_access.base = settings.MAIL_PROVISIONING_API_URL
-            grant_access.url = "/allows"
-            grant_access.params = {
-                "user": user.sub,
-                "domain": zone_name,
-            }
-            grant_access.headers = {
-                "Authorization": f"Basic {settings.MAIL_PROVISIONING_API_CREDENTIALS}"
-            }
-            grant_access.execute()
+
+            tasks = self.complete_grant_access(user.sub, zone_name)
+            for task in tasks:
+                task.execute()
