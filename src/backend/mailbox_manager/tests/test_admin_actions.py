@@ -18,6 +18,7 @@ from mailbox_manager import enums, factories, models
 from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
     CHECK_DOMAIN_OK,
+    DOMAIN_SPEC,
     TOKEN_OK,
     response_mailbox_created,
 )
@@ -150,3 +151,56 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
     assert "Check domains done with success" in response.content.decode("utf-8")
     for mailbox in models.Mailbox.objects.filter(domain=domain1):
         assert mailbox.status == enums.MailboxStatusChoices.ENABLED
+
+
+@pytest.mark.parametrize(
+    "domain_status",
+    [
+        enums.MailDomainStatusChoices.PENDING,
+        enums.MailDomainStatusChoices.FAILED,
+        enums.MailDomainStatusChoices.ENABLED,
+    ],
+)
+@responses.activate
+@pytest.mark.django_db
+def test_fetch_domain_expected_config(client, domain_status):
+    """Test admin action to fetch domain expected config from dimail."""
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+    domain = factories.MailDomainFactory(status=domain_status)
+    data = {
+        "action": "fetch_domain_expected_config_from_dimail",
+        "_selected_action": [domain.id],
+    }
+    responses.add(
+        responses.GET,
+        re.compile(rf".*/domains/{domain.name}/spec/"),
+        body=json.dumps(DOMAIN_SPEC),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+    response = client.post(url, data, follow=True)
+    assert response.status_code == status.HTTP_200_OK
+    domain.refresh_from_db()
+    assert domain.expected_config == DOMAIN_SPEC
+
+
+@pytest.mark.django_db
+def test_fetch_domain_expected_config__should_not_fetch_for_disabled_domain(client):
+    """Test admin action to fetch domain expected config from dimail."""
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+    domain = factories.MailDomainFactory(status=enums.MailDomainStatusChoices.DISABLED)
+    data = {
+        "action": "fetch_domain_expected_config_from_dimail",
+        "_selected_action": [domain.id],
+    }
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+    response = client.post(url, data, follow=True)
+    assert response.status_code == status.HTTP_200_OK
+    domain.refresh_from_db()
+    assert domain.expected_config is None
+    assert "Domains disabled are excluded from fetch" in response.content.decode(
+        "utf-8"
+    )
