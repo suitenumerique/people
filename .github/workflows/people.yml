@@ -201,9 +201,6 @@ jobs:
         run: |
           make dimail-setup-db
 
-      - name: Install Playwright Browsers
-        run: cd src/frontend/apps/e2e && yarn install
-
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
