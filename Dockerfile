@@ -29,7 +29,6 @@ FROM node:20 AS frontend-builder-dev
 WORKDIR /builder
 
 COPY --from=frontend-deps /deps/node_modules ./node_modules
-COPY ./src/frontend .
 
 WORKDIR ./apps/desk
 
@@ -59,6 +58,8 @@ COPY ./src/frontend/apps/desk/conf/default.conf /etc/nginx/conf.d
 
 # Copy entrypoint
 COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
+# Copy sources
+COPY ./src/frontend .
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
@@ -71,7 +72,7 @@ FROM base AS back-builder
 WORKDIR /builder
 
 # Copy required python dependencies
-COPY ./src/backend /builder
+COPY ./src/backend/pyproject.toml /builder
 
 RUN mkdir /install && \
   pip install --prefix=/install .
@@ -157,6 +158,8 @@ USER root:root
 # Install psql
 RUN apk add postgresql-client
 
+COPY ./src/backend/people ./people
+
 # Uninstall people and re-install it in editable mode along with development
 # dependencies
 RUN pip uninstall -y people
@@ -178,6 +181,8 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 FROM core AS backend-production
 
 ARG PEOPLE_STATIC_ROOT=/data/static
+
+COPY ./src/backend .
 
 # Gunicorn
 RUN mkdir -p /usr/local/etc/gunicorn
