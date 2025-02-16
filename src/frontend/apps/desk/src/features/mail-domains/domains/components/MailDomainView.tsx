@@ -1,4 +1,5 @@
 import {
+  Button,
   Modal,
   ModalSize,
   VariantType,
@@ -15,10 +16,14 @@ import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.sv
 import { MailDomain, Role } from '@/features/mail-domains/domains';
 import { MailDomainsContent } from '@/features/mail-domains/mailboxes';
 
+import { useFetchFromDimail } from '../api/useFetchMailDomain';
+
 type Props = {
   mailDomain: MailDomain;
+  onMailDomainUpdate?: (updatedDomain: MailDomain) => void;
 };
-export const MailDomainView = ({ mailDomain }: Props) => {
+
+export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const [showModal, setShowModal] = React.useState(false);
@@ -56,6 +61,19 @@ export const MailDomainView = ({ mailDomain }: Props) => {
     await navigator.clipboard.writeText(text);
     toast(t('copy done'), VariantType.SUCCESS);
   };
+
+  const { mutate: fetchMailDomain } = useFetchFromDimail({
+    onSuccess: (data: MailDomain) => {
+      console.info('fetchMailDomain success', data);
+      setShowModal(false);
+      toast(t('Domain data fetched successfully'), VariantType.SUCCESS);
+      onMailDomainUpdate?.(data);
+    },
+    onError: () => {
+      console.error('fetchMailDomain error');
+      toast(t('Failed to fetch domain data'), VariantType.ERROR);
+    },
+  });
 
   return (
     <>
@@ -135,6 +153,17 @@ export const MailDomainView = ({ mailDomain }: Props) => {
               </pre>
             </Box>
           )}
+          <pre>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button
+                onClick={() => {
+                  void fetchMailDomain(mailDomain.slug);
+                }}
+              >
+                {t('Re-run check')}
+              </Button>
+            </div>
+          </pre>
         </Modal>
       )}
       <Box $padding="big">
@@ -155,6 +184,25 @@ export const MailDomainView = ({ mailDomain }: Props) => {
             <Text $margin="none" as="h3" $size="h3">
               {mailDomain?.name}
             </Text>
+            {/* TODO: remove when pending status will be removed */}
+            {mailDomain?.status === 'pending' && (
+              <button
+                onClick={handleShowModal}
+                style={{
+                  padding: '5px 10px',
+                  marginLeft: '10px',
+                  backgroundColor: '#cccccc',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  borderRadius: '5px',
+                }}
+                data-modal="mail-domain-status"
+              >
+                {t('Pending')}
+              </button>
+            )}
             {mailDomain?.status === 'action_required' && (
               <button
                 onClick={handleShowModal}

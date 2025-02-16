@@ -1,18 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { VariantType } from '@openfun/cunningham-react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
 import { MailDomain } from '@/features/mail-domains/domains';
 import { AppWrapper } from '@/tests/utils';
 
 import { MailDomainView } from '../components/MailDomainView';
-
-const toast = jest.fn();
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
-  useToastProvider: () => ({
-    toast,
-  }),
-}));
 
 const mockMailDomain: MailDomain = {
   id: '123e4567-e89b-12d3-a456-426614174000',
@@ -56,7 +49,17 @@ const mockMailDomain: MailDomain = {
   ],
 };
 
+const toast = jest.fn();
+jest.mock('@openfun/cunningham-react', () => ({
+  ...jest.requireActual('@openfun/cunningham-react'),
+  useToastProvider: () => ({
+    toast,
+  }),
+}));
+
 describe('<MailDomainView />', () => {
+  const apiUrl = `end:/mail-domains/${mockMailDomain.slug}/fetch/`;
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -64,6 +67,7 @@ describe('<MailDomainView />', () => {
   afterEach(() => {
     fetchMock.restore();
   });
+
   it('display action required button and open modal with information when domain status is action_required', () => {
     render(<MailDomainView mailDomain={mockMailDomain} />, {
       wrapper: AppWrapper,
@@ -79,7 +83,7 @@ describe('<MailDomainView />', () => {
     expect(screen.getByText('Required actions on domain')).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Je veux que le MX du domaine soit mx.ox.numerique.gouv.fr/,
+        /Je veux que le MX du domaine soit mx.ox.numerique.gouv.fr./i,
       ),
     ).toBeInTheDocument();
 
@@ -91,5 +95,46 @@ describe('<MailDomainView />', () => {
     expect(
       screen.getByText(/webmail.ox.numerique.gouv.fr./i),
     ).toBeInTheDocument();
+  });
+  it('allows re-running domain check when clicking re-run button', async () => {
+    // Mock the fetch call
+    fetchMock.postOnce(apiUrl, {
+      status: 200,
+      body: mockMailDomain,
+    });
+
+    render(
+      <MailDomainView
+        mailDomain={mockMailDomain}
+        onMailDomainUpdate={jest.fn()}
+      />,
+      { wrapper: AppWrapper },
+    );
+
+    // Check if action required button is displayed
+    const actionButton = screen.getByText('Actions required');
+    expect(actionButton).toBeInTheDocument();
+
+    // Click the button and verify modal content
+    fireEvent.click(actionButton);
+
+    // Verify modal title and content
+    expect(screen.getByText('Required actions on domain')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Je veux que le MX du domaine soit mx.ox.numerique.gouv.fr./,
+      ),
+    ).toBeInTheDocument();
+
+    // Find and click re-run button
+    const reRunButton = screen.getByText('Re-run check');
+    fireEvent.click(reRunButton);
+    await waitFor(() => {
+      expect(fetchMock.called(apiUrl)).toBeTruthy();
+    });
+    expect(toast).toHaveBeenCalledWith(
+      'Domain data fetched successfully',
+      VariantType.SUCCESS,
+    );
   });
 });

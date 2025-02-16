@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) allow user to re-run all fetch domain data from dimail
 - ✨(domains) display DNS config expected for domain with required actions
 - ✨(domains) check status after creation
 - ✨(domains) display required actions to do on domain
