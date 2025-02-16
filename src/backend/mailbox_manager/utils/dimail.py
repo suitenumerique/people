@@ -431,6 +431,7 @@ class DimailAPIClient:
                 self.API_URL,
                 exc_info=error,
             )
+            raise error
         if response.status_code == status.HTTP_200_OK:
             return response.json()
         return self.raise_exception_for_unexpected_response(response)

@@ -35,6 +35,9 @@ class MailDomainViewSet(
         - name: str
         - support_email: str
         Return newly created domain
+
+    POST /api/<version>/mail-domains/<domain-slug>/fetch/
+        Fetch domain status and expected config from dimail.
     """
 
     permission_classes = [permissions.AccessPermission]
@@ -59,6 +62,17 @@ class MailDomainViewSet(
                 "domain": domain,
                 "role": str(core_models.RoleChoices.OWNER),
             }
+        )
+
+    @action(detail=True, methods=["post"], url_path="fetch")
+    def fetch_from_dimail(self, request, *args, **kwargs):
+        """Fetch domain status and expected config from dimail."""
+        domain = self.get_object()
+        client = DimailAPIClient()
+        client.fetch_domain_status(domain)
+        client.fetch_domain_expected_config(domain)
+        return Response(
+            serializers.MailDomainSerializer(domain, context={"request": request}).data
         )
 
 

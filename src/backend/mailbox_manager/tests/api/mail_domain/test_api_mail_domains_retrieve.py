@@ -2,9 +2,6 @@
 Tests for MailDomains API endpoint in People's mailbox manager app. Focus on "retrieve" action.
 """
 
-import json
-import re
-
 import pytest
 import responses
 from rest_framework import status
