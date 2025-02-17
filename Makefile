@@ -156,6 +156,10 @@ lint-pylint: ## lint back-end python sources with pylint only on changed files f
 	bin/pylint --diff-only=origin/main
 .PHONY: lint-pylint
 
+lint-front:
+	cd $(PATH_FRONT) && yarn lint
+.PHONY: lint-front
+
 test: ## run project tests
 	@$(MAKE) test-back-parallel
 .PHONY: test
