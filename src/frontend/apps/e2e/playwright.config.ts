@@ -44,7 +44,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], locale: 'en-US' },
+      use: { ...devices['Desktop Chrome'], locale: 'en-US', channel: 'chrome' },
     },
   ],
 });

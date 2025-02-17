@@ -418,12 +418,19 @@ class DimailAPIClient:
 
     def check_domain(self, domain):
         """Send a request to dimail to check domain health."""
-        response = session.get(
-            f"{self.API_URL}/domains/{domain.name}/check/",
-            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
-            verify=True,
-            timeout=10,
-        )
+        try:
+            response = session.get(
+                f"{self.API_URL}/domains/{domain.name}/check/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                verify=True,
+                timeout=10,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
         if response.status_code == status.HTTP_200_OK:
             return response.json()
         return self.raise_exception_for_unexpected_response(response)
@@ -448,52 +455,60 @@ class DimailAPIClient:
     def fetch_domain_status(self, domain):
         """Send a request to check and update status of a domain."""
         dimail_response = self.check_domain(domain)
-        dimail_state = dimail_response["state"]
-        # if domain is not enabled and dimail returns ok status, enable it
-        if (
-            domain.status != enums.MailDomainStatusChoices.ENABLED
-            and dimail_state == "ok"
-        ):
-            self.enable_pending_mailboxes(domain)
-            domain.status = enums.MailDomainStatusChoices.ENABLED
-            domain.last_check_details = dimail_response
-            domain.save()
-        # if dimail returns broken status, we need to extract external and internal checks
-        # and manage the case where the domain has to be fixed by support
-        elif dimail_state == "broken":
-            external_checks = self._get_dimail_checks(dimail_response, internal=False)
-            internal_checks = self._get_dimail_checks(dimail_response, internal=True)
-            # manage the case where the domain has to be fixed by support
-            if not all(external_checks.values()):
-                domain.status = enums.MailDomainStatusChoices.ACTION_REQUIRED
+        if dimail_response:
+            dimail_state = dimail_response["state"]
+            # if domain is not enabled and dimail returns ok status, enable it
+            if (
+                domain.status != enums.MailDomainStatusChoices.ENABLED
+                and dimail_state == "ok"
+            ):
+                self.enable_pending_mailboxes(domain)
+                domain.status = enums.MailDomainStatusChoices.ENABLED
                 domain.last_check_details = dimail_response
                 domain.save()
-            # if all external checks are ok but not internal checks, we need to fix internal checks
-            elif all(external_checks.values()) and not all(internal_checks.values()):
-                # a call to fix endpoint is needed because all external checks are ok
-                dimail_response = self.fix_domain(domain)
-                # we need to check again if all internal and external checks are ok
+            # if dimail returns broken status, we need to extract external and internal checks
+            # and manage the case where the domain has to be fixed by support
+            elif dimail_state == "broken":
                 external_checks = self._get_dimail_checks(
                     dimail_response, internal=False
                 )
                 internal_checks = self._get_dimail_checks(
                     dimail_response, internal=True
                 )
-                if all(external_checks.values()) and all(internal_checks.values()):
-                    domain.status = enums.MailDomainStatusChoices.ENABLED
+                # manage the case where the domain has to be fixed by support
+                if not all(external_checks.values()):
+                    domain.status = enums.MailDomainStatusChoices.ACTION_REQUIRED
                     domain.last_check_details = dimail_response
                     domain.save()
+                # if all external checks are ok but not internal checks, we need to fix
+                # internal checks
                 elif all(external_checks.values()) and not all(
                     internal_checks.values()
                 ):
-                    domain.status = enums.MailDomainStatusChoices.FAILED
-                    domain.last_check_details = dimail_response
-                    domain.save()
+                    # a call to fix endpoint is needed because all external checks are ok
+                    dimail_response = self.fix_domain(domain)
+                    # we need to check again if all internal and external checks are ok
+                    external_checks = self._get_dimail_checks(
+                        dimail_response, internal=False
+                    )
+                    internal_checks = self._get_dimail_checks(
+                        dimail_response, internal=True
+                    )
+                    if all(external_checks.values()) and all(internal_checks.values()):
+                        domain.status = enums.MailDomainStatusChoices.ENABLED
+                        domain.last_check_details = dimail_response
+                        domain.save()
+                    elif all(external_checks.values()) and not all(
+                        internal_checks.values()
+                    ):
+                        domain.status = enums.MailDomainStatusChoices.FAILED
+                        domain.last_check_details = dimail_response
+                        domain.save()
 
-        # if no health check data is stored on the domain, we store it now
-        if not domain.last_check_details:
-            domain.last_check_details = dimail_response
-            domain.save()
+            # if no health check data is stored on the domain, we store it now
+            if not domain.last_check_details:
+                domain.last_check_details = dimail_response
+                domain.save()
 
         return dimail_response
 
