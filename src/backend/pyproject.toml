@@ -25,7 +25,7 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.36.17",
+    "boto3==1.36.21",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
     "django-configurations==2.5.1",
@@ -35,7 +35,7 @@ dependencies = [
     "django-treebeard==4.7.1",
     "redis==5.2.1",
     "django-redis==5.4.0",
-    "django-storages==1.14.4",
+    "django-storages==1.14.5",
     "django-timezone-field>=5.1",
     "django==5.1.6",
     "djangorestframework==3.15.2",
@@ -50,7 +50,7 @@ dependencies = [
     "PyJWT==2.10.1",
     "joserfc==1.0.3",
     "requests==2.32.3",
-    "sentry-sdk[django]==2.20.0",
+    "sentry-sdk[django]==2.21.0",
     "whitenoise==6.9.0",
     "mozilla-django-oidc==4.0.1",
 ]
