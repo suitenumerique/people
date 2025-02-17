@@ -95,8 +95,6 @@ export const ModalCreateAccess = ({
       switchActions(selectedMembers),
     );
 
-    onClose();
-
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
         case 'rejected':
@@ -107,6 +105,7 @@ export const ModalCreateAccess = ({
           onSuccess(settledPromise.value);
           break;
       }
+      onClose();
     });
   };
 

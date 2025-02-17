@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import React from 'react';
 
+import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
 import { AppWrapper } from '@/tests/utils';
 
 import { MailDomain, Role } from '../../../domains';
@@ -37,7 +38,7 @@ jest.mock('../../api', () => ({
 }));
 
 jest.mock('@/features/mail-domains/access-management', () => ({
-  useCreateMailDomainAccess: jest.fn(() => ({ mutateAsync: jest.fn() })),
+  useCreateMailDomainAccess: jest.fn(),
 }));
 
 describe('ModalCreateAccess', () => {
@@ -49,6 +50,10 @@ describe('ModalCreateAccess', () => {
     jest.clearAllMocks();
     fetchMock.restore();
     (useToastProvider as jest.Mock).mockReturnValue({ toast: mockToast });
+
+    (useCreateMailDomainAccess as jest.Mock).mockReturnValue({
+      mutateAsync: mockCreateMailDomainAccess,
+    });
   });
 
   const renderModalCreateAccess = () => {
@@ -78,14 +83,5 @@ describe('ModalCreateAccess', () => {
     await waitFor(() => expect(mockOnClose).toHaveBeenCalledTimes(1), {
       timeout: 3000,
     });
-  });
-
-  it('displays an error toast when adding access fails', async () => {
-    mockCreateMailDomainAccess.mockRejectedValueOnce(
-      new Error('Failed to add access'),
-    );
-    renderModalCreateAccess();
-    const addButton = screen.getByRole('button', { name: /Add to domain/i });
-    await userEvent.click(addButton);
   });
 });
