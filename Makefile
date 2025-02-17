@@ -332,7 +332,7 @@ help:
 
 # Front 
 install-front-desk: ## Install the frontend dependencies of app Desk  
-	cd $(PATH_FRONT_DESK) && yarn
+	cd $(PATH_FRONT_DESK) && yarn && yarn playwright install chromium
 .PHONY: install-front-desk
 
 run-front-desk: ## Start app Desk  
