@@ -101,7 +101,7 @@ class ApiCall:
                 url=f"{self.base}/{self.url}",
                 json=self.params,
                 headers=self.headers,
-                timeout=5,
+                timeout=20,
             )
         else:
             response = requests.request(
@@ -109,7 +109,7 @@ class ApiCall:
                 url=f"{self.base}/{self.url}",
                 params=self.params,
                 headers=self.headers,
-                timeout=5,
+                timeout=20,
             )
         self.response_data = response.json()
         logger.info(
