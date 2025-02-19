@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 👽️(dimail) increase timeout value for API calls
+
 ## [1.12.0] - 2025-02-18
 
 ### Added
