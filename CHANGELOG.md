@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.12.1] - 2025-02-20
+
 ### Fixed
 
 - 👽️(dimail) increase timeout value for API calls
@@ -296,7 +298,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.12.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.12.1...main
+[1.12.1]: https://github.com/suitenumerique/people/releases/v1.12.1
 [1.12.0]: https://github.com/suitenumerique/people/releases/v1.12.0
 [1.11.0]: https://github.com/suitenumerique/people/releases/v1.11.0
 [1.10.1]: https://github.com/suitenumerique/people/releases/v1.10.1
