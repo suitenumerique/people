@@ -11,6 +11,7 @@ from datetime import timedelta
 from logging import getLogger
 from typing import Tuple
 
+import vobject
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -136,6 +137,8 @@ class Contact(BaseModel):
         blank=True,
     )
 
+    dn_vcard_data = models.TextField()  # Store vCard format
+
     class Meta:
         db_table = "people_contact"
         # indexes = [
@@ -191,6 +194,10 @@ class Contact(BaseModel):
             error_message = f"Validation error in '{field_path:s}': {e.message}"
             raise exceptions.ValidationError({"data": [error_message]}) from e
 
+    def save(self, *args, **kwargs):
+        self.dn_vcard_data = self.generate_vcard()
+        super().save(*args, **kwargs)
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user on the contact.
@@ -211,6 +218,55 @@ class Contact(BaseModel):
             "put": is_owner,
             "delete": is_owner and not self.user,  # Can't delete a profile contact
         }
+
+    def generate_vcard(self):
+        """Generate a vCard from the contact data."""
+        card = vobject.vCard()
+        card.add('fn').value = self.full_name
+
+        if self.short_name:
+            card.add('nickname').value = self.short_name
+
+        if 'emails' in self.data:
+            for email in self.data['emails']:
+                email_field = card.add('email')
+                email_field.value = email['value']
+                email_field.type_param = email['type']
+
+        if 'phones' in self.data:
+            for phone in self.data['phones']:
+                phone_field = card.add('tel')
+                phone_field.value = phone['value']
+                phone_field.type_param = phone['type']
+
+        if 'addresses' in self.data:
+            for address in self.data['addresses']:
+                address_field = card.add('adr')
+                address_field.value = vobject.vcard.Address(
+                    street=address.get('street', ''),
+                    city=address.get('city', ''),
+                    region=address.get('state', ''),
+                    code=address.get('zip', ''),
+                    country=address.get('country', '')
+                )
+                address_field.type_param = address['type']
+
+        if 'links' in self.data:
+            for link in self.data['links']:
+                url_field = card.add('url')
+                url_field.value = link['value']
+                url_field.type_param = link['type']
+
+        if 'organizations' in self.data:
+            for org in self.data['organizations']:
+                org_field = card.add('org')
+                org_field.value = [org['name']]
+                if 'department' in org:
+                    org_field.value.append(org['department'])
+                if 'jobTitle' in org:
+                    card.add('title').value = org['jobTitle']
+
+        return card.serialize()
 
 
 class ServiceProvider(BaseModel):

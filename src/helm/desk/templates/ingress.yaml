@@ -96,6 +96,20 @@ spec:
               serviceName: {{ include "desk.frontend.fullname" $ }}
               servicePort: {{ $.Values.frontend.service.port }}
             {{- end }}
+          - path: /carddav
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "desk.frontend.fullname" $ }}
+                port:
+                  number: {{ $.Values.frontend.service.port }}
+              {{- else }}
+              serviceName: {{ include "desk.frontend.fullname" $ }}
+              servicePort: {{ $.Values.frontend.service.port }}
+            {{- end }}
           - path: /api
             {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix

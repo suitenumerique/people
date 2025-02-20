@@ -14,6 +14,8 @@ from drf_spectacular.views import (
 
 from debug import urls as debug_urls
 
+from core.carddav import urls as carddav_urls
+
 from . import api_urls, resource_server_urls
 
 API_VERSION = settings.API_VERSION
@@ -24,6 +26,7 @@ urlpatterns = (
     ]
     + api_urls.urlpatterns
     + resource_server_urls.urlpatterns
+    + carddav_urls.urlpatterns
 )
 
 if settings.DEBUG:

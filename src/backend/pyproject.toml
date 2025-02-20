@@ -51,6 +51,7 @@ dependencies = [
     "joserfc==1.0.3",
     "requests==2.32.3",
     "sentry-sdk[django]==2.20.0",
+    "vobject==0.9.9",
     "whitenoise==6.9.0",
     "mozilla-django-oidc==4.0.1",
 ]

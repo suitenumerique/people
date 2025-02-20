@@ -155,3 +155,61 @@ def test_models_contacts_data_invalid():
         "{'data': [\"Validation error in 'emails.0.type': 'invalid type' is not one of ['Work', "
         "'Home', 'Other']\"]}"
     )
+
+
+def test_generate_vcard():
+    """Test the vCard generation from contact data."""
+    contact = factories.ContactFactory(
+        full_name="John Doe",
+        short_name="Johnny",
+        data={
+            "emails": [
+                {"type": "Work", "value": "john.doe@work.com"},
+                {"type": "Home", "value": "john.doe@home.com"},
+            ],
+            "phones": [
+                {"type": "Mobile", "value": "(123) 456-7890"},
+                {"type": "Home", "value": "(987) 654-3210"},
+            ],
+            "addresses": [
+                {
+                    "type": "Home",
+                    "street": "123 Main St",
+                    "city": "Cityville",
+                    "state": "CA",
+                    "zip": "12345",
+                    "country": "USA",
+                }
+            ],
+            "links": [
+                {"type": "Website", "value": "http://workwebsite.com"},
+                {"type": "LinkedIn", "value": "https://www.linkedin.com/in/johndoe"},
+            ],
+            "organizations": [
+                {
+                    "name": "ACME Corporation",
+                    "department": "IT",
+                    "jobTitle": "Software Engineer",
+                }
+            ],
+        }
+    )
+
+    vcard = contact.generate_vcard()
+
+    assert vcard.split("\n") == ['BEGIN:VCARD\r',
+        'VERSION:3.0\r',
+        'ADR;TYPE=Home:;;123 Main St;Cityville;CA;12345;USA\r',
+        'EMAIL;TYPE=Work:john.doe@work.com\r',
+        'EMAIL;TYPE=Home:john.doe@home.com\r',
+        'FN:John Doe\r',
+        'NICKNAME:Johnny\r',
+        'ORG:ACME Corporation;IT\r',
+        'TEL;TYPE=Mobile:(123) 456-7890\r',
+        'TEL;TYPE=Home:(987) 654-3210\r',
+        'TITLE:Software Engineer\r',
+        'URL;TYPE=Website:http://workwebsite.com\r',
+        'URL;TYPE=LinkedIn:https://www.linkedin.com/in/johndoe\r',
+        'END:VCARD\r',
+        '',
+    ]
