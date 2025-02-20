@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🧱(helm) add resource-server ingress path #743
 - 🌐(backend) synchronize translations with crowdin again
 
 ## [1.12.1] - 2025-02-20
