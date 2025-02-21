@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from core import models as core_models
 from core.api.client.serializers import UserSerializer
-from core.api.client.viewsets import Pagination
 
 from mailbox_manager import enums, models
 from mailbox_manager.api import permissions
@@ -285,7 +284,6 @@ class DomainInvitationViewset(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """API ViewSet for user invitations to domain management.
@@ -303,13 +301,9 @@ class DomainInvitationViewset(
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,
         delete and create a new one.
-
-    DELETE  /api/<version>/mail-domains/<domain_slug>/invitations/<invitation_id>/
-        Delete targeted invitation
     """
 
     lookup_field = "id"
-    pagination_class = Pagination
     permission_classes = [permissions.AccessPermission]
     queryset = (
         models.DomainInvitation.objects.all()
@@ -333,7 +327,7 @@ class DomainInvitationViewset(
             # Determine which role the logged-in user has in the domain
             user_role_query = models.MailDomainAccess.objects.filter(
                 user=self.request.user, domain__slug=self.kwargs["domain_slug"]
-            ).values("role")[:1]
+            ).values("role")
 
             queryset = (
                 # The logged-in user should be part of a domain to see its accesses

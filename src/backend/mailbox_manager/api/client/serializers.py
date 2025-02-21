@@ -5,8 +5,8 @@ from logging import getLogger
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
 
-from core import models as core_models
 from core.api.client.serializers import UserSerializer
+from core.models import User
 
 from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
@@ -199,7 +199,7 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                 raise exceptions.PermissionDenied(
                     "Only owners of a domain can assign other users as owners."
                 )
-            attrs["user"] = core_models.User.objects.get(pk=self.initial_data["user"])
+            attrs["user"] = User.objects.get(pk=self.initial_data["user"])
             attrs["domain"] = models.MailDomain.objects.get(
                 slug=self.context["domain_slug"]
             )
@@ -269,18 +269,12 @@ class DomainInvitationSerializer(serializers.ModelSerializer):
                 "You must set a domain slug in kwargs to create a new domain management invitation."
             ) from exc
 
-        if not models.MailDomainAccess.objects.filter(
-            domain__slug=domain_slug,
-            user=user,
-            role__in=[
-                enums.MailDomainRoleChoices.OWNER,
-                enums.MailDomainRoleChoices.ADMIN,
-            ],
-        ).exists():
+        domain = models.MailDomain.objects.get(slug=domain_slug)
+        if not domain.get_abilities(user)["manage_accesses"]:
             raise exceptions.PermissionDenied(
                 "You are not allowed to manage invitations for this domain."
             )
 
-        attrs["domain"] = models.MailDomain.objects.get(slug=domain_slug)
+        attrs["domain"] = domain
         attrs["issuer"] = user
         return attrs
