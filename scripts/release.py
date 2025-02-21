@@ -76,7 +76,7 @@ def update_changelog(path, version):
         file.writelines(lines)
 
 
-def deployment_part(version, kind):
+def deployment_part(version):
     """ Update helm file of preprod on deployment repository numerique-gouv/lasuite-deploiement
     """
     # Move to lasuite-deploiement repository
@@ -95,7 +95,7 @@ def deployment_part(version, kind):
         path = f"manifests/regie/env.d/preprod/values.desk.yaml.gotmpl"
         update_helm_files(path)
         run_command(f"git add {path}", shell=True)
-        message = f"""🔖({RELEASE_KINDS[kind]}) release version {version}"""
+        message = f"""🔖(people) bump preprod version to {version}"""
         run_command(f"git commit -m '{message}'", shell=True)
         confirm = input(f"""\033[0;32m
 ### DEPLOYMENT ###
@@ -107,7 +107,7 @@ Continue ? (y,n)
             run_command(f"git push origin {deployment_branch}", shell=True)
         sys.stdout.write(f"""\033[1;34m
 PLEASE DO THE FOLLOWING INSTRUCTIONS: 
---> Please submit PR {deployment_branch} and merge code to main
+--> Please submit PR {deployment_branch} and merge code to main [https://github.com/numerique-gouv/lasuite-deploiement]
 \x1b[0m""")
 
 
@@ -137,7 +137,7 @@ Continue ? (y,n)
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
 \033[1;34mPLEASE DO THE FOLLOWING INSTRUCTIONS:
---> Please submit PR {branch_to_release} and merge code to main 
+--> Please submit PR {branch_to_release} and merge code to main [https://github.com/suitenumerique/people/]
 --> Then do:
     >> git checkout main
     >> git pull
@@ -158,4 +158,4 @@ if __name__ == "__main__":
         kind = input("Enter kind of release (p:patch, m:minor, mj:major):")
     if "--only-deployment-part" not in sys.argv:
         project_part(version, kind)
-    deployment_part(version, kind)
+    deployment_part(version)
