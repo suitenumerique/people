@@ -17,6 +17,7 @@ backend:
     DJANGO_EMAIL_HOST: "maildev"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
+    DJANGO_SENTRY_DSN: null
     OIDC_RS_CLIENT_ID: changeme
     OIDC_RS_CLIENT_SECRET: changeme
     OIDC_RS_PRIVATE_KEY_STR: "lkj"
@@ -32,6 +33,8 @@ backend:
     OIDC_RP_SCOPES: "openid email siret"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
+    OAUTH2_PROVIDER_OIDC_ENABLED: True
+    OAUTH2_PROVIDER_VALIDATOR_CLASS: "mailbox_oauth2.validators.ProConnectValidator"
     ORGANIZATION_REGISTRATION_ID_VALIDATORS: '[{"NAME": "django.core.validators.RegexValidator", "OPTIONS": {"regex": "^[0-9]{14}$"}}]'
     LOGIN_REDIRECT_URL: https://desk.127.0.0.1.nip.io
     LOGIN_REDIRECT_URL_FAILURE: https://desk.127.0.0.1.nip.io
@@ -48,7 +51,6 @@ backend:
     WEBMAIL_URL: "https://onestendev.yapasdewebmail.fr"
     MAIL_PROVISIONING_API_URL: "http://dimail:8000"
     MAIL_PROVISIONING_API_CREDENTIALS: changeme
-    SENTRY_DSN: "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171"
   command:
     - "gunicorn"
     - "-c"
@@ -69,7 +71,7 @@ backend:
       mountPath: /usr/local/lib/python3.12/site-packages/certifi/cacert.pem
       subPath: cacert.pem
 
-  # Exra volumes to manage our local custom CA and avoid to set ssl_verify: false
+  # Extra volumes to manage our local custom CA and avoid to set ssl_verify: false
   extraVolumes:
     - name: certs
       configMap:
