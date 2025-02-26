@@ -87,6 +87,17 @@ class MailDomain(BaseModel):
             "manage_accesses": is_owner_or_admin,
         }
 
+    def send_notification(self, subject, message):
+        """
+        Notify owners and admins of the domain
+        """
+        for access in self.accesses.filter(
+            role__in=[MailDomainRoleChoices.OWNER, MailDomainRoleChoices.ADMIN]
+        ).all():
+            access.user.email_user(
+                subject=subject, message=message, from_email=settings.DEFAULT_FROM_EMAIL
+            )
+
 
 class MailDomainAccess(BaseModel):
     """Allow to manage users' accesses to mail domains."""
