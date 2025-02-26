@@ -213,6 +213,7 @@ class Base(Configuration):
         "demo",
         "mailbox_manager",
         "drf_spectacular",
+        "drf_spectacular_sidecar",  # required for Django collectstatic discovery
         # Third party apps
         "corsheaders",
         "dockerflow.django",
@@ -662,7 +663,7 @@ class Development(Base):
     def __init__(self):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
-        self.INSTALLED_APPS += ["django_extensions", "drf_spectacular_sidecar"]
+        self.INSTALLED_APPS += ["django_extensions"]
 
 
 class Test(Base):
