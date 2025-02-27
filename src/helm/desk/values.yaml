@@ -277,3 +277,141 @@ frontend:
 
   ## @param frontend.extraVolumes Additional volumes to mount on the frontend.
   extraVolumes: []
+
+
+## @section celeryWorker
+
+celeryWorker:
+  ## @param celeryWorker.dpAnnotations Annotations to add to the celeryWorker Deployment
+  dpAnnotations: {}
+
+  ## @param celeryWorker.command Override the celeryWorker container command
+  command: ["celery", "-A", "people.celery_app", "worker"]
+
+  ## @param celeryWorker.args Override the celeryWorker container args
+  args: []
+
+  ## @param celeryWorker.replicas Amount of celeryWorker replicas
+  replicas: 1
+
+  ## @param celeryWorker.shareProcessNamespace Enable share process namespace between containers
+  shareProcessNamespace: false
+
+  ## @param celeryWorker.sidecars Add sidecars containers to celeryWorker deployment
+  sidecars: []
+
+  ## @param celeryWorker.migrateJobAnnotations Annotations for the migrate job
+  migrateJobAnnotations: {}
+
+  ## @param celeryWorker.securityContext Configure celeryWorker Pod security context
+  securityContext: null
+
+  ## @param celeryWorker.envVars Configure celeryWorker container environment variables
+  ## @extra celeryWorker.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra celeryWorker.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celeryWorker.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celeryWorker.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra celeryWorker.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  ## @skip celeryWorker.envVars
+  envVars:
+    <<: *commonEnvVars
+
+  ## @param celeryWorker.podAnnotations Annotations to add to the celeryWorker Pod
+  podAnnotations: {}
+
+  ## @param celeryWorker.probes Configure celeryWorker probes
+  ## @param celeryWorker.probes.liveness.path [nullable] Configure path for celeryWorker HTTP liveness probe
+  ## @param celeryWorker.probes.liveness.targetPort [nullable] Configure port for celeryWorker HTTP liveness probe
+  ## @param celeryWorker.probes.liveness.initialDelaySeconds [nullable] Configure initial delay for celeryWorker liveness probe
+  ## @param celeryWorker.probes.liveness.initialDelaySeconds [nullable] Configure timeout for celeryWorker liveness probe
+  ## @param celeryWorker.probes.startup.path [nullable] Configure path for celeryWorker HTTP startup probe
+  ## @param celeryWorker.probes.startup.targetPort [nullable] Configure port for celeryWorker HTTP startup probe
+  ## @param celeryWorker.probes.startup.initialDelaySeconds [nullable] Configure initial delay for celeryWorker startup probe
+  ## @param celeryWorker.probes.startup.initialDelaySeconds [nullable] Configure timeout for celeryWorker startup probe
+  ## @param celeryWorker.probes.readiness.path [nullable] Configure path for celeryWorker HTTP readiness probe
+  ## @param celeryWorker.probes.readiness.targetPort [nullable] Configure port for celeryWorker HTTP readiness probe
+  ## @param celeryWorker.probes.readiness.initialDelaySeconds [nullable] Configure initial delay for celeryWorker readiness probe
+  ## @param celeryWorker.probes.readiness.initialDelaySeconds [nullable] Configure timeout for celeryWorker readiness probe
+  probes: {}
+
+  ## @param celeryWorker.resources Resource requirements for the celeryWorker container
+  resources: {}
+
+  ## @param celeryWorker.nodeSelector Node selector for the celeryWorker Pod
+  nodeSelector: {}
+
+  ## @param celeryWorker.tolerations Tolerations for the celeryWorker Pod
+  tolerations: []
+
+  ## @param celeryWorker.affinity Affinity for the celeryWorker Pod
+  affinity: {}
+
+  ## @param celeryWorker.persistence Additional volumes to create and mount on the celeryWorker. Used for debugging purposes
+  ## @extra celeryWorker.persistence.volume-name.size Size of the additional volume
+  ## @extra celeryWorker.persistence.volume-name.type Type of the additional volume, persistentVolumeClaim or emptyDir
+  ## @extra celeryWorker.persistence.volume-name.mountPath Path where the volume should be mounted to
+  persistence: {}
+
+  ## @param celeryWorker.extraVolumeMounts Additional volumes to mount on the celeryWorker.
+  extraVolumeMounts: []
+
+  ## @param celeryWorker.extraVolumes Additional volumes to mount on the celeryWorker.
+  extraVolumes: []
+  
+
+## @section celeryBeat
+
+celeryBeat:
+  ## @param celeryBeat.dpAnnotations Annotations to add to the celeryBeat Deployment
+  dpAnnotations: {}
+
+  ## @param celeryBeat.command Override the celeryBeat container command
+  command: ["celery", "-A", "people.celery_app", "beat"]
+
+  ## @param celeryBeat.args Override the celeryBeat container args
+  args: []
+
+  ## @param celeryBeat.replicas Amount of celeryBeat replicas
+  replicas: 1
+
+  ## @param celeryBeat.shareProcessNamespace Enable share process namespace between containers
+  shareProcessNamespace: false
+
+  ## @param celeryBeat.sidecars Add sidecars containers to celeryBeat deployment
+  sidecars: []
+
+  ## @param celeryBeat.securityContext Configure celeryBeat Pod security context
+  securityContext: null
+
+  ## @param celeryBeat.envVars Configure celeryBeat container environment variables
+  ## @extra celeryBeat.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra celeryBeat.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celeryBeat.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celeryBeat.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra celeryBeat.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  envVars:
+    <<: *commonEnvVars
+
+  ## @param celeryBeat.probes Configure celeryBeat probes
+  probes: {}
+
+  ## @param celeryBeat.resources Resource requirements for the celeryBeat container
+  resources: {}
+
+  ## @param celeryBeat.nodeSelector Node selector for the celeryBeat Pod
+  nodeSelector: {}
+
+  ## @param celeryBeat.tolerations Tolerations for the celeryBeat Pod
+  tolerations: []
+
+  ## @param celeryBeat.affinity Affinity for the celeryBeat Pod
+  affinity: {}
+
+  ## @param celeryBeat.persistence Additional volumes to create and mount on the celeryBeat. Used for debugging purposes
+  persistence: {}
+
+  ## @param celeryBeat.extraVolumeMounts Additional volumes to mount on the celeryBeat.
+  extraVolumeMounts: []
+
+  ## @param celeryBeat.extraVolumes Additional volumes to mount on the celeryBeat.
+  extraVolumes: []

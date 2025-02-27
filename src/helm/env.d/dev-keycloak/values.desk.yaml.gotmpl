@@ -6,6 +6,7 @@ image:
 backend:
   replicas: 1
   envVars:
+    CELERY_BROKER_URL: redis://default:pass@redis-master:6379/1
     DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Local
     DJANGO_ALLOWED_HOSTS: "*"
