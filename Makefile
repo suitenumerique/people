@@ -111,6 +111,7 @@ run: ## start the wsgi (production) and development server
 	@$(COMPOSE) up --force-recreate -d app-dev
 	@$(COMPOSE) up --force-recreate -d celery-dev
 	@$(COMPOSE) up --force-recreate -d celery-beat-dev
+	@$(COMPOSE) up --force-recreate -d flower-dev
 	@$(COMPOSE) up --force-recreate -d keycloak
 	@$(COMPOSE) up -d dimail
 	@echo "Wait for postgresql to be up..."
