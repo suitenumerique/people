@@ -180,3 +180,20 @@ services:
       DIMAIL_JWT_SECRET: fake_jwt_secret
     ports:
       - "8001:8000"
+
+  flower-dev:
+    user: ${DOCKER_USER:-1000}
+    image: people:backend-development
+    command: ["celery", "-A", "people.celery_app", "flower", "--port=5555"]
+    environment:
+      - DJANGO_CONFIGURATION=Development
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./src/backend:/app
+    depends_on:
+      - celery-dev
+      - redis
