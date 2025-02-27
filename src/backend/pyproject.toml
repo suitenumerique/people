@@ -56,6 +56,7 @@ dependencies = [
     "mozilla-django-oidc==4.0.1",
     "django-celery-results==2.5.1",
     "django-celery-beat==2.7.0",
+    "flower==2.0.0",
 ]
 
 [project.urls]
