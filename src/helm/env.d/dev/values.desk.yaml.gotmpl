@@ -107,3 +107,22 @@ ingress:
 ingressAdmin:
   enabled: true
   host: desk.127.0.0.1.nip.io
+
+celery:
+  beat:
+    enabled: true
+    componentName: celery-beat
+    command: 'celery -A people.celery_app beat -l INFO'
+    replicaCount: 1
+    strategy: Recreate
+
+  worker:
+    componentName: celery-worker
+    command: 'celery -A people.celery_app worker -l INFO'
+    replicaCount: 1
+    strategy: RollingUpdate
+    envVars:
+      - name: CELERY_BROKER_URL
+        value: redis://default:pass@redis-master:6379/1
+      - name: CELERY_RESULT_BACKEND
+        value: redis://default:pass@redis-master:6379/1
