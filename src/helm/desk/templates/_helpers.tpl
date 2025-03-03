@@ -148,6 +148,25 @@ Requires top level scope
 {{ include "desk.fullname" . }}-frontend
 {{- end }}
 
+
+{{/*
+Full name for the Celery
+
+Requires top level scope
+*/}}
+{{- define "desk.celery.fullname" -}}
+{{ include "desk.fullname" . }}-celery
+{{- end }}
+
+{{/*
+Full name for the Celery Beat
+
+Requires top level scope
+*/}}
+{{- define "desk.celerybeat.fullname" -}}
+{{ include "desk.fullname" . }}-celerybeat
+{{- end }}
+
 {{/*
 Usage : {{ include "desk.secret.dockerconfigjson.name" (dict "fullname" (include "desk.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
 */}}

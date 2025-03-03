@@ -51,8 +51,12 @@ dependencies = [
     "joserfc==1.0.3",
     "requests==2.32.3",
     "sentry-sdk[django]==2.22.0",
+    "sentry-sdk[celery]==2.22.0",
     "whitenoise==6.9.0",
     "mozilla-django-oidc==4.0.1",
+    "django-celery-results==2.5.1",
+    "django-celery-beat==2.7.0",
+    "flower==2.0.0",
 ]
 
 [project.urls]

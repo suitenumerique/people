@@ -277,3 +277,160 @@ frontend:
 
   ## @param frontend.extraVolumes Additional volumes to mount on the frontend.
   extraVolumes: []
+
+
+## @section celery
+
+celery:
+  ## @param celery.dpAnnotations Annotations to add to the celery Deployment
+  dpAnnotations: {}
+
+  ## @param celery.command Override the celery container command
+  command: []
+
+  ## @param celery.args Override the celery container args
+  args: []
+
+  ## @param celery.replicas Amount of celery replicas
+  replicas: 1
+
+  ## @param celery.shareProcessNamespace Enable share process namespace between containers
+  shareProcessNamespace: false
+
+  ## @param celery.sidecars Add sidecars containers to celery deployment
+  sidecars: []
+
+  ## @param celery.migrateJobAnnotations Annotations for the migrate job
+  migrateJobAnnotations: {}
+
+  ## @param celery.securityContext Configure celery Pod security context
+  securityContext: null
+
+  ## @param celery.envVars Configure celery container environment variables
+  ## @extra celery.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra celery.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celery.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celery.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra celery.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  ## @skip celery.envVars
+  envVars:
+    <<: *commonEnvVars
+
+  ## @param celery.podAnnotations Annotations to add to the celery Pod
+  podAnnotations: {}
+
+  ## @param celery.service.type celery Service type
+  ## @param celery.service.port celery Service listening port
+  ## @param celery.service.targetPort celery container listening port
+  ## @param celery.service.annotations Annotations to add to the celery Service
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+    annotations: {}
+
+  ## @param celery.probes Configure celery probes
+  ## @param celery.probes.liveness.path [nullable] Configure path for celery HTTP liveness probe
+  ## @param celery.probes.liveness.targetPort [nullable] Configure port for celery HTTP liveness probe
+  ## @param celery.probes.liveness.initialDelaySeconds [nullable] Configure initial delay for celery liveness probe
+  ## @param celery.probes.liveness.initialDelaySeconds [nullable] Configure timeout for celery liveness probe
+  ## @param celery.probes.startup.path [nullable] Configure path for celery HTTP startup probe
+  ## @param celery.probes.startup.targetPort [nullable] Configure port for celery HTTP startup probe
+  ## @param celery.probes.startup.initialDelaySeconds [nullable] Configure initial delay for celery startup probe
+  ## @param celery.probes.startup.initialDelaySeconds [nullable] Configure timeout for celery startup probe
+  ## @param celery.probes.readiness.path [nullable] Configure path for celery HTTP readiness probe
+  ## @param celery.probes.readiness.targetPort [nullable] Configure port for celery HTTP readiness probe
+  ## @param celery.probes.readiness.initialDelaySeconds [nullable] Configure initial delay for celery readiness probe
+  ## @param celery.probes.readiness.initialDelaySeconds [nullable] Configure timeout for celery readiness probe
+  probes: {}
+
+  ## @param celery.resources Resource requirements for the celery container
+  resources: {}
+
+  ## @param celery.nodeSelector Node selector for the celery Pod
+  nodeSelector: {}
+
+  ## @param celery.tolerations Tolerations for the celery Pod
+  tolerations: []
+
+  ## @param celery.affinity Affinity for the celery Pod
+  affinity: {}
+
+  ## @param celery.persistence Additional volumes to create and mount on the celery. Used for debugging purposes
+  ## @extra celery.persistence.volume-name.size Size of the additional volume
+  ## @extra celery.persistence.volume-name.type Type of the additional volume, persistentVolumeClaim or emptyDir
+  ## @extra celery.persistence.volume-name.mountPath Path where the volume should be mounted to
+  persistence: {}
+
+  ## @param celery.extraVolumeMounts Additional volumes to mount on the celery.
+  extraVolumeMounts: []
+
+  ## @param celery.extraVolumes Additional volumes to mount on the celery.
+  extraVolumes: []
+  
+
+## @section celerybeat
+
+celerybeat:
+  ## @param celerybeat.dpAnnotations Annotations to add to the celerybeat Deployment
+  dpAnnotations: {}
+
+  ## @param celerybeat.command Override the celerybeat container command
+  command: []
+
+  ## @param celerybeat.args Override the celerybeat container args
+  args: []
+
+  ## @param celerybeat.replicas Amount of celerybeat replicas
+  replicas: 1
+
+  ## @param celerybeat.shareProcessNamespace Enable share process namespace between containers
+  shareProcessNamespace: false
+
+  ## @param celerybeat.sidecars Add sidecars containers to celerybeat deployment
+  sidecars: []
+
+  ## @param celerybeat.securityContext Configure celerybeat Pod security context
+  securityContext: null
+
+  ## @param celerybeat.service.type celerybeat Service type
+  ## @param celerybeat.service.port celerybeat Service listening port
+  ## @param celerybeat.service.targetPort celerybeat container listening port
+  ## @param celerybeat.service.annotations Annotations to add to the celerybeat Service
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+    annotations: {}
+
+  ## @param celerybeat.envVars Configure celerybeat container environment variables
+  ## @extra celerybeat.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra celerybeat.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celerybeat.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra celerybeat.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra celerybeat.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  envVars: {}
+
+  ## @param celerybeat.probes Configure celerybeat probes
+  probes: {}
+
+  ## @param celerybeat.resources Resource requirements for the celerybeat container
+  resources: {}
+
+  ## @param celerybeat.nodeSelector Node selector for the celerybeat Pod
+  nodeSelector: {}
+
+  ## @param celerybeat.tolerations Tolerations for the celerybeat Pod
+  tolerations: []
+
+  ## @param celerybeat.affinity Affinity for the celerybeat Pod
+  affinity: {}
+
+  ## @param celerybeat.persistence Additional volumes to create and mount on the celerybeat. Used for debugging purposes
+  persistence: {}
+
+  ## @param celerybeat.extraVolumeMounts Additional volumes to mount on the celerybeat.
+  extraVolumeMounts: []
+
+  ## @param celerybeat.extraVolumes Additional volumes to mount on the celerybeat.
+  extraVolumes: []
