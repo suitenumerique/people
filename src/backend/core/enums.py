@@ -1,3 +1,4 @@
+# pylint: disable=too-many-ancestors
 """
 Core application enums declaration
 """
