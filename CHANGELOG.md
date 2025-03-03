@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Fixed
 
+- 👽️(dimail) increase timeout value for check domain API call
 - 🧱(helm) add resource-server ingress path #743
 - 🌐(backend) synchronize translations with crowdin again
 

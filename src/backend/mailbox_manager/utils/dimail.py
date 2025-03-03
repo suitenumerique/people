@@ -425,7 +425,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/domains/{domain.name}/check/",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
-                timeout=10,
+                timeout=20,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
