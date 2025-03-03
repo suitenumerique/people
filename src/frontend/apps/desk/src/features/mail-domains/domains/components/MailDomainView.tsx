@@ -1,5 +1,6 @@
 import {
   Button,
+  Loader,
   Modal,
   ModalSize,
   VariantType,
@@ -62,18 +63,17 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
     toast(t('copy done'), VariantType.SUCCESS);
   };
 
-  const { mutate: fetchMailDomain } = useFetchFromDimail({
-    onSuccess: (data: MailDomain) => {
-      console.info('fetchMailDomain success', data);
-      setShowModal(false);
-      toast(t('Domain data fetched successfully'), VariantType.SUCCESS);
-      onMailDomainUpdate?.(data);
-    },
-    onError: () => {
-      console.error('fetchMailDomain error');
-      toast(t('Failed to fetch domain data'), VariantType.ERROR);
-    },
-  });
+  const { mutate: fetchMailDomain, isPending: fetchPending } =
+    useFetchFromDimail({
+      onSuccess: (data: MailDomain) => {
+        setShowModal(false);
+        toast(t('Domain data fetched successfully'), VariantType.SUCCESS);
+        onMailDomainUpdate?.(data);
+      },
+      onError: () => {
+        toast(t('Failed to fetch domain data'), VariantType.ERROR);
+      },
+    });
 
   return (
     <>
@@ -155,13 +155,17 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
           )}
           <pre>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button
-                onClick={() => {
-                  void fetchMailDomain(mailDomain.slug);
-                }}
-              >
-                {t('Re-run check')}
-              </Button>
+              {fetchPending ? (
+                <Loader />
+              ) : (
+                <Button
+                  onClick={() => {
+                    void fetchMailDomain(mailDomain.slug);
+                  }}
+                >
+                  {t('Re-run check')}
+                </Button>
+              )}
             </div>
           </pre>
         </Modal>
