@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.13.1] - 2025-03-04
+
 ### Fixed
 
 - 🐛(mailbox) fix migration to fill dn_email field
@@ -315,7 +317,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.13.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.13.1...main
+[1.13.1]: https://github.com/suitenumerique/people/releases/v1.13.1
 [1.13.0]: https://github.com/suitenumerique/people/releases/v1.13.0
 [1.12.1]: https://github.com/suitenumerique/people/releases/v1.12.1
 [1.12.0]: https://github.com/suitenumerique/people/releases/v1.12.0
