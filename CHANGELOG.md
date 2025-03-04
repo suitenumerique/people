@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(mailbox) fix migration to fill dn_email field
+
 ## [1.13.0] - 2025-03-04
 
 ### Added
