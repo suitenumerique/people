@@ -13,6 +13,14 @@ from core.resource_server.urls import urlpatterns as resource_server_urls
 router = DefaultRouter()
 router.register("teams", viewsets.TeamViewSet, basename="teams")
 
+# - Routes nested under a team
+team_related_router = DefaultRouter()
+team_related_router.register(
+    "invitations",
+    viewsets.InvitationViewset,
+    basename="invitations",
+)
+
 
 # - Routes nested under a team
 # Invitations will be added later
@@ -24,6 +32,7 @@ urlpatterns = [
             [
                 *router.urls,
                 *resource_server_urls,
+                path("teams/<uuid:team_id>/", include(team_related_router.urls)),
             ]
         ),
     ),

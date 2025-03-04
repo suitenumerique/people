@@ -123,3 +123,79 @@ class TeamViewSet(  # pylint: disable=too-many-ancestors
             user=self.request.user,
             role=models.RoleChoices.OWNER,
         )
+
+
+class InvitationViewset(  # pylint: disable=too-many-ancestors
+    ResourceServerMixin,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for user invitations to team via resource server.
+
+    GET /resource-server/v1.0/teams/<team_id>/invitations/:<invitation_id>/
+        Return list of invitations related to that team or one
+        team access if an id is provided.
+
+    POST /resource-server/v1.0/teams/<team_id>/invitations/ with expected data:
+        - email: str
+        - role: str [owner|admin|member]
+        - issuer : User, automatically added from user making query, if allowed
+        - team : Team, automatically added from requested URI
+        Return newly created invitation
+
+    PUT / PATCH : Not permitted. Instead of updating your invitation,
+        delete and create a new one.
+
+    DELETE  /resource-server/v1.0/teams/<team_id>/invitations/<invitation_id>/
+        Delete targeted invitation
+    """
+
+    lookup_field = "id"
+    pagination_class = Pagination
+    permission_classes = [permissions.AccessPermission]
+    serializer_class = serializers.InvitationSerializer
+
+    def get_permissions(self):
+        """Set specific permissions based on the action."""
+        if self.action == "list":
+            permission_classes = [permissions.IsAuthenticated]
+        elif self.action == "create":
+            permission_classes = [permissions.TeamInvitationCreationPermission]
+        else:
+            permission_classes = [permissions.AccessPermission]
+
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["team_id"] = self.kwargs["team_id"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        service_provider_audience = self._get_service_provider_audience()
+
+        # Determine which role the logged-in user has in the team
+        user_role_query = models.TeamAccess.objects.filter(
+            user=self.request.user, team=self.kwargs["team_id"]
+        ).values("role")[:1]
+
+        queryset = (
+            models.Invitation.objects.select_related("team")
+            .filter(
+                team=self.kwargs["team_id"],
+                # The logged-in user should be part of a team to see its accesses
+                team__accesses__user=self.request.user,
+                # The team should be accessible by the service provider audience
+                team__service_providers__audience_id=service_provider_audience,
+            )
+            .annotate(user_role=Subquery(user_role_query))
+            .order_by("-created_at")
+            .distinct()
+        )
+
+        return queryset
