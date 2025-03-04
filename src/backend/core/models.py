@@ -37,8 +37,6 @@ from core.plugins.loader import (
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
 
-from mailbox_manager import enums
-
 logger = getLogger(__name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -520,7 +518,8 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
         if self._state.adding:
             self._convert_valid_team_invitations()
-            self._convert_valid_domain_invitations()
+            # a post_save signal to convert domain invitations to domain accesses
+            # is triggered by the mailbox_manager app
 
         super().save(*args, **kwargs)
 
@@ -554,53 +553,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             ]
         )
         valid_invitations.delete()
-
-    def _convert_valid_domain_invitations(self):
-        """
-        Convert valid domain invitations to domain accesses.
-        Expired invitations are ignored.
-        """
-
-        from mailbox_manager.models import DomainInvitation, MailDomainAccess
-        from mailbox_manager.utils.dimail import DimailAPIClient
-
-        valid_domain_invitations = DomainInvitation.objects.filter(
-            email=self.email,
-            created_at__gte=(
-                timezone.now()
-                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-            ),
-        )
-
-        if not valid_domain_invitations.exists():
-            return
-
-        MailDomainAccess.objects.bulk_create(
-            [
-                MailDomainAccess(
-                    user=self, domain=invitation.domain, role=invitation.role
-                )
-                for invitation in valid_domain_invitations
-            ]
-        )
-
-        management_role = set(valid_domain_invitations.values_list("role", flat="True"))
-        if (
-            enums.MailDomainRoleChoices.OWNER in management_role
-            or enums.MailDomainRoleChoices.ADMIN in management_role
-        ):
-            # Sync with dimail
-            dimail = DimailAPIClient()
-            dimail.create_user(self.sub)
-
-            for invitation in valid_domain_invitations:
-                if invitation.role in [
-                    enums.MailDomainRoleChoices.OWNER,
-                    enums.MailDomainRoleChoices.ADMIN,
-                ]:
-                    dimail.create_allow(self.sub, invitation.domain.name)
-
-        valid_domain_invitations.delete()
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Email this user."""
@@ -725,7 +677,7 @@ class TeamManager(MP_NodeManager):
             return self.model.add_root(**kwargs)
 
         # Retrieve parent object, because django-treebeard uses raw queries for most
-        # write operations, and raw queries don’t update the django objects of the db
+        # write operations, and raw queries don't update the django objects of the db
         # entries they modify. See caveats in the django-treebeard documentation.
         # This might be changed later if we never do any operation on the parent object
         # before creating the child.
