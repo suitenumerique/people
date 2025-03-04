@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.13.0] - 2025-03-04
+
 ### Added
 
 - ✨(oidc) people as an identity provider #638
@@ -309,7 +311,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.12.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.13.0...main
+[1.13.0]: https://github.com/suitenumerique/people/releases/v1.13.0
 [1.12.1]: https://github.com/suitenumerique/people/releases/v1.12.1
 [1.12.0]: https://github.com/suitenumerique/people/releases/v1.12.0
 [1.11.0]: https://github.com/suitenumerique/people/releases/v1.11.0
