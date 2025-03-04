@@ -95,7 +95,7 @@ def deployment_part(version):
         path = f"manifests/regie/env.d/preprod/values.desk.yaml.gotmpl"
         update_helm_files(path)
         run_command(f"git add {path}", shell=True)
-        message = f"""🔖(people) bump preprod version to {version}"""
+        message = f"""🔖(regie) bump preprod version to {version}"""
         run_command(f"git commit -m '{message}'", shell=True)
         confirm = input(f"""\033[0;32m
 ### DEPLOYMENT ###
@@ -125,7 +125,7 @@ def project_part(version, kind):
     run_command("git add src/", shell=True)
     message = f"""🔖({RELEASE_KINDS[kind]}) release version {version}
 
-        Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
+Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
     run_command(f"git commit -m '{message}'", shell=True)
     confirm = input(f"""\033[0;32m
 ### RELEASE ###
