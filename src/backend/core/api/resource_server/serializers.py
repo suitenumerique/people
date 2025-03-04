@@ -50,3 +50,28 @@ class TeamSerializer(serializers.ModelSerializer):
                 "service_providers": [service_provider],
             },
         )
+
+
+class InvitationSerializer(serializers.ModelSerializer):
+    """Serialize invitations."""
+
+    class Meta:
+        model = models.Invitation
+        fields = ["id", "created_at", "email", "team", "role", "issuer", "is_expired"]
+        read_only_fields = ["id", "created_at", "team", "issuer", "is_expired"]
+
+    def validate(self, attrs):
+        """Fill team and issuer from request."""
+        is_team_available_for_service_provider = models.Team.objects.filter(
+            id=self.context["team_id"],
+            service_providers__audience_id=self.context[
+                "from_service_provider_audience"
+            ],
+        ).exists()
+        if not is_team_available_for_service_provider:
+            raise serializers.ValidationError({"team": "Team not found."})
+
+        attrs["team_id"] = self.context["team_id"]
+        attrs["issuer"] = self.context["request"].user  # User is authenticated
+
+        return attrs
