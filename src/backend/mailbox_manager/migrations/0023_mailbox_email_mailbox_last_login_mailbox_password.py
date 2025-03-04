@@ -12,7 +12,7 @@ def fill_dn_email(apps, schema_editor):
         models.Q(dn_email="") | models.Q(dn_email__isnull=True)
     ):
         # quite naive but we don't have many data
-        mailbox.dn_email = mailbox.get_email()
+        mailbox.dn_email = f"{mailbox.local_part}@{mailbox.domain.name}"
         mailbox.save()
 
 
