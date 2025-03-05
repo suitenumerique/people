@@ -26,7 +26,7 @@ class MailDomainFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("name",)
         skip_postgeneration_save = True
 
-    name = factory.Faker("domain_name")
+    name = factory.Sequence(lambda n: f"domain{n!s}.com")
     slug = factory.LazyAttribute(lambda o: slugify(o.name))
     support_email = factory.Faker("email")
 
