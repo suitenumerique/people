@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(api) allow invitations for domain management #708
+
 ## [1.13.1] - 2025-03-04
 
 ### Fixed

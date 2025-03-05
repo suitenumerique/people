@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the People core application
 """
+# pylint: disable=too-many-lines import-outside-toplevel
 
 import json
 import os
@@ -35,6 +36,8 @@ from core.plugins.loader import (
 )
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
+
+from mailbox_manager import enums
 
 logger = getLogger(__name__)
 
@@ -512,11 +515,13 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     def save(self, *args, **kwargs):
         """
-        If it's a new user, give her access to the relevant teams.
+        If it's a new user, give them access to the relevant teams.
         """
 
         if self._state.adding:
-            self._convert_valid_invitations()
+            self._convert_valid_team_invitations()
+            # a post_save signals to convert domain invitations to domain accesses
+            # is triggered by the mailbox_manager app
 
         super().save(*args, **kwargs)
 
@@ -526,7 +531,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         if self.email:
             self.email = User.objects.normalize_email(self.email)
 
-    def _convert_valid_invitations(self):
+    def _convert_valid_team_invitations(self):
         """
         Convert valid invitations to team accesses.
         Expired invitations are ignored.
@@ -674,7 +679,7 @@ class TeamManager(MP_NodeManager):
             return self.model.add_root(**kwargs)
 
         # Retrieve parent object, because django-treebeard uses raw queries for most
-        # write operations, and raw queries don’t update the django objects of the db
+        # write operations, and raw queries don't update the django objects of the db
         # entries they modify. See caveats in the django-treebeard documentation.
         # This might be changed later if we never do any operation on the parent object
         # before creating the child.
@@ -895,18 +900,10 @@ class TeamWebhook(BaseModel):
         return headers
 
 
-class Invitation(BaseModel):
-    """User invitation to teams."""
+class BaseInvitation(BaseModel):
+    """Abstract base invitation model, surcharged for teams or domains."""
 
     email = models.EmailField(_("email address"), null=False, blank=False)
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="invitations",
-    )
-    role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
-    )
     issuer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -914,17 +911,7 @@ class Invitation(BaseModel):
     )
 
     class Meta:
-        db_table = "people_invitation"
-        verbose_name = _("Team invitation")
-        verbose_name_plural = _("Team invitations")
-        constraints = [
-            models.UniqueConstraint(
-                fields=["email", "team"], name="email_and_team_unique_together"
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.email} invited to {self.team}"
+        abstract = True
 
     def save(self, *args, **kwargs):
         """Make invitations read-only."""
@@ -953,31 +940,6 @@ class Invitation(BaseModel):
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
         return timezone.now() > (self.created_at + validity_duration)
 
-    def get_abilities(self, user):
-        """Compute and return abilities for a given user."""
-        can_delete = False
-        role = None
-
-        if user.is_authenticated:
-            try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self.team.accesses.filter(user=user).values("role")[0][
-                        "role"
-                    ]
-                except (self._meta.model.DoesNotExist, IndexError):
-                    role = None
-
-            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
-        return {
-            "delete": can_delete,
-            "get": bool(role),
-            "patch": False,
-            "put": False,
-        }
-
     def email_invitation(self):
         """Email invitation to the user."""
         try:
@@ -1002,5 +964,52 @@ class Invitation(BaseModel):
             logger.error("invitation to %s was not sent: %s", self.email, exception)
 
 
-# It's not clear yet how best to split this file.
-# pylint: disable=C0302
+class Invitation(BaseInvitation):
+    """User invitation to teams."""
+
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name="invitations",
+    )
+    role = models.CharField(
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+    )
+
+    class Meta:
+        db_table = "people_invitation"
+        verbose_name = _("Team invitation")
+        verbose_name_plural = _("Team invitations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "team"], name="email_and_team_unique_together"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.email} invited to {self.team}"
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        can_delete = False
+        role = None
+
+        if user.is_authenticated:
+            try:
+                role = self.user_role
+            except AttributeError:
+                try:
+                    role = self.team.accesses.filter(user=user).values("role")[0][
+                        "role"
+                    ]
+                except (self._meta.model.DoesNotExist, IndexError):
+                    role = None
+
+            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
+
+        return {
+            "delete": can_delete,
+            "get": bool(role),
+            "patch": False,
+            "put": False,
+        }
