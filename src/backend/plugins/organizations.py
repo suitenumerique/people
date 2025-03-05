@@ -181,7 +181,7 @@ class CommuneCreation(BaseOrganizationPlugin):
     def zone_name(self, name: str) -> str:
         """Derive the zone name from the commune name"""
         normalized = self.normalize_name(name)
-        return f"{normalized}.collectivite.fr"
+        return f"{normalized}.{settings.DNS_PROVISIONING_TARGET_ZONE}"
 
     def complete_commune_creation(self, name: str) -> ApiCall:
         """Specify the tasks to be completed after a commune is created."""
@@ -193,7 +193,7 @@ class CommuneCreation(BaseOrganizationPlugin):
         create_zone.url = "/domain/v2beta1/dns-zones"
         create_zone.params = {
             "project_id": settings.DNS_PROVISIONING_RESOURCE_ID,
-            "domain": "collectivite.fr",
+            "domain": settings.DNS_PROVISIONING_TARGET_ZONE,
             "subdomain": inputs["name"],
         }
         create_zone.headers = {

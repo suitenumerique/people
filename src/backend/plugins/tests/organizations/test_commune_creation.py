@@ -1,6 +1,7 @@
 """Tests for the CommuneCreation plugin."""
 
 from django.conf import settings
+from django.test.utils import override_settings
 
 import pytest
 import responses
@@ -60,6 +61,7 @@ def test_api_call_execution():
         task.execute()
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_tasks_on_commune_creation_include_zone_creation():
     """Test the first task in commune creation: creating the DNS sub-zone"""
     plugin = CommuneCreation()
@@ -78,6 +80,7 @@ def test_tasks_on_commune_creation_include_zone_creation():
     assert tasks[0].headers["X-Auth-Token"] == settings.DNS_PROVISIONING_API_CREDENTIALS
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_tasks_on_commune_creation_include_dimail_domain_creation():
     """Test the second task in commune creation: creating the domain in Dimail"""
     plugin = CommuneCreation()
@@ -100,6 +103,7 @@ def test_tasks_on_commune_creation_include_dimail_domain_creation():
     )
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_tasks_on_commune_creation_include_fetching_spec():
     """Test the third task in commune creation: asking Dimail for the spec"""
     plugin = CommuneCreation()
@@ -116,6 +120,7 @@ def test_tasks_on_commune_creation_include_fetching_spec():
     )
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_tasks_on_commune_creation_include_dns_records():
     """Test the next several tasks in commune creation: creating records"""
     plugin = CommuneCreation()
@@ -171,6 +176,7 @@ def test_tasks_on_commune_creation_include_dns_records():
     )
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_tasks_on_grant_access():
     """Test the final tasks after making user admin of an org"""
     plugin = CommuneCreation()
@@ -218,6 +224,7 @@ def test_normalize_name():
     )
 
 
+@override_settings(DNS_PROVISIONING_TARGET_ZONE="collectivite.fr")
 def test_zone_name():
     """Test transforming a commune name to a sub-zone of collectivite.fr"""
     plugin = CommuneCreation()

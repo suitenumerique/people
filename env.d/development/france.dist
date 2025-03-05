@@ -1,1 +1,2 @@
 ORGANIZATION_PLUGINS=plugins.organizations.NameFromSiretOrganizationPlugin,plugins.organizations.CommuneCreation
+DNS_PROVISIONING_TARGET_ZONE=test.collectivite.fr

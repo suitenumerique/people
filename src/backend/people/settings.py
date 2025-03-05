@@ -545,6 +545,11 @@ class Base(Configuration):
         environ_name="MAIL_CHECK_DOMAIN_INTERVAL",
         environ_prefix=None,
     )
+    DNS_PROVISIONING_TARGET_ZONE = values.Value(
+        default=None,
+        environ_name="DNS_PROVISIONING_TARGET_ZONE",
+        environ_prefix=None,
+    )
     DNS_PROVISIONING_API_URL = values.Value(
         default="https://api.scaleway.com",
         environ_name="DNS_PROVISIONING_API_URL",

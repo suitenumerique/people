@@ -23,7 +23,7 @@ test.describe('When a commune, domain is created on first login via ProConnect',
     await expect(
       page.getByLabel('Mail domains panel', { exact: true }),
     ).toBeVisible();
-    await expect(page.getByText('merlaut.collectivite.fr')).toHaveCount(1);
+    await expect(page.getByText('merlaut.test.collectivite.fr')).toHaveCount(1);
     await expect(page.getByText('No domains exist.')).toHaveCount(0);
   });
 });
