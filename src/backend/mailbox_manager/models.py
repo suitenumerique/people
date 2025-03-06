@@ -276,7 +276,7 @@ class Mailbox(AbstractBaseUser, BaseModel):
 
 
 class MailDomainInvitation(BaseInvitation):
-    """User invitation to teams."""
+    """User invitation to mail domains."""
 
     issuer = models.ForeignKey(
         User,
