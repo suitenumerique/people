@@ -304,7 +304,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/domains/{domain.name}/mailboxes/",
                 headers=self.get_headers(),
                 verify=True,
-                timeout=10,
+                timeout=30,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
