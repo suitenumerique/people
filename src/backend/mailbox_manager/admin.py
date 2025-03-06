@@ -216,3 +216,16 @@ class MailDomainAccessInline(admin.TabularInline):
     autocomplete_fields = ["user", "domain"]
     model = models.MailDomainAccess
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(models.MailDomainInvitation)
+class MailDomainInvitationAdmin(admin.ModelAdmin):
+    """Admin for mail domain invitation model."""
+
+    list_display = ("email", "domain", "created_at", "updated_at", "is_expired")
+    search_fields = ("email", "domain__name")
+    readonly_fields = ("created_at", "updated_at", "is_expired")
+
+    def is_expired(self, obj):
+        """Return the expiration date of the invitation."""
+        return obj.is_expired
