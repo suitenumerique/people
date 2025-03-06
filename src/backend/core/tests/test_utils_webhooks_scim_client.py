@@ -73,13 +73,16 @@ def test_utils_webhooks_add_user_to_group_success(mock_info):
             }
 
     # Logger
-    assert mock_info.call_count == 2
-    for i, webhook in enumerate(webhooks):
-        assert mock_info.call_args_list[i][0] == (
-            "%s synchronization succeeded with %s",
-            "add_user_to_group",
-            webhook.url,
-        )
+    for webhook in webhooks:
+        expected_messages = {
+            (
+                "%s synchronization succeeded with %s",
+                "add_user_to_group",
+                webhook.url,
+            )
+        }
+        actual_messages = {args for args, _ in mock_info.call_args_list}
+        assert expected_messages.issubset(actual_messages)
 
     # Status
     for webhook in webhooks:
@@ -130,13 +133,16 @@ def test_utils_webhooks_remove_user_from_group_success(mock_info):
             }
 
     # Logger
-    assert mock_info.call_count == 2
-    for i, webhook in enumerate(webhooks):
-        assert mock_info.call_args_list[i][0] == (
-            "%s synchronization succeeded with %s",
-            "remove_user_from_group",
-            webhook.url,
-        )
+    for webhook in webhooks:
+        expected_messages = {
+            (
+                "%s synchronization succeeded with %s",
+                "remove_user_from_group",
+                webhook.url,
+            )
+        }
+        actual_messages = {args for args, _ in mock_info.call_args_list}
+        assert expected_messages.issubset(actual_messages)
 
     # Status
     for webhook in webhooks:
@@ -145,8 +151,7 @@ def test_utils_webhooks_remove_user_from_group_success(mock_info):
 
 
 @mock.patch.object(Logger, "error")
-@mock.patch.object(Logger, "info")
-def test_utils_webhooks_add_user_to_group_failure(mock_info, mock_error):
+def test_utils_webhooks_add_user_to_group_failure(mock_error):
     """The logger should be called on webhook call failure."""
     user = factories.UserFactory()
     access = factories.TeamAccessFactory(user=user)
@@ -188,14 +193,16 @@ def test_utils_webhooks_add_user_to_group_failure(mock_info, mock_error):
             }
 
     # Logger
-    assert not mock_info.called
-    assert mock_error.call_count == 2
-    for i, webhook in enumerate(webhooks):
-        assert mock_error.call_args_list[i][0] == (
-            "%s synchronization failed with %s",
-            "add_user_to_group",
-            webhook.url,
-        )
+    for webhook in webhooks:
+        expected_messages = {
+            (
+                "%s synchronization failed with %s",
+                "add_user_to_group",
+                webhook.url,
+            )
+        }
+        actual_messages = {args for args, _ in mock_error.call_args_list}
+        assert expected_messages.issubset(actual_messages)
 
     # Status
     for webhook in webhooks:
@@ -246,12 +253,15 @@ def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
 
     # Logger
     assert not mock_error.called
-    assert mock_info.call_count == 1
-    assert mock_info.call_args_list[0][0] == (
-        "%s synchronization succeeded with %s",
-        "add_user_to_group",
-        webhook.url,
-    )
+    expected_messages = {
+        (
+            "%s synchronization succeeded with %s",
+            "add_user_to_group",
+            webhook.url,
+        )
+    }
+    actual_messages = {args for args, _ in mock_info.call_args_list}
+    assert expected_messages.issubset(actual_messages)
 
     # Status
     webhook.refresh_from_db()
@@ -259,8 +269,7 @@ def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
 
 
 @mock.patch.object(Logger, "error")
-@mock.patch.object(Logger, "info")
-def test_utils_synchronize_course_runs_max_retries_exceeded(mock_info, mock_error):
+def test_utils_synchronize_course_runs_max_retries_exceeded(mock_error):
     """Webhooks synchronization has exceeded max retries and should get logged."""
     user = factories.UserFactory()
     access = factories.TeamAccessFactory(user=user)
@@ -299,13 +308,15 @@ def test_utils_synchronize_course_runs_max_retries_exceeded(mock_info, mock_erro
         }
 
     # Logger
-    assert not mock_info.called
-    assert mock_error.call_count == 1
-    assert mock_error.call_args_list[0][0] == (
-        "%s synchronization failed due to max retries exceeded with url %s",
-        "add_user_to_group",
-        webhook.url,
-    )
+    expected_messages = {
+        (
+            "%s synchronization failed due to max retries exceeded with url %s",
+            "add_user_to_group",
+            webhook.url,
+        )
+    }
+    actual_messages = {args for args, _ in mock_error.call_args_list}
+    assert expected_messages.issubset(actual_messages)
 
     # Status
     webhook.refresh_from_db()

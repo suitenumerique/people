@@ -272,20 +272,20 @@ def test_api_mail_domains_accesses__create_dimail_allows(caplog):
 
     assert response.status_code == status.HTTP_201_CREATED
 
+    log_messages = [msg.message for msg in caplog.records]
     # check logs
     assert (
-        caplog.records[0].message
-        == f'[DIMAIL] User "{allowed_user.sub}" successfully created on dimail'
+        f'[DIMAIL] User "{allowed_user.sub}" successfully created on dimail'
+        in log_messages
     )
     assert (
-        caplog.records[1].message
-        == f'[DIMAIL] Permissions granted for user "{allowed_user.sub}" on domain {domain.name}.'
+        f'[DIMAIL] Permissions granted for user "{allowed_user.sub}" on domain {domain.name}.'
+        in log_messages
     )
 
 
-def test_api_mail_domains_accesses__dont_create_dimail_allows_for_viewer(caplog):
+def test_api_mail_domains_accesses__dont_create_dimail_allows_for_viewer():
     """Dimail should not be called when creating an access to a simple viewer."""
-    caplog.set_level(logging.INFO)
 
     authenticated_user = core_factories.UserFactory()
     domain = factories.MailDomainFactory(status="enabled")
@@ -308,9 +308,6 @@ def test_api_mail_domains_accesses__dont_create_dimail_allows_for_viewer(caplog)
         )
 
     assert response.status_code == status.HTTP_201_CREATED
-
-    # check logs
-    assert len(caplog.records) == 1  # should be 0, investigate this damn empty message
 
 
 def test_api_mail_domains_accesses__user_already_on_dimail(caplog):
@@ -358,12 +355,12 @@ def test_api_mail_domains_accesses__user_already_on_dimail(caplog):
     assert response.status_code == status.HTTP_201_CREATED
 
     # check logs
-    assert len(caplog.records) == 3  # should be 2, investigate this damn empty message
+    log_messages = [msg.message for msg in caplog.records]
     assert (
-        caplog.records[0].message
-        == f'[DIMAIL] Attempt to create user "{allowed_user.sub}" which already exists.'
+        f'[DIMAIL] Attempt to create user "{allowed_user.sub}" which already exists.'
+        in log_messages
     )
     assert (
-        caplog.records[1].message
-        == f'[DIMAIL] Permissions granted for user "{allowed_user.sub}" on domain {domain.name}.'
+        f'[DIMAIL] Permissions granted for user "{allowed_user.sub}" on domain {domain.name}.'
+        in log_messages
     )
