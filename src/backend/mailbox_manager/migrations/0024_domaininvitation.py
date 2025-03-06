@@ -15,20 +15,20 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='DomainInvitation',
+            name='MailDomainInvitation',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, help_text='primary key for the record as UUID', primary_key=True, serialize=False, verbose_name='id')),
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='date and time at which a record was created', verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='date and time at which a record was last updated', verbose_name='updated at')),
                 ('email', models.EmailField(max_length=254, verbose_name='email address')),
                 ('role', models.CharField(choices=[('viewer', 'Viewer'), ('administrator', 'Administrator'), ('owner', 'Owner')], default='viewer', max_length=20)),
-                ('domain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='domain_invitations', to='mailbox_manager.maildomain')),
-                ('issuer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='domain_invitations', to=settings.AUTH_USER_MODEL)),
+                ('domain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mail_domain_invitations', to='mailbox_manager.maildomain')),
+                ('issuer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mail_domain_invitations', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Domain invitation',
-                'verbose_name_plural': 'Domain invitations',
-                'db_table': 'people_domain_invitation',
+                'verbose_name': 'Mail domain invitation',
+                'verbose_name_plural': 'Mail domain invitations',
+                'db_table': 'people_mail_domain_invitation',
                 'constraints': [models.UniqueConstraint(fields=('email', 'domain'), name='email_and_domain_unique_together')],
             },
         ),

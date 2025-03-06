@@ -275,18 +275,18 @@ class Mailbox(AbstractBaseUser, BaseModel):
         return f"{self.local_part}@{self.domain.name}"
 
 
-class DomainInvitation(BaseInvitation):
+class MailDomainInvitation(BaseInvitation):
     """User invitation to teams."""
 
     issuer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="domain_invitations",
+        related_name="mail_domain_invitations",
     )
     domain = models.ForeignKey(
         MailDomain,
         on_delete=models.CASCADE,
-        related_name="domain_invitations",
+        related_name="mail_domain_invitations",
     )
     role = models.CharField(
         max_length=20,
@@ -295,9 +295,9 @@ class DomainInvitation(BaseInvitation):
     )
 
     class Meta:
-        db_table = "people_domain_invitation"
-        verbose_name = _("Domain invitation")
-        verbose_name_plural = _("Domain invitations")
+        db_table = "people_mail_domain_invitation"
+        verbose_name = _("Mail domain invitation")
+        verbose_name_plural = _("Mail domain invitations")
         constraints = [
             models.UniqueConstraint(
                 fields=["email", "domain"], name="email_and_domain_unique_together"

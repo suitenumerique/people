@@ -86,11 +86,11 @@ class MailboxEnabledFactory(MailboxFactory):
     status = enums.MailboxStatusChoices.ENABLED
 
 
-class DomainInvitationFactory(factory.django.DjangoModelFactory):
+class MailDomainInvitationFactory(factory.django.DjangoModelFactory):
     """A factory to create invitations for a user"""
 
     class Meta:
-        model = models.DomainInvitation
+        model = models.MailDomainInvitation
 
     domain = factory.SubFactory(MailDomainEnabledFactory)
     email = factory.Faker("email")

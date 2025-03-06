@@ -1,5 +1,6 @@
 """
-Tests for DomainInvitations API endpoint in People's app mailbox_manager. Focus on "create" action.
+Tests for MailDomainInvitations API endpoint in People's app mailbox_manager.
+Focus on "create" action.
 """
 
 import pytest
@@ -17,8 +18,8 @@ pytestmark = pytest.mark.django_db
 def test_api_domain_invitations__create__anonymous():
     """Anonymous users should not be able to create invitations."""
     domain = factories.MailDomainEnabledFactory()
-    invitation_values = serializers.DomainInvitationSerializer(
-        factories.DomainInvitationFactory.build()
+    invitation_values = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build()
     ).data
 
     response = APIClient().post(
@@ -37,8 +38,8 @@ def test_api_domain_invitations__create__authenticated_outsider():
     for a domain they don't manage."""
     user = core_factories.UserFactory()
     domain = factories.MailDomainEnabledFactory()
-    invitation_values = serializers.DomainInvitationSerializer(
-        factories.DomainInvitationFactory.build()
+    invitation_values = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build()
     ).data
 
     client = APIClient()
@@ -62,8 +63,8 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     domain = factories.MailDomainEnabledFactory()
     factories.MailDomainAccessFactory(domain=domain, user=user, role=role)
 
-    invitation_values = serializers.DomainInvitationSerializer(
-        factories.DomainInvitationFactory.build()
+    invitation_values = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build()
     ).data
 
     client = APIClient()
@@ -87,8 +88,8 @@ def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():
         domain=domain, user=user, role=enums.MailDomainRoleChoices.VIEWER
     )
 
-    invitation_values = serializers.DomainInvitationSerializer(
-        factories.DomainInvitationFactory.build()
+    invitation_values = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build()
     ).data
 
     client = APIClient()
@@ -107,7 +108,7 @@ def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():
 
 def test_api_domain_invitations__should_not_create_duplicate_invitations():
     """An email should not be invited multiple times to the same domain."""
-    existing_invitation = factories.DomainInvitationFactory()
+    existing_invitation = factories.MailDomainInvitationFactory()
     domain = existing_invitation.domain
 
     # Grant privileged role on the domain to the user
@@ -117,8 +118,8 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     )
 
     # Create a new invitation to the same domain with the exact same email address
-    duplicated_invitation = serializers.DomainInvitationSerializer(
-        factories.DomainInvitationFactory.build(email=existing_invitation.email)
+    duplicated_invitation = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build(email=existing_invitation.email)
     ).data
 
     client = APIClient()
@@ -130,5 +131,5 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["__all__"] == [
-        "Domain invitation with this Email address and Domain already exists."
+        "Mail domain invitation with this Email address and Domain already exists."
     ]

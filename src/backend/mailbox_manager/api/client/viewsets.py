@@ -294,7 +294,7 @@ class MailBoxViewSet(
         return Response(serializers.MailboxSerializer(mailbox).data)
 
 
-class DomainInvitationViewset(
+class MailDomainInvitationViewset(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -320,11 +320,11 @@ class DomainInvitationViewset(
     lookup_field = "id"
     permission_classes = [permissions.AccessPermission]
     queryset = (
-        models.DomainInvitation.objects.all()
+        models.MailDomainInvitation.objects.all()
         .select_related("domain")
         .order_by("-created_at")
     )
-    serializer_class = serializers.DomainInvitationSerializer
+    serializer_class = serializers.MailDomainInvitationSerializer
 
     def get_serializer_context(self):
         """Extra context provided to the serializer class."""

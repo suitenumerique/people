@@ -26,7 +26,7 @@ maildomain_related_router.register(
 
 maildomain_related_router.register(
     "invitations",
-    viewsets.DomainInvitationViewset,
+    viewsets.MailDomainInvitationViewset,
     basename="invitations",
 )
 
