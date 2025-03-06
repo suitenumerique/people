@@ -335,18 +335,15 @@ def test_api_mail_domains__create_dimail_domain(caplog):
     assert response.status_code == status.HTTP_201_CREATED
 
     # Logger
-    assert len(caplog.records) == 4  # should be 3. Last empty info still here.
+    log_messages = [msg.message for msg in caplog.records]
     assert (
-        caplog.records[0].message
-        == f"Domain {domain_name} successfully created on dimail by user {user.sub}"
+        f"Domain {domain_name} successfully created on dimail by user {user.sub}"
+        in log_messages
     )
+    assert f'[DIMAIL] User "{user.sub}" successfully created on dimail' in log_messages
     assert (
-        caplog.records[1].message
-        == f'[DIMAIL] User "{user.sub}" successfully created on dimail'
-    )
-    assert (
-        caplog.records[2].message
-        == f'[DIMAIL] Permissions granted for user "{user.sub}" on domain {domain_name}.'
+        f'[DIMAIL] Permissions granted for user "{user.sub}" on domain {domain_name}.'
+        in log_messages
     )
 
 

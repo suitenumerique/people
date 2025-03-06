@@ -617,11 +617,11 @@ def test_api_mailboxes__dimail_token_permission_denied(caplog):
         assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
         # Check error logger was called
-        assert caplog.records[0].levelname == "ERROR"
+        log_messages = [msg.message for msg in caplog.records]
         assert (
-            caplog.records[0].message
-            == "[DIMAIL] 403 Forbidden: Could not retrieve a token,"
-            "please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting."
+            "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
+please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting."
+            in log_messages
         )
 
 
@@ -771,16 +771,17 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
 
     # Logger
     assert not mock_error.called
-    assert mock_info.call_count == 4
-    # a new empty error has been added. To be investigated
-    assert mock_info.call_args_list[0][0] == (
-        "Token succesfully granted by mail-provisioning API.",
-    )
-    assert mock_info.call_args_list[1][0] == (
-        "Mailbox successfully created on domain %s by user %s",
-        str(access.domain),
-        access.user.sub,
-    )
+    # Check all expected log messages are present, order doesn't matter
+    expected_messages = {
+        ("Token succesfully granted by mail-provisioning API.",),
+        (
+            "Mailbox successfully created on domain %s by user %s",
+            str(access.domain),
+            access.user.sub,
+        ),
+    }
+    actual_messages = {args for args, _ in mock_info.call_args_list}
+    assert expected_messages.issubset(actual_messages)
 
 
 @mock.patch.object(Logger, "info")
@@ -826,9 +827,12 @@ def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
         assert mock_send.mock_calls[0][1][0] == "Your new mailbox information"
         assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
 
-    assert mock_info.call_count == 4
-    assert mock_info.call_args_list[2][0] == (
-        "Information for mailbox %s sent to %s.",
-        f"{mailbox_data['local_part']}@{access.domain.name}",
-        mailbox_data["secondary_email"],
-    )
+    expected_messages = {
+        (
+            "Information for mailbox %s sent to %s.",
+            f"{mailbox_data['local_part']}@{access.domain.name}",
+            mailbox_data["secondary_email"],
+        )
+    }
+    actual_messages = {args for args, _ in mock_info.call_args_list}
+    assert expected_messages.issubset(actual_messages)

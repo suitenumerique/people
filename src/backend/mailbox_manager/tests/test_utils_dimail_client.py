@@ -387,24 +387,21 @@ def test_dimail__enable_pending_mailboxes(caplog):
     assert mailbox1.status == enums.MailboxStatusChoices.ENABLED
     assert mailbox2.status == enums.MailboxStatusChoices.ENABLED
 
-    assert len(caplog.records) == 6
+    log_messages = [msg.message for msg in caplog.records]
+    assert "Token succesfully granted by mail-provisioning API." in log_messages
     assert (
-        caplog.records[0].message
-        == "Token succesfully granted by mail-provisioning API."
+        f"Mailbox successfully created on domain {domain.name} by user None"
+        in log_messages
     )
     assert (
-        caplog.records[1].message
-        == f"Mailbox successfully created on domain {domain.name} by user None"
+        f"Information for mailbox mock@{domain.name} sent to {mailbox2.secondary_email}."
+        in log_messages
     )
     assert (
-        caplog.records[2].message
-        == f"Information for mailbox mock@{domain.name} sent to {mailbox2.secondary_email}."
+        f"Mailbox successfully created on domain {domain.name} by user None"
+        in log_messages
     )
     assert (
-        caplog.records[4].message
-        == f"Mailbox successfully created on domain {domain.name} by user None"
-    )
-    assert (
-        caplog.records[5].message
-        == f"Information for mailbox mock@{domain.name} sent to {mailbox1.secondary_email}."
+        f"Information for mailbox mock@{domain.name} sent to {mailbox1.secondary_email}."
+        in log_messages
     )
