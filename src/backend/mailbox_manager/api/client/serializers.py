@@ -269,11 +269,11 @@ class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):
         ]
 
 
-class DomainInvitationSerializer(serializers.ModelSerializer):
+class MailDomainInvitationSerializer(serializers.ModelSerializer):
     """Serialize invitations."""
 
     class Meta:
-        model = models.DomainInvitation
+        model = models.MailDomainInvitation
         fields = ["id", "created_at", "email", "domain", "role", "issuer", "is_expired"]
         read_only_fields = ["id", "created_at", "domain", "issuer", "is_expired"]
 
