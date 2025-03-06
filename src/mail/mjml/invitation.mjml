@@ -16,7 +16,7 @@
 
           <!-- Welcome Message -->
           <mj-text>
-            <h1>{% trans "Welcome to" %} <strong>Régie</strong></h1>
+            <h1>{% trans "Welcome to" %} <strong>La Régie</strong></h1>
           </mj-text>
           <mj-divider border-width="1px" border-style="solid" border-color="#DDDDDD" width="30%" align="left"/>
 
