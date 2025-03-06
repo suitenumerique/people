@@ -1,0 +1,105 @@
+image:
+  repository: localhost:5001/people-backend
+  pullPolicy: Always
+  tag: "latest"
+
+backend:
+  replicas: 1
+  envVars:
+    DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
+    DJANGO_CONFIGURATION: Local
+    DJANGO_ALLOWED_HOSTS: "*"
+    DJANGO_SECRET_KEY: kkdsjfhkjhsfdkjhsd76kjhkjh
+    DJANGO_SETTINGS_MODULE: people.settings
+    DJANGO_SUPERUSER_PASSWORD: admin
+    DJANGO_SUPERUSER_EMAIL: admin@example.com
+    DJANGO_EMAIL_HOST_PASSWORD: changeme
+    DJANGO_EMAIL_HOST: "maildev"
+    DJANGO_EMAIL_PORT: 1025
+    DJANGO_EMAIL_USE_SSL: False
+    DJANGO_SENTRY_DSN: null
+    OIDC_RS_CLIENT_ID: changeme
+    OIDC_RS_CLIENT_SECRET: changeme
+    OIDC_RS_PRIVATE_KEY_STR: "lkj"
+    OIDC_OP_JWKS_ENDPOINT: https://authentik.127.0.0.1.nip.io/application/o/people/jwks/
+    OIDC_OP_AUTHORIZATION_ENDPOINT: https://authentik.127.0.0.1.nip.io/application/o/authorize/
+    OIDC_OP_TOKEN_ENDPOINT: https://authentik.127.0.0.1.nip.io/application/o/token/
+    OIDC_OP_USER_ENDPOINT: https://authentik.127.0.0.1.nip.io/application/o/userinfo/
+    OIDC_OP_USER_ENDPOINT_IS_JWT: False
+    OIDC_OP_LOGOUT_ENDPOINT: https://authentik.127.0.0.1.nip.io/application/o/people/end-session/
+    OIDC_ORGANIZATION_REGISTRATION_ID_FIELD: "siret"
+    OIDC_RP_CLIENT_ID: people
+    OIDC_RP_CLIENT_SECRET: ThisIsAnExampleKeyForDevPurposeOnly
+    OIDC_RP_SIGN_ALGO: RS256
+    OIDC_RP_SCOPES: "openid email siret"
+    OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
+    OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
+    OAUTH2_PROVIDER_OIDC_ENABLED: True
+    OAUTH2_PROVIDER_VALIDATOR_CLASS: "mailbox_oauth2.validators.ProConnectValidator"
+    ORGANIZATION_REGISTRATION_ID_VALIDATORS: '[{"NAME": "django.core.validators.RegexValidator", "OPTIONS": {"regex": "^[0-9]{14}$"}}]'
+    LOGIN_REDIRECT_URL: https://desk.127.0.0.1.nip.io
+    LOGIN_REDIRECT_URL_FAILURE: https://desk.127.0.0.1.nip.io
+    LOGOUT_REDIRECT_URL: https://desk.127.0.0.1.nip.io
+    DB_HOST: postgres-postgresql
+    DB_NAME: people
+    DB_USER: dinum
+    DB_PASSWORD: pass
+    DB_PORT: 5432
+    POSTGRES_DB: people
+    POSTGRES_USER: dinum
+    POSTGRES_PASSWORD: pass
+    REDIS_URL: redis://default:pass@redis-master:6379/1
+    WEBMAIL_URL: "https://onestendev.yapasdewebmail.fr"
+    MAIL_PROVISIONING_API_URL: "http://dimail:8000"
+    MAIL_PROVISIONING_API_CREDENTIALS: changeme
+  command:
+    - "gunicorn"
+    - "-c"
+    - "/usr/local/etc/gunicorn/people.py"
+    - "people.wsgi:application"
+    - "--reload"
+
+  createsuperuser:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - python manage.py createsuperuser --username ${DJANGO_SUPERUSER_EMAIL} --password ${DJANGO_SUPERUSER_PASSWORD} || echo ok
+    restartPolicy: Never
+
+  # Extra volume mounts to manage our local custom CA and avoid to set ssl_verify: false
+  extraVolumeMounts:
+    - name: certs
+      mountPath: /usr/local/lib/python3.12/site-packages/certifi/cacert.pem
+      subPath: cacert.pem
+
+  # Extra volumes to manage our local custom CA and avoid to set ssl_verify: false
+  extraVolumes:
+    - name: certs
+      configMap:
+        name: certifi
+        items:
+        - key: cacert.pem
+          path: cacert.pem
+
+frontend:
+  envVars:
+    PORT: 8080
+    NEXT_PUBLIC_API_ORIGIN: https://desk.127.0.0.1.nip.io
+
+  replicas: 1
+  command:
+    - yarn
+    - dev
+
+  image:
+    repository: localhost:5001/people-frontend
+    pullPolicy: Always
+    tag: "latest"
+
+ingress:
+  enabled: true
+  host: desk.127.0.0.1.nip.io
+
+ingressAdmin:
+  enabled: true
+  host: desk.127.0.0.1.nip.io

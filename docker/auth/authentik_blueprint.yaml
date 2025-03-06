@@ -1,0 +1,257 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+
+# Can be debugged in a worker with:
+# ak apply_blueprint /blueprints/mounted/cm-people/people.yaml
+
+version: 1
+metadata:
+  name: Initial configuration for People project
+entries:
+  - model: authentik_core.user
+    identifiers:
+      username: people
+    attrs:
+      name: John Doe
+      email: people@people.world
+      password: people
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.marie
+    attrs:
+      name: Marie Delamairie
+      email: marie.varzy@gmail.com
+      password: password-e2e.marie
+      path: users
+      is_active: true
+      attributes:
+        siret: 21510339100011
+
+  - model: authentik_core.user
+    identifiers:
+      username: user-e2e-chromium
+    attrs:
+      name: E2E Chromium
+      email: user@chromium.e2e
+      password: password-e2e-chromium
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: user-e2e-webkit
+    attrs:
+      name: E2E Webkit
+      email: user@webkit.e2e
+      password: password-e2e-webkit
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: user-e2e-firefox
+    attrs:
+      name: E2E Firefox
+      email: user@firefox.e2e
+      password: password-e2e-firefox
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-member
+    attrs:
+      name: E2E Group Member
+      email: e2e.team-member@example.com
+      password: password-e2e.team-member
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-administrator
+    attrs:
+      name: E2E Group Administrator
+      email: e2e.team-administrator@example.com
+      password: password-e2e.team-administrator
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-owner
+    attrs:
+      name: E2E Group Owner
+      email: e2e.team-owner@example.com
+      password: password-e2e.team-owner
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.mail-member
+    attrs:
+      name: E2E Mailbox Member
+      email: e2e.mail-member@example.com
+      password: password-e2e.mail-member
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.mail-administrator
+    attrs:
+      name: E2E Mailbox Administrator
+      email: e2e.mail-administrator@example.com
+      password: password-e2e.mail-administrator
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.mail-owner
+    attrs:
+      name: E2E Mailbox Owner
+      email: e2e.mail-owner@example.com
+      password: password-e2e.mail-owner
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-member-mail-member
+    attrs:
+      name: E2E Group Member Mailbox Member
+      email: e2e.team-member-mail-member@example.com
+      password: password-e2e.team-member-mail-member
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-member-mail-administrator
+    attrs:
+      name: E2E Group Member Mailbox Administrator
+      email: e2e.team-member-mail-administrator@example.com
+      password: password-e2e.team-member-mail-administrator
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-member-mail-owner
+    attrs:
+      name: E2E Group Member Mailbox Owner
+      email: e2e.team-member-mail-owner@example.com
+      password: password-e2e.team-member-mail-owner
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-administrator-mail-member
+    attrs:
+      name: E2E Group Administrator Mailbox Member
+      email: e2e.team-administrator-mail-member@example.com
+      password: password-e2e.team-administrator-mail-member
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-administrator-mail-administrator
+    attrs:
+      name: E2E Group Administrator Mailbox Administrator
+      email: e2e.team-administrator-mail-administrator@example.com
+      password: password-e2e.team-administrator-mail-administrator
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-administrator-mail-owner
+    attrs:
+      name: E2E Group Administrator Mailbox Owner
+      email: e2e.team-administrator-mail-owner@example.com
+      password: password-e2e.team-administrator-mail-owner
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-owner-mail-member
+    attrs:
+      name: E2E Group Owner Mailbox Member
+      email: e2e.team-owner-mail-member@example.com
+      password: password-e2e.team-owner-mail-member
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-owner-mail-administrator
+    attrs:
+      name: E2E Group Owner Mailbox Administrator
+      email: e2e.team-owner-mail-administrator@example.com
+      password: password-e2e.team-owner-mail-administrator
+      path: users
+      is_active: true
+
+  - model: authentik_core.user
+    identifiers:
+      username: e2e.team-owner-mail-owner
+    attrs:
+      name: E2E Mailbox Owner
+      email: e2e.team-owner-mail-owner@example.com
+      password: password-e2e.team-owner-mail-owner
+      path: users
+      is_active: true
+
+  - model: authentik_providers_oauth2.scopemapping
+    id: scope-siret
+    identifiers:
+      scope_name: siret
+    attrs:
+      name: "ProConnect OAuth Mapping: OpenID 'siret'"
+      description: Access to your company SIRET number
+      expression: |
+        return {
+          "siret": str(request.user.attributes.get("siret", "")),
+        }
+
+  # Create the OIDC Provider
+  - model: authentik_providers_oauth2.oauth2provider
+    id: people-oidc-provider
+    identifiers:
+      name: Provider for people
+    attrs:
+      authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      authentication_flow: !Find [authentik_flows.flow, [slug, default-authentication-flow]]
+      invalidation_flow: !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
+      issuer_mode: global
+      client_type: confidential
+      client_id: people
+      client_secret: ThisIsAnExampleKeyForDevPurposeOnly
+      access_code_validity: minutes=1
+      access_token_validity: minutes=5
+      refresh_token_validity: days=30
+      include_claims_in_id_token: false
+      redirect_uris:
+        - matching_mode: strict
+          url: https://desk.127.0.0.1.nip.io/api/v1.0/callback/
+      property_mappings:
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-openid]]
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-email]]
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-profile]]
+        - !KeyOf scope-siret
+      signing_key: !Find [authentik_crypto.certificatekeypair, [name, authentik Self-signed Certificate]]
+
+  # Create the OIDC Application
+  - model: authentik_core.application
+    identifiers:
+      slug: people
+    attrs:
+      name: People Application
+      provider: !KeyOf people-oidc-provider
