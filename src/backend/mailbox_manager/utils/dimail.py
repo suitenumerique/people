@@ -41,6 +41,7 @@ class DimailAPIClient:
 
     API_URL = settings.MAIL_PROVISIONING_API_URL
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
+    API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
 
     def get_headers(self, user_sub=None):
         """
@@ -59,7 +60,7 @@ class DimailAPIClient:
             f"{self.API_URL}/token/",
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
             params=params,
-            timeout=20,
+            timeout=self.API_TIMEOUT,
         )
 
         if response.status_code == status.HTTP_200_OK:
@@ -93,7 +94,7 @@ class DimailAPIClient:
                 json=payload,
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -129,7 +130,7 @@ class DimailAPIClient:
                 json=payload,
                 headers=headers,
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -169,7 +170,7 @@ class DimailAPIClient:
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 json=payload,
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -209,7 +210,7 @@ class DimailAPIClient:
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 json=payload,
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -304,7 +305,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/domains/{domain.name}/mailboxes/",
                 headers=self.get_headers(),
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -365,7 +366,7 @@ class DimailAPIClient:
             json={"active": "no"},
             headers=self.get_headers(user_sub),
             verify=True,
-            timeout=10,
+            timeout=self.API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -389,7 +390,7 @@ class DimailAPIClient:
             },
             headers=self.get_headers(user_sub),
             verify=True,
-            timeout=10,
+            timeout=self.API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -425,7 +426,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/domains/{domain.name}/check/",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
-                timeout=20,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -445,7 +446,7 @@ class DimailAPIClient:
             f"{self.API_URL}/domains/{domain.name}/fix/",
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
             verify=True,
-            timeout=10,
+            timeout=self.API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -530,7 +531,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/domains/{domain.name}/spec/",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
-                timeout=10,
+                timeout=self.API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.exception(
