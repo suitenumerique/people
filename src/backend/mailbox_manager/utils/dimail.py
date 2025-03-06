@@ -35,12 +35,13 @@ session = requests.Session()
 session.mount("http://", adapter)
 session.mount("https://", adapter)
 
+API_URL = settings.MAIL_PROVISIONING_API_URL
+API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
+API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
+
 
 class DimailAPIClient:
     """A dimail-API client."""
-
-    API_URL = settings.MAIL_PROVISIONING_API_URL
-    API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
 
     def get_headers(self, user_sub=None):
         """
@@ -56,10 +57,10 @@ class DimailAPIClient:
             params = {"username": str(user_sub)}
 
         response = requests.get(
-            f"{self.API_URL}/token/",
-            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+            f"{API_URL}/token/",
+            headers={"Authorization": f"Basic {API_CREDENTIALS}"},
             params=params,
-            timeout=20,
+            timeout=API_TIMEOUT,
         )
 
         if response.status_code == status.HTTP_200_OK:
@@ -89,16 +90,16 @@ class DimailAPIClient:
         }
         try:
             response = session.post(
-                f"{self.API_URL}/domains/",
+                f"{API_URL}/domains/",
                 json=payload,
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                headers={"Authorization": f"Basic {API_CREDENTIALS}"},
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -125,16 +126,16 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
+                f"{API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
                 json=payload,
                 headers=headers,
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -165,16 +166,16 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{self.API_URL}/users/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                f"{API_URL}/users/",
+                headers={"Authorization": f"Basic {API_CREDENTIALS}"},
                 json=payload,
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -205,16 +206,16 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{self.API_URL}/allows/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                f"{API_URL}/allows/",
+                headers={"Authorization": f"Basic {API_CREDENTIALS}"},
                 json=payload,
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -301,15 +302,15 @@ class DimailAPIClient:
 
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/mailboxes/",
+                f"{API_URL}/domains/{domain.name}/mailboxes/",
                 headers=self.get_headers(),
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -361,11 +362,11 @@ class DimailAPIClient:
     def disable_mailbox(self, mailbox, user_sub=None):
         """Send a request to disable a mailbox to dimail API"""
         response = session.patch(
-            f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
+            f"{API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={"active": "no"},
             headers=self.get_headers(user_sub),
             verify=True,
-            timeout=10,
+            timeout=API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -380,7 +381,7 @@ class DimailAPIClient:
     def enable_mailbox(self, mailbox, user_sub=None):
         """Send a request to enable a mailbox to dimail API"""
         response = session.patch(
-            f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
+            f"{API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={
                 "active": "yes",
                 "givenName": mailbox.first_name,
@@ -389,7 +390,7 @@ class DimailAPIClient:
             },
             headers=self.get_headers(user_sub),
             verify=True,
-            timeout=10,
+            timeout=API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -422,15 +423,15 @@ class DimailAPIClient:
         """Send a request to dimail to check domain health."""
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/check/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                f"{API_URL}/domains/{domain.name}/check/",
+                headers={"Authorization": f"Basic {API_CREDENTIALS}"},
                 verify=True,
-                timeout=20,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             raise error
@@ -442,10 +443,10 @@ class DimailAPIClient:
         """Send a request to dimail to fix a domain.
         Allow to fix internal checks."""
         response = session.get(
-            f"{self.API_URL}/domains/{domain.name}/fix/",
-            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+            f"{API_URL}/domains/{domain.name}/fix/",
+            headers={"Authorization": f"Basic {API_CREDENTIALS}"},
             verify=True,
-            timeout=10,
+            timeout=API_TIMEOUT,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -527,15 +528,15 @@ class DimailAPIClient:
         """Send a request to dimail to get domain specification for DNS configuration."""
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/spec/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                f"{API_URL}/domains/{domain.name}/spec/",
+                headers={"Authorization": f"Basic {API_CREDENTIALS}"},
                 verify=True,
-                timeout=10,
+                timeout=API_TIMEOUT,
             )
         except requests.exceptions.ConnectionError as error:
             logger.exception(
                 "Connection error while trying to reach %s.",
-                self.API_URL,
+                API_URL,
                 exc_info=error,
             )
             return []
