@@ -1,5 +1,5 @@
 """
-Tests for DomainInvitations API endpoint. Focus on "retrieve" action.
+Tests for MailDomainInvitations API endpoint. Focus on "retrieve" action.
 """
 
 import pytest
@@ -18,7 +18,7 @@ def test_api_domain_invitations__anonymous_user_should_not_retrieve_invitations(
     Anonymous user should not be able to retrieve invitations.
     """
 
-    invitation = factories.DomainInvitationFactory()
+    invitation = factories.MailDomainInvitationFactory()
     response = APIClient().get(
         f"/api/v1.0/mail-domains/{invitation.domain.slug}/invitations/",
     )
@@ -31,7 +31,7 @@ def test_api_domain_invitations__unrelated_user_should_not_retrieve_invitations(
     Authenticated unrelated users should not be able to retrieve invitations.
     """
     auth_user = core_factories.UserFactory()
-    invitation = factories.DomainInvitationFactory()
+    invitation = factories.MailDomainInvitationFactory()
 
     client = APIClient()
     client.force_login(auth_user)
@@ -50,7 +50,7 @@ def test_api_domain_invitations__domain_managers_should_list_invitations():
     whatever their role in the domain.
     """
     auth_user = core_factories.UserFactory()
-    invitation = factories.DomainInvitationFactory()
+    invitation = factories.MailDomainInvitationFactory()
     factories.MailDomainAccessFactory(
         domain=invitation.domain, user=auth_user, role=enums.MailDomainRoleChoices.ADMIN
     )

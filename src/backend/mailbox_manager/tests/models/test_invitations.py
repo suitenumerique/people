@@ -1,5 +1,5 @@
 """
-Unit tests for the Domain Invitation model
+Unit tests for the Mail Domain Invitation model
 """
 
 import re
@@ -23,7 +23,7 @@ pytestmark = pytest.mark.django_db
 
 def test_models_domain_invitations_readonly_after_create():
     """Existing invitations should be readonly."""
-    invitation = factories.DomainInvitationFactory()
+    invitation = factories.MailDomainInvitationFactory()
     with pytest.raises(exceptions.PermissionDenied):
         invitation.save()
 
@@ -33,7 +33,7 @@ def test_models_domain_invitations__is_expired():
     The 'is_expired' property should return False until validity duration
     is exceeded and True afterwards.
     """
-    expired_invitation = factories.DomainInvitationFactory()
+    expired_invitation = factories.MailDomainInvitationFactory()
     assert expired_invitation.is_expired is False
 
     settings.INVITATION_VALIDITY_DURATION = 1
@@ -49,17 +49,17 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
     """
     # Two invitations to the same mail but to different domains
     email = "future_admin@example.com"
-    invitation_to_domain1 = factories.DomainInvitationFactory(
+    invitation_to_domain1 = factories.MailDomainInvitationFactory(
         email=email, role=enums.MailDomainRoleChoices.OWNER
     )
-    invitation_to_domain2 = factories.DomainInvitationFactory(email=email)
+    invitation_to_domain2 = factories.MailDomainInvitationFactory(email=email)
 
     # an expired invitation that should not be converted
     with freeze_time("1985-10-30"):
-        expired_invitation = factories.DomainInvitationFactory(email=email)
+        expired_invitation = factories.MailDomainInvitationFactory(email=email)
 
     # another person invited to domain2
-    other_invitation = factories.DomainInvitationFactory(
+    other_invitation = factories.MailDomainInvitationFactory(
         domain=invitation_to_domain2.domain
     )
 
@@ -89,15 +89,15 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
     assert models.MailDomainAccess.objects.filter(
         domain=invitation_to_domain2.domain, user=new_user
     ).exists()
-    assert not models.DomainInvitation.objects.filter(
+    assert not models.MailDomainInvitation.objects.filter(
         domain=invitation_to_domain1.domain, email=email
     ).exists()  # invitation "consumed"
-    assert not models.DomainInvitation.objects.filter(
+    assert not models.MailDomainInvitation.objects.filter(
         domain=invitation_to_domain2.domain, email=email
     ).exists()  # invitation "consumed"
-    assert models.DomainInvitation.objects.filter(
+    assert models.MailDomainInvitation.objects.filter(
         domain=expired_invitation.domain, email=email
     ).exists()  # expired invitation remains
-    assert models.DomainInvitation.objects.filter(
+    assert models.MailDomainInvitation.objects.filter(
         domain=invitation_to_domain2.domain, email=other_invitation.email
     ).exists()  # the other invitation remains

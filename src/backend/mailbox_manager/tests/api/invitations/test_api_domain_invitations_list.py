@@ -1,5 +1,6 @@
 """
-Tests for DomainInvitations API endpoint in People's app mailbox_manager. Focus on "list" action.
+Tests for MailDomainInvitations API endpoint in People's app mailbox_manager.
+Focus on "list" action.
 """
 
 import time
@@ -37,24 +38,24 @@ def test_api_domain_invitations__domain_managers_should_list_invitations():
     factories.MailDomainAccessFactory(
         domain=domain, user=other_user, role=enums.MailDomainRoleChoices.OWNER
     )
-    invitation = factories.DomainInvitationFactory(
+    invitation = factories.MailDomainInvitationFactory(
         domain=domain, role=enums.MailDomainRoleChoices.ADMIN, issuer=auth_user
     )
-    other_invitations = factories.DomainInvitationFactory.create_batch(
+    other_invitations = factories.MailDomainInvitationFactory.create_batch(
         2, domain=domain, role=enums.MailDomainRoleChoices.VIEWER, issuer=other_user
     )
 
     # expired invitations should be listed too
     # override settings to accelerate validation expiration
     settings.INVITATION_VALIDITY_DURATION = 1  # second
-    expired_invitation = factories.DomainInvitationFactory(
+    expired_invitation = factories.MailDomainInvitationFactory(
         domain=domain, role=enums.MailDomainRoleChoices.VIEWER, issuer=auth_user
     )
     time.sleep(1)
 
     # invitations from other teams should not be listed
     other_domain = factories.MailDomainEnabledFactory()
-    factories.DomainInvitationFactory.create_batch(
+    factories.MailDomainInvitationFactory.create_batch(
         2, domain=other_domain, role=enums.MailDomainRoleChoices.OWNER
     )
 

@@ -13,7 +13,7 @@ from django.utils import timezone
 from core.models import User
 
 from mailbox_manager import enums
-from mailbox_manager.models import DomainInvitation, MailDomainAccess
+from mailbox_manager.models import MailDomainAccess, MailDomainInvitation
 from mailbox_manager.utils.dimail import DimailAPIClient
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def convert_domain_invitations(sender, created, instance, **kwargs):  # pylint: 
     """
     logger.info("Convert domain invitations for user %s", instance)
     if created:
-        valid_domain_invitations = DomainInvitation.objects.filter(
+        valid_domain_invitations = MailDomainInvitation.objects.filter(
             email=instance.email,
             created_at__gte=(
                 timezone.now()
