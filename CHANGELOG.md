@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔒️(organization) the first user is not admin #776
 - 🐛(admin) fix broken alias import #1021
 
 ## [1.22.0] - 2026-01-19

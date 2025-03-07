@@ -391,6 +391,8 @@ def test_authentication_getter_new_user_with_registration_id_new_organization(
     assert user.organization.domain_list == expected_domain_list
     assert user.organization.registration_id_list == expected_registration_id_list
 
+    assert models.OrganizationAccess.objects.filter(user=user).exists() is False
+
 
 def test_authentication_getter_existing_user_via_email_update_organization(
     django_assert_num_queries, monkeypatch
