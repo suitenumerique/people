@@ -102,7 +102,7 @@ services:
     image: jwilder/dockerize
 
   crowdin:
-    image: crowdin/cli:3.16.0
+    image: crowdin/cli:4.6.1
     volumes:
       - ".:/app"
     env_file:
