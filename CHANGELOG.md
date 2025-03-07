@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 👽️(dimail) increase timeout value for check domain API call
 - ✨(api) allow invitations for domain management #708
 
 ## [1.13.1] - 2025-03-04
