@@ -512,6 +512,11 @@ class Base(Configuration):
         environ_name="MAIL_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
+    DNS_PROVISIONING_TARGET_ZONE = values.Value(
+        default="collectivite.fr",
+        environ_name="DNS_PROVISIONING_TARGET_ZONE",
+        environ_prefix=None,
+    )
     DNS_PROVISIONING_API_URL = values.Value(
         default="https://api.scaleway.com",
         environ_name="DNS_PROVISIONING_API_URL",
