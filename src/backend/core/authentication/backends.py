@@ -17,8 +17,6 @@ from core.models import (
     AccountService,
     Contact,
     Organization,
-    OrganizationAccess,
-    OrganizationRoleChoices,
 )
 
 logger = logging.getLogger(__name__)
@@ -130,15 +128,6 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
         logger.info("Creating user %s / %s", sub, email)
 
         user = super().create_user(claims | {"organization": organization})
-
-        if organization_created:
-            # Warning: we may remove this behavior in the near future when we
-            # add a feature to claim the organization ownership.
-            OrganizationAccess.objects.create(
-                organization=organization,
-                user=user,
-                role=OrganizationRoleChoices.ADMIN,
-            )
 
         # Initiate the user's profile
         Contact.objects.create(
