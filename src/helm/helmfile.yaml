@@ -5,13 +5,67 @@ environments:
   dev-keycloak:
     values:
       - version: 0.0.1
+  dev-authentik:
+    values:
+      - version: 0.0.1
 ---
 repositories:
 - name: bitnami
   url: registry-1.docker.io/bitnamicharts
   oci: true
+- name: authentik
+  url: https://charts.goauthentik.io
 
 releases:
+  - name: authentik
+    installed: {{ eq .Environment.Name "dev-authentik" | toYaml }}
+    missingFileHandler: Warn
+    namespace: {{ .Namespace }}
+    chart: authentik/authentik
+    values:
+      - authentik:
+          log_level: trace
+          secret_key: PleaseGenerateASecureKey
+          postgresql:
+            password: ThisIsNotASecurePassword
+          redis:
+            password: ThisIsNotASecurePassword
+
+        # Basic blueprint configuration - directly mount ConfigMaps
+        blueprints:
+          configMaps:
+            - people
+
+        server:
+          ingress:
+            ingressClassName: nginx
+            enabled: true
+            hosts:
+              - authentik.127.0.0.1.nip.io
+
+        postgresql:
+          enabled: true
+          auth:
+            password: ThisIsNotASecurePassword
+
+        redis:
+          enabled: true
+          auth:
+            enabled: true
+            password: ThisIsNotASecurePassword
+          architecture: standalone
+
+        # Create the ConfigMap with blueprint data
+        additionalObjects:
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: people
+              namespace: {{ .Namespace }}
+            data:
+              people.yaml: |
+{{ readFile "../../docker/auth/authentik_blueprint.yaml" | indent 16 }}
+
   - name: keycloak
     installed: {{ eq .Environment.Name "dev-keycloak" | toYaml }}
     missingFileHandler: Warn
