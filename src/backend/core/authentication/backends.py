@@ -17,8 +17,6 @@ from mozilla_django_oidc.auth import (
 from core.models import (
     Contact,
     Organization,
-    OrganizationAccess,
-    OrganizationRoleChoices,
 )
 
 logger = logging.getLogger(__name__)
@@ -192,14 +190,6 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             email=email,
             name=name,
         )
-        if organization_created:
-            # Warning: we may remove this behavior in the near future when we
-            # add a feature to claim the organization ownership.
-            OrganizationAccess.objects.create(
-                organization=organization,
-                user=user,
-                role=OrganizationRoleChoices.ADMIN,
-            )
 
         # Initiate the user's profile
         Contact.objects.create(
