@@ -13,6 +13,10 @@ and this project adheres to
 - ✨(frontend) feature modal add new access role to domain 
 - ✨(api) allow invitations for domain management #708
 
+### Fixed
+
+- 🔒️(organization) the first user is not admin #776
+
 ## [1.13.1] - 2025-03-04
 
 ### Fixed
