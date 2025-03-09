@@ -13,6 +13,7 @@ from django.contrib.sites.models import Site
 from django.core import exceptions, mail
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import override
 
 import requests
 from rest_framework import status
@@ -258,31 +259,29 @@ class DimailAPIClient:
             f"{error_content.get('detail') or error_content}"
         )
 
-    def notify_mailbox_creation(self, recipient, mailbox_data):
+    def notify_mailbox_creation(self, recipient, mailbox_data, issuer=None):
         """
         Send email to confirm mailbox creation
         and send new mailbox information.
         """
-
-        template_vars = {
-            "title": _("Your new mailbox information"),
-            "site": Site.objects.get_current(),
-            "webmail_url": settings.WEBMAIL_URL,
-            "mailbox_data": mailbox_data,
-        }
-
-        msg_html = render_to_string("mail/html/new_mailbox.html", template_vars)
-        msg_plain = render_to_string("mail/text/new_mailbox.txt", template_vars)
-
         try:
-            mail.send_mail(
-                template_vars["title"],
-                msg_plain,
-                settings.EMAIL_FROM,
-                [recipient],
-                html_message=msg_html,
-                fail_silently=False,
-            )
+            with override(issuer.language if issuer else settings.LANGUAGE_CODE):
+                template_vars = {
+                    "title": _("Your new mailbox information"),
+                    "site": Site.objects.get_current(),
+                    "webmail_url": settings.WEBMAIL_URL,
+                    "mailbox_data": mailbox_data,
+                }
+                msg_html = render_to_string("mail/html/new_mailbox.html", template_vars)
+                msg_plain = render_to_string("mail/text/new_mailbox.txt", template_vars)
+                mail.send_mail(
+                    template_vars["title"],
+                    msg_plain,
+                    settings.EMAIL_FROM,
+                    [recipient],
+                    html_message=msg_html,
+                    fail_silently=False,
+                )
             logger.info(
                 "Information for mailbox %s sent to %s.",
                 mailbox_data["email"],

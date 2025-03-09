@@ -136,7 +136,11 @@ class Base(Configuration):
     # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
     # Languages
-    LANGUAGE_CODE = values.Value("en-us")
+    LANGUAGE_CODE = values.Value(
+        default="en-us",
+        environ_name="LANGUAGE_CODE",
+        environ_prefix=None,
+    )
 
     DRF_NESTED_MULTIPART_PARSER = {
         # output of parser is converted to querydict

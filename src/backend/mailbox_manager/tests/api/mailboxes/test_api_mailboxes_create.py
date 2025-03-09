@@ -790,10 +790,14 @@ def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
     Creating a new mailbox should send confirmation email
     to secondary email.
     """
-    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+    user = core_factories.UserFactory(language="fr-fr")
+    access = factories.MailDomainAccessFactory(
+        user=user,
+        role=enums.MailDomainRoleChoices.OWNER,
+    )
 
     client = APIClient()
-    client.force_login(access.user)
+    client.force_login(user)
     mailbox_data = serializers.MailboxSerializer(
         factories.MailboxFactory.build(domain=access.domain)
     ).data
@@ -824,7 +828,10 @@ def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
             )
 
         assert mock_send.call_count == 1
-        assert mock_send.mock_calls[0][1][0] == "Your new mailbox information"
+        assert (
+            "Informations sur votre nouvelle boîte mail"
+            in mock_send.mock_calls[0][1][1]
+        )
         assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
 
     expected_messages = {
