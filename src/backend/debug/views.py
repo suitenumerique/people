@@ -14,13 +14,24 @@ class DebugBaseView(TemplateView):
 
 
 # TEAM INVITATION
-class DebugViewTeamInvitationHtml(DebugBaseView):
+class DebugViewTeamInvitationBase(DebugBaseView):
+    """Debug view for team invitation base email layout"""
+
+    def get_context_data(self, **kwargs):
+        """Add some fake context data for team invitation email layout"""
+        context = super().get_context_data(**kwargs)
+        context["team"] = "example team"
+        context["role"] = "owner"
+        return context
+
+
+class DebugViewTeamInvitationHtml(DebugViewTeamInvitationBase):
     """Debug view for team invitation html email layout"""
 
     template_name = "mail/html/team_invitation.html"
 
 
-class DebugViewTeamInvitationTxt(DebugBaseView):
+class DebugViewTeamInvitationTxt(DebugViewTeamInvitationBase):
     """Debug view for team invitation text email layout"""
 
     template_name = "mail/text/team_invitation.txt"
