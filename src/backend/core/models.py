@@ -908,6 +908,9 @@ class BaseInvitation(BaseModel):
         related_name="invitations",
     )
 
+    MAIL_TEMPLATE_HTML = None
+    MAIL_TEMPLATE_TXT = None
+
     class Meta:
         abstract = True
 
@@ -938,17 +941,24 @@ class BaseInvitation(BaseModel):
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
         return timezone.now() > (self.created_at + validity_duration)
 
+    def _get_mail_subject(self):
+        """Get the subject of the invitation."""
+        return gettext("Invitation to join La Régie!")
+
+    def _get_mail_context(self):
+        """Get the template variables for the invitation."""
+        return {
+            "site": Site.objects.get_current(),
+        }
+
     def email_invitation(self):
         """Email invitation to the user."""
         try:
             with override(self.issuer.language):
-                subject = gettext("Invitation to join La Régie!")
-                template_vars = {
-                    "title": subject,
-                    "site": Site.objects.get_current(),
-                }
-                msg_html = render_to_string("mail/html/invitation.html", template_vars)
-                msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
+                subject = self._get_mail_subject()
+                context = self._get_mail_context()
+                msg_html = render_to_string(self.MAIL_TEMPLATE_HTML, context)
+                msg_plain = render_to_string(self.MAIL_TEMPLATE_TXT, context)
                 mail.send_mail(
                     subject,
                     msg_plain,
@@ -973,6 +983,9 @@ class Invitation(BaseInvitation):
     role = models.CharField(
         max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
     )
+
+    MAIL_TEMPLATE_HTML = "mail/html/team_invitation.html"
+    MAIL_TEMPLATE_TXT = "mail/text/team_invitation.txt"
 
     class Meta:
         db_table = "people_invitation"
