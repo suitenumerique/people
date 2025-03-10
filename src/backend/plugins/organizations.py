@@ -31,19 +31,27 @@ class NameFromSiretOrganizationPlugin(BaseOrganizationPlugin):
     _api_url = "https://recherche-entreprises.api.gouv.fr/search?q={siret}"
 
     @staticmethod
-    def get_organization_name_from_results(data, siret):
-        """Return the organization name from the results of a SIRET search."""
+    def get_organization_name_and_metadata_from_results(data, siret):
+        """Return the organization name and metadata from the results of a SIRET search."""
+        org_metadata = {}
         for result in data["results"]:
             for organization in result["matching_etablissements"]:
                 if organization.get("siret") == siret:
+                    org_metadata["is_public_service"] = result.get(
+                        "complements", {}
+                    ).get("est_service_public", False)
+                    org_metadata["is_commune"] = (
+                        str(result.get("nature_juridique", "")) == "7210"
+                    )
+
                     store_signs = organization.get("liste_enseignes") or []
                     if store_signs:
-                        return store_signs[0].title()
+                        return store_signs[0].title(), org_metadata
                     if name := result.get("nom_raison_sociale"):
-                        return name.title()
+                        return name.title(), org_metadata
 
         logger.warning("No organization name found for SIRET %s", siret)
-        return None
+        return None, org_metadata
 
     def run_after_create(self, organization):
         """After creating an organization, update the organization name."""
@@ -67,15 +75,20 @@ class NameFromSiretOrganizationPlugin(BaseOrganizationPlugin):
             response = s.get(self._api_url.format(siret=siret), timeout=10)
             response.raise_for_status()
             data = response.json()
-            name = self.get_organization_name_from_results(data, siret)
-            if not name:
-                return
         except requests.RequestException as exc:
             logger.exception("%s: Unable to fetch organization name from SIRET", exc)
             return
 
+        name, metadata = self.get_organization_name_and_metadata_from_results(
+            data, siret
+        )
+        if not name:  # don't consider metadata either
+            return
+
         organization.name = name
-        organization.save(update_fields=["name", "updated_at"])
+        organization.metadata = (organization.metadata or {}) | metadata
+
+        organization.save(update_fields=["name", "metadata", "updated_at"])
         logger.info("Organization %s name updated to %s", organization, name)
 
     def run_after_grant_access(self, organization_access):

@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(organization) add metadata field #790
 - ⬆️(nginx) bump nginx-unprivileged to 1.27 #797
 - ✨(teams) allow broadly available teams #796
 - ✨(teams) update and enhance team invitation email
