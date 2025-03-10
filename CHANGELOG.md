@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(teams) update and enhance team invitation email
 - ✨(api) define dimail timeout as a setting
 - ✨(frontend) feature modal add new access role to domain 
 - ✨(api) allow invitations for domain management #708

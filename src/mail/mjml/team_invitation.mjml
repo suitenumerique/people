@@ -2,56 +2,55 @@
   <mj-include path="./partial/header.mjml" />
 
   <mj-body mj-class="bg--blue-100">
-    <mj-wrapper css-class="wrapper" padding="0 40px 40px 40px">
-      <mj-section background-url="{% base64_static 'images/mail-header-background.png' %}" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
+    <mj-wrapper css-class="wrapper" padding="10px">
+      <mj-section>
         <mj-column>
-            <mj-image align="center" src="{% base64_static 'images/logo-suite-numerique.png' %}" width="250px" align="left" alt="{%trans 'La Suite Numérique' %}" />
-        </mj-column>
+            <mj-image align="center" src="{% base64_static 'images/logo-laregie.png' %}" width="157px" align="left" alt="{%trans 'La Régie' %}" padding="10px" />
+          </mj-column>
       </mj-section>
-      <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
+      <mj-section mj-class="bg--white-100">
         <mj-column>
-          <mj-text font-size="14px">
-            <p>{% trans "Invitation to join a team" %}</p>
-          </mj-text>
-
-          <!-- Welcome Message -->
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" padding="10px 20px" />
           <mj-text>
-            <h1>{% trans "Welcome to" %} <strong>La Régie</strong></h1>
+            <strong>{% trans "Welcome to" %} La Régie</strong>
           </mj-text>
-          <mj-divider border-width="1px" border-style="solid" border-color="#DDDDDD" width="30%" align="left"/>
-
-          <mj-image src="{% base64_static 'images/logo.png' %}" width="157px" align="left" alt="{%trans 'Logo' %}" />
-
           <!-- Main Message -->
-          <mj-text>{% trans "We are delighted to welcome you to our community on La Régie, your new companion to simplify the management of your groups efficiently, intuitively, and securely." %}</mj-text>
-          <mj-text>{% trans "Our application is designed to help you organize, collaborate, and manage permissions." %}</mj-text>
-          <mj-text>
-            {% trans "With La Régie, you will be able to:" %}
-            <ul>
-              <li>{% trans "Create customized groups according to your specific needs."%}</li>
-              <li>{% trans "Invite members of your team or community in just a few clicks."%}</li>
-              <li>{% trans "Plan events, meetings, or activities effortlessly with our integrated calendar."%}</li>
-              <li>{% trans "Share documents, photos, and important information securely."%}</li>
-              <li>{% trans "Facilitate exchanges and communication with our messaging and group discussion tools."%}</li>
-            </ul>
+          <mj-text>{% trans "Hello," %}</mj-text>
+          <mj-text>{% blocktranslate with team=team role=role trimmed %}
+            You have been invited to be a {{ role }} of the group "{{ team }}" within La Suite.
+          {% endblocktranslate %}
           </mj-text>
-          <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
-            {% trans "Visit La Régie"%}
+          <mj-text>{% trans "To do so, please log in La Régie via ProConnect, by following this link:" %}</mj-text>
+          <mj-button href="//{{ site.domain }}" background-color="#000091" color="white" padding-bottom="30px">
+            <img src="{% base64_static 'images/arrow.png' %}" width="25px" align="left" alt="arrow" background-color="red"/>
+            {% trans "Go to La Régie"%}
           </mj-button>
-          <mj-text>{% trans "We are confident that La Régie will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
-          <mj-text>{% trans "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service." %}</mj-text>
-          <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on this group management adventure." %}</mj-text>
-
+          <!-- end Main Message -->
+          <mj-text>
+            <strong>{% trans "What is La Régie?" %}</strong>
+          </mj-text>
+          <mj-text>
+          {% trans "La Suite is an open-source work environment, designed for the public sector and open to commons."%}
+          </mj-text>
+          <mj-text>
+          {% trans "With La Suite, you will be able to create, organise and collaborate online!" %}
+          </mj-text>
+          <mj-text>
+          {% trans "For more information:" %} <a href="https://lasuite.numerique.gouv.fr">{% trans "Visit the website for La Suite numérique" %}</a>
+          </mj-text>
+          <mj-text>
+            {% trans "Welcome aboard!" %}
+          </mj-text>
           <!-- Signature -->
           <mj-text>
-            <p>{% trans "Sincerely," %}</p>
-            <p>{% trans "The La Suite Numérique Team" %}</p>
+            <p>{% trans "Regards," %}</p>
+            <p>{% trans "La Suite Team" %}</p>
           </mj-text>
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" />
+          <mj-image align="left" src="{% base64_static 'images/logo-footer-mail.png' %}" width="160px" align="left" alt="La Suite" />
         </mj-column>
       </mj-section>
     </mj-wrapper>
   </mj-body>
-
-  <mj-include path="./partial/footer.mjml" />
 </mjml>
 

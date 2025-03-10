@@ -241,15 +241,14 @@ def test_models_team_invitations_get_abilities_member():
 def test_models_team_invitations_email():
     """Check email invitation during invitation creation."""
 
-    member_access = factories.TeamAccessFactory(role="member")
-    team = member_access.team
+    team = factories.TeamFactory()
 
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 0
 
-    factories.TeamAccessFactory(team=team)
+    # Please add test for french language after translations update
     invitation = factories.InvitationFactory(
-        team=team, email="john@people.com", issuer__language="fr-fr"
+        role="member", team=team, email="john@people.com", issuer__language="en-us"
     )
 
     # pylint: disable-next=no-member
@@ -259,10 +258,16 @@ def test_models_team_invitations_email():
     email = mail.outbox[0]
 
     assert email.to == [invitation.email]
-    assert email.subject == "Invitation à rejoindre La Régie !"
+    assert (
+        email.subject
+        == "[La Suite] You have been invited to become a member of a group"
+    )
 
     email_content = " ".join(email.body.split())
-    assert "Nous sommes ravis de vous accueillir" in email_content
+    assert (
+        f"""You have been invited to be a member of the group "{team.name}" within La Suite."""
+        in email_content
+    )
     assert "[//example.com]" in email_content
 
 
