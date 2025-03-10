@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(organization) add metadata field #790
 - ✨(api) define dimail timeout as a setting
 - ✨(frontend) feature modal add new access role to domain 
 - ✨(api) allow invitations for domain management #708
