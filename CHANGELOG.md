@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(domains) use a dedicated mail to invite user to manage domain
 - 🐛(mailbox) fix mailbox creation email language
 
 ## [1.13.1] - 2025-03-04

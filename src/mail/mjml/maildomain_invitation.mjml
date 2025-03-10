@@ -1,0 +1,58 @@
+<mjml>
+  <mj-include path="./partial/header.mjml" />
+
+  <mj-body mj-class="bg--blue-100">
+    <mj-wrapper css-class="wrapper" padding="10px">
+      <mj-section>
+        <mj-column>
+            <mj-image align="center" src="{% base64_static 'images/logo-laregie.png' %}" width="157px" align="left" alt="{%trans 'La Régie' %}" padding="10px" />
+          </mj-column>
+      </mj-section>
+      <mj-section mj-class="bg--white-100">
+        <mj-column>
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" padding="10px 20px" />
+          <mj-text>
+            <strong>{% trans "Welcome to" %} La Régie</strong>
+          </mj-text>
+          <!-- Main Message -->
+          <mj-text>{% trans "Hello," %}</mj-text>
+          <mj-text>{% blocktranslate with role=role domain=domain trimmed %}
+            You have been invited to join La Régie to be {{ role }} of the domain {{ domain }}.
+          {% endblocktranslate %}
+          </mj-text>
+          <mj-text>{% trans "To do so, please log in La Régie via ProConnect, by following this link:" %}</mj-text>
+          <mj-button href="//{{ site.domain }}" background-color="#000091" color="white" padding-bottom="30px">
+            <img src="{% base64_static 'images/arrow.png' %}" width="25px" align="left" alt="arrow" background-color="red"/>
+            {% trans "Go to La Régie"%}
+          </mj-button>
+          <!-- end Main Message -->
+          <mj-text>
+            <strong>{% trans "What is La Régie?" %}</strong>
+          </mj-text>
+          <mj-text>
+          {% trans "La Régie is the administration center of la Suite, where you can manage users, groups and domains. You will be able to:" %}
+          <ul>
+            <li>{% trans "create work groups,"%}</li>
+            <li>{% trans "invite new members,"%}</li>
+            <li>{% trans "manage mail domains,"%}</li>
+            <li>{% trans "create new mail accounts,"%}</li>
+            <li>{% trans "etc."%}</li>
+          </ul>
+          </mj-text>
+          <mj-text>
+            {% trans "Welcome aboard!" %}
+          </mj-text>
+          <!-- Signature -->
+          <mj-text>
+            <p>{% trans "Regards," %}</p>
+            <p>{% trans "La Suite Team" %}</p>
+          </mj-text>
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" />
+          <mj-image align="left" src="{% base64_static 'images/logo-footer-mail.png' %}" width="160px" align="left" alt="La Suite" />
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+ 
+</mjml>
+
