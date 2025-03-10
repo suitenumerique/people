@@ -9,8 +9,9 @@ import smtplib
 import uuid
 from contextlib import suppress
 from datetime import timedelta
+from functools import lru_cache
 from logging import getLogger
-from typing import Tuple
+from typing import Optional, Tuple
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
@@ -40,9 +41,35 @@ from core.validators import get_field_validators_from_setting
 logger = getLogger(__name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
 contact_schema_path = os.path.join(current_dir, "jsonschema", "contact_data.json")
 with open(contact_schema_path, "r", encoding="utf-8") as contact_schema_file:
     contact_schema = json.load(contact_schema_file)
+
+
+@lru_cache(maxsize=None)
+def get_organization_metadata_schema() -> Optional[dict]:
+    """Load the organization metadata schema from the settings."""
+    if not settings.ORGANIZATION_METADATA_SCHEMA:
+        logger.info("No organization metadata schema specified")
+        return None
+
+    organization_metadata_schema_path = os.path.join(
+        current_dir,
+        "jsonschema",
+        settings.ORGANIZATION_METADATA_SCHEMA,
+    )
+    with open(
+        organization_metadata_schema_path,
+        "r",
+        encoding="utf-8",
+    ) as organization_metadata_schema_file:
+        organization_metadata_schema = json.load(organization_metadata_schema_file)
+
+    logger.info(
+        "Loaded organization metadata schema from %s", organization_metadata_schema_path
+    )
+    return organization_metadata_schema
 
 
 class RoleChoices(models.TextChoices):  # pylint: disable=too-many-ancestors
@@ -357,6 +384,13 @@ class Organization(BaseModel):
         # list overlap validation is done in the validate_unique method
     )
 
+    metadata = models.JSONField(
+        _("metadata"),
+        help_text=_("A JSON object containing the organization metadata"),
+        blank=True,
+        default=dict,
+    )
+
     service_providers = models.ManyToManyField(
         ServiceProvider,
         related_name="organizations",
@@ -386,6 +420,22 @@ class Organization(BaseModel):
 
     def __str__(self):
         return f"{self.name} (# {self.pk})"
+
+    def clean(self):
+        """Validate fields."""
+        super().clean()
+
+        organization_metadata_schema = get_organization_metadata_schema()
+        if not organization_metadata_schema:
+            return
+
+        try:
+            jsonschema.validate(self.metadata, organization_metadata_schema)
+        except jsonschema.ValidationError as e:
+            # Specify the property in the data in which the error occurred
+            field_path = ".".join(map(str, e.path))
+            error_message = f"Validation error in '{field_path:s}': {e.message}"
+            raise exceptions.ValidationError({"metadata": [error_message]}) from e
 
     def validate_unique(self, exclude=None):
         """
