@@ -125,3 +125,77 @@ def test_models_organization_registration_id_validators():
             name="hi",
             registration_id_list=["a12345678912345"],
         )
+
+
+def test_models_organization_metadata_schema_valid(settings):
+    """When a schema is provided, valid metadata should pass validation."""
+    settings.ORGANIZATION_METADATA_SCHEMA = "fr/organization_metadata.json"
+    # Clear the cache to reload the schema
+    models.get_organization_metadata_schema.cache_clear()
+
+    organization = models.Organization(
+        name="Valid Metadata Org",
+        registration_id_list=["12345678901234"],
+        metadata={"is_public_service": True, "is_commune": False},
+    )
+
+    # This should not raise any validation errors
+    organization.full_clean()
+    organization.save()
+
+    # Verify the metadata was saved correctly
+    org = models.Organization.objects.get(pk=organization.pk)
+    assert org.metadata["is_public_service"] is True
+    assert org.metadata["is_commune"] is False
+
+    settings.ORGANIZATION_METADATA_SCHEMA = None
+    # Clear the cache to reload the schema
+    models.get_organization_metadata_schema.cache_clear()
+
+
+def test_models_organization_metadata_schema_invalid(settings):
+    """When a schema is provided, invalid metadata should fail validation."""
+    settings.ORGANIZATION_METADATA_SCHEMA = "fr/organization_metadata.json"
+    # Clear the cache to reload the schema
+    models.get_organization_metadata_schema.cache_clear()
+
+    # Integer instead of boolean for is_public_service
+    organization = models.Organization(
+        name="Invalid Metadata Org",
+        registration_id_list=["12345678901234"],
+        metadata={"is_public_service": 1, "is_commune": False},
+    )
+
+    with pytest.raises(ValidationError) as excinfo:
+        organization.full_clean()
+
+    assert "metadata" in str(excinfo.value)
+    assert "is_public_service" in str(excinfo.value)
+    assert "is_commune" not in str(excinfo.value)
+
+    settings.ORGANIZATION_METADATA_SCHEMA = None
+    # Clear the cache to reload the schema
+    models.get_organization_metadata_schema.cache_clear()
+
+
+def test_models_organization_no_metadata_schema(settings):
+    """When no schema is provided, any metadata should be allowed."""
+    settings.ORGANIZATION_METADATA_SCHEMA = None
+    # Clear the cache to reload the schema
+    models.get_organization_metadata_schema.cache_clear()
+
+    # Random metadata that wouldn't match the schema
+    organization = models.Organization(
+        name="No Schema Org",
+        registration_id_list=["12345678901234"],
+        metadata={"random_field": "anything", "numeric_value": 123},
+    )
+
+    # This should not raise any validation errors
+    organization.full_clean()
+    organization.save()
+
+    # Verify the metadata was saved correctly
+    org = models.Organization.objects.get(pk=organization.pk)
+    assert org.metadata["random_field"] == "anything"
+    assert org.metadata["numeric_value"] == 123

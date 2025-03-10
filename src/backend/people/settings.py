@@ -550,6 +550,11 @@ class Base(Configuration):
         environ_name="ORGANIZATION_PLUGINS",
         environ_prefix=None,
     )
+    ORGANIZATION_METADATA_SCHEMA = values.Value(
+        default=None,
+        environ_name="ORGANIZATION_METADATA_SCHEMA",
+        environ_prefix=None,
+    )
 
     OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
     OAUTH2_PROVIDER_GRANT_MODEL = "mailbox_oauth2.Grant"
