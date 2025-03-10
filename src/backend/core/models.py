@@ -1000,6 +1000,14 @@ class Invitation(BaseInvitation):
     def __str__(self):
         return f"{self.email} invited to {self.team}"
 
+    def _get_mail_context(self):
+        """Get the template variables for the invitation."""
+        return {
+            **super()._get_mail_context(),
+            "team": self.team.name,
+            "role": self.get_role_display().lower(),
+        }
+
     def get_abilities(self, user):
         """Compute and return abilities for a given user."""
         can_delete = False
