@@ -3,6 +3,8 @@ Tests for MailDomainInvitations API endpoint in People's app mailbox_manager.
 Focus on "create" action.
 """
 
+from django.core import mail
+
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -70,12 +72,18 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     client = APIClient()
     client.force_login(user)
 
+    assert len(mail.outbox) == 0
+
     response = client.post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
         invitation_values,
         format="json",
     )
     assert response.status_code == status.HTTP_201_CREATED
+    assert len(mail.outbox) == 1
+    email = mail.outbox[0]
+    assert email.to == [invitation_values["email"]]
+    assert email.subject == "[La Suite] You have been invited to join La Régie"
 
 
 def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():

@@ -7,6 +7,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import exceptions, validators
 from django.db import models
 from django.utils.text import slugify
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseInvitation, BaseModel, Organization, User
@@ -294,6 +295,9 @@ class MailDomainInvitation(BaseInvitation):
         default=MailDomainRoleChoices.VIEWER,
     )
 
+    MAIL_TEMPLATE_HTML = "mail/html/maildomain_invitation.html"
+    MAIL_TEMPLATE_TXT = "mail/text/maildomain_invitation.txt"
+
     class Meta:
         db_table = "people_mail_domain_invitation"
         verbose_name = _("Mail domain invitation")
@@ -306,6 +310,18 @@ class MailDomainInvitation(BaseInvitation):
 
     def __str__(self):
         return f"{self.email} invited to {self.domain}"
+
+    def _get_mail_subject(self):
+        """Get the subject of the invitation."""
+        return gettext("[La Suite] You have been invited to join La Régie")
+
+    def _get_mail_context(self):
+        """Get the template variables for the invitation."""
+        return {
+            **super()._get_mail_context(),
+            "domain": self.domain.name,
+            "role": self.get_role_display(),
+        }
 
     def get_abilities(self, user):
         """Compute and return abilities for a given user."""
