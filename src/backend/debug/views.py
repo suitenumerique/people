@@ -15,16 +15,27 @@ class DebugBaseView(TemplateView):
         return context
 
 
-class DebugViewHtml(DebugBaseView):
-    """Debug View for HTML Email Layout"""
+class DebugViewTeamInvitationBase(DebugBaseView):
+    """Debug view for team invitation base email layout"""
 
-    template_name = "mail/html/invitation.html"
+    def get_context_data(self, **kwargs):
+        """Add some fake context data for team invitation email layout"""
+        context = super().get_context_data(**kwargs)
+        context["team"] = "example team"
+        context["role"] = "owner"
+        return context
 
 
-class DebugViewTxt(DebugBaseView):
-    """Debug View for Text Email Layout"""
+class DebugViewTeamInvitationHtml(DebugViewTeamInvitationBase):
+    """Debug view for team invitation html email layout"""
 
-    template_name = "mail/text/invitation.txt"
+    template_name = "mail/html/team_invitation.html"
+
+
+class DebugViewTeamInvitationTxt(DebugViewTeamInvitationBase):
+    """Debug view for team invitation text email layout"""
+
+    template_name = "mail/text/team_invitation.txt"
 
 
 class DebugViewNewMailboxHtml(DebugBaseView):
@@ -40,3 +51,26 @@ class DebugViewNewMailboxHtml(DebugBaseView):
             "password": "6HGVAsjoog_v",
         }
         return context
+
+
+class DebugViewMaildomainInvitationBase(DebugBaseView):
+    """Debug view for mail domain invitation base email layout"""
+
+    def get_context_data(self, **kwargs):
+        """Add some fake context data for mail domain invitation email layout"""
+        context = super().get_context_data(**kwargs)
+        context["domain"] = "example.com"
+        context["role"] = "owner"
+        return context
+
+
+class DebugViewMaildomainInvitationHtml(DebugViewMaildomainInvitationBase):
+    """Debug view for mail domain invitation html email layout"""
+
+    template_name = "mail/html/maildomain_invitation.html"
+
+
+class DebugViewMaildomainInvitationTxt(DebugViewMaildomainInvitationBase):
+    """Debug view for mail domain invitation text email layout"""
+
+    template_name = "mail/text/maildomain_invitation.txt"

@@ -10,12 +10,14 @@ and this project adheres to
 
 ### Added
 
+- ✨(teams) update and enhance team invitation email
 - ✨(api) define dimail timeout as a setting
 - ✨(frontend) feature modal add new access role to domain 
 - ✨(api) allow invitations for domain management #708
 
 ### Fixed
 
+- 🐛(domains) use a dedicated mail to invite user to manage domain
 - 🐛(mailbox) fix mailbox creation email language
 
 ## [1.13.1] - 2025-03-04
