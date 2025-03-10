@@ -15,16 +15,16 @@ class DebugBaseView(TemplateView):
         return context
 
 
-class DebugViewHtml(DebugBaseView):
-    """Debug View for HTML Email Layout"""
+class DebugViewTeamInvitationHtml(DebugBaseView):
+    """Debug view for team invitation html email layout"""
 
-    template_name = "mail/html/invitation.html"
+    template_name = "mail/html/team_invitation.html"
 
 
-class DebugViewTxt(DebugBaseView):
-    """Debug View for Text Email Layout"""
+class DebugViewTeamInvitationTxt(DebugBaseView):
+    """Debug view for team invitation text email layout"""
 
-    template_name = "mail/text/invitation.txt"
+    template_name = "mail/text/team_invitation.txt"
 
 
 class DebugViewNewMailboxHtml(DebugBaseView):
@@ -40,3 +40,26 @@ class DebugViewNewMailboxHtml(DebugBaseView):
             "password": "6HGVAsjoog_v",
         }
         return context
+
+
+class DebugViewMaildomainInvitationBase(DebugBaseView):
+    """Debug view for mail domain invitation base email layout"""
+
+    def get_context_data(self, **kwargs):
+        """Add some fake context data for mail domain invitation email layout"""
+        context = super().get_context_data(**kwargs)
+        context["domain"] = "example.com"
+        context["role"] = "owner"
+        return context
+
+
+class DebugViewMaildomainInvitationHtml(DebugViewMaildomainInvitationBase):
+    """Debug view for mail domain invitation html email layout"""
+
+    template_name = "mail/html/maildomain_invitation.html"
+
+
+class DebugViewMaildomainInvitationTxt(DebugViewMaildomainInvitationBase):
+    """Debug view for mail domain invitation text email layout"""
+
+    template_name = "mail/text/maildomain_invitation.txt"
