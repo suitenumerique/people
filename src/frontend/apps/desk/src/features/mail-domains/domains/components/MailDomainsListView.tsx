@@ -22,7 +22,7 @@ interface PanelMailDomainsStateProps {
   mailDomains?: MailDomain[];
 }
 
-export function MailDomainsListView({ children }: PropsWithChildren) {
+export function MailDomainsListView({ querySearch, children }: PropsWithChildren) {
   const { colorsTokens } = useCunninghamTheme();
   const { ordering } = useMailDomainsStore();
   const {
@@ -40,12 +40,18 @@ export function MailDomainsListView({ children }: PropsWithChildren) {
     }, [] as MailDomain[]);
   }, [data?.pages]);
 
-  console.log(mailDomains);
+  const filteredMailDomains = useMemo(() => {
+    if (!querySearch) return mailDomains;
+    const lowerCaseSearch = querySearch.toLowerCase();
+    return mailDomains && mailDomains.filter(domain =>
+      domain.name.toLowerCase().includes(lowerCaseSearch)
+    ) || [] ;
+  }, [querySearch, mailDomains]);
 
   return (
     <div>
-        {mailDomains && mailDomains.length ? (
-          <DataGrid rows={mailDomains} 
+        {filteredMailDomains && filteredMailDomains.length ? (
+          <DataGrid rows={filteredMailDomains} 
             columns={[{
               field: "name",
               headerName: "Domaine",

@@ -24,7 +24,7 @@ export const tokens = {
           'info-800': '#033474',
           'info-900': '#022858',
           'greyscale-100': '#FAFAFB',
-          'greyscale-200': '#F3F4F4',
+          'greyscale-200': '#E5E5E5',
           'greyscale-300': '#E7E8EA',
           'greyscale-400': '#C2C6CA',
           'greyscale-500': '#9EA3AA',
@@ -140,8 +140,8 @@ export const tokens = {
             black: 900,
           },
           families: {
-            base: '"Roboto Flex Variable", sans-serif',
-            accent: '"Roboto Flex Variable", sans-serif',
+            base: '"Marianne", sans-serif',
+            accent: '"Marianne", sans-serif',
           },
           letterSpacings: {
             h1: 'normal',
