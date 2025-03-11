@@ -251,6 +251,7 @@ class TeamSerializer(serializers.ModelSerializer):
     """Serialize teams."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
+    is_visible_all_services = serializers.BooleanField(required=False, default=True)
     service_providers = serializers.PrimaryKeyRelatedField(
         queryset=ServiceProvider.objects.all(), many=True, required=False
     )
@@ -263,6 +264,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "accesses",
             "created_at",
             "depth",
+            "is_visible_all_services",
             "name",
             "numchild",
             "path",

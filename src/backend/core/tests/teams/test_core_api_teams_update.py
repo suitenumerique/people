@@ -128,6 +128,27 @@ def test_api_teams_update_authenticated_administrators():
             assert value == new_values[key]
 
 
+def test_api_teams_update_is_visible_all_services():
+    """Administrators of a team should be allowed to update the visibility to all services."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    team = factories.TeamFactory(
+        users=[(user, "administrator")], is_visible_all_services=False
+    )
+
+    response = client.patch(
+        f"/api/v1.0/teams/{team.id!s}/",
+        {"is_visible_all_services": True},
+        format="json",
+    )
+    assert response.status_code == HTTP_200_OK
+    team.refresh_from_db()
+    assert team.is_visible_all_services is True
+
+
 def test_api_teams_update_authenticated_owners():
     """Administrators of a team should be allowed to update it,
     apart from read-only fields."""

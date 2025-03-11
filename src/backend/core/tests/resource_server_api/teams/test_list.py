@@ -82,6 +82,7 @@ def test_api_teams_list_authenticated(  # pylint: disable=too-many-locals
                 "created_at": team_1.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "depth": team_1.depth,
                 "id": str(team_1.pk),
+                "is_visible_all_services": False,
                 "name": team_1.name,
                 "numchild": team_1.numchild,
                 "path": team_1.path,
@@ -91,6 +92,7 @@ def test_api_teams_list_authenticated(  # pylint: disable=too-many-locals
                 "created_at": team_2.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "depth": team_2.depth,
                 "id": str(team_2.pk),
+                "is_visible_all_services": False,
                 "name": team_2.name,
                 "numchild": team_2.numchild,
                 "path": team_2.path,
@@ -100,6 +102,7 @@ def test_api_teams_list_authenticated(  # pylint: disable=too-many-locals
                 "created_at": team_3.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "depth": team_3.depth,
                 "id": str(team_3.pk),
+                "is_visible_all_services": False,
                 "name": team_3.name,
                 "numchild": team_3.numchild,
                 "path": team_3.path,
@@ -109,6 +112,7 @@ def test_api_teams_list_authenticated(  # pylint: disable=too-many-locals
                 "created_at": team_4.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "depth": team_4.depth,
                 "id": str(team_4.pk),
+                "is_visible_all_services": False,
                 "name": team_4.name,
                 "numchild": team_4.numchild,
                 "path": team_4.path,
@@ -273,3 +277,48 @@ def test_api_teams_list_with_parent_teams_other_organization(
     team_ids = [team["id"] for team in response_data["results"]]
     assert len(team_ids) == 1
     assert set(team_ids) == {str(second_team.id)}
+
+
+def test_api_teams_list_is_visible_all_services_teams(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be able to see teams
+    if they are associated with another requesting service provider.
+    """
+    user = factories.UserFactory()
+    service_provider = factories.ServiceProviderFactory()
+    other_service_provider = factories.ServiceProviderFactory()
+
+    # Create a public team visible to the requesting service provider
+    service_team = factories.TeamFactory(
+        is_visible_all_services=False,
+        service_providers=[service_provider],
+    )
+    factories.TeamAccessFactory(user=user, team=service_team, role="member")
+
+    # Create a public team visible to another service provider (should be listed)
+    other_public_team = factories.TeamFactory(
+        is_visible_all_services=True,
+        service_providers=[other_service_provider],
+    )
+    factories.TeamAccessFactory(user=user, team=other_public_team, role="member")
+
+    # Create a public team visible to the requesting service provider (should not be listed)
+    private_team = factories.TeamFactory(
+        is_visible_all_services=False,
+        service_providers=[other_service_provider],
+    )
+    factories.TeamAccessFactory(user=user, team=private_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get("/resource-server/v1.0/teams/")
+
+    assert response.status_code == HTTP_200_OK
+    response_data = response.json()
+    assert response_data["count"] == 2
+
+    team_ids = [team["id"] for team in response_data["results"]]
+    assert len(team_ids) == 2
+    assert str(service_team.id) in team_ids
+    assert str(other_public_team.id) in team_ids

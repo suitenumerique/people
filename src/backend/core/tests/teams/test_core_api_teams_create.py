@@ -61,6 +61,7 @@ def test_api_teams_create_authenticated(settings):
     assert team.name == "my team"
     assert team.organization == organization
     assert team.accesses.filter(role="owner", user=user).exists()
+    assert team.is_visible_all_services is True
 
 
 def test_api_teams_create_authenticated_feature_disabled(settings):
@@ -120,3 +121,32 @@ def test_api_teams_create_cannot_override_organization():
     assert team.name == "my team"
     assert team.organization == organization
     assert team.accesses.filter(role="owner", user=user).exists()
+    assert team.is_visible_all_services is True
+
+
+def test_api_teams_create_not_is_visible_all_services():
+    """
+    Authenticated users should be able to create teams and
+    make is restricted to the services which can view it.
+    """
+    organization = OrganizationFactory(with_registration_id=True)
+    user = UserFactory(organization=organization)
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        "/api/v1.0/teams/",
+        {
+            "name": "my team",
+            "is_visible_all_services": False,
+        },
+        format="json",
+    )
+
+    assert response.status_code == HTTP_201_CREATED
+    team = Team.objects.get()
+    assert team.name == "my team"
+    assert team.organization == organization
+    assert team.accesses.filter(role="owner", user=user).exists()
+    assert team.is_visible_all_services is False
