@@ -721,6 +721,11 @@ class Team(MP_Node, BaseModel):
         related_name="teams",
         blank=True,
     )
+    is_visible_all_services = models.BooleanField(
+        _("is visible for all SP"),
+        default=False,
+        help_text=_("Whether this team is visible to all service providers."),
+    )
 
     objects = TeamManager()
 

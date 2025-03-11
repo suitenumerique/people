@@ -103,7 +103,8 @@ class TeamViewSet(  # pylint: disable=too-many-ancestors
                         for d in depth_path
                     ),
                 ),
-                service_providers__audience_id=service_provider_audience,
+                Q(service_providers__audience_id=service_provider_audience)
+                | Q(is_visible_all_services=True),
             )
             # Abilities are computed based on logged-in user's role for the team
             # and if the user does not have access, it's ok to consider them as a member
