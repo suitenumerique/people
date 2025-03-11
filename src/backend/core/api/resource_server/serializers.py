@@ -14,6 +14,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "id",
             "created_at",
             "depth",
+            "is_visible_all_services",
             "name",
             "numchild",
             "path",

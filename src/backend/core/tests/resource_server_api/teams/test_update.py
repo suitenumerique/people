@@ -336,3 +336,57 @@ def test_api_teams_update_child_team(client, force_login_via_resource_server, ro
 
     second_team.refresh_from_db()
     assert second_team.name == "Second"
+
+
+def test_api_teams_update_is_visible_all_services_status(
+    client, force_login_via_resource_server
+):
+    """Team administrators should be able to change the visibility status of their team."""
+    user = factories.UserFactory()
+    service_provider = factories.ServiceProviderFactory()
+    team = factories.TeamFactory(
+        users=[(user, "administrator")],
+        service_providers=[service_provider],
+        is_visible_all_services=True,
+    )
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.patch(
+            f"/resource-server/v1.0/teams/{team.id}/",
+            {
+                "is_visible_all_services": False,
+            },
+            content_type="application/json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_200_OK
+    team.refresh_from_db()
+    assert team.is_visible_all_services is False
+
+
+def test_api_teams_update_public_status_as_member(
+    client, force_login_via_resource_server
+):
+    """Team members should not be able to change the visibility status of their team."""
+    user = factories.UserFactory()
+    service_provider = factories.ServiceProviderFactory()
+    team = factories.TeamFactory(
+        users=[(user, "member")],
+        service_providers=[service_provider],
+        is_visible_all_services=True,
+    )
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.patch(
+            f"/resource-server/v1.0/teams/{team.id}/",
+            {
+                "is_visible_all_services": False,
+            },
+            content_type="application/json",
+            HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
+        )
+
+    assert response.status_code == HTTP_403_FORBIDDEN
+    team.refresh_from_db()
+    assert team.is_visible_all_services is True

@@ -69,6 +69,7 @@ def test_api_teams_retrieve_authenticated_related(
         "created_at": team.created_at.isoformat().replace("+00:00", "Z"),
         "depth": 1,
         "id": str(team.id),
+        "is_visible_all_services": False,
         "name": team.name,
         "numchild": 0,
         "path": team.path,
@@ -143,6 +144,7 @@ def test_api_teams_retrieve_authenticated_related_parent_same_organization(
         "created_at": first_team.created_at.isoformat().replace("+00:00", "Z"),
         "depth": 2,
         "id": str(first_team.pk),
+        "is_visible_all_services": False,
         "name": first_team.name,
         "numchild": 1,
         "path": first_team.path,
@@ -229,3 +231,27 @@ def test_api_teams_retrieve_authenticated_related_child_same_organization(
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "No Team matches the given query."}
+
+
+def test_api_teams_retrieve_is_visible_all_services_team(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be able to retrieve teams even
+    if associated with the another requesting service provider.
+    """
+    user = factories.UserFactory()
+    service_provider = factories.ServiceProviderFactory()
+    other_service_provider = factories.ServiceProviderFactory()
+
+    public_team = factories.TeamFactory(
+        is_visible_all_services=True,
+        service_providers=[other_service_provider],
+    )
+    TeamAccessFactory(user=user, team=public_team, role="member")
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.get(f"/resource-server/v1.0/teams/{public_team.id}/")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["id"] == str(public_team.id)

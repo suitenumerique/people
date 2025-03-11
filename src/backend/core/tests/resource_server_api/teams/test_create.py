@@ -59,6 +59,7 @@ def test_api_teams_create_authenticated_new_service_provider(
     assert response.json() == {
         "created_at": team.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "id": str(team.pk),
+        "is_visible_all_services": False,
         "depth": team.depth,
         "name": "my team",
         "numchild": team.numchild,
@@ -164,3 +165,46 @@ def test_api_teams_create_cannot_override_service_provider(
     team = Team.objects.get()
     assert team.name == "my team"
     assert team.service_providers.get().audience_id == service_provider.audience_id
+
+
+def test_api_teams_create_is_visible_all_services_team(
+    client, force_login_via_resource_server
+):
+    """
+    Authenticated users should be able to create teams visible in all service providers.
+    """
+    user = UserFactory()
+    service_provider = ServiceProviderFactory()
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.post(
+            "/resource-server/v1.0/teams/",
+            {
+                "name": "my team",
+                "is_visible_all_services": True,
+            },
+            format="json",
+        )
+
+    assert response.status_code == HTTP_201_CREATED
+    team = Team.objects.get()
+    assert team.is_visible_all_services is True
+
+
+def test_api_teams_create_restricted_team(client, force_login_via_resource_server):
+    """Authenticated users should be able to create teams restricted to some service providers."""
+    user = UserFactory()
+    service_provider = ServiceProviderFactory()
+
+    with force_login_via_resource_server(client, user, service_provider.audience_id):
+        response = client.post(
+            "/resource-server/v1.0/teams/",
+            {
+                "name": "my team",
+            },
+            format="json",
+        )
+
+    assert response.status_code == HTTP_201_CREATED
+    team = Team.objects.get()
+    assert team.is_visible_all_services is False
