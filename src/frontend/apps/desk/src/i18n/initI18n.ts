@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import { BASE_LANGUAGE, LANGUAGES_ALLOWED, LANGUAGE_COOKIE_NAME } from './conf';
+import { BASE_LANGUAGE, LANGUAGES_ALLOWED, LANGUAGE_LOCAL_STORAGE } from './conf';
 import resources from './translations.json';
 
 i18n
@@ -13,7 +13,7 @@ i18n
     detection: {
       order: ['cookie', 'navigator'], // detection order
       caches: ['cookie'], // Use cookies to store the language preference
-      lookupCookie: LANGUAGE_COOKIE_NAME,
+      lookupCookie: LANGUAGE_LOCAL_STORAGE,
       cookieMinutes: 525600, // Expires after one year
     },
     interpolation: {

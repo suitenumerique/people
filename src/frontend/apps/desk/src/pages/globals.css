@@ -43,15 +43,26 @@ main ::-webkit-scrollbar-thumb:hover {
   display: block !important;
 }
 
-@media (min-width: 640px) {
+.flex {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
   .sm\:block {
     display: block !important;
+  }
+  .sm\:flex {
+    display: flex !important;
   }
 }
 
 @media (min-width: 768px) {
   .md\:hidden {
     display: none !important;
+  }
+
+  .md\:flex {
+    display: flex !important;
   }
 
   .md\:block {

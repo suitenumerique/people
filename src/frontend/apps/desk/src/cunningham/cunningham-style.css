@@ -23,11 +23,15 @@
 }
 
 .labelled-box label {
-  color: var(--c--theme--colors--primary-text);
+  color: var(--c--theme--colors--greyscale-500);
 }
 
 .labelled-box--disabled label {
   color: var(--c--components--forms-labelledbox--label-color--small-disabled);
+}
+
+.labelled-box label.placeholder {
+  top: 12px;
 }
 
 .c__field :not(.c__textarea__wrapper, div) .labelled-box label.placeholder {
@@ -43,6 +47,21 @@
 .c__textarea__wrapper {
   transition: all var(--c--theme--transitions--duration)
     var(--c--theme--transitions--ease-out);
+  gap: 0.5rem;
+  color: var(--c--theme--colors--greyscale-600);
+}
+
+.c__input__wrapper {
+  height: 46px;
+}
+
+.c__input__wrapper .c__input {
+  position: absolute;
+  top: 16px;
+}
+
+.labelled-box label {
+  top: 1px;
 }
 
 .c__input__wrapper:has(input[readonly]),
@@ -55,21 +74,6 @@
 .c__input__wrapper:has(input.border-none),
 .c__input__wrapper:has(input.border-none) * {
   border: none;
-}
-
-.c__input__wrapper:hover,
-.c__textarea__wrapper:hover {
-  box-shadow: var(--c--components--forms-input--box-shadow-color) 0 0 0 2px;
-}
-
-.c__textarea__wrapper--disabled:hover,
-.c__input__wrapper--disabled:hover,
-.c__input__wrapper:hover:has(input[readonly]) {
-  box-shadow: var(--c--theme--colors--primary-500) 0 0 0 0;
-}
-
-.c__input__wrapper--disabled {
-  color: var(--c--components--forms-input--value-color--disabled);
 }
 
 .c__input__wrapper .labelled-box__label.placeholder {

@@ -14,6 +14,8 @@ jest.mock('next/navigation', () => ({
   })),
 }));
 
+const mockCloseModal = jest.fn();
+
 describe('ModalAddMailDomain', () => {
   const getElements = () => ({
     modalElement: screen.getByText('Add a mail domain'),
@@ -36,7 +38,7 @@ describe('ModalAddMailDomain', () => {
   });
 
   it('renders all the elements', () => {
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const {
       modalElement,
@@ -57,7 +59,7 @@ describe('ModalAddMailDomain', () => {
   });
 
   it('should disable submit button when no field is filled', () => {
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { buttonSubmit } = getElements();
 
@@ -69,7 +71,7 @@ describe('ModalAddMailDomain', () => {
 
     const user = userEvent.setup();
 
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { inputName, buttonSubmit } = getElements();
 
@@ -110,7 +112,7 @@ describe('ModalAddMailDomain', () => {
 
     const user = userEvent.setup();
 
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
@@ -143,7 +145,7 @@ describe('ModalAddMailDomain', () => {
 
     const user = userEvent.setup();
 
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
@@ -176,7 +178,7 @@ describe('ModalAddMailDomain', () => {
 
     const user = userEvent.setup();
 
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
@@ -207,7 +209,7 @@ describe('ModalAddMailDomain', () => {
 
     const user = userEvent.setup();
 
-    render(<ModalAddMailDomain />, { wrapper: AppWrapper });
+    render(<ModalAddMailDomain closeModal={mockCloseModal}/>, { wrapper: AppWrapper });
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 

@@ -88,8 +88,8 @@ const config = {
           width: 'auto',
         },
         'forms-input': {
-          'value-color': 'var(--c--theme--colors--primary-500)',
-          'border-color': 'var(--c--theme--colors--primary-500)',
+          'value-color': 'var(--c--theme--colors--greyscale-500)',
+          'border-color': 'var(--c--theme--colors--greyscale-500)',
           color: {
             error: 'var(--c--theme--colors--danger-500)',
             'error-hover': 'var(--c--theme--colors--danger-500)',
@@ -98,7 +98,7 @@ const config = {
         },
         'forms-labelledbox': {
           'label-color': {
-            small: 'var(--c--theme--colors--primary-500)',
+            small: 'var(--c--theme--colors--greyscale-500)',
             'small-disabled': 'var(--c--theme--colors--greyscale-400)',
             big: {
               disabled: 'var(--c--theme--colors--greyscale-400)',
@@ -228,10 +228,11 @@ const config = {
           'secondary-900': '#2b1919',
           'greyscale-text': '#303C4B',
           'greyscale-000': '#f6f6f6',
+          'greyscale-050': '#f6f6f6',
           'greyscale-100': '#eeeeee',
           'greyscale-200': '#e5e5e5',
           'greyscale-300': '#e1e1e1',
-          'greyscale-400': '#dddddd',
+          'greyscale-400': '#929292',
           'greyscale-500': '#cecece',
           'greyscale-600': '#7b7b7b',
           'greyscale-700': '#666666',
@@ -363,7 +364,7 @@ const config = {
         },
         'forms-labelledbox': {
           'label-color': {
-            big: 'var(--c--theme--colors--primary-text)',
+            big: 'var(--c--theme--colors--greyscale-500)',
           },
         },
         'forms-select': {
