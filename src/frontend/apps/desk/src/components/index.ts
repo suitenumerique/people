@@ -4,7 +4,6 @@ export * from './Card';
 export * from './Icon';
 export * from './Effect';
 export * from './DropButton';
-export * from './IconOptions';
 export * from './Link';
 export * from './LogoGouv';
 export * from './Tag';

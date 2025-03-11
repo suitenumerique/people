@@ -22,5 +22,5 @@ export const getLanguage = () => {
 
   const language = splitLocaleCode(languageStore).language;
 
-  return LANGUAGES_ALLOWED.includes(language) ? language : BASE_LANGUAGE;
+  return Object.keys(LANGUAGES_ALLOWED).includes(language) ? language : BASE_LANGUAGE;
 };

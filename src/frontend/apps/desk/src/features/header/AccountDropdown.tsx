@@ -13,8 +13,8 @@ export const AccountDropdown = () => {
   return (
     <DropButton
       button={
-        <Box $flex $direction="row" $align="center">
-          <Box $flex $direction="column" $align="left">
+        <Box $flex="flex" $direction="row" $align="center">
+          <Box $flex="flex" $direction="column" $align="left">
             <Text $theme="primary">{userName}</Text>
             {userData?.organization?.registration_id_list?.at(0) && (
               <Text $theme="primary">{userData?.organization?.name}</Text>

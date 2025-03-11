@@ -1,7 +1,6 @@
 import {
   CSSProperties,
   ComponentPropsWithRef,
-  ReactHTML,
   forwardRef,
 } from 'react';
 import styled from 'styled-components';
@@ -15,7 +14,7 @@ type TextSizes = keyof typeof sizes;
 
 export interface TextProps extends BoxProps {
   as?: keyof Pick<
-    ReactHTML,
+    HTMLElementTagNameMap,
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
   $elipsis?: boolean;

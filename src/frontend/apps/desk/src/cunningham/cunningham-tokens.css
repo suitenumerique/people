@@ -19,6 +19,7 @@
   --c--theme--colors--info-700: #044395;
   --c--theme--colors--info-800: #033474;
   --c--theme--colors--info-900: #022858;
+  --c--theme--colors--greyscale-050: #f6f6f6;
   --c--theme--colors--greyscale-100: #fafafb;
   --c--theme--colors--greyscale-200: #f3f4f4;
   --c--theme--colors--greyscale-300: #e7e8ea;
@@ -201,16 +202,16 @@
   --c--components--forms-datepicker--border-radius--focus: var(
     --c--components--forms-datepicker--border-radius
   );
-  --c--components--forms-field--color: var(--c--theme--colors--primary-500);
+  --c--components--forms-field--color: var(--c--theme--colors--greyscale-600);
   --c--components--forms-field--value-color: var(
-    --c--theme--colors--primary-500
+    --c--theme--colors--greyscale-600
   );
   --c--components--forms-field--width: auto;
   --c--components--forms-input--value-color: var(
     --c--theme--colors--primary-500
   );
   --c--components--forms-input--border-color: var(
-    --c--theme--colors--primary-500
+    --c--theme--colors--greyscale-400
   );
   --c--components--forms-input--color--error: var(
     --c--theme--colors--danger-500
@@ -345,7 +346,7 @@
   --c--theme--colors--greyscale-100: #182536;
   --c--theme--colors--greyscale-200: #303c4b;
   --c--theme--colors--greyscale-300: #555f6b;
-  --c--theme--colors--greyscale-400: #79818a;
+  --c--theme--colors--greyscale-400: #929292;
   --c--theme--colors--greyscale-500: #9ea3aa;
   --c--theme--colors--greyscale-600: #c2c6ca;
   --c--theme--colors--greyscale-700: #e7e8ea;
@@ -547,19 +548,21 @@
     --c--theme--colors--greyscale-text
   );
   --c--components--forms-input--border-radius: 4px;
-  --c--components--forms-input--background-color: #fff;
+  --c--components--forms-input--background-color: var(
+    --c--theme--colors--greyscale-050
+  );
   --c--components--forms-input--border-color: var(
-    --c--theme--colors--primary-text
+    --c--theme--colors--greyscale-400
   );
   --c--components--forms-input--box-shadow-color: var(
     --c--theme--colors--primary-text
   );
   --c--components--forms-input--value-color: var(
-    --c--theme--colors--primary-text
+    --c--theme--colors--greyscale-950
   );
   --c--components--forms-input--font-size: 14px;
   --c--components--forms-labelledbox--label-color--big: var(
-    --c--theme--colors--primary-text
+    --c--theme--colors--greyscale-500
   );
   --c--components--forms-radio--accent-color: var(
     --c--theme--colors--primary-600

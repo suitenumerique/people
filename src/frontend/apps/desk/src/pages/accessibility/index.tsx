@@ -2,7 +2,7 @@ import { PropsWithChildren, ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Text, TextStyled, TextType } from '@/components';
-import { PageLayout } from '@/core';
+import { PageLayout } from '@/layouts';
 import { useCunninghamTheme } from '@/cunningham';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -19,7 +19,9 @@ const Page: NextPageWithLayout = () => {
   const { colorsTokens } = useCunninghamTheme();
 
   return (
-    <Box>
+    <Box
+      $margin={{ top: '50px' }}
+      >
       <Box
         as="h1"
         $background={colorsTokens()['primary-100']}
