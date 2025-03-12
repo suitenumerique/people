@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ⬆️(nginx) bump nginx-unprivileged to 1.27 #797
 - ✨(teams) allow broadly available teams #796
 - ✨(teams) update and enhance team invitation email
 - ✨(api) define dimail timeout as a setting

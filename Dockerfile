@@ -39,7 +39,7 @@ FROM frontend-builder-dev AS frontend-builder
 RUN yarn build
 
 # ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.26-alpine AS frontend-production
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS frontend-production
 
 USER root
 
