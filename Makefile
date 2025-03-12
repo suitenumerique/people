@@ -212,7 +212,7 @@ back-i18n-compile: ## compile the gettext files
 .PHONY: back-i18n-compile
 
 back-i18n-generate: ## create the .pot files used for i18n
-back-i18n-generate: crowdin-download-sources
+back-i18n-generate: mails-build crowdin-download-sources
 	@$(MANAGE) makemessages -a --keep-pot
 .PHONY: back-i18n-generate
 
