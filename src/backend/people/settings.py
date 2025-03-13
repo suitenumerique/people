@@ -667,6 +667,13 @@ class Base(Configuration):
             SCOPES["given_name"] = "First name"
             SCOPES["usual_name"] = "Last name"
             SCOPES["siret"] = "SIRET number"
+            SCOPES["siren"] = "SIREN number"
+            SCOPES["uid"] = "UID"
+            # available but not filled
+            SCOPES["organizational_unit"] = "Organizational unit"
+            SCOPES["belonging_population"] = "Belonging population"
+            SCOPES["phone"] = "Phone number"
+            SCOPES["chorusdt"] = "Chorus DT"
 
         return {
             "OIDC_ENABLED": OIDC_ENABLED,
