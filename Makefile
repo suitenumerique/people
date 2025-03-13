@@ -301,7 +301,11 @@ dimail-setup-db:
 
 # -- Mail generator
 
-mails-build: ## Convert mjml files to html and text
+mails-remove-templates: ## Remove the generated mail templates
+	rm -Rf "./src/backend/core/templates/mail"
+.PHONY: mails-remove-templates
+
+mails-build: mails-clean-templates ## Convert mjml files to html and text
 	@$(MAIL_YARN) build
 .PHONY: mails-build
 
