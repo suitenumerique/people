@@ -178,3 +178,17 @@ class ProConnectValidator(BaseValidator):
 
         # Call the superclass method to create the authorization code
         return super()._create_authorization_code(request, code, expires)
+
+    def is_pkce_required(self, client_id, request):
+        """
+        Determine if PKCE is required for the given client.
+        For ProConnect, PKCE is disabled.
+
+        Args:
+            client_id: The client identifier.
+            request: The OAuth2 request object containing user and scope information.
+
+        Returns:
+            bool: True if PKCE is required, False otherwise.
+        """
+        return False
