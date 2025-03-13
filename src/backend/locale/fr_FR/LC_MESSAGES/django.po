@@ -324,8 +324,8 @@ msgstr "Invitations d'équipe"
 
 #: build/lib/core/models.py:1062 core/models.py:1062
 #, python-brace-format
-msgid "[La Suite] You have been invited to become a {role} of a group"
-msgstr "[La Suite] Vous avez été invité(e) à être {role} d'un groupe"
+msgid "[La Suite] You have been invited to become a %(role)s of a group"
+msgstr "[La Suite] Vous avez été invité(e) à être %(role)s d'un groupe"
 
 #: build/lib/mailbox_manager/admin.py:17 mailbox_manager/admin.py:17
 msgid "Synchronise from dimail"

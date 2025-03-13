@@ -1057,10 +1057,9 @@ class Invitation(BaseInvitation):
 
     def _get_mail_subject(self):
         """Get the subject of the team invitation."""
-        role = self.get_role_display().lower()
         return gettext(
-            f"[La Suite] You have been invited to become a {role} of a group"
-        )
+            "[La Suite] You have been invited to become a %(role)s of a group"
+        ) % {"role": self.get_role_display().lower()}
 
     def _get_mail_context(self):
         """Get the template variables for the invitation."""
