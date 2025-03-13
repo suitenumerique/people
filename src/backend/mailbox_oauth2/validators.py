@@ -162,15 +162,6 @@ class ProConnectValidator(BaseValidator):
                 request.user.domain.organization.registration_id_list[0][:9]
             )
 
-        for empty_claim in [
-            "organizational_unit",
-            "belonging_population",
-            "phone",
-            "chorusdt",
-        ]:
-            if empty_claim in request.scopes:
-                additional_claims[empty_claim] = ""
-
         # Include 'acr' claim if it is present in the request claims and equals 'eidas1'
         # see _create_authorization_code method for more details
         if request.claims and request.claims.get("acr") == "eidas1":
