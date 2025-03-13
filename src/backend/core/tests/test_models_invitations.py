@@ -246,9 +246,8 @@ def test_models_team_invitations_email():
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 0
 
-    # Please add test for french language after translations update
     invitation = factories.InvitationFactory(
-        role="member", team=team, email="john@people.com", issuer__language="en-us"
+        role="member", team=team, email="john@people.com", issuer__language="fr-fr"
     )
 
     # pylint: disable-next=no-member
@@ -259,13 +258,12 @@ def test_models_team_invitations_email():
 
     assert email.to == [invitation.email]
     assert (
-        email.subject
-        == "[La Suite] You have been invited to become a member of a group"
+        email.subject == "[La Suite] Vous avez été invité(e) à être membre d'un groupe"
     )
 
     email_content = " ".join(email.body.split())
     assert (
-        f"""You have been invited to be a member of the group "{team.name}" within La Suite."""
+        f"""Vous avez été invité(e) à être membre du groupe "{team.name}" au sein de la Suite."""
         in email_content
     )
     assert "[//example.com]" in email_content
