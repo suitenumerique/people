@@ -115,7 +115,13 @@ class ProConnectValidator(BaseValidator):
     oidc_claim_scope = OAuth2Validator.oidc_claim_scope | {
         "given_name": "given_name",
         "usual_name": "usual_name",
-        "siret": "profile",
+        "siret": "siret",
+        "uid": "uid",
+        "siren": "siren",
+        "organizational_unit": "organizational_unit",
+        "belonging_population": "belonging_population",
+        "phone": "phone",
+        "chorusdt": "chorusdt",
     }
 
     def get_additional_claims(self, request):
@@ -137,11 +143,29 @@ class ProConnectValidator(BaseValidator):
         if "usual_name" in request.scopes:
             additional_claims["usual_name"] = request.user.last_name
 
+        if "uid" in request.scopes:
+            additional_claims["uid"] = str(request.user.pk)
+
         if "siret" in request.scopes:
             # The following line will fail on purpose if we don't have the proper information
             additional_claims["siret"] = (
                 request.user.domain.organization.registration_id_list[0]
             )
+
+        if "siren" in request.scopes:
+            # The following line will fail on purpose if we don't have the proper information
+            additional_claims["siren"] = (
+                request.user.domain.organization.registration_id_list[0][:9]
+            )
+
+        for empty_claim in [
+            "organizational_unit",
+            "belonging_population",
+            "phone",
+            "chorusdt",
+        ]:
+            if empty_claim in request.scopes:
+                additional_claims[empty_claim] = ""
 
         # Include 'acr' claim if it is present in the request claims and equals 'eidas1'
         # see _create_authorization_code method for more details

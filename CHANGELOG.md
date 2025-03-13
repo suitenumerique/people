@@ -22,6 +22,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(oauth2) add ProConnect scopes #802
 - 🐛(domains) use a dedicated mail to invite user to manage domain
 - 🐛(mailbox) fix mailbox creation email language
 
