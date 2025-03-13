@@ -61,7 +61,7 @@ def test_api_domain_invitations__create__authenticated_outsider():
 )
 def test_api_domain_invitations__admin_should_create_invites(role):
     """Owners and administrators should be able to invite new domain managers."""
-    user = core_factories.UserFactory()
+    user = core_factories.UserFactory(language="fr-fr")
     domain = factories.MailDomainEnabledFactory()
     factories.MailDomainAccessFactory(domain=domain, user=user, role=role)
 
@@ -83,7 +83,7 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     assert len(mail.outbox) == 1
     email = mail.outbox[0]
     assert email.to == [invitation_values["email"]]
-    assert email.subject == "[La Suite] You have been invited to join La Régie"
+    assert email.subject == "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
 
 def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():
