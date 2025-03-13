@@ -5,6 +5,10 @@ Contains all related code for OIDC authentication using
 people as an Identity Provider.
 """
 
+import json
+
+from jwcrypto import jwt
+from oauth2_provider.models import AbstractApplication
 from oauth2_provider.oauth2_validators import OAuth2Validator
 
 
@@ -216,3 +220,29 @@ class ProConnectValidator(BaseValidator):
             bool: True if PKCE is required, False otherwise.
         """
         return False
+
+    def get_userinfo_claims(self, request):
+        """
+        Generates and saves a new JWT for this request, and returns it as the
+        current user's claims.
+
+        This is overridden to enforce JWT signing, we use `finalize_id_token` like code.
+        """
+        claims, _expiration_time = self.get_id_token_dictionary(
+            request.access_token, None, request
+        )
+
+        header = {
+            "typ": "JWT",
+            "alg": request.client.algorithm,
+        }
+        # RS256 consumers expect a kid in the header for verifying the token
+        if request.client.algorithm == AbstractApplication.RS256_ALGORITHM:
+            header["kid"] = request.client.jwk_key.thumbprint()
+
+        jwt_token = jwt.JWT(
+            header=json.dumps(header, default=str),
+            claims=json.dumps(claims, default=str),
+        )
+        jwt_token.make_signed_token(request.client.jwk_key)
+        return jwt_token.serialize()
