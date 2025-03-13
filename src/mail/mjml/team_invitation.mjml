@@ -5,14 +5,14 @@
     <mj-wrapper css-class="wrapper" padding="10px">
       <mj-section>
         <mj-column>
-            <mj-image align="center" src="{% base64_static 'images/logo-laregie.png' %}" width="157px" align="left" alt="{%trans 'La Régie' %}" padding="10px" />
+            <mj-image align="center" src="{% base64_static 'images/logo-laregie.png' %}" width="157px" align="left" alt="La Régie" padding="10px" />
           </mj-column>
       </mj-section>
       <mj-section mj-class="bg--white-100">
         <mj-column>
           <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" padding="10px 20px" />
           <mj-text>
-            <strong>{% trans "Welcome to" %} La Régie</strong>
+            <strong>{% trans "Welcome to La Régie!" %}</strong>
           </mj-text>
           <!-- Main Message -->
           <mj-text>{% trans "Hello," %}</mj-text>
@@ -30,13 +30,20 @@
             <strong>{% trans "What is La Régie?" %}</strong>
           </mj-text>
           <mj-text>
+          {% trans "La Régie is the administration center of la Suite, where you can manage users, groups and domains."%}
+          </mj-text>
+          <mj-text>
+            <strong>{% trans "What is La Suite?" %}</strong>
+          </mj-text>
+          <mj-text>
           {% trans "La Suite is an open-source work environment, designed for the public sector and open to commons."%}
           </mj-text>
           <mj-text>
           {% trans "With La Suite, you will be able to create, organise and collaborate online!" %}
           </mj-text>
-          <mj-text>
-          {% trans "For more information:" %} <a href="https://lasuite.numerique.gouv.fr">{% trans "Visit the website for La Suite numérique" %}</a>
+          <mj-text>{% blocktranslate with link=site.url trimmed %}
+            For more information: <a href="{{ link }}">Visit the website for La Suite numérique</a> to discover what tools we offer.
+          {% endblocktranslate %}
           </mj-text>
           <mj-text>
             {% trans "Welcome aboard!" %}
