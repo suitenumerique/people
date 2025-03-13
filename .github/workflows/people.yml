@@ -29,7 +29,7 @@ jobs:
         run: git log
       - name: Enforce absence of print statements in code
         run: |
-          ! git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- . ':(exclude)**/people.yml' | grep "print("
+          ! git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- . ':(exclude)**/people.yml' | grep -E "(\bprint\(|\bpprint\()"
       - name: Check absence of fixup commits
         run: |
           ! git log | grep 'fixup!'
