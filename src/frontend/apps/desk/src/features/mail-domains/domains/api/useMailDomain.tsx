@@ -1,4 +1,5 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
@@ -35,9 +36,21 @@ export function useMailDomain(
     MailDomainResponse
   >,
 ) {
+  const router = useRouter();
+
   return useQuery<MailDomainResponse, APIError, MailDomainResponse>({
     queryKey: [KEY_MAIL_DOMAIN, param],
-    queryFn: () => getMailDomain(param),
+
+    queryFn: async () => {
+      try {
+        return await getMailDomain(param);
+      } catch (error) {
+        if (error instanceof APIError && error.status === 404) {
+          router.replace('/404');
+        }
+        throw error;
+      }
+    },
     ...queryConfig,
   });
 }

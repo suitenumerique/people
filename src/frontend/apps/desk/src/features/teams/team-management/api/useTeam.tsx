@@ -1,4 +1,5 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
@@ -24,9 +25,20 @@ export function useTeam(
   param: TeamParams,
   queryConfig?: UseQueryOptions<Team, APIError, Team>,
 ) {
+  const router = useRouter();
+
   return useQuery<Team, APIError, Team>({
     queryKey: [KEY_TEAM, param],
-    queryFn: () => getTeam(param),
+    queryFn: async () => {
+      try {
+        return await getTeam(param);
+      } catch (error) {
+        if (error instanceof APIError && error.status === 404) {
+          router.replace('/404');
+        }
+        throw error;
+      }
+    },
     ...queryConfig,
   });
 }
