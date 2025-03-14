@@ -89,7 +89,7 @@ describe('<MailDomainView />', () => {
 
     // Verify DNS configuration section
     expect(
-      screen.getByText(/Diagnostic status performed by the server/i),
+      screen.getByText(/Result of the diagnosis performed by the server/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/imap.ox.numerique.gouv.fr./i)).toBeInTheDocument();
     expect(
