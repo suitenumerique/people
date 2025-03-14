@@ -84,12 +84,12 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
           onClose={() => setShowModal(false)}
           title={t('Required actions on domain')}
         >
-          <p>
+          <pre>
             {t(
               'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
             )}
-          </p>
-          <h3>{t('Actions required detail')}</h3>
+          </pre>
+          <h3>{t('Diagnostic status performed by the server')}</h3>
 
           <pre>
             {mailDomain.action_required_details &&
@@ -105,7 +105,6 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
           </pre>
           {mailDomain.expected_config && (
             <Box $margin={{ bottom: 'medium' }}>
-              <h3>{t('DNS Configuration Required:')}</h3>
               <pre>
                 <div
                   style={{
@@ -113,7 +112,9 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
                     overflowWrap: 'break-word',
                   }}
                 >
-                  {t('Add the following DNS values:')}
+                  {t(
+                    'You can resolve the above issues by applying the following configurations on your domain:',
+                  )}
                   <ul>
                     {mailDomain.expected_config.map((item, index) => (
                       <li
@@ -122,10 +123,12 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
                       >
                         {item.target && (
                           <>
-                            <b>{item.target.toUpperCase()}</b> -{' '}
+                            <b>{item.target}</b>{' '}
                           </>
                         )}
-                        <b>{item.type.toUpperCase()}</b> {t('with value:')}{' '}
+                        <b style={{ color: 'purple' }}>
+                          IN {item.type.toUpperCase()}
+                        </b>{' '}
                         <span style={{ backgroundColor: '#d4e5f5' }}>
                           {item.value}
                         </span>
