@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - '!i18n/**'
+      - '!qbey/**'
   pull_request:
     branches-ignore:
       - 'i18n/**'
+      - 'qbey/**'
 
 jobs:
   # Call the reusable workflow to install dependencies

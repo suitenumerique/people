@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - 'release/**'
+      - 'qbey/improve-release-process'
 
 jobs:
   install-dependencies:

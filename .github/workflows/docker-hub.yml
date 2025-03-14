@@ -7,12 +7,14 @@ on:
     branches:
       - 'main'
       - '!i18n/**'
+      - '!qbey/**'
     tags:
       - 'v*'
   pull_request:
     branches:
       - 'main'
       - '!i18n/**'
+      - '!qbey/**'
 
 env:
   DOCKER_USER: 1001:127
