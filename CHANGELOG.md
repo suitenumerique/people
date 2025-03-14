@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 🧑‍💻(tasks) run management commands #814
+
 ## [1.14.1] - 2025-03-17
 
 ## [1.14.0] - 2025-03-17
