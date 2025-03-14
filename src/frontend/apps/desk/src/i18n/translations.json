@@ -1,15 +1,4 @@
 {
-  "de": {
-    "translation": {
-      "Accessibility: non-compliant": "Barrierefreiheit: nicht kompatibel",
-      "Cancel": "",
-      "Language": "Sprache",
-      "Legal Notice": "Impressum",
-      "Logout": "Abmelden",
-      "No Username": "Kein Benutzername",
-      "Personal data and cookies": "Personenbezogene Daten und Cookies"
-    }
-  },
   "en": {
     "translation": {
       "copy done": "Copy done",
@@ -28,7 +17,6 @@
       "Accessibility statement": "Déclaration d'accessibilité",
       "Accessibility: non-compliant": "Accessibilité : non conforme",
       "Actions required": "Actions requises",
-      "Actions required detail": "Détail des actions requises",
       "Add a mail domain": "Ajouter un nom de domaine",
       "Add a member": "Ajouter un membre",
       "Add a new access": "Ajouter un nouveau rôle",
@@ -36,7 +24,6 @@
       "Add a team": "Ajouter un groupe",
       "Add members to the team": "Ajouter des membres à l'équipe",
       "Add the domain": "Ajouter le domaine",
-      "Add the following DNS values:": "Ajouter les valeurs DNS suivantes :",
       "Add to domain": "Ajouter au domaine",
       "Add to group": "Ajouter au groupe",
       "Address: National Agency for Territorial Cohesion - 20, avenue de Ségur TSA 10717 75 334 Paris Cedex 07 Paris": "Adresse : Agence Nationale de la Cohésion des Territoires - 20, avenue de Ségur TSA 10717 75 334 Paris Cedex 07",
@@ -72,11 +59,11 @@
       "Create the team": "Créer le groupe",
       "Create your first team by clicking on the \"Create a new team\" button.": "Créez votre premier groupe en cliquant sur le bouton \"Créer un nouveau groupe\".",
       "Created at": "Créé le",
-      "DNS Configuration Required:": "Configuration DNS requise :",
       "Declaration established on June 25, 2024.": "Établie le 25 juin 2024.",
       "Defender of Rights - Free response - 71120 75342 Paris CEDEX 07": "Défenseur des droits\nLibre réponse 71120 75342 Paris CEDEX 07",
       "Delete the team": "Supprimer le groupe",
       "Deleting the {{teamName}} team": "Suppression du groupe {{teamName}}",
+      "Diagnostic status performed by the server": "Résultat du diagnostic effectué par le serveur",
       "Disable": "Désactiver",
       "Disable mailbox": "Désactiver la boîte mail",
       "Domain data fetched successfully": "Les données de domaine ont été récupérées avec succès",
@@ -232,6 +219,7 @@
       "You are the last owner, you cannot be removed from your team.": "Vous êtes le dernier propriétaire, vous ne pouvez pas être retiré de votre groupe.",
       "You are the sole owner of this group. Make another member the group owner, before you can change your own role.": "Vous êtes l’unique propriétaire de ce groupe. Désignez un autre membre comme propriétaire du groupe, avant de pouvoir modifier votre propre rôle.",
       "You can oppose the tracking of your browsing on this website.": "Vous pouvez vous opposer au suivi de votre navigation sur ce site.",
+      "You can resolve the above issues by applying the following configurations on your domain:": "Vous pouvez résoudre les problèmes ci-dessus en appliquant les configurations suivantes sur votre domaine :",
       "You can:": "Vous pouvez :",
       "You cannot remove other owner.": "Vous ne pouvez pas supprimer un autre propriétaire.",
       "You cannot update the role of other owner.": "Vous ne pouvez pas mettre à jour les rôles d'autre propriétaire.",
@@ -246,7 +234,6 @@
       "accessibility-form-defenseurdesdroits": "Écrire un message au<1>Défenseur des droits</1>",
       "copy done": "Copié",
       "mail domains list loading": "chargement de la liste des domaines de messagerie",
-      "with value:": "avec la valeur :",
       "{{count}} member_many": "{{count}} membres",
       "{{count}} member_one": "{{count}} membre",
       "{{count}} member_other": "{{count}} membres",
