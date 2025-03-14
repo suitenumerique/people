@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) enhance required action modal content
 - ✨(domains) add periodic tasks to fetch domain status
 - 🧑‍💻(docker) add celery beat to manage periodic tasks
 - ✨(organization) add metadata field #790
