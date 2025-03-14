@@ -583,6 +583,12 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    TASK_MANAGEMENT_COMMAND_ALLOWLIST = values.ListValue(
+        default=[],
+        environ_name="TASK_MANAGEMENT_COMMAND_ALLOWLIST",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
