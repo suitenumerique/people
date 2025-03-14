@@ -333,17 +333,17 @@ msgstr "Synchroniser à partir de dimail"
 
 #: build/lib/mailbox_manager/admin.py:35 mailbox_manager/admin.py:35
 #, python-brace-format
-msgid "Synchronisation failed for {domain.name} with message: [{err}]"
-msgstr "La synchronisation a échoué pour {domain.name} avec le message : [{err}]"
+msgid "Synchronisation failed for %(domain)s with message: %(err)s"
+msgstr "La synchronisation a échoué pour %(domain)s avec le message : %(err)s"
 
 #: build/lib/mailbox_manager/admin.py:41 mailbox_manager/admin.py:41
 #, python-brace-format
-msgid "Synchronisation succeed for {domain.name}. "
-msgstr "La synchronisation a réussi pour {domain.name}. "
+msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
+msgstr "La synchronisation a réussi pour %(domain)s. Importation des boîtes mails : %(mailboxes)s"
 
 #: build/lib/mailbox_manager/admin.py:49 mailbox_manager/admin.py:49
-msgid "Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
-msgstr "La synchro nécessite des domaines activés. Les domaines exclus sont : {', '.join(excluded_domains)}"
+msgid "Sync require enabled domains. Excluded domains: %(domains)s"
+msgstr "La synchro nécessite des domaines activés. Les domaines exclus sont : %(domains)s"
 
 #: build/lib/mailbox_manager/admin.py:54 mailbox_manager/admin.py:54
 msgid "Check and update status from dimail"
@@ -351,16 +351,16 @@ msgstr "Vérifier et mettre à jour le statut à partir de dimail"
 
 #: build/lib/mailbox_manager/admin.py:70 mailbox_manager/admin.py:70
 #, python-brace-format
-msgid "- {domain.name} with message: '{err}'"
-msgstr "- {domain.name} avec le message : '{err}'"
+msgid "- %(domain)s with message: %(err)s"
+msgstr "- %(domain)s avec le message : %(err)s"
 
 #: build/lib/mailbox_manager/admin.py:81 mailbox_manager/admin.py:81
 msgid "Check domains done with success."
 msgstr "Vérification des domaines effectuée avec succès."
 
 #: build/lib/mailbox_manager/admin.py:82 mailbox_manager/admin.py:82
-msgid "Domains updated: {', '.join(domains_updated)}"
-msgstr "Domaines mis à jour : {', '.join(domains_updated)}"
+msgid "Domains updated: %(domains)s"
+msgstr "Domaines mis à jour : %(domains)s"
 
 #: build/lib/mailbox_manager/admin.py:84 mailbox_manager/admin.py:84
 msgid "No domain updated."
@@ -371,26 +371,26 @@ msgid "Check domain failed for:"
 msgstr "La vérification du domaine a échoué pour :"
 
 #: build/lib/mailbox_manager/admin.py:100 mailbox_manager/admin.py:100
-msgid "Domains disabled are excluded from check: {', '.join(excluded_domains)}"
-msgstr "Les domaines désactivés sont exclus de la vérification : {', '.join(excluded_domains)}"
+msgid "Domains disabled are excluded from check: %(domains)s"
+msgstr "Les domaines désactivés sont exclus de la vérification : %(domains)s"
 
 #: build/lib/mailbox_manager/admin.py:105 mailbox_manager/admin.py:105
 msgid "Fetch domain expected config from dimail"
 msgstr "Récupérer la configuration attendue du domaine depuis dimail"
 
 #: build/lib/mailbox_manager/admin.py:119 mailbox_manager/admin.py:119
-#, python-brace-format
-msgid "Domain expected config fetched with success for {domain.name}."
-msgstr "La configuration du domaine attendue a été récupérée avec succès pour {domain.name}."
+#, python-format
+msgid "Domain expected config fetched with success for %(domain)s."
+msgstr "La configuration du domaine attendue a été récupérée avec succès pour %(domain)s."
 
 #: build/lib/mailbox_manager/admin.py:123 mailbox_manager/admin.py:123
 #, python-brace-format
-msgid "Failed to fetch domain expected config for {domain.name}."
-msgstr "Impossible de récupérer la configuration attendue pour {domain.name}."
+msgid "Failed to fetch domain expected config for %(domain)s."
+msgstr "Impossible de récupérer la configuration attendue pour %(domain)s."
 
 #: build/lib/mailbox_manager/admin.py:129 mailbox_manager/admin.py:129
-msgid "Domains disabled are excluded from fetch: {', '.join(excluded_domains)}"
-msgstr "Les domaines désactivés sont exclus de la vérification : {', '.join(excluded_domains)}"
+msgid "Domains disabled are excluded from fetch: %(domains)s"
+msgstr "Les domaines désactivés sont exclus de la récupération : %(domains)s"
 
 #: build/lib/mailbox_manager/apps.py:11 mailbox_manager/apps.py:11
 msgid "Mailbox manager"
