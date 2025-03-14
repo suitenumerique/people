@@ -32,22 +32,22 @@ def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disabl
         except exceptions.HTTPError as err:
             messages.error(
                 request,
-                _(f"Synchronisation failed for {domain.name} with message: [{err}]"),
+                _("Synchronisation failed for %(domain)s with message: %(err)s")
+                % {"domain": domain.name, "err": err},
             )
         else:
             messages.success(
                 request,
                 _(
-                    f"Synchronisation succeed for {domain.name}. "
-                    f"Imported mailboxes: {', '.join(imported_mailboxes)}"
-                ),
+                    "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
+                )
+                % {"domain": domain.name, "mailboxes": ", ".join(imported_mailboxes)},
             )
     if excluded_domains:
         messages.warning(
             request,
-            _(
-                f"Sync require enabled domains. Excluded domains: {', '.join(excluded_domains)}"
-            ),
+            _("Sync require enabled domains. Excluded domains: %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
         )
 
 
@@ -67,7 +67,10 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
         try:
             response = client.fetch_domain_status(domain)
         except exceptions.HTTPError as err:
-            msg_error.append(_(f"- {domain.name} with message: '{err}'"))
+            msg_error.append(
+                _("- %(domain)s with message: %(err)s")
+                % {"domain": domain.name, "err": err},
+            )
         else:
             success = True
             # temporary (or not?) display content of the dimail response to debug broken state
@@ -79,7 +82,7 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
     if success:
         msg_success = [
             _("Check domains done with success."),
-            _(f"Domains updated: {', '.join(domains_updated)}")
+            _("Domains updated: %(domains)s") % {"domains": ", ".join(domains_updated)}
             if domains_updated
             else _("No domain updated."),
         ]
@@ -96,9 +99,8 @@ def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: d
     if excluded_domains:
         messages.warning(
             request,
-            _(
-                f"Domains disabled are excluded from check: {', '.join(excluded_domains)}"
-            ),
+            _("Domains disabled are excluded from check: %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
         )
 
 
@@ -116,18 +118,20 @@ def fetch_domain_expected_config_from_dimail(modeladmin, request, queryset):  # 
         if response:
             messages.success(
                 request,
-                _(f"Domain expected config fetched with success for {domain.name}."),
+                _("Domain expected config fetched with success for %(domain)s.")
+                % {"domain": domain.name},
             )
         else:
             messages.error(
-                request, _(f"Failed to fetch domain expected config for {domain.name}.")
+                request,
+                _("Failed to fetch domain expected config for %(domain)s.")
+                % {"domain": domain.name},
             )
     if excluded_domains:
         messages.warning(
             request,
-            _(
-                f"Domains disabled are excluded from fetch: {', '.join(excluded_domains)}"
-            ),
+            _("Domains disabled are excluded from fetch: %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
         )
 
 
