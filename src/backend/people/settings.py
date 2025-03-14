@@ -583,6 +583,14 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    MANAGEMENT_COMMAND_AS_TASK = [
+        "fill_organization_metadata",
+    ] + values.ListValue(
+        default=[],
+        environ_name="MANAGEMENT_COMMAND_AS_TASK",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
