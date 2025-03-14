@@ -86,10 +86,10 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
         >
           <pre>
             {t(
-              'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
+              'Actions are required on this domain. Please take the necessary actions to resolve those following issues.',
             )}
           </pre>
-          <h3>{t('Diagnostic status performed by the server')}</h3>
+          <h3>{t('Result of the diagnosis performed by the server')}</h3>
 
           <pre>
             {mailDomain.action_required_details &&
