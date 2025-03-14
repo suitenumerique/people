@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
+      - '!i18n/**'
   pull_request:
-    branches:
-      - '*'
+    branches-ignore:
+      - 'i18n/**'
 
 jobs:
   # Call the reusable workflow to install dependencies

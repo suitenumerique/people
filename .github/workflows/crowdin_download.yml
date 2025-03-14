@@ -56,6 +56,166 @@ jobs:
       - name: generate translations files
         working-directory: src/frontend
         run: yarn i18n:deploy
+
+      # check missing translations
+      - name: Check backend translations
+        id: check_backend
+        run: |
+          echo "Checking for missing translations in backend locale files..."
+          if [ -f src/backend/locale/fr_FR/LC_MESSAGES/django.po ]; then
+            # We need to use a more sophisticated check that ignores multi-line translations
+            # A true empty translation has 'msgstr ""' followed by a blank line or another msgid
+            # Use default value 0 when awk doesn't output anything
+            MISSING_BACKEND=$(awk '/msgstr ""$/ {getline; if ($0 ~ /^$/ || $0 ~ /^#/ || $0 ~ /^msgid/) count++} END {print count+0}' src/backend/locale/fr_FR/LC_MESSAGES/django.po || echo 0)
+            # Ensure we have a numeric value
+            if ! [[ "$MISSING_BACKEND" =~ ^[0-9]+$ ]]; then
+              MISSING_BACKEND=0
+            fi
+
+            echo "Number of missing backend translations: $MISSING_BACKEND"
+            echo "missing_backend_count=$MISSING_BACKEND" >> $GITHUB_OUTPUT
+            if [ "$MISSING_BACKEND" -gt 0 ]; then
+              echo "::warning ::Found $MISSING_BACKEND missing translations in backend locale file"
+            fi
+          else
+            echo "::warning ::Backend translation file src/backend/locale/fr_FR/LC_MESSAGES/django.po not found"
+            echo "missing_backend_count=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check frontend translations
+        id: check_frontend
+        run: |
+          echo "Checking for missing translations in frontend locale files..."
+          if [ -f src/frontend/packages/i18n/locales/desk/fr/translations.json ]; then
+            # Install jq if needed
+            if ! command -v jq &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y jq
+            fi
+
+            # Count all message entries in the translation file
+            TOTAL_FRONTEND=$(jq 'length' src/frontend/apps/desk/src/i18n/translations.json 2>/dev/null || echo 0)
+            TRANSLATED_FRONTEND=$(jq '[paths(objects.message?)] | length' src/frontend/packages/i18n/locales/desk/fr/translations.json 2>/dev/null || echo 0)
+
+            MISSING_FRONTEND=$((TOTAL_FRONTEND - TRANSLATED_FRONTEND))
+
+            echo "Number of total frontend translations: $TOTAL_FRONTEND"
+            echo "Number of translated frontend translations: $TRANSLATED_FRONTEND"
+            echo "Number of missing frontend translations: $MISSING_FRONTEND"
+            echo "missing_frontend_count=$MISSING_FRONTEND" >> $GITHUB_OUTPUT
+            if [ "$MISSING_FRONTEND" -gt 0 ]; then
+              echo "::warning ::Found $MISSING_FRONTEND missing translations in frontend locale file"
+            fi
+          else
+            echo "::warning ::Frontend translation file src/frontend/packages/i18n/locales/desk/fr/translations.json not found"
+            echo "missing_frontend_count=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate translation status report
+        run: |
+          # Create summary for GitHub Actions UI
+          echo "# 📊 Translation Status Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Backend translations
+          echo "## 🔤 Backend Translations (fr_FR)" >> $GITHUB_STEP_SUMMARY
+          if [ -f src/backend/locale/fr_FR/LC_MESSAGES/django.po ]; then
+            TOTAL_BACKEND=$(grep -c "msgid" src/backend/locale/fr_FR/LC_MESSAGES/django.po || echo 0)
+            MISSING_BACKEND=$(awk '/msgstr ""$/ {getline; if ($0 ~ /^$/ || $0 ~ /^#/ || $0 ~ /^msgid/) count++} END {print count || 0}' src/backend/locale/fr_FR/LC_MESSAGES/django.po || echo 0)
+            TRANSLATED_BACKEND=$((TOTAL_BACKEND - MISSING_BACKEND))
+            PERCENT_BACKEND=0
+            if [ "$TOTAL_BACKEND" -gt 0 ]; then
+              PERCENT_BACKEND=$((TRANSLATED_BACKEND * 100 / TOTAL_BACKEND))
+            fi
+
+            # Create progress bar
+            PROGRESS_BAR="["
+            for i in $(seq 1 10); do
+              if [ "$i" -le "$((PERCENT_BACKEND / 10))" ]; then
+                PROGRESS_BAR="${PROGRESS_BAR}🟩"
+              else
+                PROGRESS_BAR="${PROGRESS_BAR}⬜"
+              fi
+            done
+            PROGRESS_BAR="${PROGRESS_BAR}]"
+
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+            echo "| Total strings | $TOTAL_BACKEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Translated strings | $TRANSLATED_BACKEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Missing translations | $MISSING_BACKEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Completion | $PERCENT_BACKEND% $PROGRESS_BAR |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ File not found: src/backend/locale/fr_FR/LC_MESSAGES/django.po" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Frontend translations
+          echo "## 🌐 Frontend Translations" >> $GITHUB_STEP_SUMMARY
+          if [ -f src/frontend/packages/i18n/locales/desk/fr/translations.json ]; then
+            # Ensure jq is available
+            if ! command -v jq &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y jq
+            fi
+
+            # Count all message entries in the translation file
+            TOTAL_FRONTEND=$(jq 'length' src/frontend/apps/desk/src/i18n/translations.json 2>/dev/null || echo 0)
+            TRANSLATED_FRONTEND=$(jq '[paths(objects.message?)] | length' src/frontend/packages/i18n/locales/desk/fr/translations.json 2>/dev/null || echo 0)
+
+            # Ensure we have numeric values
+            if ! [[ "$TOTAL_FRONTEND" =~ ^[0-9]+$ ]]; then
+              TOTAL_FRONTEND=0
+            fi
+
+            if ! [[ "TRANSLATED_FRONTEND" =~ ^[0-9]+$ ]]; then
+              TRANSLATED_FRONTEND=0
+            fi
+
+            MISSING_FRONTEND=$((TOTAL_FRONTEND - TRANSLATED_FRONTEND))
+
+            PERCENT_FRONTEND=0
+            if [ "$TOTAL_FRONTEND" -gt 0 ]; then
+              PERCENT_FRONTEND=$((TRANSLATED_FRONTEND * 100 / TOTAL_FRONTEND))
+            fi
+
+            # Create progress bar
+            PROGRESS_BAR="["
+            for i in $(seq 1 10); do
+              if [ "$i" -le "$((PERCENT_FRONTEND / 10))" ]; then
+                PROGRESS_BAR="${PROGRESS_BAR}🟩"
+              else
+                PROGRESS_BAR="${PROGRESS_BAR}⬜"
+              fi
+            done
+            PROGRESS_BAR="${PROGRESS_BAR}]"
+
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+            echo "| Total strings | $TOTAL_FRONTEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Translated strings | $TRANSLATED_FRONTEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Missing translations | $MISSING_FRONTEND |" >> $GITHUB_STEP_SUMMARY
+            echo "| Completion | $PERCENT_FRONTEND% $PROGRESS_BAR |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ File not found: src/frontend/packages/i18n/locales/desk/fr/translations.json" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📅 _Report generated on $(date)_" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if missing translations exist
+        run: |
+          MISSING_BACKEND=${{ steps.check_backend.outputs.missing_backend_count }}
+          MISSING_FRONTEND=${{ steps.check_frontend.outputs.missing_frontend_count }}
+          TOTAL_MISSING=$((MISSING_BACKEND + MISSING_FRONTEND))
+
+          if [ "$TOTAL_MISSING" -gt 0 ]; then
+            echo "::error ::Found $TOTAL_MISSING missing translations ($MISSING_BACKEND backend, $MISSING_FRONTEND frontend)"
+            echo "Please complete all translations before proceeding."
+            exit 1
+          else
+            echo "✅ All translations are complete!"
+          fi
+
       # Create a new PR
       - name: Create a new Pull Request with new translated strings
         uses: peter-evans/create-pull-request@v7
