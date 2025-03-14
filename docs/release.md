@@ -19,22 +19,19 @@ Whenever we are cooking a new release (e.g. `4.18.1`) we should follow a standar
 
     1.  Create a new branch named: `release/4.18.1`.
 
-    2.  Bump the release number for backend project, frontend projects:
-
-        - for backend, update the version number by hand in `pyproject.toml`,
-        - for each project (`src/frontend`, `src/frontend/apps/*`, `src/mail`), run `yarn version --new-version --no-git-tag-version 4.18.1` in their directory. This will update their `package.json` for you.
+    2.  Bump the release number for backend and frontend project.
 
     3.  Update the project's `Changelog` following the [keepachangelog](https://keepachangelog.com/en/0.3.0/) recommendations
 
     4.  Commit your changes with the following format: the 🔖 release emoji, the type of release (patch/minor/patch) and the release version:
     
         ```text
-        🔖(minor) bump release to 4.18.0
+        🔖(minor) release version 4.18.1
         ```
 
-3.  Open a pull request and ait for an approval from your peers and merge it.
+3.  Open a pull request ask you to wait for an approval from your peers and merge it.
 
-4.  Tag and push your commit:
+4.  Ask you to tag and push your commit:
 
     ```bash
     git tag v4.18.1 && git push origin tag v4.18.1
@@ -42,9 +39,11 @@ Whenever we are cooking a new release (e.g. `4.18.1`) we should follow a standar
 
     Doing this triggers the CI and tells it to build the new Docker image versions that you targeted earlier in the Helm files.
 
-5.  Ensure the new [backend](https://hub.docker.com/r/lasuite/impress-frontend/tags) and [frontend](https://hub.docker.com/r/lasuite/impress-frontend/tags) image tags are on Docker Hub.
+5.  Ensure the new [backend](https://hub.docker.com/r/lasuite/people-backend/tags) and [frontend](https://hub.docker.com/r/lasuite/people-frontend/tags) image tags are on Docker Hub.
 
-6.  The release is now done!
+6. Create a PR on the [lasuite-deploiement](https://github.com/numerique-gouv/lasuite-deploiement) repository to bump the preprod version.
+
+7.  The release is now done!
 
 # Deploying
 
