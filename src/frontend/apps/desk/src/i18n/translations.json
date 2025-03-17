@@ -1,15 +1,4 @@
 {
-  "de": {
-    "translation": {
-      "Accessibility: non-compliant": "Barrierefreiheit: nicht kompatibel",
-      "Cancel": "",
-      "Language": "Sprache",
-      "Legal Notice": "Impressum",
-      "Logout": "Abmelden",
-      "No Username": "Kein Benutzername",
-      "Personal data and cookies": "Personenbezogene Daten und Cookies"
-    }
-  },
   "en": {
     "translation": {
       "copy done": "Copy done",
@@ -27,8 +16,8 @@
       "Accesses list card": "Carte de la liste des accès",
       "Accessibility statement": "Déclaration d'accessibilité",
       "Accessibility: non-compliant": "Accessibilité : non conforme",
+      "Actions are required on this domain. Please take the necessary actions to resolve those following issues.": "Des actions sont requises sur ce domaine. Veuillez faire le nécessaire pour résoudre les problèmes suivants.",
       "Actions required": "Actions requises",
-      "Actions required detail": "Détail des actions requises",
       "Add a mail domain": "Ajouter un nom de domaine",
       "Add a member": "Ajouter un membre",
       "Add a new access": "Ajouter un nouveau rôle",
@@ -36,7 +25,6 @@
       "Add a team": "Ajouter un groupe",
       "Add members to the team": "Ajouter des membres à l'équipe",
       "Add the domain": "Ajouter le domaine",
-      "Add the following DNS values:": "Ajouter les valeurs DNS suivantes :",
       "Add to domain": "Ajouter au domaine",
       "Add to group": "Ajouter au groupe",
       "Address: National Agency for Territorial Cohesion - 20, avenue de Ségur TSA 10717 75 334 Paris Cedex 07 Paris": "Adresse : Agence Nationale de la Cohésion des Territoires - 20, avenue de Ségur TSA 10717 75 334 Paris Cedex 07",
@@ -72,7 +60,6 @@
       "Create the team": "Créer le groupe",
       "Create your first team by clicking on the \"Create a new team\" button.": "Créez votre premier groupe en cliquant sur le bouton \"Créer un nouveau groupe\".",
       "Created at": "Créé le",
-      "DNS Configuration Required:": "Configuration DNS requise :",
       "Declaration established on June 25, 2024.": "Établie le 25 juin 2024.",
       "Defender of Rights - Free response - 71120 75342 Paris CEDEX 07": "Défenseur des droits\nLibre réponse 71120 75342 Paris CEDEX 07",
       "Delete the team": "Supprimer le groupe",
@@ -177,6 +164,7 @@
       "Remove this access from the domain": "Retirer cet accès du domaine",
       "Remove this member from the group": "Retirer le membre du groupe",
       "Required actions on domain": "Actions requises sur le domaine",
+      "Result of the diagnosis performed by the server": "Résultat du diagnostic effectué par le serveur",
       "Roles": "Rôles",
       "Régie": "Régie",
       "Search for members to assign them a role (name or email)": "Rechercher des membres afin de leur attribuer un rôle (nom ou email)",
@@ -199,7 +187,6 @@
       "Teams": "Équipes",
       "The National Agency for Territorial Cohesion undertakes to make its\n          service accessible, in accordance with article 47 of law no. 2005-102\n          of February 11, 2005.": "L'Agence Nationale de la Cohésion des Territoires s’engage à rendre son service accessible, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
       "The access has been removed from the domain": "L'accès a été supprimé du domaine.",
-      "The domain is currently in action required status. Please take the necessary actions to resolve those following issues.": "Le domaine est actuellement en statut actions requises. Veuillez faire le nécessaire pour résoudre les problèmes suivants.",
       "The domain name encounters an error. Please contact our support team to solve the problem:": "Le nom de domaine rencontre une erreur. Veuillez contacter notre support pour résoudre le problème :",
       "The mail domain secret is misconfigured. Please, contact our support team to solve the issue: suiteterritoriale@anct.gouv.fr": "Le secret du domaine de messagerie est mal configuré. Veuillez contacter notre support pour résoudre le problème : suiteterritoriale@anct.gouv.fr",
       "The member has been removed from the team": "Le membre a été supprimé de votre groupe",
@@ -232,6 +219,7 @@
       "You are the last owner, you cannot be removed from your team.": "Vous êtes le dernier propriétaire, vous ne pouvez pas être retiré de votre groupe.",
       "You are the sole owner of this group. Make another member the group owner, before you can change your own role.": "Vous êtes l’unique propriétaire de ce groupe. Désignez un autre membre comme propriétaire du groupe, avant de pouvoir modifier votre propre rôle.",
       "You can oppose the tracking of your browsing on this website.": "Vous pouvez vous opposer au suivi de votre navigation sur ce site.",
+      "You can resolve the above issues by applying the following configurations on your domain:": "Vous pouvez résoudre les problèmes ci-dessus en appliquant les configurations suivantes sur votre domaine :",
       "You can:": "Vous pouvez :",
       "You cannot remove other owner.": "Vous ne pouvez pas supprimer un autre propriétaire.",
       "You cannot update the role of other owner.": "Vous ne pouvez pas mettre à jour les rôles d'autre propriétaire.",
@@ -246,7 +234,6 @@
       "accessibility-form-defenseurdesdroits": "Écrire un message au<1>Défenseur des droits</1>",
       "copy done": "Copié",
       "mail domains list loading": "chargement de la liste des domaines de messagerie",
-      "with value:": "avec la valeur :",
       "{{count}} member_many": "{{count}} membres",
       "{{count}} member_one": "{{count}} membre",
       "{{count}} member_other": "{{count}} membres",
