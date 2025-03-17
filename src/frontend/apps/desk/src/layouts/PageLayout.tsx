@@ -1,17 +1,16 @@
 import { PropsWithChildren } from 'react';
 
-import { Box } from '@/components';
 import { Footer } from '@/features/footer';
 import { Header } from '@/features/header';
 
 export function PageLayout({ children }: PropsWithChildren) {
   return (
-    <Box $minHeight="100vh">
+    <div
+      style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+    >
       <Header />
-      <Box as="main" $width="100%" $css="flex-grow:1;">
-        {children}
-      </Box>
+      <main style={{ width: '100%', flexGrow: 1 }}>{children}</main>
       <Footer />
-    </Box>
+    </div>
   );
 }

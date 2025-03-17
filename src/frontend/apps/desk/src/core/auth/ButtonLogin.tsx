@@ -5,15 +5,7 @@ import { useAuthStore } from '@/core/auth';
 
 export const ButtonLogin = () => {
   const { t } = useTranslation();
-  const { logout, authenticated, login } = useAuthStore();
-
-  if (!authenticated) {
-    return (
-      <Button onClick={login} color="primary-text" aria-label={t('Login')}>
-        {t('Login')}
-      </Button>
-    );
-  }
+  const { logout } = useAuthStore();
 
   return (
     <Button onClick={logout} color="primary-text" aria-label={t('Logout')}>

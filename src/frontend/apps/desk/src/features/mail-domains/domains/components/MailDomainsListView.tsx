@@ -1,39 +1,23 @@
-import { PropsWithChildren, useMemo, useRef } from 'react';
-import { useConfigStore } from '@/core';
+import { Button, DataGrid } from '@openfun/cunningham-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Box, Card, Text, Tag, StyledLink } from '@/components';
-import { MainLayout } from '@/layouts';
-import { MailDomainsTopBar } from '@/features/mail-domains/domains';
-
-import { useCunninghamTheme } from '@/cunningham';
-import { DataGrid, Button } from "@openfun/cunningham-react";
-
+import { Box, StyledLink, Tag } from '@/components';
 import {
   MailDomain,
   useMailDomains,
   useMailDomainsStore,
 } from '@/features/mail-domains/domains';
 
-import { Panel } from './panel';
-
-interface PanelMailDomainsStateProps {
-  isLoading: boolean;
-  isError: boolean;
-  mailDomains?: MailDomain[];
+interface MailDomainsListViewProps {
+  querySearch: string;
 }
 
-export function MailDomainsListView({ querySearch, children }: PropsWithChildren) {
-  const { colorsTokens } = useCunninghamTheme();
+export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
+  const { t } = useTranslation();
+
   const { ordering } = useMailDomainsStore();
-  const {
-    data,
-    isError,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useMailDomains({ ordering });
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { data, isLoading } = useMailDomains({ ordering });
   const mailDomains = useMemo(() => {
     return data?.pages.reduce((acc, page) => {
       return acc.concat(page.results);
@@ -41,68 +25,83 @@ export function MailDomainsListView({ querySearch, children }: PropsWithChildren
   }, [data?.pages]);
 
   const filteredMailDomains = useMemo(() => {
-    if (!querySearch) return mailDomains;
+    if (!querySearch) {
+      return mailDomains;
+    }
     const lowerCaseSearch = querySearch.toLowerCase();
-    return mailDomains && mailDomains.filter(domain =>
-      domain.name.toLowerCase().includes(lowerCaseSearch)
-    ) || [] ;
+    return (
+      (mailDomains &&
+        mailDomains.filter((domain) =>
+          domain.name.toLowerCase().includes(lowerCaseSearch),
+        )) ||
+      []
+    );
   }, [querySearch, mailDomains]);
 
   return (
     <div>
-        {filteredMailDomains && filteredMailDomains.length ? (
-          <DataGrid rows={filteredMailDomains} 
-            columns={[{
-              field: "name",
-              headerName: "Domaine",
-            }, {
-              field: "count_mailboxes",
+      {filteredMailDomains && filteredMailDomains.length ? (
+        <DataGrid
+          aria-label="listbox"
+          rows={filteredMailDomains}
+          columns={[
+            {
+              field: 'name',
+              headerName: 'Domaine',
+            },
+            {
+              field: 'count_mailboxes',
               headerName: "Nombre d'adresses",
               enableSorting: true,
             },
             {
-              id: "status",
-              headerName: "Statut",
+              id: 'status',
+              headerName: 'Statut',
               enableSorting: true,
               renderCell({ row }) {
                 const tooltipText = {
-                  'pending': "Domaine en cours de validation par un administrateur",
-                  'enabled': "Domaine actif",
-                  'disabled': "Domaine désactivé",
-                  'failed': "Domaine en erreur, contactez un administrateur",
-                }
+                  pending:
+                    'Domaine en cours de validation par un administrateur',
+                  enabled: 'Domaine actif',
+                  disabled: 'Domaine désactivé',
+                  failed: 'Domaine en erreur, contactez un administrateur',
+                  action_required:
+                    'Une action de paramétrage du gestionnaire du domaine (hors Régie) est requise',
+                };
 
                 return (
                   <Box $direction="row" $align="center">
-                    <Tag status={row.status} tooltip={tooltipText[row.status] || null }></Tag>
+                    <Tag
+                      status={row.status}
+                      tooltip={tooltipText[row.status] || ''}
+                    ></Tag>
                   </Box>
-                )
-              }
+                );
+              },
             },
             {
-              id: "actions",
+              id: 'actions',
               renderCell({ row }) {
                 return (
-                  <StyledLink 
-                    href={`/mail-domains/${row.slug}`}>
-                    <Button 
+                  <StyledLink href={`/mail-domains/${row.slug}`}>
+                    <Button
+                      aria-label="`${row.name} listbox button`"
                       style={{
                         fontWeight: '500',
-                        fontSize: '16px'
+                        fontSize: '16px',
                       }}
-                      color="tertiary">
-                        Gérer
-                      </Button>
+                      color="tertiary"
+                    >
+                      {t('Manage')}
+                    </Button>
                   </StyledLink>
                 );
-              }
-            }
-            ]
-          } defaultSortModel={[{
-      field: "name",
-      sort: "desc"
-    }]}  isLoading={isLoading} />) : null
-        }
-      </div>
+              },
+            },
+          ]}
+          isLoading={isLoading}
+        />
+      ) : null}
+    </div>
   );
 }

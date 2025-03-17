@@ -1,10 +1,11 @@
-import { useCunninghamTheme } from '@/cunningham';
-import { Box } from '@/components';
-import { Tooltip } from "@openfun/cunningham-react";
+import { Tooltip } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
+import { Box } from '@/components';
+import { useCunninghamTheme } from '@/cunningham';
+
 interface TagContentProps {
-  status: 'pending' | 'enabled' | 'disabled' | 'failed';
+  status: 'pending' | 'enabled' | 'disabled' | 'failed' | 'action_required';
   tooltip?: string;
 }
 
@@ -13,18 +14,20 @@ const TagContent = ({ status }: TagContentProps) => {
   const { t } = useTranslation();
 
   const textColor = {
-    'pending': colorsTokens()['info-600'],
-    'enabled': colorsTokens()['success-600'],
-    'disabled': colorsTokens()['greyscale-600'],
-    'failed': colorsTokens()['warning-600']
-  }
+    pending: colorsTokens()['info-600'],
+    enabled: colorsTokens()['success-600'],
+    disabled: colorsTokens()['greyscale-600'],
+    action_required: colorsTokens()['warning-600'],
+    failed: colorsTokens()['danger-600'],
+  };
 
   const backgroundColor = {
-    'pending': colorsTokens()['info-100'],
-    'enabled': colorsTokens()['success-100'],
-    'disabled': colorsTokens()['greyscale-100'],
-    'failed': colorsTokens()['warning-100']
-  }
+    pending: colorsTokens()['info-100'],
+    enabled: colorsTokens()['success-100'],
+    disabled: colorsTokens()['greyscale-100'],
+    action_required: colorsTokens()['warning-100'],
+    failed: colorsTokens()['danger-100'],
+  };
 
   return (
     <Box
@@ -38,14 +41,12 @@ const TagContent = ({ status }: TagContentProps) => {
         text-transform: capitalize;
       `}
     >
-      {t(status)}
+      {t(status).replace('_', ' ')}
     </Box>
   );
 };
 
-export const Tag = ({
-  ...props
-}) => {
+export const Tag = ({ ...props }: TagContentProps) => {
   return props.tooltip ? (
     <Tooltip content={props.tooltip} placement="top">
       <Box>

@@ -1,29 +1,20 @@
-import React, { ReactElement} from "react";
-import { Button, Input } from "@openfun/cunningham-react";
+import { Button, Input, Tooltip } from '@openfun/cunningham-react';
+import React, { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
-
-import { useTranslation } from "react-i18next";
-import styled from "styled-components";
-import { Box, Text, Card } from "@/components";
-import { useAuthStore } from "@/core/auth";
-import { MainLayout } from "@/layouts";
-import { NextPageWithLayout } from "@/types/next";
-import { MailDomainsListView } from "@/features/mail-domains/domains/components/MailDomainsListView";
-import { ModalAddMailDomain } from "@/features/mail-domains/domains/components/ModalAddMailDomain"; // Import de la modale
-
-const StyledButton = styled(Button)`
-  @media (max-width: 768px) {
-    margin-top: 10px;
-  }
-`;
+import { MailDomainsListView } from '@/features/mail-domains/domains/components/MailDomainsListView';
+import { ModalAddMailDomain } from '@/features/mail-domains/domains/components/ModalAddMailDomain';
+import { MainLayout } from '@/layouts';
+import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
   const { userData } = useAuthStore();
   const can_create = userData?.abilities?.mailboxes.can_create;
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-  const [searchValue, setSearchValue] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState('');
   const { colorsTokens } = useCunninghamTheme();
   const colors = colorsTokens();
 
@@ -32,11 +23,11 @@ const Page: NextPageWithLayout = () => {
   };
 
   const clearInput = () => {
-    setSearchValue("");
+    setSearchValue('');
   };
 
   const openModal = () => {
-    setIsModalOpen(true); 
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -44,91 +35,119 @@ const Page: NextPageWithLayout = () => {
   };
 
   return (
-    <Box
-      $position="relative"
-      $width="100%"
-      $direction="row"
-      $maxWidth="960px"
-      $maxHeight="calc(100vh - 52px - 1rem)"
-      $align="center"
-      $margin="20px auto"
-      $padding="0 10px"
-      $css={`
-        overflow-x: hidden;
-        overflow-y: auto;
-      `}
+    <div
+      aria-label="Mail Domains panel"
+      style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '960px',
+        margin: '20px auto',
+        padding: '0 10px',
+        overflowX: 'hidden',
+        overflowY: 'auto',
+      }}
     >
-      <Card
+      <div
         data-testid="regie-grid"
-        $height="100%"
-        $justify="center"
-        $width="100%"
-        $css={`
-          overflow-x: hidden;
-          overflow-y: auto;
-        `}
-        $padding={{
-          top: "md",
-          bottom: "md",
-          horizontal: "md",
+        style={{
+          height: '100%',
+          justifyContent: 'center',
+          width: '100%',
+          padding: '16px',
+          overflowX: 'hidden',
+          overflowY: 'auto',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <Text
-          as="h2"
-          $weight="700"
-          $size="h4"
-          $variation="1000"
-          $margin={{ top: "0px", bottom: "20px" }}
+        <h2
+          style={{ fontWeight: 700, fontSize: '1.5rem', marginBottom: '20px' }}
         >
-          Domaines de l’organisation
-        </Text>
+          {t('Mail Domains')}
+        </h2>
 
-        <Box 
+        <div
           className="sm:block md:flex"
-          $margin={{ top: "0px", bottom: "20px" }}
-          $direction="row"
-          $align="center"
-          $justify="space-between"
-          $gap="1em"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '20px',
+            gap: '1em',
+          }}
+        >
+          <div
+            style={{ width: 'calc(100% - 245px)' }}
+            className="c__input__wrapper__mobile"
           >
-            <Box $minWidth="72%">
-              <Input
-                label={t('Search a mail domain')}
-                icon={<span className="material-icons">search</span>}
-                rightIcon={
-                  searchValue && (
-                    <span className="material-icons" onClick={clearInput} style={{ cursor: "pointer" }}>
-                      close
-                    </span>
-                  )
-                }
-                value={searchValue}
-                onChange={handleInputChange}
-              />
-            </Box>
+            <Input
+              style={{ width: '100%' }}
+              label={t('Search a mail domain')}
+              icon={<span className="material-icons">search</span>}
+              rightIcon={
+                searchValue && (
+                  <span
+                    className="material-icons"
+                    onClick={clearInput}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        clearInput();
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    close
+                  </span>
+                )
+              }
+              value={searchValue}
+              onChange={handleInputChange}
+            />
+          </div>
 
-            <Box
-              className="hidden md:flex"
-              $background={colors['greyscale-200']} 
-              $height="32px"
-              $width="1px"
-            >
-            </Box>
+          <div
+            className="hidden md:flex"
+            style={{
+              background: colors['greyscale-200'],
+              height: '32px',
+              width: '1px',
+            }}
+          ></div>
 
-          {can_create && (
-            <StyledButton onClick={openModal}>
-              {t("Add a mail domain")}
-            </StyledButton>
-          )}
-        </Box>
+          <div
+            className="block md:hidden"
+            style={{ marginBottom: '10px' }}
+          ></div>
 
-        {!can_create && <Text>{t("Click on mailbox to view details")}</Text>}
+          <div>
+            {can_create ? (
+              <Button onClick={openModal}>{t('Add a mail domain')}</Button>
+            ) : (
+              <Tooltip content="You don't have the correct access right">
+                <div>
+                  <Button onClick={openModal} disabled={!can_create}>
+                    {t('Add a mail domain')}
+                  </Button>
+                </div>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+
+        {!can_create && (
+          <p style={{ textAlign: 'center' }}>
+            {t('Click on mailbox to view details')}
+          </p>
+        )}
+
         <MailDomainsListView querySearch={searchValue} />
-        
-        {/* Affiche la modale si l'état est true */}
+
         {isModalOpen && <ModalAddMailDomain closeModal={closeModal} />}
-      </Card>
-    </Box>
+      </div>
+    </div>
   );
 };
 

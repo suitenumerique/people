@@ -10,14 +10,18 @@ test.describe('Language', () => {
   });
 
   test('checks the language picker', async ({ page }) => {
-    await expect(page.getByText('Groups')).toBeVisible();
+    await expect(
+      page.getByLabel('Teams panel', { exact: true }).getByText('Groups'),
+    ).toBeVisible();
 
     const header = page.locator('header').first();
     await header.getByRole('combobox').getByText('EN').click();
     await header.getByRole('option', { name: 'FR' }).click();
     await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
 
-    await expect(page.getByText('Groupes')).toBeVisible();
+    await expect(
+      page.getByLabel('Teams panel', { exact: true }).getByText('Groupes'),
+    ).toBeVisible();
   });
 
   test('checks lang attribute of html tag updates when user changes language', async ({
@@ -37,7 +41,7 @@ test.describe('Language', () => {
 });
 
 test.describe('Default language', () => {
-  LANGUAGES_ALLOWED.forEach((language) => {
+  Object.keys(LANGUAGES_ALLOWED).forEach((language) => {
     test(`checks lang attribute of html tag has right value by default for ${language} language`, async ({
       browser,
       browserName,

@@ -5,10 +5,9 @@ import React, { ReactElement, useState } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MainLayout } from '@/layouts';
-
-import { useMailDomain } from '@/features/mail-domains/domains';
+import { MailDomain, useMailDomain } from '@/features/mail-domains/domains';
 import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const MailboxesPage: NextPageWithLayout = () => {
