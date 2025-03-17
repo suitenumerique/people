@@ -4,8 +4,6 @@ import Script from 'next/script';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-import { useCunninghamTheme } from '@/cunningham';
-
 const GaufreStyle = createGlobalStyle`
   .lasuite-gaufre-btn{
     box-shadow: inset 0 0 0 0 !important;
@@ -13,7 +11,6 @@ const GaufreStyle = createGlobalStyle`
 `;
 
 export const LaGaufre = () => {
-
   return (
     <>
       <Script

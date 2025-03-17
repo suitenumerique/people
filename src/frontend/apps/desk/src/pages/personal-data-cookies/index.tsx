@@ -2,8 +2,8 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
-import { PageLayout } from '@/layouts';
 import { useCunninghamTheme } from '@/cunningham';
+import { PageLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {

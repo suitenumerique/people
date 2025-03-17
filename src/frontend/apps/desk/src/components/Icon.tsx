@@ -27,7 +27,7 @@ export const IconBG = ({ iconName, ...textProps }: IconBGProps) => {
       $size="36px"
       $theme="primary"
       $variation="600"
-      $background={colorsTokens()['primary-bg']}
+      $background={colorsTokens()['primary-050']}
       $css={`
         border: 1px solid ${colorsTokens()['primary-200']}; 
         user-select: none;

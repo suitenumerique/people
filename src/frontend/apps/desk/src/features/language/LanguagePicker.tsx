@@ -1,6 +1,6 @@
 import { Select } from '@openfun/cunningham-react';
 import { Settings } from 'luxon';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 

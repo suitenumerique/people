@@ -15,7 +15,6 @@ export const SeparatedSection = ({
 }: PropsWithChildren<Props>) => {
   const theme = useCunninghamTheme();
   const colors = theme.colorsTokens();
-  const spacings = theme.spacingsTokens();
   return (
     <Box
       $css={css`

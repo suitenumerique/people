@@ -11,14 +11,6 @@ test.describe('Header', () => {
   test('checks all the elements are visible', async ({ page, browserName }) => {
     const header = page.locator('header').first();
 
-    await expect(header.getByAltText('Marianne Logo')).toBeVisible();
-
-    await expect(header.getByText(/République Française/i)).toBeVisible();
-
-    await expect(
-      header.getByAltText('Freedom Equality Fraternity Logo'),
-    ).toBeVisible();
-
     await expect(header.getByRole('link', { name: 'Régie' })).toBeVisible();
 
     await expect(header.locator('h2').getByText('Régie')).toHaveCSS(
@@ -42,13 +34,7 @@ test.describe('Header', () => {
     ).toBeVisible();
   });
 
-  test('checks logout button', async ({ page, browserName }) => {
-    await page
-      .getByRole('button', {
-        name: new RegExp(`E2E ${browserName}`, 'i'),
-      })
-      .click();
-
+  test('checks logout button', async ({ page }) => {
     await page
       .getByRole('button', {
         name: 'Logout',

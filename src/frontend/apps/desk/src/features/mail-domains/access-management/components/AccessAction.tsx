@@ -36,14 +36,9 @@ export const AccessAction = ({
   return (
     <>
       <DropButton
-        button={
-          <IconOptions
-            isOpen={isDropOpen}
-            aria-label={t('Open the access options modal')}
-          />
-        }
-        onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
+        button={<IconOptions aria-label={t('Open the access options modal')} />}
         isOpen={isDropOpen}
+        onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
       >
         <Box>
           {(mailDomain.abilities.put || mailDomain.abilities.patch) && (

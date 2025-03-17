@@ -1,15 +1,13 @@
 import { Button } from '@openfun/cunningham-react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
-import { css } from 'styled-components';
 
-import { Box, Text, Icon, StyledLink } from '@/components/';
+import { default as IconRegie } from '@/assets/logo-regie.svg?url';
+import { Icon, StyledLink, Text } from '@/components/';
 import { ButtonLogin } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
 import { LanguagePicker } from '@/features/language';
 import { useLeftPanelStore } from '@/features/left-panel';
-
-import { default as IconRegie } from '@/assets/logo-regie.svg?url';
 
 import { LaGaufre } from './LaGaufre';
 export const HEADER_HEIGHT = '52px';
@@ -23,80 +21,97 @@ export const Header = () => {
   const colors = theme.colorsTokens();
 
   return (
-    <Box
-      as="header"
-      $css={`
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        height: var(--header-height);
-        min-height: var(--header-height);
-        padding: 0 ${spacings['base']};
-        background-color: ${colors['greyscale-000']};
-        border-bottom: 1px solid ${colors['greyscale-200']};
-      `}
+    <header
+      style={{
+        display: 'flex',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: 'var(--header-height)',
+        minHeight: 'var(--header-height)',
+        padding: `0 ${spacings['base']}`,
+        backgroundColor: colors['greyscale-000'],
+        borderBottom: `1px solid ${colors['greyscale-200']}`,
+      }}
     >
-        <Button
-          className="md:hidden"
-          size="medium"
-          onClick={() => togglePanel()}
-          aria-label={t('Open the header menu')}
-          color="tertiary-text"
-          icon={
-            <Icon
-              $variation="800"
-              $theme="primary"
-              iconName={isPanelOpen ? 'close' : 'menu'}
-            />
-          }
-        />
+      <Button
+        className="md:hidden"
+        size="medium"
+        onClick={() => togglePanel()}
+        aria-label={t('Open the header menu')}
+        color="tertiary-text"
+        icon={
+          <Icon
+            $variation="800"
+            $theme="primary"
+            iconName={isPanelOpen ? 'close' : 'menu'}
+          />
+        }
+      />
       <StyledLink href="/">
-        <Box
-          $align="center"
-          $gap={spacings['3xs']}
-          $direction="row"
-          $position="relative"
-          $height="fit-content"
-          $margin={{ top: 'auto' }}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacings['3xs'],
+          }}
         >
           <Image priority src={IconRegie} alt={t('La régie Logo')} width={25} />
-           <Box $direction="row" $align="center" $gap="4px">
-            <Text $margin="none" as="h2" $color="#000091" $zIndex={1} $size="1.30rem">
-              {t('La régie')}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacings['xs'],
+            }}
+          >
+            <Text
+              as="h2"
+              style={{ color: '#000091', zIndex: 1, fontSize: '1.30rem' }}
+            >
+              {t('La Régie')}
             </Text>
             <Text
-              $padding={{ horizontal: '8px', vertical: '1px' }}
-              $size="11px"
-              $theme="primary"
-              $variation="500"
-              $weight="bold"
-              $radius="12px"
-              $background={colors['primary-200']}
+              style={{
+                padding: '1px 8px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                color: colors['primary-500'],
+                borderRadius: '12px',
+                backgroundColor: colors['primary-200'],
+              }}
             >
               BETA
             </Text>
-          </Box>
-        </Box>
+          </div>
+        </div>
       </StyledLink>
       <div className="md:hidden">
-        <Box $direction="row" $gap={spacings['sm']}>
+        <div
+          style={{ display: 'flex', flexDirection: 'row', gap: spacings['sm'] }}
+        >
           <LaGaufre />
-        </Box>
+        </div>
       </div>
       <div className="hidden md:block">
-        <Box $align="center" $gap={spacings['sm']} $direction="row">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacings['sm'],
+            flexDirection: 'row',
+          }}
+        >
           <ButtonLogin />
           <LanguagePicker />
           <LaGaufre />
-        </Box>
+        </div>
       </div>
-
-    </Box>
+    </header>
   );
 };
