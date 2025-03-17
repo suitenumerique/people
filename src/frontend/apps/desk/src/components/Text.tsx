@@ -1,8 +1,4 @@
-import {
-  CSSProperties,
-  ComponentPropsWithRef,
-  forwardRef,
-} from 'react';
+import { CSSProperties, ComponentPropsWithRef, forwardRef } from 'react';
 import styled from 'styled-components';
 
 import { tokens } from '@/cunningham';

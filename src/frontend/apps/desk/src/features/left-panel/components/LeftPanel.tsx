@@ -1,18 +1,16 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
-import { createGlobalStyle, css } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
-import { Box } from '@/components';
 import { SeparatedSection } from '@/components/separators';
 import { ButtonLogin } from '@/core';
-import { useCunninghamTheme } from '@/cunningham';
 import { LanguagePicker } from '@/features/language';
 
 import { useLeftPanelStore } from '../stores';
 
 import { LeftPanelContent } from './LeftPanelContent';
 import { LeftPanelHeader } from './LeftPanelHeader';
-import { LeftPanelTargetFilters } from './LeftPanelTargetFilters';
+import { LeftPanelItems } from './LeftPanelItems';
 
 const MobileLeftPanelStyle = createGlobalStyle`
   body {
@@ -20,14 +18,20 @@ const MobileLeftPanelStyle = createGlobalStyle`
   }
 `;
 
-export const LeftPanel = () => {
+const LeftPanelStyle = createGlobalStyle`
+  .LeftPanel {
+    height: calc(100vh - var(--header-height));
+    width: 300px;
+    min-width: 300px;
+    overflow: hidden;
+    border-right: 1px solid var(--c--theme--colors--greyscale-200']};
+  }
+`;
 
-  const theme = useCunninghamTheme();
+export const LeftPanel = () => {
   const { togglePanel, isPanelOpen } = useLeftPanelStore();
 
   const pathname = usePathname();
-  const colors = theme.colorsTokens();
-  const spacings = theme.spacingsTokens();
 
   const toggle = useCallback(() => {
     togglePanel(false);
@@ -40,65 +44,68 @@ export const LeftPanel = () => {
   return (
     <>
       <div className="hidden md:block">
-        <Box
-          data-testid="left-panel-desktop"
-          $css={`
-            height: calc(100vh - var(--header-height));
-            width: 300px;
-
-            min-width: 300px;
-            overflow: hidden;
-            border-right: 1px solid ${colors['greyscale-200']};
-        `}
-        >
-          <Box
-            $css={css`
-              flex: 0 0 auto;
-            `}
+        <LeftPanelStyle />
+        <div className="LeftPanel">
+          <div
+            style={{
+              flex: '0 0 auto',
+            }}
+          ></div>
+          <menu
+            style={{
+              margin: '0',
+              gap: 'var(--c--theme--spacings--xs)',
+              padding: '0 10px',
+            }}
           >
-          </Box>
-          <LeftPanelTargetFilters />
-           <LeftPanelContent />
-        </Box>
+            <LeftPanelItems />
+          </menu>
+          <LeftPanelContent />
+        </div>
       </div>
 
-
-        <>
-          {isPanelOpen && <MobileLeftPanelStyle />}
-          <Box
-            $hasTransition
-            $css={css`
-              z-index: 999;
-              width: 100dvw;
-              height: calc(100dvh - var(--header-height));
-              border-right: 1px solid var(--c--theme--colors--greyscale-200);
-              position: fixed;
-              transform: translateX(${isPanelOpen ? '0' : '-100dvw'});
-              background-color: var(--c--theme--colors--greyscale-000);
-            `}
+      <>
+        {isPanelOpen && <MobileLeftPanelStyle />}
+        <div
+          style={{
+            zIndex: '999',
+            width: '100vw',
+            height: 'calc(100dvh - var(--header-height))',
+            borderRight: '1px solid var(--c--theme--colors--greyscale-200)',
+            position: 'fixed',
+            transform: `translateX(${isPanelOpen ? '0' : '-100dvw'})`,
+            backgroundColor: 'var(--c--theme--colors--greyscale-000)',
+          }}
+          className="md:hidden"
+        >
+          <div
+            data-testid="left-panel-mobile"
+            style={{
+              width: '100%',
+              padding: '0 10px',
+              justifyContent: 'center',
+              gap: 'var(--c--theme--spacings--base)',
+            }}
             className="md:hidden"
           >
-            <Box
-              data-testid="left-panel-mobile"
-              $css={css`
-                width: 100%;
-                justify-content: center;
-                gap: ${spacings['base']};
-              `}
-              className="md:hidden"
-            >
-              <LeftPanelHeader />
-              <LeftPanelTargetFilters />
-              <LeftPanelContent />
-              <SeparatedSection showSeparator={false}>
-                <Box $justify="center" $align="center" $gap={spacings['sm']}>
-                  <ButtonLogin />
-                  <LanguagePicker />
-                </Box>
-              </SeparatedSection>
-            </Box>
-          </Box>
-        </>
+            <LeftPanelHeader />
+            <LeftPanelItems />
+            <SeparatedSection showSeparator={false}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignSelf: 'center',
+                  flexDirection: 'column',
+                  gap: 'var(--c--theme--spacings--sm)',
+                }}
+              >
+                <ButtonLogin />
+                <LanguagePicker />
+              </div>
+            </SeparatedSection>
+          </div>
+        </div>
+      </>
     </>
   );
 };

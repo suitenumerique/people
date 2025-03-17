@@ -15,7 +15,11 @@ import { useAddMailDomain } from '../api';
 
 const FORM_ID = 'form-add-mail-domain';
 
-export const ModalAddMailDomain = ({ closeModal }: { closeModal: () => void }) => {
+export const ModalAddMailDomain = ({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) => {
   const { t } = useTranslation();
 
   const [errorCauses, setErrorCauses] = useState<string[]>([]);

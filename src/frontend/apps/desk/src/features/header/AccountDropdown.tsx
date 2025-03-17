@@ -20,7 +20,12 @@ export const AccountDropdown = () => {
               <Text $theme="primary">{userData?.organization?.name}</Text>
             )}
           </Box>
-          <Text className="material-icons" $size="17px" $theme="primary" aria-hidden="true">
+          <Text
+            className="material-icons"
+            $size="17px"
+            $theme="primary"
+            aria-hidden="true"
+          >
             arrow_drop_down
           </Text>
         </Box>

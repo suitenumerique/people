@@ -138,7 +138,8 @@ const navigateToMailboxCreationFormForMailDomainFr = async (
   page: Page,
 ): Promise<void> => {
   await page.locator('menu').first().getByLabel(`Mail Domains button`).click();
-  await page.getByRole('listbox').first().getByText('domain.fr').click();
+  await expect(page.getByRole('listbox').getByText('domain.fr')).toBeVisible();
+  await page.getByLabel(`domain.fr listbox button`).click();
   await page.getByRole('button', { name: 'Create a mailbox' }).click();
 };
 
@@ -385,7 +386,11 @@ test.describe('Mail domain create mailbox', () => {
       .first()
       .getByLabel(`Mail Domains button`)
       .click();
-    await page.getByRole('listbox').first().getByText('domain.fr').click();
+
+    await expect(
+      page.getByRole('listbox').getByText('domain.fr'),
+    ).toBeVisible();
+    await page.getByLabel(`domain.fr listbox button`).click();
 
     await expect(
       page.getByRole('button', { name: 'Create a mailbox' }),

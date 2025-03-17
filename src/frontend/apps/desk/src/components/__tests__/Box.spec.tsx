@@ -11,16 +11,16 @@ describe('<Box />', () => {
     unmount();
 
     render(
-      <Box $padding={{ horizontal: 'xl', all: 'large', bottom: 'tiny' }}>
+      <Box $padding={{ horizontal: 'xl', all: 'lg', bottom: '0.5rem' }}>
         My Box
       </Box>,
     );
 
     expect(screen.getByText('My Box')).toHaveStyle(`
+      padding-bottom: 0.5rem;
       padding-left: 4rem;
       padding-right: 4rem;
-      padding-top: 3rem;
-      padding-bottom: 0.5rem;`);
+      padding-top: 3rem;`);
   });
 
   it('has the margin from prop', () => {

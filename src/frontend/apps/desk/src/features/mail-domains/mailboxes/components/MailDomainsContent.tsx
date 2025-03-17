@@ -105,7 +105,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
 
       <Card
         $overflow="auto"
-        aria-label={t('Mailboxes list card')}
+        aria-label="Mailboxes list card"
         $css={`
           
           & table td:last-child {
@@ -116,6 +116,7 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
         {error && <TextErrors causes={error.cause} />}
 
         <DataGrid
+          aria-label="listbox"
           columns={[
             {
               field: 'name',
@@ -156,7 +157,6 @@ export function MailDomainsContent({ mailDomain }: { mailDomain: MailDomain }) {
             ...pagination,
             displayGoto: false,
           }}
-          aria-label={t('Mailboxes list')}
           hideEmptyPlaceholderImage={true}
           emptyPlaceholderLabel={t(
             'No mail box was created with this mail domain.',
