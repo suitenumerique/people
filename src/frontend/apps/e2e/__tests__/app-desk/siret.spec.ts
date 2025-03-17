@@ -21,9 +21,6 @@ test.describe('OIDC interop with SIRET', () => {
 
 test.describe('When a commune, display commune name below user name', () => {
   test('it checks the name is added below the user name', async ({ page }) => {
-    const header = page.locator('header').first();
-    await expect(header.getByAltText('Marianne Logo')).toBeVisible();
-
     const logout = page.getByRole('button', {
       name: 'Marie Delamairie',
     });

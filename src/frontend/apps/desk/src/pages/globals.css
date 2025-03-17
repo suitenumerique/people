@@ -1,5 +1,12 @@
 @import url('../cunningham/cunningham-style.css');
 
+:root {
+  --header-height: 52px;
+  @media (min-width: 768px) {
+    --header-height: 52px;
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -26,4 +33,39 @@ main ::-webkit-scrollbar-thumb {
 
 main ::-webkit-scrollbar-thumb:hover {
   background-color: #a8bbbf;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.block {
+  display: block !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .sm\:block {
+    display: block !important;
+  }
+  .sm\:flex {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none !important;
+  }
+
+  .md\:flex {
+    display: flex !important;
+  }
+
+  .md\:block {
+    display: block !important;
+  }
 }

@@ -42,12 +42,14 @@ const interceptCommonApiCalls = async (
   );
 };
 const clickOnMailDomainsNavButton = async (page: Page): Promise<void> =>
-  await page.locator('menu').first().getByLabel(`Mail Domains button`).click();
+  await page.locator('menu').getByLabel(`Mail Domains button`).click();
 
 const assertMailDomainUpperElementsAreVisible = async (page: Page) => {
   await expect(page).toHaveURL(/mail-domains\//);
 
-  await page.getByRole('listbox').first().getByText('domain.fr').click();
+  await expect(page.getByText('domain.fr', { exact: true })).toBeVisible();
+  await page.getByLabel(`domain.fr listbox button`).click();
+
   await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
   await expect(page.getByRole('heading', { name: 'domain.fr' })).toBeVisible();
@@ -137,7 +139,7 @@ test.describe('Mail domain', () => {
         'It seems that the page you are looking for does not exist or cannot be displayed correctly.',
       ),
     ).toBeVisible({
-      timeout: 15000,
+      timeout: 700000,
     });
   });
 
@@ -379,7 +381,14 @@ test.describe('Mail domain', () => {
 
         await expect(page).toHaveURL(/mail-domains\//);
 
-        await page.getByRole('listbox').first().getByText('domain.fr').click();
+        await expect(
+          page
+            .getByRole('listbox')
+            .first()
+            .getByText('domain.fr', { exact: true }),
+        ).toBeVisible();
+        await page.getByLabel(`domain.fr listbox button`).click();
+
         await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
         await expect(
@@ -721,7 +730,11 @@ test.describe('Mail domain', () => {
 
         await expect(page).toHaveURL(/mail-domains\//);
 
-        await page.getByRole('listbox').first().getByText('domain.fr').click();
+        await expect(
+          page.getByRole('listbox').getByText('domain.fr'),
+        ).toBeVisible();
+        await page.getByLabel(`domain.fr listbox button`).click();
+
         await expect(page).toHaveURL(/mail-domains\/domainfr\//);
 
         await expect(

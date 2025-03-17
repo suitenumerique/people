@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input, Loader, ModalSize } from '@openfun/cunningham-react';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +15,12 @@ import { useAddMailDomain } from '../api';
 
 const FORM_ID = 'form-add-mail-domain';
 
-export const ModalAddMailDomain = () => {
+export const ModalAddMailDomain = ({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) => {
   const { t } = useTranslation();
-  const router = useRouter();
 
   const [errorCauses, setErrorCauses] = useState<string[]>([]);
 
@@ -39,8 +41,8 @@ export const ModalAddMailDomain = () => {
   });
 
   const { mutate: addMailDomain, isPending } = useAddMailDomain({
-    onSuccess: (mailDomain) => {
-      router.push(`/mail-domains/${mailDomain.slug}`);
+    onSuccess: () => {
+      closeModal();
     },
     onError: (error: APIError) => {
       const unhandledCauses = parseAPIError({
@@ -103,14 +105,14 @@ export const ModalAddMailDomain = () => {
     <Modal
       isOpen
       leftActions={
-        <Button color="secondary" onClick={() => router.push('/mail-domains/')}>
+        <Button color="secondary" onClick={closeModal}>
           {t('Cancel')}
         </Button>
       }
       hideCloseButton
       closeOnClickOutside
       closeOnEsc
-      onClose={() => router.push('/mail-domains/')}
+      onClose={closeModal}
       rightActions={
         <Button
           type="submit"
