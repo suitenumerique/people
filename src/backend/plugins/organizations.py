@@ -11,8 +11,9 @@ from requests.adapters import HTTPAdapter, Retry
 
 from core.plugins.base import BaseOrganizationPlugin
 
-from mailbox_manager.enums import MailDomainRoleChoices
+from mailbox_manager.enums import MailDomainRoleChoices, MailDomainStatusChoices
 from mailbox_manager.models import MailDomain, MailDomainAccess
+from mailbox_manager.tasks import fetch_domain_status_task
 
 logger = logging.getLogger(__name__)
 
@@ -263,7 +264,13 @@ class CommuneCreation(BaseOrganizationPlugin):
 
         zone_name = self.zone_name(name)
         support = "support-regie@numerique.gouv.fr"
-        MailDomain.objects.get_or_create(name=zone_name, support_email=support)
+        MailDomain.objects.get_or_create(
+            name=zone_name,
+            support_email=support,
+            status=MailDomainStatusChoices.ENABLED,
+        )
+
+        fetch_domain_status_task.apply_async(args=[zone_name], countdown=300)
 
         # Compute and execute the rest of the process
         tasks = self.complete_commune_creation(name)
