@@ -6,12 +6,12 @@
     "lint": "eslint --ext .js ."
   },
   "dependencies": {
-    "@next/eslint-plugin-next": "15.2.1",
-    "@tanstack/eslint-plugin-query": "5.67.2",
+    "@next/eslint-plugin-next": "15.2.2",
+    "@tanstack/eslint-plugin-query": "5.68.0",
     "@typescript-eslint/eslint-plugin": "8.26.1",
     "@typescript-eslint/parser": "8.26.1",
     "eslint": "8.57.0",
-    "eslint-config-next": "15.2.1",
+    "eslint-config-next": "15.2.2",
     "eslint-config-prettier": "10.1.1",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
