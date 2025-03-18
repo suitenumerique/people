@@ -102,7 +102,7 @@ def deployment_part(version):
 NEXT COMMAND on lasuite-deploiement repository: 
     >> git push origin {deployment_branch}
 Continue ? (y,n) 
-\x1b[0m""")
+\x1b[0m""").strip()
         if confirm == 'y':
             run_command(f"git push origin {deployment_branch}", shell=True)
         sys.stdout.write(f"""\033[1;34m
@@ -132,7 +132,7 @@ Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
 NEXT COMMAND on current repository:
     >> git push origin {branch_to_release}
 Continue ? (y,n)
-\x1b[0m""")
+\x1b[0m""").strip()
     if confirm == 'y':
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
@@ -153,9 +153,9 @@ Continue ? (y,n)
 if __name__ == "__main__":
     version, kind = None, None
     while not version:
-        version = input("Enter your release version:")
+        version = input("Enter your release version:").strip()
     while kind not in RELEASE_KINDS:
-        kind = input("Enter kind of release (p:patch, m:minor, mj:major):")
+        kind = input("Enter kind of release (p:patch, m:minor, mj:major):").strip()
     if "--only-deployment-part" not in sys.argv:
         project_part(version, kind)
     deployment_part(version)
