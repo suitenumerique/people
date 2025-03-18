@@ -119,8 +119,11 @@ class DimailAPIClient:
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
+            # givenName value can be empty
             "givenName": mailbox.first_name,
+            # surName value can be empty
             "surName": mailbox.last_name,
+            # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
         headers = self.get_headers(user_sub)
