@@ -137,7 +137,9 @@ Continue ? (y,n)
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
 \033[1;34mPLEASE DO THE FOLLOWING INSTRUCTIONS:
---> Please submit PR {branch_to_release} and merge code to main [https://github.com/suitenumerique/people/]
+--> A github action will download last translations from crowdin and create a commit to merge into the release branch.
+    Please wait for this and merge this translations commit into the release branch {branch_to_release}.
+--> Then please submit PR {branch_to_release} and merge code to main [https://github.com/suitenumerique/people/]
 --> Then do:
     >> git checkout main
     >> git pull
