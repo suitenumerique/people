@@ -19,14 +19,17 @@ backend:
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
     DJANGO_SENTRY_DSN: null
-    OIDC_RS_CLIENT_ID: changeme
-    OIDC_RS_CLIENT_SECRET: changeme
-    OIDC_RS_PRIVATE_KEY_STR: "lkj"
+    OIDC_RS_CLIENT_ID: people
+    OIDC_RS_CLIENT_SECRET: ThisIsAnExampleKeyForDevPurposeOnly
+    OIDC_RS_SIGNING_ALGO: RS256
+    OIDC_RS_SCOPES: "openid,siret,profile,email"
     OIDC_OP_JWKS_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/certs
     OIDC_OP_AUTHORIZATION_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/auth
     OIDC_OP_TOKEN_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/token
     OIDC_OP_USER_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/userinfo
     OIDC_OP_LOGOUT_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/logout
+    OIDC_OP_URL: https://keycloak.127.0.0.1.nip.io/realms/people
+    OIDC_OP_INTROSPECTION_ENDPOINT: https://keycloak.127.0.0.1.nip.io/realms/people/protocol/openid-connect/token/introspect
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD: "siret"
     OIDC_RP_CLIENT_ID: people
     OIDC_RP_CLIENT_SECRET: ThisIsAnExampleKeyForDevPurposeOnly 
