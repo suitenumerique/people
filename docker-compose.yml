@@ -173,7 +173,7 @@ services:
 
   dimail: 
     entrypoint: /opt/dimail-api/start-dev.sh
-    image: registry.mim-libre.fr/dimail/dimail-api:v0.1.1
+    image: registry.mim-libre.fr/dimail/dimail-api:v0.2.11
     pull_policy: always
     environment:
       DIMAIL_MODE: FAKE
