@@ -16,9 +16,28 @@ from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 
 from core.factories import UserFactory
 from core.models import ServiceProvider
-from core.resource_server.authentication import ResourceServerAuthentication
+from core.resource_server.authentication import (
+    ResourceServerAuthentication,
+    get_resource_server_backend,
+)
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(name="jwt_resource_server_backend")
+def jwt_resource_server_backend_fixture(settings):
+    """Fixture to switch the backend to the JWTResourceServerBackend."""
+    _original_backend = str(settings.OIDC_RS_BACKEND_CLASS)
+
+    settings.OIDC_RS_BACKEND_CLASS = (
+        "core.resource_server.backend.JWTResourceServerBackend"
+    )
+    get_resource_server_backend.cache_clear()
+
+    yield
+
+    settings.OIDC_RS_BACKEND_CLASS = _original_backend
+    get_resource_server_backend.cache_clear()
 
 
 def build_authorization_bearer(token):
@@ -36,6 +55,88 @@ def build_authorization_bearer(token):
 
 @responses.activate
 def test_resource_server_authentication_class(client, settings):
+    """
+    Defines the settings for the resource server
+    for a full authentication with introspection process.
+
+    This is an integration test that checks the authentication process
+    when using the ResourceServerAuthentication class.
+
+    This test asserts the DRF request object contains the
+    `resource_server_token_audience` attribute which is used in
+    the resource server views.
+
+    This test uses the `/resource-server/v1.0/teams/` URL as an example
+    because we don't want to create a new URL just for this test.
+    """
+    assert (
+        settings.OIDC_RS_BACKEND_CLASS
+        == "core.resource_server.backend.ResourceServerBackend"
+    )
+
+    settings.OIDC_RS_CLIENT_ID = "some_client_id"
+    settings.OIDC_RS_CLIENT_SECRET = "some_client_secret"
+
+    settings.OIDC_OP_URL = "https://oidc.example.com"
+    settings.OIDC_VERIFY_SSL = False
+    settings.OIDC_TIMEOUT = 5
+    settings.OIDC_PROXY = None
+    settings.OIDC_OP_JWKS_ENDPOINT = "https://oidc.example.com/jwks"
+    settings.OIDC_OP_INTROSPECTION_ENDPOINT = "https://oidc.example.com/introspect"
+
+    responses.add(
+        responses.POST,
+        "https://oidc.example.com/introspect",
+        json={
+            "iss": "https://oidc.example.com",
+            "aud": "some_client_id",  # settings.OIDC_RS_CLIENT_ID
+            "sub": "very-specific-sub",
+            "client_id": "some_service_provider",
+            "scope": "openid groups",
+            "active": True,
+        },
+    )
+
+    # Try to authenticate while the user does not exist => 401
+    response = client.get(
+        "/resource-server/v1.0/teams/",  # use an exising URL here
+        format="json",
+        HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
+    )
+    assert response.status_code == HTTP_401_UNAUTHORIZED
+    assert ServiceProvider.objects.count() == 0
+
+    # Create a user with the specific sub, the access is authorized
+    UserFactory(sub="very-specific-sub")
+
+    response = client.get(
+        "/resource-server/v1.0/teams/",  # use an exising URL here
+        format="json",
+        HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+
+    response_request = response.renderer_context.get("request")
+    assert isinstance(response_request, DRFRequest)
+    assert isinstance(
+        response_request.successful_authenticator, ResourceServerAuthentication
+    )
+
+    # Check that the user is authenticated
+    assert response_request.user.is_authenticated
+
+    # Check the request contains the resource server token audience
+    assert response_request.resource_server_token_audience == "some_service_provider"
+
+    # Check that no service provider is created here
+    assert ServiceProvider.objects.count() == 0
+
+
+@responses.activate
+def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-argument
+    client, jwt_resource_server_backend, settings
+):
     """
     Defines the settings for the resource server
     for a full authentication with introspection process.
@@ -134,7 +235,8 @@ def test_resource_server_authentication_class(client, settings):
                 "token_introspection": {
                     "sub": "very-specific-sub",
                     "iss": "https://oidc.example.com",
-                    "aud": "some_service_provider",
+                    "aud": "some_client_id",
+                    "client_id": "some_service_provider",
                     "scope": "openid groups",
                     "active": True,
                 },
