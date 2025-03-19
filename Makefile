@@ -296,7 +296,7 @@ recreate-dimail-container:
 
 dimail-setup-db:
 	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"
-	@$(MANAGE) setup_dimail_db
+	@$(MANAGE) setup_dimail_db --populate-from-people
 .PHONY: dimail-setup-db
 
 # -- Mail generator

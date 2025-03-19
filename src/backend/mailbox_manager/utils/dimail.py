@@ -44,18 +44,18 @@ class DimailAPIClient:
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
     API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
 
-    def get_headers(self, user_sub=None):
+    def get_headers(self, request_user=None):
         """
         Build headers dictionary. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
         to get a token from dimail /token/ endpoint.
-        If provided, request user' sub is used for la regie to log in as this user,
+        If provided, request user' sub is used for la regie to log in on behalf of this user,
         thus allowing for more precise logs.
         """
         headers = {"Content-Type": "application/json"}
         params = None
 
-        if user_sub:
-            params = {"username": str(user_sub)}
+        if request_user:
+            params = {"username": str(request_user)}
 
         response = requests.get(
             f"{self.API_URL}/token/",
@@ -86,7 +86,7 @@ class DimailAPIClient:
         payload = {
             "name": domain_name,
             "context_name": domain_name,  # for now, we put each domain on its own context
-            "features": ["webmail", "mailbox"],
+            "features": ["webmail", "mailbox", "alias"],
             "delivery": "virtual",
         }
         try:
@@ -115,7 +115,7 @@ class DimailAPIClient:
 
         return self.raise_exception_for_unexpected_response(response)
 
-    def create_mailbox(self, mailbox, user_sub=None):
+    def create_mailbox(self, mailbox, request_user=None):
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
@@ -126,7 +126,7 @@ class DimailAPIClient:
             # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
-        headers = self.get_headers(user_sub)
+        headers = self.get_headers(request_user)
 
         try:
             response = session.post(
@@ -148,7 +148,7 @@ class DimailAPIClient:
             logger.info(
                 "Mailbox successfully created on domain %s by user %s",
                 str(mailbox.domain),
-                user_sub,
+                request_user,
             )
             return response
 
@@ -163,10 +163,10 @@ class DimailAPIClient:
 
         return self.raise_exception_for_unexpected_response(response)
 
-    def create_user(self, user_sub):
-        """Send a request to dimail, to create a new user there."""
+    def create_user(self, user_id):
+        """Send a request to dimail, to create a new user there. In dimail, user ids are subs."""
 
-        payload = {"name": user_sub, "password": "no", "is_admin": "false", "perms": []}
+        payload = {"name": user_id, "password": "no", "is_admin": "false", "perms": []}
 
         try:
             response = session.post(
@@ -187,24 +187,24 @@ class DimailAPIClient:
         if response.status_code == status.HTTP_201_CREATED:
             logger.info(
                 '[DIMAIL] User "%s" successfully created on dimail',
-                user_sub,
+                user_id,
             )
             return response
 
         if response.status_code == status.HTTP_409_CONFLICT:
             logger.info(
                 '[DIMAIL] Attempt to create user "%s" which already exists.',
-                user_sub,
+                user_id,
             )
             return response
 
         return self.raise_exception_for_unexpected_response(response)
 
-    def create_allow(self, user_sub, domain_name):
+    def create_allow(self, user_id, domain_name):
         """Send a request to dimail for a new 'allow' between user and the domain."""
 
         payload = {
-            "user": user_sub,
+            "user": user_id,
             "domain": domain_name,
         }
 
@@ -227,7 +227,7 @@ class DimailAPIClient:
         if response.status_code == status.HTTP_201_CREATED:
             logger.info(
                 '[DIMAIL] Permissions granted for user "%s" on domain %s.',
-                user_sub,
+                user_id,
                 domain_name,
             )
             return response
@@ -235,7 +235,7 @@ class DimailAPIClient:
         if response.status_code == status.HTTP_409_CONFLICT:
             logger.info(
                 '[DIMAIL] Attempt to create already existing permission between "%s" and "%s".',
-                user_sub,
+                user_id,
                 domain_name,
             )
             return response
@@ -361,12 +361,12 @@ class DimailAPIClient:
                     )
         return imported_mailboxes
 
-    def disable_mailbox(self, mailbox, user_sub=None):
+    def disable_mailbox(self, mailbox, request_user=None):
         """Send a request to disable a mailbox to dimail API"""
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={"active": "no"},
-            headers=self.get_headers(user_sub),
+            headers=self.get_headers(request_user),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -375,12 +375,12 @@ class DimailAPIClient:
                 "Mailbox %s successfully desactivated on domain %s by user %s",
                 str(mailbox),
                 str(mailbox.domain),
-                user_sub,
+                request_user,
             )
             return response
         return self.raise_exception_for_unexpected_response(response)
 
-    def enable_mailbox(self, mailbox, user_sub=None):
+    def enable_mailbox(self, mailbox, request_user=None):
         """Send a request to enable a mailbox to dimail API"""
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
@@ -390,7 +390,7 @@ class DimailAPIClient:
                 "surName": mailbox.last_name,
                 "displayName": f"{mailbox.first_name} {mailbox.last_name}",
             },
-            headers=self.get_headers(user_sub),
+            headers=self.get_headers(request_user),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -399,7 +399,7 @@ class DimailAPIClient:
                 "Mailbox %s successfully enabled on domain %s by user %s",
                 str(mailbox),
                 str(mailbox.domain),
-                user_sub,
+                request_user,
             )
             return response
         return self.raise_exception_for_unexpected_response(response)
