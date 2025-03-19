@@ -136,9 +136,7 @@ test.describe('Mail domain', () => {
       page.getByText(
         'It seems that the page you are looking for does not exist or cannot be displayed correctly.',
       ),
-    ).toBeVisible({
-      timeout: 15000,
-    });
+    ).toBeVisible();
   });
 
   test.describe('user is administrator or owner', () => {

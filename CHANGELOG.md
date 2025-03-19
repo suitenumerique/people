@@ -13,6 +13,11 @@ and this project adheres to
 - ✨(oidc) add simple introspection backend #832
 - 🧑‍💻(tasks) run management commands #814
 
+### Fixed
+
+- 🐛(oauth2) force JWT signed for /userinfo #804
+- 🐛(front) disable retries in useQuery and useInfiniteQuery #818
+
 ## [1.14.1] - 2025-03-17
 
 ## [1.14.0] - 2025-03-17
