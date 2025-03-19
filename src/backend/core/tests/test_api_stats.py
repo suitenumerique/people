@@ -19,7 +19,7 @@ pytestmark = pytest.mark.django_db
 def test_api_stats__anonymous(django_assert_num_queries):
     """Stats endpoint should be available even when not connected."""
 
-    domains_factories.MailDomainFactory.create_batch(5)
+    domains_factories.MailDomainEnabledFactory.create_batch(5)
     core_factories.TeamFactory.create_batch(3)
 
     # clear cache to allow stats count
@@ -57,7 +57,8 @@ def test_api_stats__expected_count():
         client.force_login(user)
 
     core_factories.TeamFactory.create_batch(3)
-    domains_factories.MailDomainFactory.create_batch(2)
+    domains_factories.MailDomainFactory.create_batch(1)
+    domains_factories.MailDomainEnabledFactory.create_batch(2)
     domains_factories.MailboxFactory.create_batch(
         10, domain=domains_models.MailDomain.objects.all()[1]
     )

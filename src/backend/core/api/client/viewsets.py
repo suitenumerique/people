@@ -29,6 +29,7 @@ from core.api import permissions
 from core.api.client import serializers
 from core.utils.raw_sql import gen_sql_filter_json_array
 
+from mailbox_manager import enums
 from mailbox_manager import models as domains_models
 
 
@@ -609,7 +610,9 @@ class StatView(views.APIView):
                 last_login__gte=timezone.now() - datetime.timedelta(30)
             ).count(),
             "teams": models.Team.objects.count(),
-            "domains": domains_models.MailDomain.objects.count(),
+            "domains": domains_models.MailDomain.objects.filter(
+                status=enums.MailDomainStatusChoices.ENABLED
+            ).count(),
             "mailboxes": domains_models.Mailbox.objects.count(),
         }
         return response.Response(context)
