@@ -34,5 +34,6 @@ export function useTeams(params: TeamsParams) {
   return useQuery({
     queryKey: [KEY_LIST_TEAM, params],
     queryFn: () => getTeams(params),
+    retry: 0,
   });
 }

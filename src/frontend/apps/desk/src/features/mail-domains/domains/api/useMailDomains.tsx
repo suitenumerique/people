@@ -66,6 +66,7 @@ export function useMailDomains(
     getNextPageParam(lastPage, allPages) {
       return lastPage.next ? allPages.length + 1 : undefined;
     },
+    retry: 0,
     ...queryConfig,
   });
 }
