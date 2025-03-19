@@ -9,6 +9,7 @@ from rest_framework import status
 
 from mailbox_manager import enums
 from mailbox_manager.models import MailDomain, MailDomainAccess
+from mailbox_manager.utils.dimail import DimailAPIClient
 
 User = get_user_model()
 
@@ -22,6 +23,8 @@ class Command(BaseCommand):
     """
     Management command populate local dimail database, to ease dev
     """
+
+    client = DimailAPIClient()
 
     help = "Populate local dimail database, for dev purposes."
 
@@ -84,7 +87,7 @@ class Command(BaseCommand):
         else:
             # create accesses for john doe
             self.create_user(name=people_base_user.sub)
-            self.create_allows(people_base_user.sub, domain_name)
+            self.create_allow(people_base_user.sub, domain_name)
             MailDomainAccess.objects.get_or_create(
                 user=people_base_user,
                 domain=domain,
@@ -128,20 +131,11 @@ class Command(BaseCommand):
                 )
             )
 
-    def create_domain(self, name, auth=(regie["username"], regie["password"])):
+    def create_domain(self, name):
         """
-        Send a request to create a new domain.
+        Send a request to create a new domain using DimailAPIClient.
         """
-        response = requests.post(
-            url=f"{DIMAIL_URL}/domains/",
-            json={
-                "name": name,
-                "context_name": "context",
-                "features": ["webmail", "mailbox", "alias"],
-            },
-            auth=auth,
-            timeout=10,
-        )
+        response = self.client.create_domain(name, request_user="setup_dimail_db.py")
 
         if response.status_code == status.HTTP_201_CREATED:
             self.stdout.write(
@@ -154,19 +148,11 @@ class Command(BaseCommand):
                 )
             )
 
-    def create_allows(self, user, domain, auth=(regie["username"], regie["password"])):
+    def create_allow(self, user, domain):
         """
-        Send a request to create a new allows between user and domain.
+        Send a request to create a new allows between user and domain using DimailAPIClient.
         """
-        response = requests.post(
-            url=f"{DIMAIL_URL}/allows/",
-            json={
-                "domain": domain,
-                "user": user,
-            },
-            auth=auth,
-            timeout=10,
-        )
+        response = self.client.create_allow(user, domain)
 
         if response.status_code == status.HTTP_201_CREATED:
             self.stdout.write(
@@ -216,4 +202,4 @@ class Command(BaseCommand):
 
         # create missing accesses
         for access in access_to_create:
-            self.create_allows(access.user.sub, access.domain.name)
+            self.create_allow(access.user.sub, access.domain.name)
