@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+# pylint: disable=too-many-lines
+
 import json
 import os
 
@@ -480,6 +482,16 @@ class Base(Configuration):
         None, environ_name="OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT", environ_prefix=None
     )
     OIDC_OP_URL = values.Value(None, environ_name="OIDC_OP_URL", environ_prefix=None)
+    OIDC_RS_BACKEND_CLASS = values.Value(
+        "core.resource_server.backend.ResourceServerBackend",
+        environ_name="OIDC_RS_BACKEND_CLASS",
+        environ_prefix=None,
+    )
+    OIDC_RS_AUDIENCE_CLAIM = values.Value(
+        "client_id",
+        environ_name="OIDC_RS_AUDIENCE_CLAIM",
+        environ_prefix=None,
+    )
     OIDC_RS_CLIENT_ID = values.Value(
         None, environ_name="OIDC_RS_CLIENT_ID", environ_prefix=None
     )
@@ -489,7 +501,7 @@ class Base(Configuration):
         environ_prefix=None,
     )
     OIDC_RS_SIGNING_ALGO = values.Value(
-        default="ES256", environ_name="OIDC_RS_SIGNING_ALG0", environ_prefix=None
+        default="ES256", environ_name="OIDC_RS_SIGNING_ALGO", environ_prefix=None
     )
     OIDC_RS_SCOPES = values.ListValue(
         ["groups"], environ_name="OIDC_RS_SCOPES", environ_prefix=None

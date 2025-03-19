@@ -3,16 +3,24 @@
 import base64
 import binascii
 import logging
+from functools import lru_cache
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string
 
 from mozilla_django_oidc.contrib.drf import OIDCAuthentication
 
-from .backend import ResourceServerBackend, ResourceServerImproperlyConfiguredBackend
+from .backend import ResourceServerImproperlyConfiguredBackend
 from .clients import AuthorizationServerClient
 
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=None)
+def get_resource_server_backend():
+    """Return the resource server backend class based on the settings."""
+    return import_string(settings.OIDC_RS_BACKEND_CLASS)
 
 
 class ResourceServerAuthentication(OIDCAuthentication):
@@ -31,7 +39,7 @@ class ResourceServerAuthentication(OIDCAuthentication):
                 url_jwks=settings.OIDC_OP_JWKS_ENDPOINT,
                 url_introspection=settings.OIDC_OP_INTROSPECTION_ENDPOINT,
             )
-            self.backend = ResourceServerBackend(authorization_server_client)
+            self.backend = get_resource_server_backend()(authorization_server_client)
 
         except ImproperlyConfigured as err:
             message = "Resource Server authentication is disabled"

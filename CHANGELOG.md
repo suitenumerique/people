@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(oidc) add simple introspection backend #832
 - 🧑‍💻(tasks) run management commands #814
 
 ## [1.14.1] - 2025-03-17
