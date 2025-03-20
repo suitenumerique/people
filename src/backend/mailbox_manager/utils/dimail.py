@@ -86,7 +86,7 @@ class DimailAPIClient:
         payload = {
             "name": domain_name,
             "context_name": domain_name,  # for now, we put each domain on its own context
-            "features": ["webmail", "mailbox"],
+            "features": ["webmail", "mailbox", "alias"],
             "delivery": "virtual",
         }
         try:
@@ -115,7 +115,7 @@ class DimailAPIClient:
 
         return self.raise_exception_for_unexpected_response(response)
 
-    def create_mailbox(self, mailbox, user_sub=None):
+    def create_mailbox(self, mailbox, request_user=None):
         """Send a CREATE mailbox request to mail provisioning API."""
 
         payload = {
@@ -126,7 +126,7 @@ class DimailAPIClient:
             # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
-        headers = self.get_headers(user_sub)
+        headers = self.get_headers(request_user)
 
         try:
             response = session.post(
@@ -148,7 +148,7 @@ class DimailAPIClient:
             logger.info(
                 "Mailbox successfully created on domain %s by user %s",
                 str(mailbox.domain),
-                user_sub,
+                request_user,
             )
             return response
 

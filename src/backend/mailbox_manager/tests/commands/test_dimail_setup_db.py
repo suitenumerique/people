@@ -74,8 +74,9 @@ def test_commands_setup_dimail_db(settings):
 
     assert responses.calls[2].request.url == f"{DIMAIL_URL}/domains/"
     assert responses.calls[2].request.body == (
-        b'{"name": "test.domain.com", "context_name": "context", '
-        b'"features": ["webmail", "mailbox", "alias"]}'
+        b'{"name": "test.domain.com", "context_name": "test.domain.com", '
+        b'"features": ["webmail", "mailbox", "alias"], '
+        b'"delivery": "virtual"}'
     )
 
     assert responses.calls[3].request.url == f"{DIMAIL_URL}/users/"
@@ -87,7 +88,7 @@ def test_commands_setup_dimail_db(settings):
     assert responses.calls[4].request.url == f"{DIMAIL_URL}/allows/"
     assert (
         responses.calls[4].request.body
-        == b'{"domain": "test.domain.com", "user": "sub.john.doe"}'
+        == b'{"user": "sub.john.doe", "domain": "test.domain.com"}'
     )
 
     # reset the responses counter
@@ -112,8 +113,9 @@ def test_commands_setup_dimail_db(settings):
     assert (
         f"{DIMAIL_URL}/domains/",
         (
-            b'{"name": "some.domain.com", "context_name": "context", '
-            b'"features": ["webmail", "mailbox", "alias"]}'
+            b'{"name": "some.domain.com", "context_name": "some.domain.com", '
+            b'"features": ["webmail", "mailbox", "alias"], '
+            b'"delivery": "virtual"}'
         ),
     ) in dimail_calls
 
@@ -124,5 +126,5 @@ def test_commands_setup_dimail_db(settings):
 
     assert (
         f"{DIMAIL_URL}/allows/",
-        b'{"domain": "some.domain.com", "user": "sub.toto.123"}',
+        b'{"user": "sub.toto.123", "domain": "some.domain.com"}',
     ) in dimail_calls
