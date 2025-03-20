@@ -1,6 +1,7 @@
 """Organization related plugins."""
 
 import logging
+import os
 import re
 
 from django.conf import settings
@@ -181,7 +182,11 @@ class CommuneCreation(BaseOrganizationPlugin):
     def zone_name(self, name: str) -> str:
         """Derive the zone name from the commune name"""
         normalized = self.normalize_name(name)
-        return f"{normalized}.collectivite.fr"
+        if os.environ["DJANGO_CONFIGURATION"] in ["Staging", "PreProduction"]:
+            base_zone = "test.collectivite.fr"
+        else:
+            base_zone = "collectivite.fr"
+        return f"{normalized}.{base_zone}"
 
     def complete_commune_creation(self, name: str) -> ApiCall:
         """Specify the tasks to be completed after a commune is created."""
