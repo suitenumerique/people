@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) notify support when domain status changes #668
+- ✨(domains) define domain check interval as a settings
 - ✨(oidc) add simple introspection backend #832
 - 🧑‍💻(tasks) run management commands #814
 

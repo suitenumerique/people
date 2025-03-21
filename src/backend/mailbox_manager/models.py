@@ -2,12 +2,17 @@
 Declare and configure the models for the People additional application : mailbox_manager
 """
 
+import logging
+import smtplib
+
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.core import exceptions, validators
+from django.contrib.sites.models import Site
+from django.core import exceptions, mail, validators
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.text import slugify
-from django.utils.translation import gettext
+from django.utils.translation import get_language, gettext, override
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseInvitation, BaseModel, Organization, User
@@ -17,6 +22,8 @@ from mailbox_manager.enums import (
     MailDomainRoleChoices,
     MailDomainStatusChoices,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MailDomain(BaseModel):
@@ -103,6 +110,61 @@ class MailDomain(BaseModel):
         return (
             bool(self.organization) and self.status == MailDomainStatusChoices.ENABLED
         )
+
+    def notify_status_change(self, recipients=None, language=None):
+        """
+        Notify the support team that the domain status has changed.
+        """
+        status_notification_mails = {
+            # new status domain: (mail subject, mail template html, mail template text)
+            MailDomainStatusChoices.ENABLED: (
+                _("[La Suite] Your domain is ready"),
+                "mail/html/maildomain_enabled.html",
+                "mail/text/maildomain_enabled.txt",
+            ),
+            MailDomainStatusChoices.ACTION_REQUIRED: (
+                _("[La Suite] Your domain requires action"),
+                "mail/html/maildomain_action_required.html",
+                "mail/text/maildomain_action_required.txt",
+            ),
+            MailDomainStatusChoices.FAILED: (
+                _("[La Suite] Your domain has failed"),
+                "mail/html/maildomain_failed.html",
+                "mail/text/maildomain_failed.txt",
+            ),
+        }
+        if self.status in status_notification_mails:
+            try:
+                with override(language or get_language()):
+                    subject, template_html, template_text = status_notification_mails[
+                        self.status
+                    ]
+                    context = {
+                        "title": subject,
+                        "domain_name": self.name,
+                        "manage_domain_url": (
+                            f"{Site.objects.get_current().domain}/mail-domains/{self.slug}/"
+                        ),
+                    }
+                    mail.send_mail(
+                        subject,
+                        render_to_string(template_text, context),
+                        settings.EMAIL_FROM,
+                        recipients or [self.support_email],
+                        html_message=render_to_string(template_html, context),
+                        fail_silently=False,
+                    )
+                    logger.info(
+                        "Information about domain %s sent to %s.",
+                        self.name,
+                        self.support_email,
+                    )
+            except smtplib.SMTPException as exception:
+                logger.error(
+                    "Notification email to %s was not sent: %s",
+                    self.support_email,
+                    exception,
+                )
 
 
 class MailDomainAccess(BaseModel):
