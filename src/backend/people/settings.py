@@ -540,6 +540,11 @@ class Base(Configuration):
         environ_name="MAIL_PROVISIONING_API_TIMEOUT",
         environ_prefix=None,
     )
+    MAIL_CHECK_DOMAIN_INTERVAL = values.IntegerValue(
+        default=10,
+        environ_name="MAIL_CHECK_DOMAIN_INTERVAL",
+        environ_prefix=None,
+    )
     DNS_PROVISIONING_API_URL = values.Value(
         default="https://api.scaleway.com",
         environ_name="DNS_PROVISIONING_API_URL",

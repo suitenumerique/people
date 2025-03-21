@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(domains) define domain check interval as a settings
 - ✨(oidc) add simple introspection backend #832
 - 🧑‍💻(tasks) run management commands #814
 
