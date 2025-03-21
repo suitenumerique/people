@@ -63,5 +63,6 @@ def fetch_domains_status_task(status: str):
             logger.error("Failed to fetch status for domain %s: %s", domain.name, err)
         else:
             if old_status != domain.status:
+                domain.notify_status_change()
                 changed_domains.append(f"{domain.name} ({domain.status})")
     return changed_domains
