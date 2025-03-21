@@ -1,0 +1,45 @@
+<mjml>
+  <mj-include path="./partial/header.mjml" />
+
+  <mj-body mj-class="bg--blue-100">
+    <mj-wrapper css-class="wrapper" padding="10px">
+      <mj-section>
+        <mj-column>
+            <mj-image align="center" src="{% base64_static 'images/logo-laregie.png' %}" width="157px" align="left" alt="La Régie" padding="10px" />
+          </mj-column>
+      </mj-section>
+      <mj-section mj-class="bg--white-100">
+        <mj-column>
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" padding="10px 20px" />
+          <mj-text>
+            <strong>
+              {% trans "Your domain is ready" %}
+            </strong>
+          </mj-text>
+          <!-- Main Message -->
+          <mj-text>{% trans "Hurray!" %}</mj-text>
+          <mj-text>
+          {% blocktranslate with name=domain_name trimmed %}
+            Your domain <b>{{ name }}</b> can be used now.
+          {% endblocktranslate %}
+          </mj-text>
+          <mj-text>{% trans "To do so, please log in La Régie via ProConnect, by following this link:" %}</mj-text>
+          <mj-button href="//{{ manage_domain_url }}" background-color="#000091" color="white" padding-bottom="30px">
+            <img src="{% base64_static 'images/arrow.png' %}" width="25px" align="left" alt="arrow" background-color="red"/>
+            {% trans "Go to La Régie"%}
+          </mj-button>
+          <!-- end Main Message -->
+          <!-- Signature -->
+          <mj-text>
+            <p>{% trans "Regards," %}</p>
+            <p>{% trans "La Suite Team" %}</p>
+          </mj-text>
+          <mj-divider border-width="1px" border-style="solid" border-color="#EEEEEE" width="100%" />
+          <mj-image align="left" src="{% base64_static 'images/logo-footer-mail.png' %}" width="160px" align="left" alt="La Suite" />
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+ 
+</mjml>
+
