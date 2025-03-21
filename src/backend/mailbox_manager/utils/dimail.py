@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 """A minimalist client to synchronize with mailbox provisioning API."""
 
 import ast
@@ -570,3 +572,28 @@ class DimailAPIClient:
                 exc_info=False,
             )
             return []
+
+    def reset_password(self, mailbox):
+        """Send a request to reset mailbox password."""
+        try:
+            response = session.post(
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.exception(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            return []
+
+        if response.status_code == status.HTTP_201_CREATED:
+            logger.info(
+                "[DIMAIL] Password reset on mailbox %s.",
+                mailbox,
+            )
+            return response
+        return self.raise_exception_for_unexpected_response(response)
