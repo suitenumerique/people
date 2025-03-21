@@ -2,6 +2,8 @@
 
 import time
 
+from django.conf import settings
+
 import requests
 from celery import Celery
 from celery.schedules import crontab
@@ -54,7 +56,7 @@ def fetch_domains_status_task(status: str):
     for domain in MailDomain.objects.filter(status=status):
         old_status = domain.status
         # wait 10 seconds between each domain treatment to avoid overloading dimail
-        time.sleep(10)
+        time.sleep(settings.MAIL_CHECK_DOMAIN_INTERVAL)
         try:
             client.fetch_domain_status(domain)
         except requests.exceptions.HTTPError as err:

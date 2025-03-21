@@ -5,6 +5,8 @@ Unit tests for mailbox manager tasks.
 import json
 import re
 
+from django.test import override_settings
+
 import pytest
 import responses
 
@@ -15,6 +17,7 @@ from .fixtures.dimail import CHECK_DOMAIN_BROKEN_INTERNAL, CHECK_DOMAIN_OK
 pytestmark = pytest.mark.django_db
 
 
+@override_settings(MAIL_CHECK_DOMAIN_INTERVAL=0)
 @responses.activate
 def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
     """Test fetch domain status from dimail task"""
@@ -78,6 +81,7 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
     assert domain_disabled.status == enums.MailDomainStatusChoices.DISABLED
 
 
+@override_settings(MAIL_CHECK_DOMAIN_INTERVAL=0)
 @responses.activate
 def test_fetch_domains_status_error_handling(caplog):
     """Test fetch domain status from dimail task with error"""
