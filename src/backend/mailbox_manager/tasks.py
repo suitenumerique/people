@@ -63,3 +63,15 @@ def fetch_domains_status_task(status: str):
             if old_status != domain.status:
                 changed_domains.append(f"{domain.name} ({domain.status})")
     return changed_domains
+
+
+@celery_app.task
+def fetch_domain_status_task(zone_name: str):
+    """Celery task to call dimail to check and update a single domain's status."""
+    client = DimailAPIClient()
+    for domain in MailDomain.objects.filter(name=zone_name):
+        logger.info("Checking status of domain %s", domain.name)
+        try:
+            client.fetch_domain_status(domain)
+        except requests.exceptions.HTTPError as err:
+            logger.error("Failed to fetch status for domain %s: %s", domain.name, err)
