@@ -27,7 +27,7 @@ requires-python = ">=3.11"
 dependencies = [
     "Brotli==1.1.0",
     "PyJWT==2.10.1",
-    "boto3==1.37.13",
+    "boto3==1.37.18",
     "celery[redis]==5.4.0",
     "django-celery-beat==2.7.0",
     "django-celery-results==2.5.1",
@@ -56,7 +56,7 @@ dependencies = [
     "psycopg[binary]==3.2.6",
     "redis==5.2.1",
     "requests==2.32.3",
-    "sentry-sdk[django]==2.22.0",
+    "sentry-sdk[django]==2.24.0",
     "whitenoise==6.9.0",
 ]
 
@@ -75,14 +75,14 @@ dev = [
     "jq==1.8.0",
     "pyfakefs==5.8.0",
     "pylint-django==2.6.1",
-    "pylint==3.3.5",
+    "pylint==3.3.6",
     "pytest-cov==6.0.0",
     "pytest-django==4.10.0",
     "pytest==8.3.5",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.6.1",
     "responses==0.25.7",
-    "ruff==0.11.0",
+    "ruff==0.11.2",
     "types-requests==2.32.0.20250306",
     "freezegun==1.5.1",
 ]
