@@ -1,4 +1,15 @@
 {
+  "de": {
+    "translation": {
+      "Accessibility: non-compliant": "Barrierefreiheit: nicht kompatibel",
+      "Cancel": "",
+      "Language": "Sprache",
+      "Legal Notice": "Impressum",
+      "Logout": "Abmelden",
+      "No Username": "Kein Benutzername",
+      "Personal data and cookies": "Personenbezogene Daten und Cookies"
+    }
+  },
   "en": {
     "translation": {
       "copy done": "Copy done",
