@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-14 11:28+0000\n"
-"PO-Revision-Date: 2025-03-17 09:23\n"
+"POT-Creation-Date: 2025-03-25 07:46+0000\n"
+"PO-Revision-Date: 2025-03-25 11:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -40,6 +40,10 @@ msgstr "Exécuter les plugins de post-création"
 #: build/lib/core/admin.py:236 core/admin.py:236
 msgid "Post creation plugins have been run for the selected organizations."
 msgstr "Les plugins de post-création ont été exécutés pour les organisations sélectionnées."
+
+#: build/lib/core/apps.py:22 core/apps.py:22
+msgid "People core application"
+msgstr ""
 
 #: build/lib/core/authentication/backends.py:94
 #: core/authentication/backends.py:94
@@ -143,9 +147,9 @@ msgid "contacts"
 msgstr "contacts"
 
 #: build/lib/core/models.py:252 build/lib/core/models.py:366
-#: build/lib/core/models.py:511 build/lib/mailbox_manager/models.py:26
+#: build/lib/core/models.py:511 build/lib/mailbox_manager/models.py:53
 #: core/models.py:252 core/models.py:366 core/models.py:511
-#: mailbox_manager/models.py:26
+#: mailbox_manager/models.py:53
 msgid "name"
 msgstr "nom"
 
@@ -423,90 +427,213 @@ msgstr "Désactivé"
 msgid "Action required"
 msgstr "Action requise"
 
-#: build/lib/mailbox_manager/models.py:41 mailbox_manager/models.py:41
+#: build/lib/mailbox_manager/models.py:32 mailbox_manager/models.py:32
+msgid "[La Suite] Your domain is ready"
+msgstr "[La Suite] Votre domaine est prêt"
+
+#: build/lib/mailbox_manager/models.py:37 mailbox_manager/models.py:37
+msgid "[La Suite] Your domain requires action"
+msgstr "[La Suite] Des actions sont requises sur votre domaine"
+
+#: build/lib/mailbox_manager/models.py:42 mailbox_manager/models.py:42
+msgid "[La Suite] Your domain has failed"
+msgstr "[La Suite] Votre domaine est en erreur"
+
+#: build/lib/mailbox_manager/models.py:68 mailbox_manager/models.py:68
 msgid "support email"
 msgstr "adresse email du support"
 
-#: build/lib/mailbox_manager/models.py:45 mailbox_manager/models.py:45
+#: build/lib/mailbox_manager/models.py:72 mailbox_manager/models.py:72
 msgid "last check details"
 msgstr "détails de la dernière vérification"
 
-#: build/lib/mailbox_manager/models.py:46 mailbox_manager/models.py:46
+#: build/lib/mailbox_manager/models.py:73 mailbox_manager/models.py:73
 msgid "A JSON object containing the last health check details"
 msgstr "Un objet JSON contenant les derniers détails du bilan de santé"
 
-#: build/lib/mailbox_manager/models.py:51 mailbox_manager/models.py:51
+#: build/lib/mailbox_manager/models.py:78 mailbox_manager/models.py:78
 msgid "expected config"
 msgstr "configuration attendue"
 
-#: build/lib/mailbox_manager/models.py:52 mailbox_manager/models.py:52
+#: build/lib/mailbox_manager/models.py:79 mailbox_manager/models.py:79
 msgid "A JSON object containing the expected config"
 msgstr "Un objet JSON contenant la configuration attendue"
 
-#: build/lib/mailbox_manager/models.py:57 mailbox_manager/models.py:57
+#: build/lib/mailbox_manager/models.py:84 mailbox_manager/models.py:84
 msgid "Mail domain"
 msgstr "Domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:58 mailbox_manager/models.py:58
+#: build/lib/mailbox_manager/models.py:85 mailbox_manager/models.py:85
 msgid "Mail domains"
 msgstr "Domaines de messagerie"
 
-#: build/lib/mailbox_manager/models.py:133 mailbox_manager/models.py:133
+#: build/lib/mailbox_manager/models.py:199 mailbox_manager/models.py:199
 msgid "User/mail domain relation"
 msgstr "Relation utilisateur/domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:134 mailbox_manager/models.py:134
+#: build/lib/mailbox_manager/models.py:200 mailbox_manager/models.py:200
 msgid "User/mail domain relations"
 msgstr "Relations utilisateur/domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:207 mailbox_manager/models.py:207
+#: build/lib/mailbox_manager/models.py:273 mailbox_manager/models.py:273
 msgid "local_part"
 msgstr "local_part"
 
-#: build/lib/mailbox_manager/models.py:221 mailbox_manager/models.py:221
+#: build/lib/mailbox_manager/models.py:287 mailbox_manager/models.py:287
 msgid "secondary email address"
 msgstr "adresse email secondaire"
 
-#: build/lib/mailbox_manager/models.py:232 mailbox_manager/models.py:232
+#: build/lib/mailbox_manager/models.py:298 mailbox_manager/models.py:298
 msgid "email"
 msgstr "email"
 
-#: build/lib/mailbox_manager/models.py:238 mailbox_manager/models.py:238
+#: build/lib/mailbox_manager/models.py:304 mailbox_manager/models.py:304
 msgid "Mailbox"
 msgstr "Boîte mail"
 
-#: build/lib/mailbox_manager/models.py:239 mailbox_manager/models.py:239
+#: build/lib/mailbox_manager/models.py:305 mailbox_manager/models.py:305
 msgid "Mailboxes"
 msgstr "Boîtes mail"
 
-#: build/lib/mailbox_manager/models.py:265 mailbox_manager/models.py:265
+#: build/lib/mailbox_manager/models.py:331 mailbox_manager/models.py:331
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr "Vous ne pouvez pas créer ou mettre à jour une boîte mail pour un domaine désactivé."
 
-#: build/lib/mailbox_manager/models.py:303 mailbox_manager/models.py:303
+#: build/lib/mailbox_manager/models.py:369 mailbox_manager/models.py:369
 msgid "Mail domain invitation"
 msgstr "Invitation au domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:304 mailbox_manager/models.py:304
+#: build/lib/mailbox_manager/models.py:370 mailbox_manager/models.py:370
 msgid "Mail domain invitations"
 msgstr "Invitations au domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:316 mailbox_manager/models.py:316
+#: build/lib/mailbox_manager/models.py:382 mailbox_manager/models.py:382
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
-#: build/lib/mailbox_manager/utils/dimail.py:270
-#: mailbox_manager/utils/dimail.py:270
+#: build/lib/mailbox_manager/utils/dimail.py:273
+#: mailbox_manager/utils/dimail.py:273
 msgid "Your new mailbox information"
 msgstr "Informations sur votre nouvelle boîte mail"
 
-#: build/lib/people/settings.py:155 people/settings.py:155
+#: build/lib/people/settings.py:157 people/settings.py:157
 msgid "English"
 msgstr "Anglais"
 
-#: build/lib/people/settings.py:156 people/settings.py:156
+#: build/lib/people/settings.py:158 people/settings.py:158
 msgid "French"
 msgstr "Français"
+
+#: core/templates/mail/html/maildomain_action_required.html:195
+#: core/templates/mail/text/maildomain_action_required.txt:5
+msgid "Some actions are required on your domain"
+msgstr "Des actions sont requises sur votre domaine"
+
+#: core/templates/mail/html/maildomain_action_required.html:201
+#: core/templates/mail/html/maildomain_failed.html:201
+#: core/templates/mail/html/maildomain_invitation.html:201
+#: core/templates/mail/html/team_invitation.html:201
+#: core/templates/mail/text/maildomain_action_required.txt:6
+#: core/templates/mail/text/maildomain_failed.txt:6
+#: core/templates/mail/text/maildomain_invitation.txt:6
+#: core/templates/mail/text/team_invitation.txt:6
+msgid "Hello,"
+msgstr "Bonjour,"
+
+#: core/templates/mail/html/maildomain_action_required.html:206
+#, python-format
+msgid "Your domain <b>%(name)s</b> cannot be used until the required actions have been completed."
+msgstr "Votre domaine <b>%(name)s</b> ne peut pas être utilisé tant que certaines actions n’ont pas été menées."
+
+#: core/templates/mail/html/maildomain_action_required.html:211
+#: core/templates/mail/text/maildomain_action_required.txt:8
+msgid "To solve this problem, please log in La Régie via ProConnect and follow instructions, by following this link:"
+msgstr "Pour résoudre ce problème, merci de vous connecter à la Régie grâce à ProConnect et de suivre les instructions, en suivant le lien ci-dessous :"
+
+#: core/templates/mail/html/maildomain_action_required.html:221
+#: core/templates/mail/html/maildomain_enabled.html:221
+#: core/templates/mail/html/maildomain_failed.html:221
+#: core/templates/mail/html/maildomain_invitation.html:221
+#: core/templates/mail/html/team_invitation.html:221
+#: core/templates/mail/text/maildomain_action_required.txt:10
+#: core/templates/mail/text/maildomain_enabled.txt:10
+#: core/templates/mail/text/maildomain_failed.txt:11
+#: core/templates/mail/text/maildomain_invitation.txt:10
+#: core/templates/mail/text/team_invitation.txt:10
+msgid "Go to La Régie"
+msgstr "Accéder à la Régie"
+
+#: core/templates/mail/html/maildomain_action_required.html:232
+#: core/templates/mail/html/maildomain_enabled.html:232
+#: core/templates/mail/html/maildomain_failed.html:232
+#: core/templates/mail/html/maildomain_invitation.html:255
+#: core/templates/mail/html/team_invitation.html:268
+#: core/templates/mail/text/maildomain_action_required.txt:12
+#: core/templates/mail/text/maildomain_enabled.txt:12
+#: core/templates/mail/text/maildomain_failed.txt:13
+#: core/templates/mail/text/maildomain_invitation.txt:22
+#: core/templates/mail/text/team_invitation.txt:20
+msgid "Regards,"
+msgstr "Cordialement,"
+
+#: core/templates/mail/html/maildomain_action_required.html:233
+#: core/templates/mail/html/maildomain_enabled.html:233
+#: core/templates/mail/html/maildomain_failed.html:233
+#: core/templates/mail/html/maildomain_invitation.html:256
+#: core/templates/mail/html/new_mailbox.html:273
+#: core/templates/mail/html/team_invitation.html:269
+#: core/templates/mail/text/maildomain_action_required.txt:14
+#: core/templates/mail/text/maildomain_enabled.txt:14
+#: core/templates/mail/text/maildomain_failed.txt:15
+#: core/templates/mail/text/maildomain_invitation.txt:24
+#: core/templates/mail/text/new_mailbox.txt:17
+#: core/templates/mail/text/team_invitation.txt:22
+msgid "La Suite Team"
+msgstr "L'équipe de La Suite"
+
+#: core/templates/mail/html/maildomain_enabled.html:195
+#: core/templates/mail/text/maildomain_enabled.txt:5
+msgid "Your domain is ready"
+msgstr "Votre domaine est prêt"
+
+#: core/templates/mail/html/maildomain_enabled.html:201
+#: core/templates/mail/text/maildomain_enabled.txt:6
+msgid "Hurray!"
+msgstr "Hourra !"
+
+#: core/templates/mail/html/maildomain_enabled.html:206
+#, python-format
+msgid "Your domain <b>%(name)s</b> can be used now."
+msgstr "Votre domaine <b>%(name)s</b> est prêt à être exploité."
+
+#: core/templates/mail/html/maildomain_enabled.html:211
+#: core/templates/mail/html/maildomain_invitation.html:211
+#: core/templates/mail/html/team_invitation.html:211
+#: core/templates/mail/text/maildomain_enabled.txt:8
+#: core/templates/mail/text/maildomain_invitation.txt:8
+#: core/templates/mail/text/team_invitation.txt:8
+msgid "To do so, please log in La Régie via ProConnect, by following this link:"
+msgstr "Pour cela, merci de vous connecter une première fois à la Régie grâce à ProConnect, en suivant le lien ci-dessous :"
+
+#: core/templates/mail/html/maildomain_failed.html:195
+#: core/templates/mail/text/maildomain_failed.txt:5
+msgid "Your domain has failed"
+msgstr "Votre domaine est en erreur"
+
+#: core/templates/mail/html/maildomain_failed.html:206
+#, python-format
+msgid "The domain <b>%(name)s</b> has encountered an error. As long as this error persists, all related mailboxes will remain disabled. Technical support is currently working on the issue."
+msgstr "Le domaine <b>%(name)s</b> a rencontré une erreur. Tant que cette erreur persiste, toutes les boîtes mail demeureront désactivées. Le support technique est en train de travailler à résoudre cette erreur."
+
+#: core/templates/mail/html/maildomain_failed.html:211
+#: core/templates/mail/text/maildomain_failed.txt:8
+msgid "You can track the status of your domain on the management interface."
+msgstr "Vous pouvez suivre l’évolution du statut de votre domaine sur l’interface de gestion dédiée."
+
+#: core/templates/mail/html/maildomain_failed.html:211
+#: core/templates/mail/text/maildomain_failed.txt:9
+msgid "To do this, please log in to La Régie via ProConnect, by following this link:"
+msgstr "Pour cela, merci de vous connecter à la Régie grâce à ProConnect, en suivant le lien ci-dessous :"
 
 #: core/templates/mail/html/maildomain_invitation.html:195
 #: core/templates/mail/html/team_invitation.html:195
@@ -515,32 +642,11 @@ msgstr "Français"
 msgid "Welcome to La Régie!"
 msgstr "Bienvenue sur La Régie !"
 
-#: core/templates/mail/html/maildomain_invitation.html:201
-#: core/templates/mail/html/team_invitation.html:201
-#: core/templates/mail/text/maildomain_invitation.txt:6
-#: core/templates/mail/text/team_invitation.txt:6
-msgid "Hello,"
-msgstr "Bonjour,"
-
 #: core/templates/mail/html/maildomain_invitation.html:206
 #: core/templates/mail/text/maildomain_invitation.txt:7
 #, python-format
 msgid "You have been invited to join La Régie to be %(role)s of the domain %(domain)s."
 msgstr "Vous avez été invité(e) à rejoindre la Régie pour devenir %(role)s du domaine %(domain)s."
-
-#: core/templates/mail/html/maildomain_invitation.html:211
-#: core/templates/mail/html/team_invitation.html:211
-#: core/templates/mail/text/maildomain_invitation.txt:8
-#: core/templates/mail/text/team_invitation.txt:8
-msgid "To do so, please log in La Régie via ProConnect, by following this link:"
-msgstr "Pour cela, merci de vous connecter une première fois à la Régie grâce à ProConnect, en suivant le lien ci-dessous :"
-
-#: core/templates/mail/html/maildomain_invitation.html:221
-#: core/templates/mail/html/team_invitation.html:221
-#: core/templates/mail/text/maildomain_invitation.txt:10
-#: core/templates/mail/text/team_invitation.txt:10
-msgid "Go to La Régie"
-msgstr "Accéder à la Régie"
 
 #: core/templates/mail/html/maildomain_invitation.html:231
 #: core/templates/mail/html/team_invitation.html:231
@@ -585,22 +691,6 @@ msgstr "etc."
 #: core/templates/mail/text/team_invitation.txt:18
 msgid "Welcome aboard!"
 msgstr "Bienvenue à bord !"
-
-#: core/templates/mail/html/maildomain_invitation.html:255
-#: core/templates/mail/html/team_invitation.html:268
-#: core/templates/mail/text/maildomain_invitation.txt:22
-#: core/templates/mail/text/team_invitation.txt:20
-msgid "Regards,"
-msgstr "Cordialement,"
-
-#: core/templates/mail/html/maildomain_invitation.html:256
-#: core/templates/mail/html/new_mailbox.html:273
-#: core/templates/mail/html/team_invitation.html:269
-#: core/templates/mail/text/maildomain_invitation.txt:24
-#: core/templates/mail/text/new_mailbox.txt:17
-#: core/templates/mail/text/team_invitation.txt:22
-msgid "La Suite Team"
-msgstr "L'équipe de La Suite"
 
 #: core/templates/mail/html/new_mailbox.html:159
 #: core/templates/mail/text/new_mailbox.txt:3
@@ -677,6 +767,21 @@ msgstr "Avec la Suite, vous pouvez créer, organiser et collaborer en ligne !"
 #, python-format
 msgid "For more information: <a href=\"%(link)s\">Visit the website for La Suite numérique</a> to discover what tools we offer."
 msgstr "Pour en savoir plus : <a href=\"%(link)s\">Visitez le site de la Suite numérique</a> pour découvrir l’ensemble des outils proposés."
+
+#: core/templates/mail/text/maildomain_action_required.txt:7
+#, python-format
+msgid "Your domain %(name)s cannot be used until the required actions have been completed."
+msgstr "Votre domaine %(name)s ne peut pas être utilisé tant que certaines actions n’ont pas été menées."
+
+#: core/templates/mail/text/maildomain_enabled.txt:7
+#, python-format
+msgid "Your domain %(name)s can be used now."
+msgstr "Votre domaine %(name)s est prêt à être exploité."
+
+#: core/templates/mail/text/maildomain_failed.txt:7
+#, python-format
+msgid "The domain %(name)s has encountered an error. As long as this error persists, all related mailboxes will remain disabled. Technical support is currently working on the issue."
+msgstr "Le domaine %(name)s a rencontré une erreur. Tant que cette erreur persiste, toutes les boîtes mail demeureront désactivées. Le support technique est en train de travailler à résoudre cette erreur."
 
 #: core/templates/mail/text/team_invitation.txt:17
 #, python-format
