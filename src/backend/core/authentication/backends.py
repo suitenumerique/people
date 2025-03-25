@@ -68,7 +68,10 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             proxies=self.get_settings("OIDC_PROXY", None),
         )
         user_response.raise_for_status()
-        userinfo = self.verify_token(user_response.text)
+        if settings.OIDC_OP_USER_ENDPOINT_IS_JWT:
+            userinfo = self.verify_token(user_response.text)
+        else:
+            userinfo = user_response.json()
         return userinfo
 
     def get_or_create_user(self, access_token, id_token, payload):

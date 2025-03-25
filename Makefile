@@ -384,6 +384,10 @@ start-tilt-keycloak: ## start the kubernetes cluster using kind, without Pro Con
 	DEV_ENV=dev-keycloak tilt up -f ./bin/Tiltfile
 .PHONY: build-k8s-cluster
 
+start-tilt-authentik:
+	DEV_ENV=dev-authentik tilt up -f ./bin/Tiltfile
+.PHONY: start-tilt-authentik
+
 release:  ## helper for release and deployment
 	python scripts/release.py
 .PHONY: release
