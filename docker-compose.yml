@@ -36,7 +36,6 @@ services:
       - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
-        - dimail
         - postgresql
         - maildev
         - redis
