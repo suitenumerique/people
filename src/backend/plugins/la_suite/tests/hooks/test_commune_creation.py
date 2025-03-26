@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 import pytest
 import responses
 
-from plugins.organizations import ApiCall, CommuneCreation
+from plugins.la_suite.hooks_utils.communes import ApiCall, CommuneCreation
 
 pytestmark = pytest.mark.django_db
 

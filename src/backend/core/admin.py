@@ -10,10 +10,7 @@ from treebeard.forms import movenodeform_factory
 from mailbox_manager.admin import MailDomainAccessInline
 
 from . import models
-from .plugins.loader import (
-    get_organization_plugins,
-    organization_plugins_run_after_create,
-)
+from .plugins.registry import registry as plugin_hooks_registry
 
 
 class TeamAccessInline(admin.TabularInline):
@@ -229,7 +226,7 @@ class OrganizationServiceProviderInline(admin.TabularInline):
 def run_post_creation_plugins(modeladmin, request, queryset):  # pylint: disable=unused-argument
     """Run the post creation plugins for the selected organizations."""
     for organization in queryset:
-        organization_plugins_run_after_create(organization)
+        plugin_hooks_registry.execute_hook("organization_created", organization)
 
     messages.success(
         request,
@@ -254,7 +251,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     def get_actions(self, request):
         """Adapt actions list to the context."""
         actions = super().get_actions(request)
-        if not get_organization_plugins():
+        if not plugin_hooks_registry.get_callbacks("organization_created"):
             actions.pop("run_post_creation_plugins", None)
         return actions
 
