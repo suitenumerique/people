@@ -217,6 +217,11 @@ class Base(Configuration):
     ]
 
     # Django's applications from the highest priority to the lowest
+    INSTALLED_PLUGINS = values.ListValue(
+        default=[],
+        environ_name="INSTALLED_PLUGINS",
+        environ_prefix=None,
+    )
     INSTALLED_APPS = [
         # People
         "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'
@@ -224,9 +229,10 @@ class Base(Configuration):
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
         "mailbox_oauth2",
+        *INSTALLED_PLUGINS,
+        # Third party apps
         "drf_spectacular",
         "drf_spectacular_sidecar",  # required for Django collectstatic discovery
-        # Third party apps
         "corsheaders",
         "django_celery_beat",
         "django_celery_results",
@@ -573,11 +579,6 @@ class Base(Configuration):
             environ_name="ORGANIZATION_REGISTRATION_ID_VALIDATORS",
             environ_prefix=None,
         )
-    )
-    ORGANIZATION_PLUGINS = values.ListValue(
-        default=[],
-        environ_name="ORGANIZATION_PLUGINS",
-        environ_prefix=None,
     )
     ORGANIZATION_METADATA_SCHEMA = values.Value(
         default=None,

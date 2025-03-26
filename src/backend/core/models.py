@@ -31,10 +31,7 @@ from timezone_field import TimeZoneField
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 
 from core.enums import WebhookStatusChoices
-from core.plugins.loader import (
-    organization_plugins_run_after_create,
-    organization_plugins_run_after_grant_access,
-)
+from core.plugins.registry import registry as plugin_hooks_registry
 from core.utils.webhooks import scim_synchronizer
 from core.validators import get_field_validators_from_setting
 
@@ -325,7 +322,7 @@ class OrganizationManager(models.Manager):
         This method is overridden to call the Organization plugins.
         """
         instance = super().create(**kwargs)
-        organization_plugins_run_after_create(instance)
+        plugin_hooks_registry.execute_hook("organization_created", instance)
         return instance
 
 
@@ -341,7 +338,7 @@ class OrganizationAccessManager(models.Manager):
         This method is overridden to call the Organization plugins.
         """
         instance = super().create(**kwargs)
-        organization_plugins_run_after_grant_access(instance)
+        plugin_hooks_registry.execute_hook("organization_access_granted", instance)
         return instance
 
 

@@ -1,2 +1,2 @@
-ORGANIZATION_PLUGINS=plugins.organizations.NameFromSiretOrganizationPlugin,plugins.organizations.CommuneCreation
+INSTALLED_PLUGINS=plugins.la_suite.apps.LaSuitePluginConfig
 DNS_PROVISIONING_TARGET_ZONE=test.collectivite.fr

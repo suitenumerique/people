@@ -1,19 +1,16 @@
-"""Base plugin class for organization plugins."""
+"""Base Django Application Configuration for plugins."""
+
+from django.apps import AppConfig
 
 
-class BaseOrganizationPlugin:
-    """
-    Base class for organization plugins.
+class BasePluginAppConfig(AppConfig):
+    """Configuration for the La Suite plugin application."""
 
-    Plugins must implement all methods of this class even if it is only to "pass".
-    """
+    def ready(self):
+        """
+        Initialize the hooks registry when the application is ready.
+        This is called by Django when the application is loaded.
+        """
+        from .registry import registry  # pylint: disable=import-outside-toplevel
 
-    def run_after_create(self, organization) -> None:
-        """Method called after creating an organization."""
-        raise NotImplementedError("Plugins must implement the run_after_create method")
-
-    def run_after_grant_access(self, organization_access) -> None:
-        """Method called after creating an organization."""
-        raise NotImplementedError(
-            "Plugins must implement the run_after_grant_access method"
-        )
+        registry.register_app(self.name)

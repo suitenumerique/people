@@ -4,7 +4,11 @@ import pytest
 import responses
 
 from core.models import Organization, get_organization_metadata_schema
-from core.plugins.loader import get_organization_plugins
+from core.plugins.registry import registry
+
+from plugins.la_suite.hooks_utils.all_organizations import (
+    get_organization_name_and_metadata_from_siret,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -14,21 +18,16 @@ pytestmark = pytest.mark.django_db
 # pylint: disable=unused-argument
 
 
-@pytest.fixture(name="organization_plugins_settings")
-def organization_plugins_settings_fixture(settings):
+@pytest.fixture(name="hook_settings")
+def hook_settings_fixture(settings):
     """
     Fixture to set the organization plugins settings and
     leave the initial state after the test.
     """
-    _original_plugins = settings.ORGANIZATION_PLUGINS
-
-    settings.ORGANIZATION_PLUGINS = [
-        "plugins.organizations.NameFromSiretOrganizationPlugin"
-    ]
-
-    # reset get_organization_plugins cache
-    get_organization_plugins.cache_clear()
-    get_organization_plugins()  # call to populate the cache
+    _original_hooks = dict(registry._hooks.items())  # pylint: disable=protected-access
+    registry.register_hook(
+        "organization_created", get_organization_name_and_metadata_from_siret
+    )
 
     settings.ORGANIZATION_METADATA_SCHEMA = "fr/organization_metadata.json"
 
@@ -38,10 +37,8 @@ def organization_plugins_settings_fixture(settings):
 
     yield
 
-    # reset get_organization_plugins cache
-    settings.ORGANIZATION_PLUGINS = _original_plugins
-    get_organization_plugins.cache_clear()
-    get_organization_plugins()  # call to populate the cache
+    # reset the hooks
+    registry._hooks = _original_hooks  # pylint: disable=protected-access
 
     settings.ORGANIZATION_METADATA_SCHEMA = None
 
@@ -61,7 +58,7 @@ def organization_plugins_settings_fixture(settings):
     ],
 )
 def test_organization_plugins_run_after_create(
-    organization_plugins_settings, nature_juridique, is_commune, is_public_service
+    hook_settings, nature_juridique, is_commune, is_public_service
 ):
     """Test the run_after_create method of the organization plugins for nominal case."""
     responses.add(
@@ -107,7 +104,7 @@ def test_organization_plugins_run_after_create(
 
 
 @responses.activate
-def test_organization_plugins_run_after_create_api_fail(organization_plugins_settings):
+def test_organization_plugins_run_after_create_api_fail(hook_settings):
     """Test the plugin when the API call fails."""
     responses.add(
         responses.GET,
@@ -140,9 +137,7 @@ def test_organization_plugins_run_after_create_api_fail(organization_plugins_set
         },
     ],
 )
-def test_organization_plugins_run_after_create_missing_data(
-    organization_plugins_settings, results
-):
+def test_organization_plugins_run_after_create_missing_data(hook_settings, results):
     """Test the plugin when the API call returns missing data."""
     responses.add(
         responses.GET,
@@ -159,7 +154,7 @@ def test_organization_plugins_run_after_create_missing_data(
 
 @responses.activate
 def test_organization_plugins_run_after_create_name_already_set(
-    organization_plugins_settings,
+    hook_settings,
 ):
     """Test the plugin does nothing when the name already differs from the registration ID."""
     organization = Organization.objects.create(
@@ -170,7 +165,7 @@ def test_organization_plugins_run_after_create_name_already_set(
 
 @responses.activate
 def test_organization_plugins_run_after_create_no_list_enseignes(
-    organization_plugins_settings,
+    hook_settings,
 ):
     """Test the run_after_create method of the organization plugins for nominal case."""
     responses.add(
