@@ -15,6 +15,10 @@ and this project adheres to
 - ✨(oidc) add simple introspection backend #832
 - 🧑‍💻(tasks) run management commands #814
 
+### Changed
+
+- ♻️(plugins) rewrite plugin system as django app #844
+
 ### Fixed
 
 - 🐛(oauth2) force JWT signed for /userinfo #804
