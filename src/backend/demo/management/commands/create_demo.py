@@ -272,6 +272,7 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                     # slug should be automatic but bulk_create doesn't use save
                     slug=slugify(name),
                     status=random.choice(MailDomainStatusChoices.values),
+                    support_email="support@example.com",
                 )
             )
         queue.flush()
