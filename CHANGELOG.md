@@ -22,6 +22,7 @@ and this project adheres to
 ### Changed
 
 - ♻️(plugins) rewrite plugin system as django app #844
+- 🔒️(users) restrict listable users to same organization #846 
 
 ### Fixed
 
