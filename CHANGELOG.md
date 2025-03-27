@@ -21,6 +21,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(dimail) enhance sentry log
 - 🐛(oauth2) force JWT signed for /userinfo #804
 - 🐛(front) disable retries in useQuery and useInfiniteQuery #818
 

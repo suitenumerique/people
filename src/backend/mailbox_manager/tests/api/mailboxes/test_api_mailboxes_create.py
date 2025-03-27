@@ -721,7 +721,7 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
-            == "[DIMAIL] unexpected error : 500 {'detail': 'Internal server error'}"
+            == "[DIMAIL] unexpected error: 500 {'detail': 'Internal server error'}"
         )
 
 

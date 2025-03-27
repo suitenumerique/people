@@ -251,15 +251,8 @@ class DimailAPIClient:
         except json.decoder.JSONDecodeError:
             error_content = response.content.decode(response.encoding)
 
-        logger.exception(
-            "[DIMAIL] unexpected error : %s %s",
-            response.status_code,
-            error_content,
-            exc_info=False,
-        )
         raise requests.exceptions.HTTPError(
-            f"Unexpected response from dimail: {response.status_code} "
-            f"{error_content.get('detail') or error_content}"
+            f"[DIMAIL] unexpected error: {response.status_code} {error_content}"
         )
 
     def notify_mailbox_creation(self, recipient, mailbox_data, issuer=None):
