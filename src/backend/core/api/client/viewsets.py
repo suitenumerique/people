@@ -263,9 +263,10 @@ class UserViewSet(
         queryset = self.queryset
 
         if self.action == "list":
-            # Exclude inactive contacts
+            # Filter active users
+            # and users from same organization
             queryset = queryset.filter(
-                is_active=True,
+                is_active=True, organization_id=self.request.user.organization_id
             )
 
             # Exclude all users already in the given team
