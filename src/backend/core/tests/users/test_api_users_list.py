@@ -31,26 +31,29 @@ def test_api_users_list_anonymous():
 
 def test_api_users_list_authenticated():
     """
-    Authenticated users should be able to list all users.
+    Authenticated users should be able to list users from their organization.
     """
-    user = factories.UserFactory()
+    organization = factories.OrganizationFactory(with_registration_id=True)
+    user = factories.UserFactory(organization=organization)
 
     client = APIClient()
     client.force_login(user)
 
-    factories.UserFactory.create_batch(2)
+    factories.UserFactory(organization=organization)
+    factories.UserFactory.create_batch(2)  # 2 users outside organization
     response = client.get(
         "/api/v1.0/users/",
     )
     assert response.status_code == HTTP_200_OK
-    assert len(response.json()["results"]) == 3
+    assert len(response.json()["results"]) == 2
 
 
 def test_api_users_list_authenticated_response_content(
     client, django_assert_num_queries
 ):
     """
-    Authenticated users should be able to list all users with the expected output.
+    Authenticated users should be able to list all users from their organization
+    with the expected output.
     """
     user_organization = factories.OrganizationFactory(
         with_registration_id=True, name="HAL 9000"
@@ -67,7 +70,7 @@ def test_api_users_list_authenticated_response_content(
     other_user_organization = factories.OrganizationFactory(
         with_registration_id=True, name="Corp. Inc."
     )
-    other_user = factories.UserFactory(
+    factories.UserFactory(
         organization=other_user_organization,
         email="sara83@example.com",
         name="Christopher Thompson",
@@ -85,23 +88,10 @@ def test_api_users_list_authenticated_response_content(
         .first()
     )
     assert edited_json == {
-        "count": 2,
+        "count": 1,
         "next": None,
         "previous": None,
         "results": [
-            {
-                "email": "sara83@example.com",
-                "id": str(other_user.pk),
-                "is_device": False,
-                "is_staff": False,
-                "language": "fr-fr",
-                "name": "Christopher Thompson",
-                "organization": {
-                    "id": str(other_user.organization.pk),
-                    "name": "Corp. Inc.",
-                },
-                "timezone": "UTC",
-            },
             {
                 "email": "kylefields@example.net",
                 "id": str(user.pk),
@@ -124,13 +114,17 @@ def test_api_users_authenticated_list_by_email():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the email.
     """
-    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
-    dave = factories.UserFactory(email="david.bowman@work.com", name=None)
+    user = factories.UserFactory(
+        email="tester@ministry.fr", name="john doe", with_organization=True
+    )
+    dave = factories.UserFactory(
+        email="david.bowman@work.com", name=None, organization=user.organization
+    )
     nicole = factories.UserFactory(
-        email="nicole_foole@work.com", name=None, with_organization=True
+        email="nicole_foole@work.com", name=None, organization=user.organization
     )
     frank = factories.UserFactory(
-        email="frank_poole@work.com", name=None, with_organization=True
+        email="frank_poole@work.com", name=None, organization=user.organization
     )
     factories.UserFactory(email="heywood_floyd@work.com", name=None)
 
@@ -203,13 +197,17 @@ def test_api_users_authenticated_list_by_name():
     Authenticated users should be able to search users with a case-insensitive and
     partial query on the name.
     """
-    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
-    dave = factories.UserFactory(name="Dave bowman", email=None)
+    user = factories.UserFactory(
+        email="tester@ministry.fr", name="john doe", with_organization=True
+    )
+    dave = factories.UserFactory(
+        name="Dave bowman", email=None, organization=user.organization
+    )
     nicole = factories.UserFactory(
-        name="nicole foole", email=None, with_organization=True
+        name="nicole foole", email=None, organization=user.organization
     )
     frank = factories.UserFactory(
-        name="frank poolé", email=None, with_organization=True
+        name="frank poolé", email=None, organization=user.organization
     )
     factories.UserFactory(name="heywood floyd", email=None)
 

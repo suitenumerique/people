@@ -201,6 +201,10 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
             )
         # this is a quick fix to fix e2e tests
         # tests needs some no random data
+        organization, _created = models.Organization.objects.get_or_create(
+            name="13002526500013",
+            registration_id_list=["13002526500013"],
+        )
         queue.push(
             models.User(
                 sub=uuid4(),
@@ -210,6 +214,7 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 is_superuser=False,
                 is_active=True,
                 is_staff=False,
+                organization=organization,
                 language=random.choice(settings.LANGUAGES)[0],
             )
         )
@@ -222,6 +227,7 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 is_superuser=False,
                 is_active=True,
                 is_staff=False,
+                organization=organization,
                 language=random.choice(settings.LANGUAGES)[0],
             )
         )
