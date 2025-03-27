@@ -393,6 +393,7 @@ class Organization(BaseModel):
         related_name="organizations",
         blank=True,
     )
+    is_active = models.BooleanField(verbose_name=_("active"), default=True)
 
     objects = OrganizationManager()
 
