@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(organization) add `is_active` field
 - ✨(domains) notify support when domain status changes #668
 - ✨(domains) define domain check interval as a settings
 - ✨(oidc) add simple introspection backend #832
