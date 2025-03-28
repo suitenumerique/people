@@ -228,6 +228,24 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
                 {t('Actions required')}
               </button>
             )}
+            {mailDomain?.status === 'failed' && (
+              <button
+                onClick={handleShowModal}
+                style={{
+                  padding: '5px 10px',
+                  marginLeft: '10px',
+                  backgroundColor: '#e1000f',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  borderRadius: '5px',
+                }}
+                data-modal="mail-domain-status"
+              >
+                {t('Failed')}
+              </button>
+            )}
           </Box>
         </Box>
         <CustomTabs tabs={tabs} />
