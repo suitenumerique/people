@@ -231,6 +231,7 @@ class Base(Configuration):
         "mailbox_oauth2",
         *INSTALLED_PLUGINS,
         # Third party apps
+        "django_zxcvbn_password_validator",
         "drf_spectacular",
         "drf_spectacular_sidecar",  # required for Django collectstatic discovery
         "corsheaders",
@@ -914,6 +915,47 @@ class Production(Base):
     # Modern browsers require to have the `secure` attribute on cookies with `Samesite=none`
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+
+    # Password management
+
+    # - Password strength for ZxcvbnPasswordValidator
+    # 0 too guessable: risky password. (guesses < 10^3)
+    # 1 very guessable: protection from throttled online attacks. (guesses < 10^6)
+    # 2 somewhat guessable: protection from unthrottled online attacks. (guesses < 10^8)
+    # 3 safely unguessable: moderate protection from offline slow-hash scenario. (guesses < 10^10)
+    # 4 very unguessable: strong protection from offline slow-hash scenario. (guesses >= 10^10)
+    PASSWORD_MINIMAL_STRENGTH = values.IntegerValue(
+        default=3,
+        environ_name="PASSWORD_MINIMAL_STRENGTH",
+        environ_prefix=None,
+    )
+
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+            "OPTIONS": {
+                "user_attributes": (
+                    "email",  # for core.User
+                    "name",  # for core.User
+                    "first_name",  # for mailbox_manager.Mailbox
+                    "last_name",  # for mailbox_manager.Mailbox
+                    "local_part",  # for mailbox_manager.Mailbox
+                ),
+            },
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        },
+        {
+            "NAME": "django_zxcvbn_password_validator.ZxcvbnPasswordValidator",
+        },
+    ]
 
     # For static files in production, we want to use a backend that includes a hash in
     # the filename, that is calculated from the file content, so that browsers always
