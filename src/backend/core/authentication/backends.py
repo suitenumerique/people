@@ -13,8 +13,11 @@ import requests
 from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from core.models import (
+    AccountService,
     Contact,
     Organization,
     OrganizationAccess,
@@ -245,3 +248,45 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
 
         if updated_claims:
             self.UserModel.objects.filter(sub=user.sub).update(**updated_claims)
+
+
+class AccountServiceAuthentication(BaseAuthentication):
+    """Authentication backend for account services using Authorization header.
+    The Authorization header is used to authenticate the request.
+    The api key is stored in the AccountService model.
+
+    Header format:
+        Authorization: ApiKey <api_key>
+    """
+
+    def authenticate(self, request):
+        """Authenticate the request. Find the account service and check the api key.
+
+        Should return either:
+        - a tuple of (account_service, api_key) if allowed,
+        - None to pass on other authentication backends
+        - raise an AuthenticationFailed exception to stop propagation.
+        """
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header:
+            return None
+        try:
+            auth_mode, api_key = auth_header.split(" ")
+        except (IndexError, ValueError) as err:
+            raise AuthenticationFailed(_("Invalid authorization header.")) from err
+        if auth_mode.lower() != "apikey" or not api_key:
+            raise AuthenticationFailed(_("Invalid authorization header."))
+        try:
+            account_service = AccountService.objects.get(api_key=api_key)
+        except AccountService.DoesNotExist as err:
+            logger.warning("Invalid api_key: %s", api_key)
+            raise AuthenticationFailed(_("Invalid api key.")) from err
+        return (account_service, account_service.api_key)
+
+    def authenticate_header(self, request):
+        """
+        Return a string to be used as the value of the `WWW-Authenticate`
+        header in a `401 Unauthenticated` response, or `None` if the
+        authentication scheme should return `403 Permission Denied` responses.
+        """
+        return "apikey"
