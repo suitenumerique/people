@@ -65,3 +65,4 @@ IH5em4M/pHIcsqCi1qggBMbdvzHBUtC3R4sK0CpEFHlN+Y59aGazidcN2FPupNJv
 MbyqKyC6DAzv4jEEhHaN7oY=
 -----END PRIVATE KEY-----
 "
+INSTALLED_PLUGINS=plugins.la_suite.apps.LaSuitePluginConfig
