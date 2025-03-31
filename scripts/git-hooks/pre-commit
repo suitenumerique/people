@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Variable to check if we are in script mode of the pre-commit hook
+# This is used to determine if we should run the script in a specific mode
+# or if we are running it as a pre-commit hook
+# Get value from arguments or default to 0
+SCRIPT_MODE=${1:-0}
+
+if [ ${SCRIPT_MODE} -eq 1 ]; then
+  echo "Script mode is enabled. Running in pre-commit hook mode."
+fi
+
+FAILED=0
+
+# Colors for output
+if [ ${SCRIPT_MODE} -eq 1 ]; then
+  # Only set colors if output is a terminal
+  BOLD="\033[1m"
+  GREEN="\033[1;32m"
+  RED="\033[1;31m"
+  RESET="\033[0m"
+
+  GIT_CACHED=""
+else
+  # Fallback to no colors if not a terminal
+  BOLD=""
+  GREEN=""
+  RED=""
+  RESET=""
+
+  GIT_CACHED="--cached"
+fi
+
+echo "${BOLD}Running pre-commit hooks...${RESET}"
+
+# Check if there are staged changes in Python files
+PYTHON_STAGED_FILES=$(git diff ${GIT_CACHED} --name-only --diff-filter=ACM | grep -E "\.py$")
+if [ -n "$PYTHON_STAGED_FILES" ]; then
+  echo "${BOLD}Running backend linters...${RESET}"
+  docker compose run --rm app-dev ruff format .
+  BACKEND_RESULT_1=$?
+  docker compose run --rm app-dev ruff check . --fix
+  BACKEND_RESULT_2=$?
+  bin/pylint --diff-only=origin/main
+  BACKEND_RESULT_3=$?
+  if [ $BACKEND_RESULT_1 -ne 0  | BACKEND_RESULT_2 -ne 0 | BACKEND_RESULT_3 -ne 0]; then
+    echo "${RED}Backend linting failed!${RESET}"
+    echo "${RED}Please fix the issues and try committing again.${RESET}"
+    FAILED=1
+  else
+    echo "${GREEN}Backend linting passed!${RESET}"
+  fi
+else
+    echo "${BOLD}No Python files staged for commit. Skipping backend linters...${RESET}"
+fi
+
+# Check if there are staged changes in frontend files
+FRONT_STAGED_FILES=$(git diff ${GIT_CACHED} --name-only --diff-filter=ACM | grep -E "src/frontend/.*\.(js|jsx|ts|tsx)$")
+if [ -n "$FRONT_STAGED_FILES" ]; then
+  echo "${BOLD}Running frontend linters...${RESET}"
+  cd $(PATH_FRONT) && yarn lint
+  FRONTEND_RESULT=$?
+  if [ $FRONTEND_RESULT -ne 0 ]; then
+    echo "${RED}Frontend linting failed!${RESET}"
+    echo "${RED}Please fix the issues and try committing again.${RESET}"
+    FAILED=1
+  else
+    echo "${GREEN}Frontend linting passed!${RESET}"
+  fi
+else
+    echo "${BOLD}No frontend files staged for commit. Skipping frontend linters...${RESET}"
+fi
+
+if [ $FAILED -ne 0 ]; then
+  echo "${RED}Pre-commit hooks failed! Please fix the issues and try committing again.${RESET}"
+else
+  echo "${GREEN}All pre-commit hooks passed successfully!${RESET}"
+fi
+exit ${FAILED}

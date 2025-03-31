@@ -425,3 +425,17 @@ install-secret: ## install the kubernetes secrets from Vaultwarden
 fetch-domain-status:
 	@$(MANAGE) fetch_domain_status
 .PHONY: fetch-domain-status
+
+# -- Git hooks
+install-pre-commit-hooks: ## Install git hooks for development
+	@echo "$(BOLD)Installing git pre-commit hooks$(RESET)"
+	@cp -f scripts/git-hooks/pre-commit .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "$(GREEN)Git hooks installed successfully$(RESET)"
+.PHONY: install-pre-commit-hooks
+
+pre-commit: ## Run pre-commit hooks in Docker container
+	@echo "$(BOLD)Running pre-commit hooks$(RESET)"
+	@. scripts/git-hooks/pre-commit SCRIPT_MODE=1
+	@echo "$(GREEN)Pre-commit hooks finished successfully$(RESET)"
+.PHONY: pre-commit
