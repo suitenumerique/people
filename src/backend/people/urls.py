@@ -13,11 +13,14 @@ from drf_spectacular.views import (
 )
 from oauth2_provider import urls as oauth2_urls
 
+from core.plugins import urls as plugin_urls
+
 from debug import urls as debug_urls
 
 from . import api_urls, resource_server_urls
 
 API_VERSION = settings.API_VERSION
+
 
 urlpatterns = (
     [
@@ -26,6 +29,7 @@ urlpatterns = (
     ]
     + api_urls.urlpatterns
     + resource_server_urls.urlpatterns
+    + plugin_urls.urlpatterns
 )
 
 if settings.DEBUG:
