@@ -1122,3 +1122,8 @@ class AccountService(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_authenticated(self):
+        """Indicate if the account service is authenticated."""
+        return True

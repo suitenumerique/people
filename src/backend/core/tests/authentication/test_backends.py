@@ -2,11 +2,16 @@
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
+from django.test import RequestFactory, override_settings
 
 import pytest
+from rest_framework.exceptions import AuthenticationFailed
 
 from core import factories, models
-from core.authentication.backends import OIDCAuthenticationBackend
+from core.authentication.backends import (
+    AccountServiceAuthentication,
+    OIDCAuthenticationBackend,
+)
 
 pytestmark = pytest.mark.django_db
 User = get_user_model()
@@ -453,3 +458,60 @@ def test_authentication_getter_existing_user_with_registration_id(
 
     assert user.organization is not None
     assert user.organization.registration_id_list == ["12345678901234"]
+
+
+@override_settings(ACCOUNT_SERVICE_SCOPES=["la-suite-list-organizations-siret"])
+def test_account_service_authenticate_valid_api_key():
+    """Test the authenticate method with a valid API key."""
+    request = RequestFactory().get("/")
+    account_service = factories.AccountServiceFactory(
+        name="test_service",
+        api_key="test_api_key_123",
+        scopes=["la-suite-list-organizations-siret"],
+    )
+    request.headers = {"Authorization": f"ApiKey {account_service.api_key}"}
+
+    result = AccountServiceAuthentication().authenticate(request)
+
+    assert result is not None
+    assert result[0] == account_service
+    assert result[1] == account_service.api_key
+
+
+def test_account_service_authenticate_missing_api_key():
+    """Test the authenticate method with a missing API key."""
+    request = RequestFactory().get("/")
+    request.headers = {}
+
+    result = AccountServiceAuthentication().authenticate(request)
+
+    assert result is None
+
+
+def test_account_service_authenticate_invalid_api_key():
+    """Test the authenticate method with an invalid API key."""
+    request = RequestFactory().get("/")
+    request.headers = {"Authorization": "ApiKey invalid_key"}
+
+    with pytest.raises(AuthenticationFailed):
+        AccountServiceAuthentication().authenticate(request)
+
+
+@override_settings(ACCOUNT_SERVICE_SCOPES=["la-suite-list-organizations-siret"])
+def test_account_service_authenticate_invalid_header():
+    """Test the authenticate method with an invalid header."""
+    request = RequestFactory().get("/")
+    account_service = factories.AccountServiceFactory(
+        name="test_service",
+        api_key="test_api_key_123",
+        scopes=["la-suite-list-organizations-siret"],
+    )
+    request.headers = {"Authorization": f"Bearer {account_service.api_key}"}
+
+    with pytest.raises(AuthenticationFailed):
+        AccountServiceAuthentication().authenticate(request)
+
+    request.headers = {"Authorization": account_service.api_key}
+
+    with pytest.raises(AuthenticationFailed):
+        AccountServiceAuthentication().authenticate(request)
