@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(core) create AccountServiceAuthentication backend #771
 - ✨(core) create AccountService model #771
 - 🧱(helm) disable createsuperuser job by setting #863
 - 🔒️(passwords) add validators for production #850
