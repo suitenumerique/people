@@ -277,3 +277,10 @@ class ServiceProviderFactory(factory.django.DjangoModelFactory):
         if not create or not extracted:
             return
         self.organizations.set(extracted)
+
+
+class AccountServiceFactory(factory.django.DjangoModelFactory):
+    """A factory to create account services for testing purposes."""
+
+    class Meta:
+        model = models.AccountService

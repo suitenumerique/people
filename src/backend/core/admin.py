@@ -284,3 +284,11 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     )
     search_fields = ("name", "audience_id")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(models.AccountService)
+class AccountServiceAdmin(admin.ModelAdmin):
+    """Admin interface for account services."""
+
+    list_display = ("name", "created_at", "updated_at")
+    readonly_fields = ("api_key", "created_at", "updated_at")

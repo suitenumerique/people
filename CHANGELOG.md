@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(core) create AccountService model #771
 - 🔒️(passwords) add validators for production #850
 - ✨(domains) allow to re-run check on domain if status is failed
 - ✨(organization) add `is_active` field

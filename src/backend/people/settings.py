@@ -526,6 +526,14 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    ACCOUNT_SERVICE_SCOPES = values.ListValue(
+        default=[
+            ("la-suite-list-organizations-siret", "List organizations with SIRET"),
+        ],
+        environ_name="ACCOUNT_SERVICE_SCOPES",
+        environ_prefix=None,
+    )
+
     # MAILBOX-PROVISIONING API
     WEBMAIL_URL = values.Value(
         default=None,

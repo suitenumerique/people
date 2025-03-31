@@ -5,6 +5,7 @@ Declare and configure the models for the People core application
 
 import json
 import os
+import secrets
 import smtplib
 import uuid
 from contextlib import suppress
@@ -1091,3 +1092,32 @@ class Invitation(BaseInvitation):
             "patch": False,
             "put": False,
         }
+
+
+class AccountService(BaseModel):
+    """Account service model."""
+
+    name = models.CharField(_("name"), max_length=255)
+    api_key = models.CharField(
+        _("api key"),
+        max_length=255,
+        default=secrets.token_urlsafe(32),
+        editable=False,
+    )
+    scopes = ArrayField(
+        models.CharField(max_length=255, choices=settings.ACCOUNT_SERVICE_SCOPES),
+        verbose_name=_("allowed scopes"),
+        help_text=_("Allowed scopes for this service"),
+    )
+
+    class Meta:
+        db_table = "people_account_service"
+        verbose_name = _("Account service")
+        verbose_name_plural = _("Account services")
+
+    def __str__(self):
+        return self.name
+
+    def is_authenticated(self, request):
+        """Check if the request is authenticated."""
+        return request.headers.get("X-API-KEY") == self.api_key
