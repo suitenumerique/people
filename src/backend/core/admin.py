@@ -1,5 +1,6 @@
 """Admin classes and registrations for People's core app."""
 
+from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
@@ -284,3 +285,20 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     )
     search_fields = ("name", "audience_id")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(models.AccountService)
+class AccountServiceAdmin(admin.ModelAdmin):
+    """Admin interface for account services."""
+
+    list_display = ("name", "created_at", "updated_at")
+    readonly_fields = ("api_key", "created_at", "updated_at")
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        """Add help text to the scopes field to provide list of available scopes."""
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields[
+            "scopes"
+        ].help_text = f"Scopes define what the service can access. \
+            Available scopes: {', '.join(settings.ACCOUNT_SERVICE_SCOPES)}"
+        return form
