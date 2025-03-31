@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(plugins) add endpoint to list siret of active organizations #771
 - ✨(core) create AccountServiceAuthentication backend #771
 - ✨(core) create AccountService model #771
 - 🧱(helm) disable createsuperuser job by setting #863
