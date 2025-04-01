@@ -4,6 +4,13 @@ from django.apps import config
 from django.conf import settings
 from django.urls import include, path
 
+import logging
+logger = logging.getLogger(__name__)
+logger.warning("_"*100)
+logger.warning("core.plugins.urls")
+logger.warning("settings.INSTALLED_PLUGINS %s", settings.INSTALLED_PLUGINS)
+logger.warning("settings.INSTALLED_APPS %s", settings.INSTALLED_APPS)
+
 plugins_urlpatterns = []
 installed_plugins_configs = [
     config.AppConfig.create(plugin) for plugin in settings.INSTALLED_PLUGINS
@@ -18,4 +25,6 @@ for app in installed_plugins:
         # Skip if app doesn't have urls.py
         continue
 
+logger.warning("plugins_urlpatterns %s", plugins_urlpatterns)
+logger.warning("_"*100)
 urlpatterns = plugins_urlpatterns
