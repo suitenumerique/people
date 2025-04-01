@@ -273,6 +273,7 @@ class DimailAPIClient:
         else:
             title = _("Your password has been updated")
             template_name = "reset_password"
+
         context = {
             "title": title,
             "site": Site.objects.get_current(),
@@ -284,11 +285,11 @@ class DimailAPIClient:
             with override(issuer.language if issuer else settings.LANGUAGE_CODE):
                 mail.send_mail(
                     context["title"],
-                    render_to_string(f"mail/html/{template_name}.txt", context),
+                    render_to_string(f"mail/text/{template_name}.txt", context),
                     settings.EMAIL_FROM,
                     [recipient],
                     html_message=render_to_string(
-                        f"mail/text/{template_name}.html", context
+                        f"mail/html/{template_name}.html", context
                     ),
                     fail_silently=False,
                 )
