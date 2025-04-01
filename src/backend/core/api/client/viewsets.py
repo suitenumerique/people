@@ -146,7 +146,7 @@ class ContactViewSet(
     """Contact ViewSet"""
 
     permission_classes = [permissions.AccessPermission]
-    queryset = models.Contact.objects.select_related("user").all()
+    queryset = models.Contact.objects.select_related("user", "owner").all()
     serializer_class = serializers.ContactSerializer
     throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
     ordering_fields = ["full_name", "short_name", "created_at"]
