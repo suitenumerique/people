@@ -23,21 +23,17 @@ logger = logging.getLogger(__name__)
 def reload_urlconf(settings):
     """Reload the urlconf before"""
     logger.warning("*"*100)
+    logger.warning("RUN FIXTURE to set INSTALLED_PLUGINS")
     plugins_app = "plugins.la_suite.apps.LaSuitePluginConfig"
-    logger.warning("set INSTALLED_PLUGINS")
+    logger.warning("SET INSTALLED_PLUGINS!")
     settings.INSTALLED_PLUGINS = [plugins_app]
-    
-    logger.warning("run fixture to set INSTALLED_PLUGINS")
-    
-    #print("call reload(import_module('people.settings'))")
-    #reload(import_module('people.settings'))
-    logger.warning("call reload(import_module('core.plugins.urls'))")
+    logger.warning("RELOAD core plugins URLCONF!")
     reload(import_module('core.plugins.urls'))
+    if plugins_app not in django_settings.INSTALLED_APPS:
+        reload(import_module('people.settings'))
+        reload(import_module('core.plugins.urls'))
     logger.warning("*"*100)
-    #if plugins_app not in settings.INSTALLED_APPS:
-        #settings.INSTALLED_APPS = settings.INSTALLED_APPS + [plugins_app]
-        #reload(import_module('people.settings'))
-        #reload(import_module('core.plugins.urls'))
+    
     yield
 
 
