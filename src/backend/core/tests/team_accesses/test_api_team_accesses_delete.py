@@ -4,7 +4,6 @@ Test for team accesses API endpoints in People's core app : delete
 
 import json
 import random
-import re
 
 import pytest
 import responses
@@ -157,16 +156,18 @@ def test_api_team_accesses_delete_owners_last_owner():
     assert models.TeamAccess.objects.count() == 1
 
 
+@responses.activate
 def test_api_team_accesses_delete_webhook():
     """
     When the team has a webhook, deleting a team access should fire a call.
     """
     user = factories.UserFactory()
     team = factories.TeamFactory(users=[(user, "administrator")])
-    webhook = factories.TeamWebhookFactory(team=team)
     access = factories.TeamAccessFactory(
         team=team, role=random.choice(["member", "administrator"])
     )
+    # add webhook after access to prevent webhook from being triggered
+    webhook = factories.TeamWebhookFactory(team=team)
 
     assert models.TeamAccess.objects.count() == 2
     assert models.TeamAccess.objects.filter(user=access.user).exists()
@@ -174,42 +175,34 @@ def test_api_team_accesses_delete_webhook():
     client = APIClient()
     client.force_login(user)
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response by scim provider using "responses":
-        rsp = rsps.add(
-            rsps.PATCH,
-            re.compile(r".*/Groups/.*"),
-            body="{}",
-            status=200,
-            content_type="application/json",
-        )
+    patch_response = responses.patch(webhook.url, status=200, json={})
 
-        response = client.delete(
-            f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
-        )
-        assert response.status_code == 204
+    response = client.delete(
+        f"/api/v1.0/teams/{team.id!s}/accesses/{access.id!s}/",
+    )
+    assert response.status_code == 204
 
-        assert rsp.call_count == 1
-        assert rsps.calls[0].request.url == webhook.url
+    # Check the request was made
+    assert patch_response.call_count == 1
 
-        # Payload sent to scim provider
-        payload = json.loads(rsps.calls[0].request.body)
-        assert payload == {
-            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-            "Operations": [
-                {
-                    "op": "remove",
-                    "path": "members",
-                    "value": [
-                        {
-                            "value": str(access.user.id),
-                            "email": access.user.email,
-                            "type": "User",
-                        }
-                    ],
-                }
-            ],
-        }
+    # Payload sent to scim provider
+    scim_payload = json.loads(patch_response.calls[0].request.body)
+    assert scim_payload == {
+        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+        "Operations": [
+            {
+                "op": "remove",
+                "path": "members",
+                "value": [
+                    {
+                        "value": str(access.user.id),
+                        "email": access.user.email,
+                        "type": "User",
+                    }
+                ],
+            }
+        ],
+    }
 
     assert models.TeamAccess.objects.count() == 1
     assert models.TeamAccess.objects.filter(user=access.user).exists() is False

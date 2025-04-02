@@ -83,47 +83,41 @@ def test_models_team_accesses_create_webhook():
         }
 
 
+@responses.activate
 def test_models_team_accesses_delete_webhook():
     """
     When the team has a webhook, deleting a team access should fire a call.
     """
     team = factories.TeamFactory()
-    webhook = factories.TeamWebhookFactory(team=team)
     access = factories.TeamAccessFactory(team=team)
+    # add webhook after access to prevent webhook from being triggered
+    webhook = factories.TeamWebhookFactory(team=team)
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response by scim provider using "responses":
-        rsp = rsps.add(
-            rsps.PATCH,
-            re.compile(r".*/Groups/.*"),
-            body="{}",
-            status=200,
-            content_type="application/json",
-        )
+    # Ensure successful response by scim provider using "responses":
+    rsp = responses.patch(webhook.url, status=200, json={})
 
-        access.delete()
+    access.delete()
 
-        assert rsp.call_count == 1
-        assert rsps.calls[0].request.url == webhook.url
+    assert rsp.call_count == 1
 
-        # Payload sent to scim provider
-        payload = json.loads(rsps.calls[0].request.body)
-        assert payload == {
-            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-            "Operations": [
-                {
-                    "op": "remove",
-                    "path": "members",
-                    "value": [
-                        {
-                            "value": str(access.user.id),
-                            "email": access.user.email,
-                            "type": "User",
-                        }
-                    ],
-                }
-            ],
-        }
+    # Payload sent to scim provider
+    payload = json.loads(rsp.calls[0].request.body)
+    assert payload == {
+        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+        "Operations": [
+            {
+                "op": "remove",
+                "path": "members",
+                "value": [
+                    {
+                        "value": str(access.user.id),
+                        "email": access.user.email,
+                        "type": "User",
+                    }
+                ],
+            }
+        ],
+    }
 
     assert models.TeamAccess.objects.exists() is False
 
