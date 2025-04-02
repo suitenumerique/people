@@ -265,6 +265,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set services env variables
+        working-directory: .
+        run: |
+          make create-env-files
+          cat env.d/development/common.dist >> env.d/development/common
       - name: Create writable /data
         run: |
           sudo mkdir -p /data/media && \
