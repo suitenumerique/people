@@ -610,7 +610,7 @@ class StatView(views.APIView):
                 last_login__gte=timezone.now() - datetime.timedelta(30)
             ).count(),
             "teams": models.Team.objects.count(),
-            "domains": domains_models.MailDomain.objects.filter(
+            "active_domains": domains_models.MailDomain.objects.filter(
                 status=enums.MailDomainStatusChoices.ENABLED
             ).count(),
             "mailboxes": domains_models.Mailbox.objects.count(),
