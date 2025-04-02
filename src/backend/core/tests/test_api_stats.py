@@ -30,7 +30,7 @@ def test_api_stats__anonymous(django_assert_num_queries):
     assert response.json() == {
         "total_users": 0,
         "mau": 0,
-        "domains": 5,
+        "active_domains": 5,
         "mailboxes": 0,
         "teams": 3,
     }
@@ -41,7 +41,7 @@ def test_api_stats__anonymous(django_assert_num_queries):
     assert response.json() == {
         "total_users": 0,
         "mau": 0,
-        "domains": 5,
+        "active_domains": 5,
         "mailboxes": 0,
         "teams": 3,
     }
@@ -70,7 +70,7 @@ def test_api_stats__expected_count():
     assert response.json() == {
         "total_users": 10,
         "mau": 6,
-        "domains": 2,
+        "active_domains": 2,
         "mailboxes": 10,
         "teams": 3,
     }
