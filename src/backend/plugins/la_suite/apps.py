@@ -1,9 +1,11 @@
 """La Suite plugin application configuration."""
 
-from core.plugins.base import BasePluginAppConfig
+from django.apps import AppConfig
+
+from core.plugins.base import BasePluginAppConfigMixIn
 
 
-class LaSuitePluginConfig(BasePluginAppConfig):
+class LaSuitePluginConfig(BasePluginAppConfigMixIn, AppConfig):
     """Configuration for the La Suite plugin application."""
 
     name = "plugins.la_suite"
