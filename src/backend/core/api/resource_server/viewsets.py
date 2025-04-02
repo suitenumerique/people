@@ -6,6 +6,7 @@ from functools import reduce
 from django.db.models import OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.functions import Coalesce
 
+from lasuite.oidc_resource_server.mixins import ResourceServerMixin
 from rest_framework import (
     filters,
     mixins,
@@ -15,7 +16,6 @@ from rest_framework import (
 from core import models
 from core.api import permissions
 from core.api.client.viewsets import Pagination
-from core.resource_server.mixins import ResourceServerMixin
 
 from . import serializers
 

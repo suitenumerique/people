@@ -11,15 +11,15 @@ from joserfc import jwe as jose_jwe
 from joserfc import jwt as jose_jwt
 from joserfc.rfc7518.rsa_key import RSAKey
 from jwt.utils import to_base64url_uint
+from lasuite.oidc_resource_server.authentication import (
+    ResourceServerAuthentication,
+    get_resource_server_backend,
+)
 from rest_framework.request import Request as DRFRequest
 from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 
 from core.factories import UserFactory
 from core.models import ServiceProvider
-from core.resource_server.authentication import (
-    ResourceServerAuthentication,
-    get_resource_server_backend,
-)
 
 pytestmark = pytest.mark.django_db
 
@@ -30,7 +30,7 @@ def jwt_resource_server_backend_fixture(settings):
     _original_backend = str(settings.OIDC_RS_BACKEND_CLASS)
 
     settings.OIDC_RS_BACKEND_CLASS = (
-        "core.resource_server.backend.JWTResourceServerBackend"
+        "lasuite.oidc_resource_server.backend.JWTResourceServerBackend"
     )
     get_resource_server_backend.cache_clear()
 
@@ -71,7 +71,7 @@ def test_resource_server_authentication_class(client, settings):
     """
     assert (
         settings.OIDC_RS_BACKEND_CLASS
-        == "core.resource_server.backend.ResourceServerBackend"
+        == "lasuite.oidc_resource_server.backend.ResourceServerBackend"
     )
 
     settings.OIDC_RS_CLIENT_ID = "some_client_id"

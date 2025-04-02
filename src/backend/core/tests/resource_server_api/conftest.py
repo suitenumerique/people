@@ -9,8 +9,7 @@ from django.contrib.auth import get_user_model
 import pytest
 import responses
 from faker import Faker
-
-from core.resource_server.authentication import ResourceServerAuthentication
+from lasuite.oidc_resource_server.authentication import ResourceServerAuthentication
 
 User = get_user_model()
 fake = Faker()
@@ -48,7 +47,7 @@ def _force_login_via_resource_server(
     ):
         client_fixture.force_login(
             user,
-            backend="core.resource_server.authentication.ResourceServerAuthentication",
+            backend="lasuite.oidc_resource_server.authentication.ResourceServerAuthentication",
         )
         yield
 

@@ -160,7 +160,7 @@ def test_authentication_getter_existing_user_via_email(
 
     monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
 
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(3):  # user by email + user by sub + update sub
         user = klass.get_or_create_user(
             access_token="test-token", id_token=None, payload=None
         )
@@ -238,7 +238,7 @@ def test_authentication_getter_new_user_with_email(monkeypatch):
     assert user.sub == "123"
     assert user.email == email
     assert user.name == "John Doe"
-    assert user.password == "!"
+    assert user.has_usable_password() is False
     assert models.User.objects.count() == 1
 
 

@@ -1,1 +1,0 @@
-"""Backend resource server module."""
