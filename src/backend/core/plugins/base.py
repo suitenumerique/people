@@ -1,10 +1,17 @@
 """Base Django Application Configuration for plugins."""
 
-from django.apps import AppConfig
 
+class BasePluginAppConfigMixIn:
+    """
+    Configuration for the La Suite plugin application.
 
-class BasePluginAppConfig(AppConfig):
-    """Configuration for the La Suite plugin application."""
+    We cannot use the `AppConfig` class directly because it is not compatible with
+    the Django way to discover default AppConfig (see `AppConfig.create`).
+    We use a mixin then, to be able to list plugins using `plugins.la_suite` instead
+    of `plugins.la_suite.apps.LaSuitePluginConfig`.
+
+    Another way would be to force `default` attribute on plugin AppConfig.
+    """
 
     def ready(self):
         """
@@ -13,4 +20,4 @@ class BasePluginAppConfig(AppConfig):
         """
         from .registry import registry  # pylint: disable=import-outside-toplevel
 
-        registry.register_app(self.name)
+        registry.register_app(self.name)  # pylint: disable=no-member

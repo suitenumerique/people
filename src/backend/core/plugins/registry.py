@@ -37,6 +37,10 @@ class HooksRegistry:
             )
         logger.info("Registered hook %s: %s", hook_name, callback)
 
+    def get_registered_hooks(self):
+        """Get all registered hooks."""
+        return self._hooks.items()
+
     def register_app(self, app_name: str) -> None:
         """
         Register an app as having hooks.

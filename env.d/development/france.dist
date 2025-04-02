@@ -1,2 +1,2 @@
-INSTALLED_PLUGINS=plugins.la_suite.apps.LaSuitePluginConfig
+INSTALLED_PLUGINS=plugins.la_suite
 DNS_PROVISIONING_TARGET_ZONE=test.collectivite.fr
