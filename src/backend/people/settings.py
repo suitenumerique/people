@@ -474,9 +474,9 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
-    USER_OIDC_FIELDS_TO_NAME = values.ListValue(
+    USER_OIDC_FIELDS_TO_FULLNAME = values.ListValue(
         default=["first_name", "last_name"],
-        environ_name="USER_OIDC_FIELDS_TO_NAME",
+        environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
         environ_prefix=None,
     )
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = values.Value(
@@ -490,7 +490,7 @@ class Base(Configuration):
     )
     OIDC_OP_URL = values.Value(None, environ_name="OIDC_OP_URL", environ_prefix=None)
     OIDC_RS_BACKEND_CLASS = values.Value(
-        "core.resource_server.backend.ResourceServerBackend",
+        "lasuite.oidc_resource_server.backend.ResourceServerBackend",
         environ_name="OIDC_RS_BACKEND_CLASS",
         environ_prefix=None,
     )

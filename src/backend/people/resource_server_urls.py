@@ -2,10 +2,10 @@
 
 from django.urls import include, path
 
+from lasuite.oidc_resource_server.urls import urlpatterns as resource_server_urls
 from rest_framework.routers import DefaultRouter
 
 from core.api.resource_server import viewsets
-from core.resource_server.urls import urlpatterns as resource_server_urls
 
 # - Main endpoints
 # Contacts will be added later
