@@ -82,6 +82,8 @@
 | `backend.extraVolumeMounts`                           | Additional volumes to mount on the backend.                                        | `[]`                                                                             |
 | `backend.extraVolumes`                                | Additional volumes to mount on the backend.                                        | `[]`                                                                             |
 | `backend.createsuperuser.command`                     | The command to create the django super user                                        | `python manage.py createsuperuser --username admin@example.com --password admin` |
+| `backend.createsuperuser.enabled`                     | Whether to create the superuser job                                                | `true`                                                                           |
+| `backend.createsuperuser.restartPolicy`               | The restart policy for the job                                                     | `Never`                                                                          |
 
 ### frontend
 
