@@ -393,6 +393,7 @@ celeryBeat:
   ## @extra celeryBeat.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
   ## @extra celeryBeat.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
   ## @extra celeryBeat.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  ## @skip celeryBeat.envVars
   envVars:
     <<: *commonEnvVars
 

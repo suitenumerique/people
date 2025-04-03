@@ -134,3 +134,72 @@
 | `frontend.persistence.volume-name.mountPath`           | Path where the volume should be mounted to                                          |                           |
 | `frontend.extraVolumeMounts`                           | Additional volumes to mount on the frontend.                                        | `[]`                      |
 | `frontend.extraVolumes`                                | Additional volumes to mount on the frontend.                                        | `[]`                      |
+
+### celeryWorker
+
+| Name                                                       | Description                                                                             | Value                                          |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `celeryWorker.dpAnnotations`                               | Annotations to add to the celeryWorker Deployment                                       | `{}`                                           |
+| `celeryWorker.command`                                     | Override the celeryWorker container command                                             | `["celery","-A","people.celery_app","worker"]` |
+| `celeryWorker.args`                                        | Override the celeryWorker container args                                                | `[]`                                           |
+| `celeryWorker.replicas`                                    | Amount of celeryWorker replicas                                                         | `1`                                            |
+| `celeryWorker.shareProcessNamespace`                       | Enable share process namespace between containers                                       | `false`                                        |
+| `celeryWorker.sidecars`                                    | Add sidecars containers to celeryWorker deployment                                      | `[]`                                           |
+| `celeryWorker.migrateJobAnnotations`                       | Annotations for the migrate job                                                         | `{}`                                           |
+| `celeryWorker.securityContext`                             | Configure celeryWorker Pod security context                                             | `nil`                                          |
+| `celeryWorker.envVars`                                     | Configure celeryWorker container environment variables                                  | `undefined`                                    |
+| `celeryWorker.envVars.BY_VALUE`                            | Example environment variable by setting value directly                                  |                                                |
+| `celeryWorker.envVars.FROM_CONFIGMAP.configMapKeyRef.name` | Name of a ConfigMap when configuring env vars from a ConfigMap                          |                                                |
+| `celeryWorker.envVars.FROM_CONFIGMAP.configMapKeyRef.key`  | Key within a ConfigMap when configuring env vars from a ConfigMap                       |                                                |
+| `celeryWorker.envVars.FROM_SECRET.secretKeyRef.name`       | Name of a Secret when configuring env vars from a Secret                                |                                                |
+| `celeryWorker.envVars.FROM_SECRET.secretKeyRef.key`        | Key within a Secret when configuring env vars from a Secret                             |                                                |
+| `celeryWorker.podAnnotations`                              | Annotations to add to the celeryWorker Pod                                              | `{}`                                           |
+| `celeryWorker.probes`                                      | Configure celeryWorker probes                                                           | `{}`                                           |
+| `celeryWorker.probes.liveness.path`                        | Configure path for celeryWorker HTTP liveness probe                                     | `undefined`                                    |
+| `celeryWorker.probes.liveness.targetPort`                  | Configure port for celeryWorker HTTP liveness probe                                     | `undefined`                                    |
+| `celeryWorker.probes.liveness.initialDelaySeconds`         | Configure initial delay for celeryWorker liveness probe                                 | `undefined`                                    |
+| `celeryWorker.probes.liveness.initialDelaySeconds`         | Configure timeout for celeryWorker liveness probe                                       | `undefined`                                    |
+| `celeryWorker.probes.startup.path`                         | Configure path for celeryWorker HTTP startup probe                                      | `undefined`                                    |
+| `celeryWorker.probes.startup.targetPort`                   | Configure port for celeryWorker HTTP startup probe                                      | `undefined`                                    |
+| `celeryWorker.probes.startup.initialDelaySeconds`          | Configure initial delay for celeryWorker startup probe                                  | `undefined`                                    |
+| `celeryWorker.probes.startup.initialDelaySeconds`          | Configure timeout for celeryWorker startup probe                                        | `undefined`                                    |
+| `celeryWorker.probes.readiness.path`                       | Configure path for celeryWorker HTTP readiness probe                                    | `undefined`                                    |
+| `celeryWorker.probes.readiness.targetPort`                 | Configure port for celeryWorker HTTP readiness probe                                    | `undefined`                                    |
+| `celeryWorker.probes.readiness.initialDelaySeconds`        | Configure initial delay for celeryWorker readiness probe                                | `undefined`                                    |
+| `celeryWorker.probes.readiness.initialDelaySeconds`        | Configure timeout for celeryWorker readiness probe                                      | `undefined`                                    |
+| `celeryWorker.resources`                                   | Resource requirements for the celeryWorker container                                    | `{}`                                           |
+| `celeryWorker.nodeSelector`                                | Node selector for the celeryWorker Pod                                                  | `{}`                                           |
+| `celeryWorker.tolerations`                                 | Tolerations for the celeryWorker Pod                                                    | `[]`                                           |
+| `celeryWorker.affinity`                                    | Affinity for the celeryWorker Pod                                                       | `{}`                                           |
+| `celeryWorker.persistence`                                 | Additional volumes to create and mount on the celeryWorker. Used for debugging purposes | `{}`                                           |
+| `celeryWorker.persistence.volume-name.size`                | Size of the additional volume                                                           |                                                |
+| `celeryWorker.persistence.volume-name.type`                | Type of the additional volume, persistentVolumeClaim or emptyDir                        |                                                |
+| `celeryWorker.persistence.volume-name.mountPath`           | Path where the volume should be mounted to                                              |                                                |
+| `celeryWorker.extraVolumeMounts`                           | Additional volumes to mount on the celeryWorker.                                        | `[]`                                           |
+| `celeryWorker.extraVolumes`                                | Additional volumes to mount on the celeryWorker.                                        | `[]`                                           |
+
+### celeryBeat
+
+| Name                                                     | Description                                                                           | Value                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `celeryBeat.dpAnnotations`                               | Annotations to add to the celeryBeat Deployment                                       | `{}`                                         |
+| `celeryBeat.command`                                     | Override the celeryBeat container command                                             | `["celery","-A","people.celery_app","beat"]` |
+| `celeryBeat.args`                                        | Override the celeryBeat container args                                                | `[]`                                         |
+| `celeryBeat.replicas`                                    | Amount of celeryBeat replicas                                                         | `1`                                          |
+| `celeryBeat.shareProcessNamespace`                       | Enable share process namespace between containers                                     | `false`                                      |
+| `celeryBeat.sidecars`                                    | Add sidecars containers to celeryBeat deployment                                      | `[]`                                         |
+| `celeryBeat.securityContext`                             | Configure celeryBeat Pod security context                                             | `nil`                                        |
+| `celeryBeat.envVars`                                     | Configure celeryBeat container environment variables                                  | `undefined`                                  |
+| `celeryBeat.envVars.BY_VALUE`                            | Example environment variable by setting value directly                                |                                              |
+| `celeryBeat.envVars.FROM_CONFIGMAP.configMapKeyRef.name` | Name of a ConfigMap when configuring env vars from a ConfigMap                        |                                              |
+| `celeryBeat.envVars.FROM_CONFIGMAP.configMapKeyRef.key`  | Key within a ConfigMap when configuring env vars from a ConfigMap                     |                                              |
+| `celeryBeat.envVars.FROM_SECRET.secretKeyRef.name`       | Name of a Secret when configuring env vars from a Secret                              |                                              |
+| `celeryBeat.envVars.FROM_SECRET.secretKeyRef.key`        | Key within a Secret when configuring env vars from a Secret                           |                                              |
+| `celeryBeat.probes`                                      | Configure celeryBeat probes                                                           | `{}`                                         |
+| `celeryBeat.resources`                                   | Resource requirements for the celeryBeat container                                    | `{}`                                         |
+| `celeryBeat.nodeSelector`                                | Node selector for the celeryBeat Pod                                                  | `{}`                                         |
+| `celeryBeat.tolerations`                                 | Tolerations for the celeryBeat Pod                                                    | `[]`                                         |
+| `celeryBeat.affinity`                                    | Affinity for the celeryBeat Pod                                                       | `{}`                                         |
+| `celeryBeat.persistence`                                 | Additional volumes to create and mount on the celeryBeat. Used for debugging purposes | `{}`                                         |
+| `celeryBeat.extraVolumeMounts`                           | Additional volumes to mount on the celeryBeat.                                        | `[]`                                         |
+| `celeryBeat.extraVolumes`                                | Additional volumes to mount on the celeryBeat.                                        | `[]`                                         |
