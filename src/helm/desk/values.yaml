@@ -178,8 +178,12 @@ backend:
   extraVolumes: []
 
   ## @param backend.createsuperuser.command The command to create the django super user
+  ## @param backend.createsuperuser.enabled Whether to create the superuser job
+  ## @param backend.createsuperuser.restartPolicy The restart policy for the job
   createsuperuser:
+    enabled: true
     command: python manage.py createsuperuser --username admin@example.com --password admin
+    restartPolicy: Never
 
 ## @section frontend
 frontend:
