@@ -1,15 +1,4 @@
 {
-  "de": {
-    "translation": {
-      "Accessibility: non-compliant": "Barrierefreiheit: nicht kompatibel",
-      "Cancel": "",
-      "Language": "Sprache",
-      "Legal Notice": "Impressum",
-      "Logout": "Abmelden",
-      "No Username": "Kein Benutzername",
-      "Personal data and cookies": "Personenbezogene Daten und Cookies"
-    }
-  },
   "en": {
     "translation": {
       "copy done": "Copy done",
@@ -89,6 +78,7 @@
       "Enable mailbox": "Activer la boîte mail",
       "Enter the new name of the selected team": "Entrez le nouveau nom du groupe sélectionné",
       "Example: saint-laurent.fr": "Exemple : saint-laurent.fr",
+      "Failed": "En erreur",
       "Failed to add access": "Impossible d'ajouter les accès",
       "Failed to add {{name}} in the team": "Impossible d'ajouter {{name}} au groupe",
       "Failed to create the invitation": "Impossible de créer l'invitation",
