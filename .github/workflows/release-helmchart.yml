@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - 'main'
-    paths:
-      - ./src/helm/desk/**
 
 jobs:
   release:
