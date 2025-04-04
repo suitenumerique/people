@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 07:46+0000\n"
-"PO-Revision-Date: 2025-03-25 11:05\n"
+"POT-Creation-Date: 2025-04-04 08:20+0000\n"
+"PO-Revision-Date: 2025-04-04 15:29\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -17,52 +17,53 @@ msgstr ""
 "X-Crowdin-File: backend.pot\n"
 "X-Crowdin-File-ID: 2\n"
 
-#: build/lib/core/admin.py:64 core/admin.py:64
+#: build/lib/core/admin.py:62 core/admin.py:62
 msgid "Personal info"
 msgstr ""
 
-#: build/lib/core/admin.py:75 core/admin.py:75
+#: build/lib/core/admin.py:73 core/admin.py:73
 msgid "Permissions"
 msgstr ""
 
-#: build/lib/core/admin.py:87 core/admin.py:87
+#: build/lib/core/admin.py:85 core/admin.py:85
 msgid "Important dates"
 msgstr ""
 
-#: build/lib/core/admin.py:126 core/admin.py:126
+#: build/lib/core/admin.py:124 core/admin.py:124
 msgid "User"
 msgstr ""
 
-#: build/lib/core/admin.py:228 core/admin.py:228
+#: build/lib/core/admin.py:226 core/admin.py:226
 msgid "Run post creation plugins"
 msgstr ""
 
-#: build/lib/core/admin.py:236 core/admin.py:236
+#: build/lib/core/admin.py:234 core/admin.py:234
 msgid "Post creation plugins have been run for the selected organizations."
 msgstr ""
 
-#: build/lib/core/apps.py:22 core/apps.py:22
+#: build/lib/core/apps.py:65 core/apps.py:65
 msgid "People core application"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:94
-#: core/authentication/backends.py:94
-msgid "User info contained no recognizable user identification"
-msgstr ""
-
-#: build/lib/core/authentication/backends.py:115
-#: core/authentication/backends.py:115
-msgid "User account is disabled"
-msgstr ""
-
-#: build/lib/core/authentication/backends.py:161
-#: core/authentication/backends.py:161
+#: build/lib/core/authentication/backends.py:103
+#: core/authentication/backends.py:103
 msgid "Claims contained no recognizable user identification"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:180
-#: core/authentication/backends.py:180
+#: build/lib/core/authentication/backends.py:123
+#: core/authentication/backends.py:123
 msgid "Claims contained no recognizable organization identification"
+msgstr ""
+
+#: build/lib/core/authentication/backends.py:180
+#: build/lib/core/authentication/backends.py:182
+#: core/authentication/backends.py:180 core/authentication/backends.py:182
+msgid "Invalid authorization header."
+msgstr ""
+
+#: build/lib/core/authentication/backends.py:187
+#: core/authentication/backends.py:187
+msgid "Invalid api key."
 msgstr ""
 
 #: build/lib/core/enums.py:24 core/enums.py:24
@@ -79,256 +80,277 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: build/lib/core/models.py:78 core/models.py:78
+#: build/lib/core/models.py:76 core/models.py:76
 msgid "Member"
 msgstr ""
 
-#: build/lib/core/models.py:79 build/lib/core/models.py:91
-#: build/lib/mailbox_manager/enums.py:14 core/models.py:79 core/models.py:91
+#: build/lib/core/models.py:77 build/lib/core/models.py:89
+#: build/lib/mailbox_manager/enums.py:14 core/models.py:77 core/models.py:89
 #: mailbox_manager/enums.py:14
 msgid "Administrator"
 msgstr ""
 
-#: build/lib/core/models.py:80 build/lib/mailbox_manager/enums.py:15
-#: core/models.py:80 mailbox_manager/enums.py:15
+#: build/lib/core/models.py:78 build/lib/mailbox_manager/enums.py:15
+#: core/models.py:78 mailbox_manager/enums.py:15
 msgid "Owner"
 msgstr ""
 
-#: build/lib/core/models.py:103 core/models.py:103
+#: build/lib/core/models.py:101 core/models.py:101
 msgid "id"
 msgstr ""
 
-#: build/lib/core/models.py:104 core/models.py:104
+#: build/lib/core/models.py:102 core/models.py:102
 msgid "primary key for the record as UUID"
 msgstr ""
 
-#: build/lib/core/models.py:110 core/models.py:110
+#: build/lib/core/models.py:108 core/models.py:108
 msgid "created at"
 msgstr ""
 
-#: build/lib/core/models.py:111 core/models.py:111
+#: build/lib/core/models.py:109 core/models.py:109
 msgid "date and time at which a record was created"
 msgstr ""
 
-#: build/lib/core/models.py:116 core/models.py:116
+#: build/lib/core/models.py:114 core/models.py:114
 msgid "updated at"
 msgstr ""
 
-#: build/lib/core/models.py:117 core/models.py:117
+#: build/lib/core/models.py:115 core/models.py:115
 msgid "date and time at which a record was last updated"
 msgstr ""
 
-#: build/lib/core/models.py:156 core/models.py:156
+#: build/lib/core/models.py:154 core/models.py:154
 msgid "full name"
 msgstr ""
 
-#: build/lib/core/models.py:157 core/models.py:157
+#: build/lib/core/models.py:155 core/models.py:155
 msgid "short name"
 msgstr ""
 
-#: build/lib/core/models.py:160 core/models.py:160
+#: build/lib/core/models.py:158 core/models.py:158
 msgid "notes"
 msgstr ""
 
-#: build/lib/core/models.py:162 core/models.py:162
+#: build/lib/core/models.py:160 core/models.py:160
 msgid "contact information"
 msgstr ""
 
-#: build/lib/core/models.py:163 core/models.py:163
+#: build/lib/core/models.py:161 core/models.py:161
 msgid "A JSON object containing the contact information"
 msgstr ""
 
-#: build/lib/core/models.py:177 core/models.py:177
+#: build/lib/core/models.py:175 core/models.py:175
 msgid "contact"
 msgstr ""
 
-#: build/lib/core/models.py:178 core/models.py:178
+#: build/lib/core/models.py:176 core/models.py:176
 msgid "contacts"
 msgstr ""
 
-#: build/lib/core/models.py:252 build/lib/core/models.py:366
-#: build/lib/core/models.py:511 build/lib/mailbox_manager/models.py:53
-#: core/models.py:252 core/models.py:366 core/models.py:511
-#: mailbox_manager/models.py:53
+#: build/lib/core/models.py:250 build/lib/core/models.py:364
+#: build/lib/core/models.py:510 build/lib/core/models.py:1106
+#: build/lib/mailbox_manager/models.py:53 core/models.py:250 core/models.py:364
+#: core/models.py:510 core/models.py:1106 mailbox_manager/models.py:53
 msgid "name"
 msgstr ""
 
-#: build/lib/core/models.py:254 core/models.py:254
+#: build/lib/core/models.py:252 core/models.py:252
 msgid "audience id"
 msgstr ""
 
-#: build/lib/core/models.py:259 core/models.py:259
+#: build/lib/core/models.py:257 core/models.py:257
 msgid "service provider"
 msgstr ""
 
-#: build/lib/core/models.py:260 core/models.py:260
+#: build/lib/core/models.py:258 core/models.py:258
 msgid "service providers"
 msgstr ""
 
-#: build/lib/core/models.py:374 core/models.py:374
+#: build/lib/core/models.py:372 core/models.py:372
 msgid "registration ID list"
 msgstr ""
 
-#: build/lib/core/models.py:381 core/models.py:381
+#: build/lib/core/models.py:379 core/models.py:379
 msgid "domain list"
 msgstr ""
 
-#: build/lib/core/models.py:388 core/models.py:388
+#: build/lib/core/models.py:386 core/models.py:386
 msgid "metadata"
 msgstr ""
 
-#: build/lib/core/models.py:389 core/models.py:389
+#: build/lib/core/models.py:387 core/models.py:387
 msgid "A JSON object containing the organization metadata"
 msgstr ""
 
-#: build/lib/core/models.py:404 core/models.py:404
-msgid "organization"
-msgstr ""
-
-#: build/lib/core/models.py:405 core/models.py:405
-msgid "organizations"
-msgstr ""
-
-#: build/lib/core/models.py:412 core/models.py:412
-msgid "An organization must have at least a registration ID or a domain."
-msgstr ""
-
-#: build/lib/core/models.py:496 core/models.py:496
-msgid "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/_ characters."
-msgstr ""
-
-#: build/lib/core/models.py:502 core/models.py:502
-msgid "sub"
-msgstr ""
-
-#: build/lib/core/models.py:504 core/models.py:504
-msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
-msgstr ""
-
-#: build/lib/core/models.py:510 build/lib/core/models.py:959 core/models.py:510
-#: core/models.py:959
-msgid "email address"
-msgstr ""
-
-#: build/lib/core/models.py:516 core/models.py:516
-msgid "language"
-msgstr ""
-
-#: build/lib/core/models.py:517 core/models.py:517
-msgid "The language in which the user wants to see the interface."
-msgstr ""
-
-#: build/lib/core/models.py:523 core/models.py:523
-msgid "The timezone in which the user wants to see times."
-msgstr ""
-
-#: build/lib/core/models.py:526 core/models.py:526
-msgid "device"
-msgstr ""
-
-#: build/lib/core/models.py:528 core/models.py:528
-msgid "Whether the user is a device or a real user."
-msgstr ""
-
-#: build/lib/core/models.py:531 core/models.py:531
-msgid "staff status"
-msgstr ""
-
-#: build/lib/core/models.py:533 core/models.py:533
-msgid "Whether the user can log into this admin site."
-msgstr ""
-
-#: build/lib/core/models.py:536 core/models.py:536
+#: build/lib/core/models.py:397 build/lib/core/models.py:535 core/models.py:397
+#: core/models.py:535
 msgid "active"
 msgstr ""
 
-#: build/lib/core/models.py:539 core/models.py:539
+#: build/lib/core/models.py:403 core/models.py:403
+msgid "organization"
+msgstr ""
+
+#: build/lib/core/models.py:404 core/models.py:404
+msgid "organizations"
+msgstr ""
+
+#: build/lib/core/models.py:411 core/models.py:411
+msgid "An organization must have at least a registration ID or a domain."
+msgstr ""
+
+#: build/lib/core/models.py:495 core/models.py:495
+msgid "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/_ characters."
+msgstr ""
+
+#: build/lib/core/models.py:501 core/models.py:501
+msgid "sub"
+msgstr ""
+
+#: build/lib/core/models.py:503 core/models.py:503
+msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
+msgstr ""
+
+#: build/lib/core/models.py:509 build/lib/core/models.py:958 core/models.py:509
+#: core/models.py:958
+msgid "email address"
+msgstr ""
+
+#: build/lib/core/models.py:515 core/models.py:515
+msgid "language"
+msgstr ""
+
+#: build/lib/core/models.py:516 core/models.py:516
+msgid "The language in which the user wants to see the interface."
+msgstr ""
+
+#: build/lib/core/models.py:522 core/models.py:522
+msgid "The timezone in which the user wants to see times."
+msgstr ""
+
+#: build/lib/core/models.py:525 core/models.py:525
+msgid "device"
+msgstr ""
+
+#: build/lib/core/models.py:527 core/models.py:527
+msgid "Whether the user is a device or a real user."
+msgstr ""
+
+#: build/lib/core/models.py:530 core/models.py:530
+msgid "staff status"
+msgstr ""
+
+#: build/lib/core/models.py:532 core/models.py:532
+msgid "Whether the user can log into this admin site."
+msgstr ""
+
+#: build/lib/core/models.py:538 core/models.py:538
 msgid "Whether this user should be treated as active. Unselect this instead of deleting accounts."
 msgstr ""
 
-#: build/lib/core/models.py:558 core/models.py:558
+#: build/lib/core/models.py:557 core/models.py:557
 msgid "user"
 msgstr ""
 
-#: build/lib/core/models.py:559 core/models.py:559
+#: build/lib/core/models.py:558 core/models.py:558
 msgid "users"
 msgstr ""
 
-#: build/lib/core/models.py:697 core/models.py:697
+#: build/lib/core/models.py:696 core/models.py:696
 msgid "Organization/user relation"
 msgstr ""
 
-#: build/lib/core/models.py:698 core/models.py:698
+#: build/lib/core/models.py:697 core/models.py:697
 msgid "Organization/user relations"
 msgstr ""
 
-#: build/lib/core/models.py:703 core/models.py:703
+#: build/lib/core/models.py:702 core/models.py:702
 msgid "This user is already in this organization."
 msgstr ""
 
-#: build/lib/core/models.py:775 core/models.py:775
+#: build/lib/core/models.py:774 core/models.py:774
 msgid "is visible for all SP"
 msgstr ""
 
-#: build/lib/core/models.py:777 core/models.py:777
+#: build/lib/core/models.py:776 core/models.py:776
 msgid "Whether this team is visible to all service providers."
 msgstr ""
 
-#: build/lib/core/models.py:785 core/models.py:785
+#: build/lib/core/models.py:784 core/models.py:784
 msgid "Team"
 msgstr ""
 
-#: build/lib/core/models.py:786 core/models.py:786
+#: build/lib/core/models.py:785 core/models.py:785
 msgid "Teams"
 msgstr ""
 
-#: build/lib/core/models.py:837 core/models.py:837
+#: build/lib/core/models.py:836 core/models.py:836
 msgid "Team/user relation"
 msgstr ""
 
-#: build/lib/core/models.py:838 core/models.py:838
+#: build/lib/core/models.py:837 core/models.py:837
 msgid "Team/user relations"
 msgstr ""
 
-#: build/lib/core/models.py:843 core/models.py:843
+#: build/lib/core/models.py:842 core/models.py:842
 msgid "This user is already in this team."
 msgstr ""
 
-#: build/lib/core/models.py:932 core/models.py:932
+#: build/lib/core/models.py:931 core/models.py:931
 msgid "url"
 msgstr ""
 
-#: build/lib/core/models.py:933 core/models.py:933
+#: build/lib/core/models.py:932 core/models.py:932
 msgid "secret"
 msgstr ""
 
-#: build/lib/core/models.py:942 core/models.py:942
+#: build/lib/core/models.py:941 core/models.py:941
 msgid "Team webhook"
 msgstr ""
 
-#: build/lib/core/models.py:943 core/models.py:943
+#: build/lib/core/models.py:942 core/models.py:942
 msgid "Team webhooks"
 msgstr ""
 
-#: build/lib/core/models.py:987 core/models.py:987
+#: build/lib/core/models.py:986 core/models.py:986
 msgid "This email is already associated to a registered user."
 msgstr ""
 
-#: build/lib/core/models.py:1001 core/models.py:1001
+#: build/lib/core/models.py:1000 core/models.py:1000
 msgid "Invitation to join La Régie!"
 msgstr ""
 
-#: build/lib/core/models.py:1047 core/models.py:1047
+#: build/lib/core/models.py:1046 core/models.py:1046
 msgid "Team invitation"
 msgstr ""
 
-#: build/lib/core/models.py:1048 core/models.py:1048
+#: build/lib/core/models.py:1047 core/models.py:1047
 msgid "Team invitations"
 msgstr ""
 
-#: build/lib/core/models.py:1061 core/models.py:1061
+#: build/lib/core/models.py:1060 core/models.py:1060
 #, python-format
 msgid "[La Suite] You have been invited to become a %(role)s of a group"
+msgstr ""
+
+#: build/lib/core/models.py:1108 core/models.py:1108
+msgid "api key"
+msgstr ""
+
+#: build/lib/core/models.py:1114 core/models.py:1114
+msgid "allowed scopes"
+msgstr ""
+
+#: build/lib/core/models.py:1115 core/models.py:1115
+msgid "Allowed scopes for this service"
+msgstr ""
+
+#: build/lib/core/models.py:1120 core/models.py:1120
+msgid "Account service"
+msgstr ""
+
+#: build/lib/core/models.py:1121 core/models.py:1121
+msgid "Account services"
 msgstr ""
 
 #: build/lib/mailbox_manager/admin.py:17 mailbox_manager/admin.py:17
@@ -511,8 +533,8 @@ msgstr ""
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: build/lib/mailbox_manager/utils/dimail.py:273
-#: mailbox_manager/utils/dimail.py:273
+#: build/lib/mailbox_manager/utils/dimail.py:266
+#: mailbox_manager/utils/dimail.py:266
 msgid "Your new mailbox information"
 msgstr ""
 
