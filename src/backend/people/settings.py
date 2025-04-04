@@ -222,6 +222,7 @@ class Base(Configuration):
         environ_name="INSTALLED_PLUGINS",
         environ_prefix=None,
     )
+
     INSTALLED_APPS = [
         # People
         "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'

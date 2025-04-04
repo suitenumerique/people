@@ -102,6 +102,20 @@ spec:
               serviceName: {{ include "desk.backend.fullname" $ }}
               servicePort: {{ $.Values.backend.service.port }}
               {{- end }}
+          - path: /la-suite
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "desk.backend.fullname" . }}
+                port:
+                  number: {{ .Values.backend.service.port }}
+              {{- else }}
+              serviceName: {{ include "desk.backend.fullname" . }}
+              servicePort: {{ .Values.backend.service.port }}
+              {{- end }}
           {{- with .Values.ingress.customBackends }}
             {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -153,6 +167,20 @@ spec:
               servicePort: {{ $.Values.backend.service.port }}
               {{- end }}
           - path: /resource-server
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "desk.backend.fullname" $ }}
+                port:
+                  number: {{ $.Values.backend.service.port }}
+              {{- else }}
+              serviceName: {{ include "desk.backend.fullname" $ }}
+              servicePort: {{ $.Values.backend.service.port }}
+              {{- end }}
+          - path: /la-suite
             {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix
             {{- end }}

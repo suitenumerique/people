@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 🧱(helm) add la-suite ingress path
 - ➕(backend) add django-lasuite dependency #858
 - ✨(plugins) add endpoint to list siret of active organizations #771
 - ✨(core) create AccountServiceAuthentication backend #771
