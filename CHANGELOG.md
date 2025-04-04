@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.15.0] - 2025-04-04
+
 ### Added
 
 - 🧱(helm) add la-suite ingress path
@@ -368,7 +370,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.14.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.15.0...main
+[1.15.0]: https://github.com/suitenumerique/people/releases/v1.15.0
 [1.14.1]: https://github.com/suitenumerique/people/releases/v1.14.1
 [1.14.0]: https://github.com/suitenumerique/people/releases/v1.14.0
 [1.13.1]: https://github.com/suitenumerique/people/releases/v1.13.1
