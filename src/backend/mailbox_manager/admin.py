@@ -14,7 +14,7 @@ from mailbox_manager.utils.dimail import DimailAPIClient
 # ruff: noqa: S308
 
 
-@admin.action(description=_("Synchronise from dimail"))
+@admin.action(description=_("Import emails from dimail"))
 def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
     """Admin action to synchronize existing mailboxes from dimail to our database.
     Only works on enabled domains."""
