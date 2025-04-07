@@ -59,21 +59,12 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
               headerName: 'Statut',
               enableSorting: true,
               renderCell({ row }) {
-                const tooltipText = {
-                  pending:
-                    'Domaine en cours de validation par un administrateur',
-                  enabled: 'Domaine actif',
-                  disabled: 'Domaine désactivé',
-                  failed: 'Domaine en erreur, contactez un administrateur',
-                  action_required:
-                    'Une action de paramétrage du gestionnaire du domaine (hors Régie) est requise',
-                };
-
                 return (
                   <Box $direction="row" $align="center">
                     <Tag
+                      showTooltip="true"
                       status={row.status}
-                      tooltip={tooltipText[row.status] || ''}
+                      tooltipType="domain"
                     ></Tag>
                   </Box>
                 );

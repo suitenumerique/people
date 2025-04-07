@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
-import { MailDomainsListView } from '@/features/mail-domains/domains/components/MailDomainsListView';
+import { MailDomainsListView } from '@/features/mail-domains/domains/components/panel/MailDomainsListView';
 import { ModalAddMailDomain } from '@/features/mail-domains/domains/components/ModalAddMailDomain';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
@@ -37,15 +37,7 @@ const Page: NextPageWithLayout = () => {
   return (
     <div
       aria-label="Mail Domains panel"
-      style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '960px',
-        margin: '20px auto',
-        padding: '0 10px',
-        overflowX: 'hidden',
-        overflowY: 'auto',
-      }}
+      className="container"
     >
       <div
         data-testid="regie-grid"
@@ -57,8 +49,8 @@ const Page: NextPageWithLayout = () => {
           overflowX: 'hidden',
           overflowY: 'auto',
           background: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          borderRadius: '4px',
+          border: `1px solid ${colorsTokens()['greyscale-200']}`,
         }}
       >
         <h2

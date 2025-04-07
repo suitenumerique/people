@@ -596,20 +596,33 @@ input:-webkit-autofill:focus {
   overflow-y: auto;
 }
 
+.c__modal__content {
+  color: var(--c--theme--colors--greyscale-600) !important;
+}
+
 .c__modal__title {
-  padding: 0;
+  padding: var(--c--theme--spacings--md);
+  padding-bottom: 0;
+  margin-bottom: 0;
+  text-align: left;
   font-size: 1.125rem;
-  margin-bottom: var(--c--theme--spacings--2xs);
 }
 
 @media screen and (width <= 420px) {
   .c__modal__scroller {
-    padding: 0.7rem;
+    padding: 0;
   }
 
-  .c__modal__title h2 {
+  .c__modal__title {
     font-size: 1rem;
+    text-align: left;
   }
+}
+
+.c__modal__footer {
+  margin-top: 0;
+  background-color: transparent !important;
+  padding: var(--c--theme--spacings--md);
 }
 
 @media (width <= 576px) {
@@ -617,6 +630,10 @@ input:-webkit-autofill:focus {
     gap: 0.5rem;
     flex-direction: column-reverse;
   }
+}
+
+.c__modal__scroller {
+  padding: 0 !important;
 }
 
 .c__modal__scroller:has(.noPadding) {

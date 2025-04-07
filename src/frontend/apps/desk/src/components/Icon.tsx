@@ -51,6 +51,7 @@ export const IconOptions = ({ isHorizontal, ...props }: IconOptionsProps) => {
     <Text
       {...props}
       $isMaterialIcon
+      $theme="primary"
       $css={css`
         user-select: none;
         ${props.$css}
