@@ -485,6 +485,11 @@ class Organization(BaseModel):
             "delete": False,
         }
 
+    @property
+    def is_authenticated(self):
+        """Indicate if the organization is authenticated."""
+        return True
+
 
 class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
