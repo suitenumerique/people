@@ -67,7 +67,7 @@ const MailboxesPage: NextPageWithLayout = () => {
 };
 
 MailboxesPage.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
+  return <MainLayout backgroundColor="grey">{page}</MainLayout>;
 };
 
 export default MailboxesPage;

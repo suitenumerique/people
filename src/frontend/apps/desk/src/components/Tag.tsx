@@ -6,7 +6,9 @@ import { useCunninghamTheme } from '@/cunningham';
 
 interface TagContentProps {
   status: 'pending' | 'enabled' | 'disabled' | 'failed' | 'action_required';
-  tooltip?: string;
+  showTooltip?: boolean;
+  tooltipType?: 'domain' | 'mail';
+  placement?: 'top' | 'bottom';
 }
 
 const TagContent = ({ status }: TagContentProps) => {
@@ -29,6 +31,7 @@ const TagContent = ({ status }: TagContentProps) => {
     failed: colorsTokens()['danger-100'],
   };
 
+
   return (
     <Box
       $background={backgroundColor[status]}
@@ -47,8 +50,28 @@ const TagContent = ({ status }: TagContentProps) => {
 };
 
 export const Tag = ({ ...props }: TagContentProps) => {
-  return props.tooltip ? (
-    <Tooltip content={props.tooltip} placement="top">
+  const { t } = useTranslation();
+
+  const tooltipText = {
+    domain: {
+      pending: 'Domain pending validation by an administrator',
+      enabled: 'Active domain',
+      disabled: 'Disabled domain',
+      failed: 'Domain error, contact an administrator',
+      action_required: 'A configuration action from the domain manager (outside Régie) is required',
+    },
+    mail: {
+      pending: 'Email address pending validation by an administrator',
+      enabled: 'Functional email address',
+      failed: 'Email address error, contact an administrator',
+      disabled: 'Disabled email address'
+    }
+  };
+
+  return props.showTooltip ? (
+    <Tooltip 
+      content={t(tooltipText[props.tooltipType]?.[props.status]) || ''} 
+      placement={props.placement || 'top'}>
       <Box>
         <TagContent status={props.status} />
       </Box>

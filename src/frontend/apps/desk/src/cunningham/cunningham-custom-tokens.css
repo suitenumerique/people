@@ -25,4 +25,9 @@
   --c--components--forms-select--value-color--disabled: var(
     --c--theme--colors--greyscale-400
   );
+
+  /**
+  * Modal
+  **/
+  --c--components--modal--content-font-size: var(--c--theme--font--sizes--sm);
 }
