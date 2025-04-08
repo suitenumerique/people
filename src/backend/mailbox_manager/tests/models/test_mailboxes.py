@@ -81,18 +81,6 @@ def test_models_mailboxes__domain_cannot_be_null():
 # SECONDARY_EMAIL FIELD
 
 
-def test_models_mailboxes__secondary_email_cannot_be_empty():
-    """The "secondary_email" field should not be empty."""
-    with pytest.raises(exceptions.ValidationError, match="This field cannot be blank"):
-        factories.MailboxFactory(secondary_email="")
-
-
-def test_models_mailboxes__secondary_email_cannot_be_null():
-    """The "secondary_email" field should not be null."""
-    with pytest.raises(exceptions.ValidationError, match="This field cannot be null"):
-        factories.MailboxFactory(secondary_email=None)
-
-
 @pytest.mark.parametrize(
     "domain_status",
     [

@@ -241,7 +241,7 @@ class MailBoxViewSet(
         - first_name: str
         - last_name: str
         - local_part: str
-        - secondary_email: str
+        - secondary_email: str (optional)
         Sends request to email provisioning API and returns newly created mailbox
 
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/disable/
