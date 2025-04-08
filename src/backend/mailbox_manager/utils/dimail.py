@@ -334,9 +334,6 @@ class DimailAPIClient:
                             last_name=dimail_mailbox["surName"],
                             local_part=address.username,
                             domain=domain,
-                            secondary_email=dimail_mailbox["email"],
-                            # secondary email is mandatory. Unfortunately, dimail doesn't
-                            # store any. We temporarily give current email as secondary email.
                             status=enums.MailboxStatusChoices.ENABLED,
                             password=make_password(None),  # unusable password
                         )
@@ -408,11 +405,18 @@ class DimailAPIClient:
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox.save()
 
-            # send confirmation email
-            self.notify_mailbox_creation(
-                recipient=mailbox.secondary_email,
-                mailbox_data=response.json(),
-            )
+            if mailbox.secondary_email:
+                # send confirmation email
+                self.notify_mailbox_creation(
+                    recipient=mailbox.secondary_email,
+                    mailbox_data=response.json(),
+                )
+            else:
+                logger.warning(
+                    "Email notification for %s creation not sent "
+                    "because no secondary email found",
+                    mailbox,
+                )
 
     def check_domain(self, domain):
         """Send a request to dimail to check domain health."""

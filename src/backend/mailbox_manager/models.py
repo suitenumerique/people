@@ -284,7 +284,7 @@ class Mailbox(AbstractBaseUser, BaseModel):
         blank=False,
     )
     secondary_email = models.EmailField(
-        _("secondary email address"), null=False, blank=False
+        _("secondary email address"), null=True, blank=True
     )
     status = models.CharField(
         max_length=20,

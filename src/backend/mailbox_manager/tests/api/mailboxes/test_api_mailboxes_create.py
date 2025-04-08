@@ -197,7 +197,7 @@ def test_api_mailboxes__create_with_accent_success(role):
 def test_api_mailboxes__create_administrator_missing_fields():
     """
     Administrator users should not be able to create mailboxes
-    without local part or secondary mail.
+    without local part.
     """
     mail_domain = factories.MailDomainEnabledFactory()
     access = factories.MailDomainAccessFactory(
@@ -219,18 +219,54 @@ def test_api_mailboxes__create_administrator_missing_fields():
     assert not models.Mailbox.objects.exists()
     assert response.json() == {"local_part": ["This field is required."]}
 
+
+@responses.activate
+@pytest.mark.parametrize(
+    "role",
+    [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
+)
+def test_api_mailboxes__create_without_secondary_email(role, caplog):
+    """
+    Creating a new mailbox should not require a secondary email.
+    We should be able to create a mailbox but not send any email notification.
+    """
+    mail_domain = factories.MailDomainEnabledFactory()
+    access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
+    client = APIClient()
+    client.force_login(access.user)
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build()
     ).data
     del mailbox_values["secondary_email"]
+
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_values['local_part']}@{mail_domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         mailbox_values,
         format="json",
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert not models.Mailbox.objects.exists()
-    assert response.json() == {"secondary_email": ["This field is required."]}
+    assert response.status_code == status.HTTP_201_CREATED
+    mailbox = models.Mailbox.objects.get()
+    assert (
+        caplog.records[0].message
+        == f"Email notification for {mailbox} creation not sent "
+        "because no secondary email found"
+    )
 
 
 @pytest.mark.parametrize(
