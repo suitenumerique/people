@@ -53,12 +53,19 @@ class MailboxSerializer(serializers.ModelSerializer):
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox.save()
 
-            # send confirmation email
-            client.notify_mailbox_creation(
-                recipient=mailbox.secondary_email,
-                mailbox_data=response.json(),
-                issuer=self.context["request"].user,
-            )
+            if mailbox.secondary_email:
+                # send confirmation email
+                client.notify_mailbox_creation(
+                    recipient=mailbox.secondary_email,
+                    mailbox_data=response.json(),
+                    issuer=self.context["request"].user,
+                )
+            else:
+                logger.warning(
+                    "Email notification for %s creation not sent "
+                    "because no secondary email found",
+                    mailbox,
+                )
 
         # actually save mailbox on our database
         return mailbox
