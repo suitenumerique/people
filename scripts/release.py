@@ -107,6 +107,9 @@ Continue ? (y,n)
             run_command(f"git push origin {deployment_branch}", shell=True)
         sys.stdout.write(f"""\033[1;34m
 PLEASE DO THE FOLLOWING INSTRUCTIONS: 
+--> Check if you need to bump chart version in the manifests/regie/helmfile.yaml file
+    and settings in the manifests/regie/env.d/preprod/values.desk.yaml.gotmpl file
+    add commits into {deployment_branch} branch to do it if needed, then...
 --> Please submit PR {deployment_branch} and merge code to main [https://github.com/numerique-gouv/lasuite-deploiement]
 \x1b[0m""")
 
@@ -137,8 +140,8 @@ Continue ? (y,n)
         run_command(f"git push origin {branch_to_release}", shell=True)
     sys.stdout.write(f"""
 \033[1;34mPLEASE DO THE FOLLOWING INSTRUCTIONS:
---> A github action will download last translations from crowdin and create a commit to merge into the release branch.
-    Please wait for this and merge this translations commit into the release branch {branch_to_release}.
+--> A github action will download last translations from crowdin and create a PR (i18n/update-translations) to merge into the release branch.
+    Please wait for this, approve and merge this translations PR into the release branch {branch_to_release}.
 --> Then please submit PR {branch_to_release} and merge code to main [https://github.com/suitenumerique/people/]
 --> Then do:
     >> git checkout main
