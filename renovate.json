@@ -14,6 +14,11 @@
       "groupName": "ignored js dependencies",
       "matchManagers": ["npm"],
       "matchPackageNames": ["fetch-mock", "node", "node-fetch", "eslint", "@hookform/resolvers"]
+    },
+    {
+      "groupName": "docker-compose dependencies",
+      "matchManagers": ["docker-compose"],
+      "matchPackageNames": ["dimail-api"]
     }
   ]
 }
