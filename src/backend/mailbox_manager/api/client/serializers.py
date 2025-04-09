@@ -54,11 +54,10 @@ class MailboxSerializer(serializers.ModelSerializer):
             mailbox.save()
 
             # send confirmation email
-            client.notify_mailbox_info(
+            client.notify_mailbox_creation(
                 recipient=mailbox.secondary_email,
                 mailbox_data=response.json(),
                 issuer=self.context["request"].user,
-                is_new_mailbox=True,
             )
 
         # actually save mailbox on our database

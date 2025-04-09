@@ -59,12 +59,20 @@ class DimailAPIClient:
         if request_user:
             params = {"username": str(request_user)}
 
-        response = requests.get(
-            f"{self.API_URL}/token/",
-            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
-            params=params,
-            timeout=self.API_TIMEOUT,
-        )
+        try:
+            response = requests.get(
+                f"{self.API_URL}/token/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                params=params,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
 
         if response.status_code == status.HTTP_200_OK:
             headers["Authorization"] = f"Bearer {response.json()['access_token']}"
@@ -257,22 +265,36 @@ class DimailAPIClient:
             f"[DIMAIL] unexpected error: {response.status_code} {error_content}"
         )
 
-    def notify_mailbox_info(
-        self,
-        recipient,
-        mailbox_data,
-        is_new_mailbox,
-        issuer=None,
+    def notify_mailbox_creation(self, recipient, mailbox_data, issuer=None):
+        """
+        Send email to confirm mailbox creation
+        and send new mailbox information.
+        """
+        title = _("Your new mailbox information")
+        template_name = "new_mailbox"
+        self._send_mailbox_related_email(
+            title, template_name, recipient, mailbox_data, issuer
+        )
+
+    def notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
+        """
+        Send email to notify of password reset
+        and send new password.
+        """
+        title = _("Your password has been updated")
+        template_name = "reset_password"
+        self._send_mailbox_related_email(
+            title, template_name, recipient, mailbox_data, issuer
+        )
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+    def _send_mailbox_related_email(
+        self, title, template_name, recipient, mailbox_data, issuer=None
     ):
         """
-        Send email with new mailbox information or password reset.
+        Send email with new mailbox or password reset information.
         """
-        if is_new_mailbox:
-            title = _("Your new mailbox information")
-            template_name = "new_mailbox"
-        else:
-            title = _("Your password has been updated")
-            template_name = "reset_password"
 
         context = {
             "title": title,
@@ -425,10 +447,9 @@ class DimailAPIClient:
             mailbox.save()
 
             # send confirmation email
-            self.notify_mailbox_info(
+            self.notify_mailbox_creation(
                 recipient=mailbox.secondary_email,
                 mailbox_data=response.json(),
-                is_new_mailbox=True,
             )
 
     def check_domain(self, domain):
@@ -596,15 +617,14 @@ class DimailAPIClient:
                 self.API_URL,
                 exc_info=error,
             )
-            return []
+            raise error
 
         if response.status_code == status.HTTP_200_OK:
             # send new password to secondary email
             if mailbox.secondary_email and mailbox.secondary_email != str(mailbox):
-                self.notify_mailbox_info(
+                self.notify_mailbox_password_reset(
                     recipient=mailbox.secondary_email,
                     mailbox_data=response.json(),
-                    is_new_mailbox=False,
                 )
             logger.info(
                 "[DIMAIL] Password reset on mailbox %s.",
