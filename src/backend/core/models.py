@@ -1107,7 +1107,6 @@ class AccountService(BaseModel):
     api_key = models.CharField(
         _("api key"),
         max_length=255,
-        default=secrets.token_urlsafe(32),
     )
     scopes = ArrayField(
         models.CharField(max_length=255, validators=[validate_account_service_scope]),
@@ -1122,6 +1121,14 @@ class AccountService(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        """
+        Override save method to generate a new api_key if it is not set.
+        """
+        if not self.api_key:
+            self.api_key = secrets.token_urlsafe(32)
+        return super().save(*args, **kwargs)
 
     @property
     def is_authenticated(self):
