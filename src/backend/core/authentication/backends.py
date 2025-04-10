@@ -49,13 +49,14 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
             )
         return extra_claims
 
-    def post_get_or_create_user(self, user, claims):
+    def post_get_or_create_user(self, user, claims, is_new_user):
         """
         Post-processing after user creation or retrieval.
 
         Args:
           user (User): The user instance.
           claims (dict): The claims dictionary.
+          is_new_user (bool): Indicates if the user was newly created.
 
         Returns:
         - None

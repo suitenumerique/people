@@ -257,7 +257,7 @@ def test_models_oidc_user_getter_invalid_token(django_assert_num_queries, monkey
         django_assert_num_queries(0),
         pytest.raises(
             SuspiciousOperation,
-            match="User info contained no recognizable user identification",
+            match="Claims verification failed",
         ),
     ):
         klass.get_or_create_user(access_token="test-token", id_token=None, payload=None)
