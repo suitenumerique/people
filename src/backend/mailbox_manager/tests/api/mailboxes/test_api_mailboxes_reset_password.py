@@ -113,3 +113,32 @@ def test_api_mailboxes__reset_password_non_existing():
 
     response = client.get("/api/v1.0/mail-domains/nonexistent.domain/mailboxes/")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@responses.activate
+def test_api_mailboxes__reset_password_connexion_failed():
+    """
+    No mail is sent when password reset failed because of connexion error.
+    """
+    mail_domain = factories.MailDomainEnabledFactory()
+    mailbox = factories.MailboxEnabledFactory(domain=mail_domain)
+
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.OWNER, domain=mail_domain
+    )
+    client = APIClient()
+    client.force_login(access.user)
+
+    dimail_url = settings.MAIL_PROVISIONING_API_URL
+    responses.add(
+        responses.POST,
+        f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
+        body=ConnectionError(),
+    )
+
+    with pytest.raises(ConnectionError):
+        with mock.patch("django.core.mail.send_mail") as mock_send:
+            client.post(
+                f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/{mailbox.pk}/reset_password/"
+            )
+        assert mock_send.call_count == 0
