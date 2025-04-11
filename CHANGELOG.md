@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(plugins) add route to create first mailbox of a domain
+
 ### Changed
 
 - ✨(mailbox) remove secondary email as required field
