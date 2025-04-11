@@ -132,23 +132,35 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
             }
           `}
         >
-          <Input
-            label={t('Filter member list')}
-            rightIcon={<IconMagnifyingGlass />}
-            onChange={(event) => setQueryValue(event.target.value)}
-          />
-          {currentRole !== Role.MEMBER && (
-            <Button
-              aria-label={t('Add members to the team')}
-              style={{
-                minWidth: '8rem',
-                maxWidth: 'fit-content',
-              }}
-              onClick={() => setIsModalMemberOpen(true)}
-            >
-              {t('Add a member')}
-            </Button>
-          )}
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              gap: '1em',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ width: 'calc(100% - 175px)' }}>
+              <Input
+                label={t('Filter member list')}
+                icon={<IconMagnifyingGlass />}
+                onChange={(event) => setQueryValue(event.target.value)}
+              />
+            </div>
+            {currentRole !== Role.MEMBER && (
+              <Button
+                aria-label={t('Add members to the team')}
+                style={{
+                  minWidth: 'auto',
+                  maxWidth: 'fit-content',
+                }}
+                onClick={() => setIsModalMemberOpen(true)}
+              >
+                {t('Add a member')}
+              </Button>
+            )}
+          </div>
         </Box>
       </Box>
       <Card

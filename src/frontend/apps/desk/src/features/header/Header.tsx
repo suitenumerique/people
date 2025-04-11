@@ -1,74 +1,117 @@
+import { Button } from '@openfun/cunningham-react';
 import Image from 'next/image';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
-import { Box, LogoGouv, StyledLink, Text } from '@/components/';
-import { LaGaufre } from '@/features/header/LaGaufre';
+import { default as IconRegie } from '@/assets/logo-regie.svg?url';
+import { Icon, StyledLink, Text } from '@/components/';
+import { ButtonLogin } from '@/core/auth';
+import { useCunninghamTheme } from '@/cunningham';
+import { LanguagePicker } from '@/features/language';
+import { useLeftPanelStore } from '@/features/left-panel';
 
-import { LanguagePicker } from '../language/';
-
-import { AccountDropdown } from './AccountDropdown';
-import { default as IconApplication } from './assets/icon-application.svg?url';
-
-export const HEADER_HEIGHT = '100px';
-
-const RedStripe = styled.div`
-  position: absolute;
-  height: 5px;
-  width: 100%;
-  background: var(--c--theme--colors--danger-500);
-  top: 0;
-`;
+import { LaGaufre } from './LaGaufre';
+export const HEADER_HEIGHT = '52px';
 
 export const Header = () => {
   const { t } = useTranslation();
+  const theme = useCunninghamTheme();
+  const { isPanelOpen, togglePanel } = useLeftPanelStore();
+
+  const spacings = theme.spacingsTokens();
+  const colors = theme.colorsTokens();
 
   return (
-    <Box
-      as="header"
-      $justify="center"
-      $width="100%"
-      $height={HEADER_HEIGHT}
-      $zIndex="100"
-      $css="box-shadow: 0 1px 4px #00000040;"
+    <header
+      style={{
+        display: 'flex',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: 'var(--header-height)',
+        minHeight: 'var(--header-height)',
+        padding: `0 ${spacings['base']}`,
+        backgroundColor: colors['greyscale-000'],
+        borderBottom: `1px solid ${colors['greyscale-200']}`,
+      }}
     >
-      <RedStripe />
-      <Box
-        $margin={{ horizontal: 'xbig' }}
-        $align="center"
-        $justify="space-between"
-        $direction="row"
-      >
-        <Box $align="center" $gap="6rem" $direction="row">
-          <LogoGouv
-            textProps={{
-              $size: 't',
-              $css: `
-                line-height:11px;
-                text-transform: uppercase;
-              `,
-              $margin: { vertical: '3px' },
-              $maxWidth: '100px',
+      <Button
+        className="md:hidden"
+        size="medium"
+        onClick={() => togglePanel()}
+        aria-label={t('Open the header menu')}
+        color="tertiary-text"
+        icon={
+          <Icon
+            $variation="800"
+            $theme="primary"
+            iconName={isPanelOpen ? 'close' : 'menu'}
+          />
+        }
+      />
+      <StyledLink href="/">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacings['3xs'],
+          }}
+        >
+          <Image priority src={IconRegie} alt={t('La régie Logo')} width={25} />
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacings['xs'],
             }}
           >
-            République Française
-          </LogoGouv>
-          <StyledLink href="/">
-            <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconApplication} alt="" />
-              <Text $margin="none" as="h2" $theme="primary">
-                {t('Régie')}
-              </Text>
-            </Box>
-          </StyledLink>
-        </Box>
-        <Box $align="center" $gap="1rem" $direction="row">
-          <AccountDropdown />
+            <Text
+              as="h2"
+              style={{ color: '#000091', zIndex: 1, fontSize: '1.30rem' }}
+            >
+              {t('La Régie')}
+            </Text>
+            <Text
+              style={{
+                padding: '1px 8px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                color: colors['primary-500'],
+                borderRadius: '12px',
+                backgroundColor: colors['primary-200'],
+              }}
+            >
+              BETA
+            </Text>
+          </div>
+        </div>
+      </StyledLink>
+      <div className="md:hidden">
+        <div
+          style={{ display: 'flex', flexDirection: 'row', gap: spacings['sm'] }}
+        >
+          <LaGaufre />
+        </div>
+      </div>
+      <div className="hidden md:block">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacings['sm'],
+            flexDirection: 'row',
+          }}
+        >
+          <ButtonLogin />
           <LanguagePicker />
           <LaGaufre />
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </header>
   );
 };
