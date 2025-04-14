@@ -12,9 +12,7 @@ from django.utils import timezone
 
 from core.models import User
 
-from mailbox_manager import enums
 from mailbox_manager.models import MailDomainAccess, MailDomainInvitation
-from mailbox_manager.utils.dimail import DimailAPIClient
 
 logger = logging.getLogger(__name__)
 
@@ -46,22 +44,6 @@ def convert_domain_invitations(sender, created, instance, **kwargs):  # pylint: 
                 for invitation in valid_domain_invitations
             ]
         )
-
-        management_role = set(valid_domain_invitations.values_list("role", flat="True"))
-        if (
-            enums.MailDomainRoleChoices.OWNER in management_role
-            or enums.MailDomainRoleChoices.ADMIN in management_role
-        ):
-            # Sync with dimail
-            dimail = DimailAPIClient()
-            dimail.create_user(instance.sub)
-
-            for invitation in valid_domain_invitations:
-                if invitation.role in [
-                    enums.MailDomainRoleChoices.OWNER,
-                    enums.MailDomainRoleChoices.ADMIN,
-                ]:
-                    dimail.create_allow(instance.sub, invitation.domain.name)
 
         valid_domain_invitations.delete()
         logger.info("Invitations converted to domain accesses for user %s", instance)

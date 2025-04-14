@@ -82,27 +82,6 @@ def test_api_mail_domains__create_authenticated():
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/users/"),
-        body=str(
-            {
-                "name": "request-user-sub",
-                "is_admin": "false",
-                "uuid": "user-uuid-on-dimail",
-                "perms": [],
-            }
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/allows/"),
-        body=str({"user": "request-user-sub", "domain": str(domain_name)}),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
     body_content_domain1 = CHECK_DOMAIN_BROKEN.copy()
     body_content_domain1["name"] = domain_name
     responses.add(
@@ -166,101 +145,6 @@ def test_api_mail_domains__create_authenticated():
     assert domain.accesses.filter(role="owner", user=user).exists()
 
 
-@responses.activate
-def test_api_mail_domains__create_authenticated__dimail_failure(caplog):
-    """
-    Despite a dimail failure for user and/or allow creation,
-    an authenticated user should be able to create a mail domain
-    and should automatically be added as owner of the newly created domain.
-    """
-    caplog.set_level(logging.ERROR)
-    user = core_factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    domain_name = "test.domain.fr"
-
-    responses.add(
-        responses.POST,
-        re.compile(r".*/domains/"),
-        body=str(
-            {
-                "name": domain_name,
-            }
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/users/"),
-        body=str(
-            {
-                "name": "request-user-sub",
-                "is_admin": "false",
-                "uuid": "user-uuid-on-dimail",
-                "perms": [],
-            }
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/allows/"),
-        body=str({"user": "request-user-sub", "domain": str(domain_name)}),
-        status=status.HTTP_403_FORBIDDEN,
-        content_type="application/json",
-    )
-    dimail_error = {
-        "status_code": status.HTTP_401_UNAUTHORIZED,
-        "detail": "Not authorized",
-    }
-    responses.add(
-        responses.GET,
-        re.compile(rf".*/domains/{domain_name}/check/"),
-        body=json.dumps(dimail_error),
-        status=dimail_error["status_code"],
-        content_type="application/json",
-    )
-
-    response = client.post(
-        "/api/v1.0/mail-domains/",
-        {
-            "name": domain_name,
-            "context": "null",
-            "features": ["webmail"],
-            "support_email": f"support@{domain_name}",
-        },
-        format="json",
-    )
-    domain = models.MailDomain.objects.get()
-
-    # response is as expected
-    assert response.json() == {
-        "id": str(domain.id),
-        "name": domain.name,
-        "slug": domain.slug,
-        "status": enums.MailDomainStatusChoices.FAILED,
-        "created_at": domain.created_at.isoformat().replace("+00:00", "Z"),
-        "updated_at": domain.updated_at.isoformat().replace("+00:00", "Z"),
-        "abilities": domain.get_abilities(user),
-        "count_mailboxes": 0,
-        "support_email": domain.support_email,
-        "last_check_details": None,
-        "action_required_details": {},
-        "expected_config": None,
-    }
-
-    # a new domain with status "failed" is created and authenticated user is the owner
-    assert domain.status == enums.MailDomainStatusChoices.FAILED
-    assert domain.name == domain_name
-    assert domain.accesses.filter(role="owner", user=user).exists()
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Not authorized" in caplog.records[0].message
-
-
 ## SYNC TO DIMAIL
 @responses.activate
 def test_api_mail_domains__create_dimail_domain(caplog):
@@ -285,28 +169,6 @@ def test_api_mail_domains__create_dimail_domain(caplog):
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/users/"),
-        body=str(
-            {
-                "name": "request-user-sub",
-                "is_admin": "false",
-                "uuid": "user-uuid-on-dimail",
-                "perms": [],
-            }
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/allows/"),
-        body=str({"user": "request-user-sub", "domain": str(domain_name)}),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-
     body_content_domain1 = CHECK_DOMAIN_OK.copy()
     body_content_domain1["name"] = domain_name
     responses.add(
@@ -340,11 +202,6 @@ def test_api_mail_domains__create_dimail_domain(caplog):
         f"Domain {domain_name} successfully created on dimail by user {user.sub}"
         in log_messages
     )
-    assert f'[DIMAIL] User "{user.sub}" successfully created on dimail' in log_messages
-    assert (
-        f'[DIMAIL] Permissions granted for user "{user.sub}" on domain {domain_name}.'
-        in log_messages
-    )
 
 
 @responses.activate
@@ -359,27 +216,6 @@ def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
         "status_code": status.HTTP_409_CONFLICT,
         "detail": "Domain already exists",
     }
-    responses.add(
-        responses.POST,
-        re.compile(r".*/users/"),
-        body=str(
-            {
-                "name": "request-user-sub",
-                "is_admin": "false",
-                "uuid": "user-uuid-on-dimail",
-                "perms": [],
-            }
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
-        re.compile(r".*/allows/"),
-        body=str({"user": "request-user-sub", "domain": str(domain_name)}),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
     responses.add(
         responses.POST,
         re.compile(r".*/domains/"),

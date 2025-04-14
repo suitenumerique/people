@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Changed
 
+- 🛂(dimail) simplify interop with dimail
 - ✨(mailbox) remove secondary email as required field
 
 ## [1.15.0] - 2025-04-04

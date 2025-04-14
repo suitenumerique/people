@@ -235,29 +235,6 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
             )
         return attrs
 
-    def create(self, validated_data):
-        """
-        Override create function to fire requests to dimail on access creation.
-        """
-        dimail = DimailAPIClient()
-
-        user = validated_data["user"]
-        domain = validated_data["domain"]
-
-        if validated_data["role"] in [
-            enums.MailDomainRoleChoices.ADMIN,
-            enums.MailDomainRoleChoices.OWNER,
-        ]:
-            try:
-                dimail.create_user(user.sub)
-                dimail.create_allow(user.sub, domain.name)
-            except HTTPError:
-                logger.exception("[DIMAIL] access creation failed %s")
-                domain.status = enums.MailDomainStatusChoices.FAILED
-                domain.save()
-
-        return super().create(validated_data)
-
 
 class MailDomainAccessReadOnlySerializer(MailDomainAccessSerializer):
     """Serialize mail domain access for list and retrieve actions."""

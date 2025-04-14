@@ -44,28 +44,22 @@ class DimailAPIClient:
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
     API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
 
-    def get_headers(self, request_user=None):
+    def get_headers(self):
         """
-        Build headers dictionary. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
+        Return Bearer token. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
         to get a token from dimail /token/ endpoint.
-        If provided, request user' sub is used for la regie to log in on behalf of this user,
-        thus allowing for more precise logs.
         """
-        headers = {"Content-Type": "application/json"}
-        params = None
-
-        if request_user:
-            params = {"username": str(request_user)}
-
         response = requests.get(
             f"{self.API_URL}/token/",
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
-            params=params,
             timeout=self.API_TIMEOUT,
         )
 
         if response.status_code == status.HTTP_200_OK:
-            headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {response.json()['access_token']}",
+            }
             logger.info("Token succesfully granted by mail-provisioning API.")
             return headers
 
@@ -126,7 +120,7 @@ class DimailAPIClient:
             # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
-        headers = self.get_headers(request_user)
+        headers = self.get_headers()
 
         try:
             response = session.post(
@@ -356,7 +350,7 @@ class DimailAPIClient:
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={"active": "no"},
-            headers=self.get_headers(request_user),
+            headers=self.get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -380,7 +374,7 @@ class DimailAPIClient:
                 "surName": mailbox.last_name,
                 "displayName": f"{mailbox.first_name} {mailbox.last_name}",
             },
-            headers=self.get_headers(request_user),
+            headers=self.get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
