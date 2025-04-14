@@ -290,9 +290,9 @@ i18n-generate-and-upload: \
 # -- INTEROPERABILTY
 # -- Dimail configuration
 
-recreate-dimail-container:
+dimail-recreate-container:
 	@$(COMPOSE) up --force-recreate -d dimail
-.PHONY: recreate-dimail-container
+.PHONY: dimail-recreate-container
 
 dimail-setup-db:
 	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"

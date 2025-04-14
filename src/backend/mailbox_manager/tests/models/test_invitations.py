@@ -2,21 +2,17 @@
 Unit tests for the Mail Domain Invitation model
 """
 
-import re
 import time
 
 from django.conf import settings
 from django.core import exceptions
 
 import pytest
-import responses
 from freezegun import freeze_time
-from rest_framework import status
 
 from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
-from mailbox_manager.tests.fixtures import dimail
 
 pytestmark = pytest.mark.django_db
 
@@ -63,38 +59,22 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
         domain=invitation_to_domain2.domain
     )
 
-    new_user = core_factories.UserFactory.build(email=email)
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            rsps.POST,
-            re.compile(r".*/users/"),
-            body=dimail.response_user_created("sub"),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(r".*/allows/"),
-            body=dimail.response_allows_created(
-                "sub", invitation_to_domain1.domain.name
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        new_user = core_factories.UserFactory(email=email)
+    new_user = core_factories.UserFactory(email=email)
 
     assert models.MailDomainAccess.objects.filter(
         domain=invitation_to_domain1.domain, user=new_user
     ).exists()
+    assert not models.MailDomainInvitation.objects.filter(
+        domain=invitation_to_domain1.domain, email=email
+    ).exists()  # invitation "consumed"
+
     assert models.MailDomainAccess.objects.filter(
         domain=invitation_to_domain2.domain, user=new_user
     ).exists()
     assert not models.MailDomainInvitation.objects.filter(
-        domain=invitation_to_domain1.domain, email=email
-    ).exists()  # invitation "consumed"
-    assert not models.MailDomainInvitation.objects.filter(
         domain=invitation_to_domain2.domain, email=email
     ).exists()  # invitation "consumed"
+
     assert models.MailDomainInvitation.objects.filter(
         domain=expired_invitation.domain, email=email
     ).exists()  # expired invitation remains

@@ -765,8 +765,7 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
 @mock.patch.object(Logger, "info")
 def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
     """
-    Upon requesting mailbox creation, la régie should impersonate
-    querying user in dimail and log things correctly.
+    Upon requesting mailbox creation, logs should report request user.
     """
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
 
@@ -801,9 +800,6 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
             format="json",
         )
         assert response.status_code == status.HTTP_201_CREATED
-
-        # user sub is sent to payload as a parameter
-        assert rsps.calls[0].request.params == {"username": access.user.sub}
 
     # Logger
     assert not mock_error.called
