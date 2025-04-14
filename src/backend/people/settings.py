@@ -965,6 +965,12 @@ class Production(Base):
         {
             "NAME": "django_zxcvbn_password_validator.ZxcvbnPasswordValidator",
         },
+        {
+            'NAME': 'django_hibp.HIBPPasswordValidator',
+            'OPTIONS': {
+                'fail_on_error': False,
+            }
+        },
     ]
 
     # For static files in production, we want to use a backend that includes a hash in
