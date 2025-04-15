@@ -1,5 +1,6 @@
 import {
   Button,
+  usePagination
 } from '@openfun/cunningham-react';
 import { useCunninghamTheme } from '@/cunningham';
 
@@ -13,42 +14,29 @@ import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.sv
 import { MailDomain, Role, ModalRequiredActionDomain } from '@/features/mail-domains/domains';
 import { MailBoxesLayout } from '@/features/mail-domains/mailboxes';
 import { useFetchFromDimail } from '../api/useFetchMailDomain';
+import { MailDomainAccessesAction } from '@/features/mail-domains/domains';
+import { useMailDomainAccesses } from '@/features/mail-domains/access-management/api';
 
 type Props = {
   mailDomain: MailDomain;
+  currentRole: Role,
   onMailDomainUpdate?: (updatedDomain: MailDomain) => void;
 };
 
-export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
+export const MailDomainView = ({ mailDomain, currentRole, onMailDomainUpdate }: Props) => {
   const { t } = useTranslation();
+  const pagination = usePagination({
+    pageSize: 20,
+  });
   const { colorsTokens } = useCunninghamTheme();
   const [showModal, setShowModal] = React.useState(false);
-  const currentRole = mailDomain.abilities.delete
-    ? Role.OWNER
-    : mailDomain.abilities.manage_accesses
-      ? Role.ADMIN
-      : Role.VIEWER;
+  const [accesses, setAccesses] = React.useState<Access[]>([]);
+  const { page, pageSize, setPagesCount } = pagination;
 
-  // const tabs = useMemo(() => {
-  //   return [
-  //     {
-  //       ariaLabel: t('Go to mailbox management'),
-  //       id: 'mails',
-  //       iconName: 'mail',
-  //       label: t('Mailbox management'),
-  //       content: <MailDomainsContent mailDomain={mailDomain} />,
-  //     },
-  //     {
-  //       ariaLabel: t('Go to accesses management'),
-  //       id: 'accesses',
-  //       iconName: 'people',
-  //       label: t('Access management'),
-  //       content: (
-  //         <AccessesContent mailDomain={mailDomain} currentRole={currentRole} />
-  //       ),
-  //     },
-  //   ];
-  // }, [t, currentRole, mailDomain]);
+  const { data, isLoading, error } = useMailDomainAccesses({
+    slug: mailDomain.slug,
+    page
+  });
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -67,42 +55,49 @@ export const MailDomainView = ({ mailDomain, onMailDomainUpdate }: Props) => {
       <Box 
         $padding={{ horizontal: 'md' }}
         $background="white"
-        $align="center"
+        $justify="space-between"
         $gap="8px"
+        $align="center"
         $radius="4px"
         $direction="row"
         $css={`
           border: 1px solid ${colorsTokens()['greyscale-200']};
         `}>
-        <Button 
-          href="/mail-domains"
-          icon={<span 
-          className="material-icons">arrow_back</span>}
-          iconPosition="left"
-          color="secondary"
-          style={{
-            fontWeight: '500'
-          }}
-          >
-          {t('Domains')}
-        </Button>
-        <MailDomainsLogo aria-hidden="true" />
-        <Text as="h5" $size="h5" $weight="bold" $theme="primary">
-          {mailDomain.name}
-        </Text>
+        <Box $direction="row" $align="center" $gap="8px">
+          <Button 
+            href="/mail-domains"
+            icon={<span 
+            className="material-icons">
+              arrow_back
+              </span>}
+            iconPosition="left"
+            color="secondary"
+            style={{
+              fontWeight: '500'
+            }}
+            >
+            {t('Domains')}
+          </Button>
+          <MailDomainsLogo aria-hidden="true" />
+          <Text as="h5" $size="h5" $weight="bold" $theme="primary">
+            {mailDomain.name}
+          </Text>
 
-        {(mailDomain?.status === 'pending' || mailDomain?.status === 'action_required') 
-          && (<Box onClick={handleShowModal}>
-          <Tag
-          onClick={handleShowModal}
-          showTooltip="true"
-          status={mailDomain.status}
-          tooltipType="domain"
-          placement="bottom"
-          ></Tag>
+          {(mailDomain?.status === 'pending' || mailDomain?.status === 'action_required' || mailDomain?.status) 
+            && (<Box onClick={handleShowModal}>
+            <Tag
+            onClick={handleShowModal}
+            showTooltip="true"
+            status={mailDomain.status}
+            tooltipType="domain"
+            placement="bottom"
+            ></Tag>
+            </Box>
+            )}
           </Box>
-          )}
-
+          <Box $align="center">
+            <MailDomainAccessesAction mailDomain={mailDomain} currentRole={currentRole} />
+          </Box>
       </Box>
 
       {showModal && 

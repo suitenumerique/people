@@ -48,6 +48,7 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
             {
               field: 'name',
               headerName: 'Domaine',
+              enableSorting: true,
             },
             {
               field: 'count_mailboxes',

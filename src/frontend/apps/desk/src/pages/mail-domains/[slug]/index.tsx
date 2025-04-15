@@ -5,7 +5,7 @@ import React, { ReactElement, useState } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MailDomain, useMailDomain } from '@/features/mail-domains/domains';
+import { MailDomain, Role, useMailDomain } from '@/features/mail-domains/domains';
 import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
@@ -13,6 +13,9 @@ import { NextPageWithLayout } from '@/types/next';
 const MailboxesPage: NextPageWithLayout = () => {
   const router = useRouter();
   const [currentMailDomain, setCurrentMailDomain] = useState<MailDomain | null>(
+    null,
+  );
+  const [currentRole, setCurrentRole] = useState<MailDomain | null>(
     null,
   );
 
@@ -34,6 +37,13 @@ const MailboxesPage: NextPageWithLayout = () => {
   React.useEffect(() => {
     if (mailDomain) {
       setCurrentMailDomain(mailDomain);
+      const role = mailDomain.abilities.delete
+        ? Role.OWNER
+        : mailDomain.abilities.manage_accesses
+        ? Role.ADMIN
+        : Role.VIEWER;
+
+      setCurrentRole(role);
     }
   }, [mailDomain]);
 
@@ -61,6 +71,7 @@ const MailboxesPage: NextPageWithLayout = () => {
   return (
     <MailDomainView
       mailDomain={currentMailDomain}
+      currentRole={currentRole}
       onMailDomainUpdate={setCurrentMailDomain}
     />
   );

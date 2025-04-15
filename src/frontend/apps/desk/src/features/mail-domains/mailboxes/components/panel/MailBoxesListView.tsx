@@ -62,7 +62,8 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
   });
 
   const mailDomains = useMemo(() => {
-    return data?.pages.reduce((acc, page) => {
+    if (!data?.pages) return [];
+    return data.pages.reduce((acc, page) => {
       return acc.concat(page.results);
     }, [] as MailDomain[]);
   }, [data?.pages]);

@@ -1,20 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Options } from 'react-select';
-import AsyncSelect from 'react-select/async';
+import { InputText, Select } from '@openfun/cunningham-react';
 
 import { MailDomain } from '@/features/mail-domains/domains/types';
 import { OptionSelect, OptionType } from '@/features/teams/member-add/types';
 import { isValidEmail } from '@/utils';
-
 import { useUsers } from '../api/useUsers';
-
-export type OptionsSelect = Options<OptionSelect>;
 
 interface SearchMembersProps {
   mailDomain: MailDomain;
-  selectedMembers: OptionsSelect;
-  setSelectedMembers: (value: OptionsSelect) => void;
+  selectedMembers: OptionSelect[];
+  setSelectedMembers: (value: OptionSelect[]) => void;
   disabled?: boolean;
 }
 
@@ -26,98 +22,76 @@ export const SearchMembers = ({
 }: SearchMembersProps) => {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
-  const [userQuery, setUserQuery] = useState('');
-  const resolveOptionsRef = useRef<((value: OptionsSelect) => void) | null>(
-    null,
-  );
-  const { data } = useUsers({
-    query: userQuery,
+  const [options, setOptions] = useState<OptionSelect[]>([]);
+  const timeout = useRef<NodeJS.Timeout | null>(null);
+
+  const { data: usersData } = useUsers({
+    query: input,
     mailDomain: mailDomain.slug,
   });
 
-  const options = data;
+  const handleChange = (newValue: OptionSelect[]) => {
+    setSelectedMembers(newValue);
+  };
+
+  const onInputChange = useCallback((value: string) => {
+    setInput(value);
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
+      // le hook useUsers va se mettre à jour automatiquement avec `input`
+    }, 400);
+  }, []);
 
   useEffect(() => {
-    if (!resolveOptionsRef.current || !options) {
-      return;
-    }
+    if (!usersData) return;
 
-    const optionsFiltered = options.filter(
-      (user) =>
-        !selectedMembers?.find(
-          (selectedUser) => selectedUser.value.email === user.email,
-        ),
+    const filtered = usersData.filter(
+      (user) => !selectedMembers.find((s) => s.value.email === user.email)
     );
 
-    let users: OptionsSelect = optionsFiltered.map((user) => ({
+    let formatted: OptionSelect[] = filtered.map((user) => ({
       value: user,
       label: user.name || user.email,
       type: OptionType.NEW_MEMBER,
     }));
 
-    if (userQuery && isValidEmail(userQuery)) {
-      const isFoundUser = !!optionsFiltered.find(
-        (user) => user.email === userQuery,
-      );
-      const isFoundEmail = !!selectedMembers.find(
-        (selectedMember) => selectedMember.value.email === userQuery,
-      );
+    if (input && isValidEmail(input)) {
+      const alreadyListed = formatted.find((u) => u.value.email === input);
+      const alreadySelected = selectedMembers.find((s) => s.value.email === input);
 
-      if (!isFoundUser && !isFoundEmail) {
-        users = [
-          {
-            value: { email: userQuery },
-            label: userQuery,
-            type: OptionType.INVITATION,
-          },
-        ];
+      if (!alreadyListed && !alreadySelected) {
+        formatted.push({
+          value: { email: input },
+          label: input,
+          type: OptionType.INVITATION,
+        });
       }
     }
 
-    resolveOptionsRef.current(users);
-    resolveOptionsRef.current = null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options, selectedMembers]);
-
-  const loadOptions = (): Promise<OptionsSelect> => {
-    return new Promise<OptionsSelect>((resolve) => {
-      resolveOptionsRef.current = resolve;
-    });
-  };
-
-  const timeout = useRef<NodeJS.Timeout | null>(null);
-  const onInputChangeHandle = useCallback((newValue: string) => {
-    setInput(newValue);
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
-
-    timeout.current = setTimeout(() => {
-      setUserQuery(newValue);
-    }, 1000);
-  }, []);
+    setOptions(formatted);
+  }, [usersData, input, selectedMembers]);
 
   return (
-    <AsyncSelect
-      isDisabled={disabled}
-      aria-label={t('Find a member to add to the domain')}
-      isMulti
-      loadOptions={loadOptions}
-      defaultOptions={[]}
-      onInputChange={onInputChangeHandle}
-      inputValue={input}
-      placeholder={t(
-        'Search for members to assign them a role (name or email)',
-        {},
-      )}
-      noOptionsMessage={() =>
-        t('Invite new members with roles', { name: mailDomain.name })
-      }
-      onChange={(value) => {
-        setInput('');
-        setUserQuery('');
-        setSelectedMembers(value);
-      }}
-    />
+    <div className="flex flex-col gap-4">
+      <InputText
+        value={input}
+        onChange={(e) => onInputChange(e.target.value)}
+        placeholder={t('Search for members (name or email)')}
+        label={t('Search a member')}
+        disabled={disabled}
+      />
+
+      <Select
+        isMulti
+        isDisabled={disabled}
+        options={options}
+        value={selectedMembers}
+        onChange={handleChange}
+        placeholder={t('Select members')}
+        noOptionsMessage={() =>
+          t('Invite new members with roles', { name: mailDomain.name })
+        }
+      />
+    </div>
   );
 };

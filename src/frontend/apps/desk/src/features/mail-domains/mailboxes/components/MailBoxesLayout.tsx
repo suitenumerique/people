@@ -37,9 +37,7 @@ export function MailBoxesLayout({ mailDomain }: { mailDomain: MailDomain }) {
   const { colorsTokens } = useCunninghamTheme();
   const colors = colorsTokens();
 
-  const canCreateMailbox =
-    mailDomain.status === 'enabled' || mailDomain.status === 'pending';
-
+  const canCreateMailbox = mailDomain.status === 'enabled' || mailDomain.status === 'pending';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
@@ -132,13 +130,13 @@ export function MailBoxesLayout({ mailDomain }: { mailDomain: MailDomain }) {
                 disabled={!canCreateMailbox}
                 onClick={() => setIsCreateMailboxFormVisible(true)}
               >
-              {t('New mail adress')}
+              {t('New mail address')}
               </Button>
             ) : (
               <Tooltip content="You don't have the correct access right">
                 <div>
                   <Button onClick={openModal} icon={<span className="material-icons">add</span>} disabled={!isCreateMailboxFormVisible}>
-                    {t('New mail adress')}
+                    {t('New mail address')}
                   </Button>
                 </div>
               </Tooltip>

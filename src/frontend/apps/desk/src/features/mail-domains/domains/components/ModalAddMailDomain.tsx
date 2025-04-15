@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, Loader, ModalSize, VariantType } from '@openfun/cunningham-react';
+import { Button, Loader, ModalSize, VariantType } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import { APIError } from '@/api';
 import { parseAPIError } from '@/api/parseAPIError';
-import { Box, Text, TextErrors } from '@/components';
+import { Box, Input, Text, TextErrors } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
 
 import { default as MailDomainsLogo } from '../../assets/mail-domains-logo.svg';
@@ -149,9 +149,10 @@ export const ModalAddMailDomain = ({
                   {...methods.register('name')}
                   aria-invalid={!!fieldState.error}
                   aria-required
+                  placeholder="mondomaine.fr"
                   required
                   autoComplete="off"
-                  label={t('Domain name')}
+                  label={t('Enter your domain')}
                   state={fieldState.error ? 'error' : 'default'}
                   text={
                     fieldState?.error?.message
@@ -170,6 +171,7 @@ export const ModalAddMailDomain = ({
                     aria-invalid={!!fieldState.error}
                     aria-required
                     required
+                    placeholder="jean.dupont@free.fr"
                     label={t('Support email address')}
                     state={fieldState.error ? 'error' : 'default'}
                     text={
@@ -185,7 +187,8 @@ export const ModalAddMailDomain = ({
           </form>
 
         </FormProvider>
-            <Text> {t("Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.")}
+            <Text $theme="grescale" $variant="600"> 
+              {t("Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.")}
             </Text>
         </>
       ),

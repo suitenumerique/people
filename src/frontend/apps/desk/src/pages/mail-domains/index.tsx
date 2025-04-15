@@ -56,7 +56,7 @@ const Page: NextPageWithLayout = () => {
         <h2
           style={{ fontWeight: 700, fontSize: '1.5rem', marginBottom: '20px' }}
         >
-          {t('Mail Domains')}
+          {t('Areas of the organization')}
         </h2>
 
         <div
