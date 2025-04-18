@@ -12,10 +12,11 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
 
   return (
     <Box $display="flex" $flexDirection="column" $gap="4px">
-      <label style={{ fontWeight: 500, color: colorsTokens()['greyscale-900'] }}>
+      <label htmlFor={label} style={{ fontWeight: 500, color: colorsTokens()['greyscale-900'] }}>
         {label} {required && '*'}
       </label>
       <input
+        id={label}
         style={{
           padding: '12px',
           margin: '6px 0',

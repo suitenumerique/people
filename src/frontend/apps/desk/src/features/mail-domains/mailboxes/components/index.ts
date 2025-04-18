@@ -1,3 +1,3 @@
 export * from './ModalCreateMailbox';
-export * from './MailBoxesLayout';
+export * from './MailBoxesView';
 export * from './panel';

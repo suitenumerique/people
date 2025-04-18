@@ -1,4 +1,4 @@
-import { Button, DataGrid } from '@openfun/cunningham-react';
+import { Button, SimpleDataGrid } from '@openfun/cunningham-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -41,13 +41,14 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
   return (
     <div>
       {filteredMailDomains && filteredMailDomains.length ? (
-        <DataGrid
+        <SimpleDataGrid
           aria-label="listbox"
           rows={filteredMailDomains}
           columns={[
             {
               field: 'name',
               headerName: 'Domaine',
+              enableSorting: true,
             },
             {
               field: 'count_mailboxes',

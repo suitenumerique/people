@@ -12,7 +12,7 @@ import { Box, Text, Tag } from '@/components';
 import { AccessesContent } from '@/features/mail-domains/access-management';
 import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
 import { MailDomain, Role, ModalRequiredActionDomain } from '@/features/mail-domains/domains';
-import { MailBoxesLayout } from '@/features/mail-domains/mailboxes';
+import { MailBoxesView } from '@/features/mail-domains/mailboxes';
 import { useFetchFromDimail } from '../api/useFetchMailDomain';
 import { MailDomainAccessesAction } from '@/features/mail-domains/domains';
 import { useMailDomainAccesses } from '@/features/mail-domains/access-management/api';
@@ -86,6 +86,7 @@ export const MailDomainView = ({ mailDomain, currentRole, onMailDomainUpdate }: 
           {(mailDomain?.status === 'pending' || mailDomain?.status === 'action_required' || mailDomain?.status) 
             && (<Box onClick={handleShowModal}>
             <Tag
+            data-testid="actions_required"
             onClick={handleShowModal}
             showTooltip="true"
             status={mailDomain.status}
@@ -119,7 +120,7 @@ export const MailDomainView = ({ mailDomain, currentRole, onMailDomainUpdate }: 
           border: 1px solid ${colorsTokens()['greyscale-200']};
         `}>
         
-          <MailBoxesLayout mailDomain={mailDomain} />
+          <MailBoxesView mailDomain={mailDomain} />
       </Box>
       </div>
     </>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMailboxes } from '../../api/useMailboxes';
 import { PAGE_SIZE } from '../../../conf';
 
-import { Box, StyledLink, Tag, Text } from '@/components';
+import { Box, StyledLink, Tag, Text, TextErrors } from '@/components';
 import {
   MailDomain,
 } from '@/features/mail-domains/domains';
@@ -96,6 +96,8 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
 
   return (
     <div>
+      {error && <TextErrors causes={error.cause} />}
+
       {filteredMailboxes && filteredMailboxes.length ? (
         <DataGrid
           aria-label="listbox"

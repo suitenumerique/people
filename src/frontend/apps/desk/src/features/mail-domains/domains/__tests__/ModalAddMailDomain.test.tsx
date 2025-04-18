@@ -17,10 +17,16 @@ jest.mock('next/navigation', () => ({
 const mockCloseModal = jest.fn();
 
 describe('ModalAddMailDomain', () => {
-  const getElements = () => ({
+  const getElementsFirstStep = () => ({
     modalElement: screen.getByText('Add a mail domain'),
-    formTag: screen.getByTitle('Mail domain addition form'),
-    inputName: screen.getByLabelText(/Domain name/i),
+    buttonStep: screen.getByRole('button', {
+      name: /I have already domain/i,
+    }),
+    buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
+  });
+
+  const getElements = () => ({
+    inputName: screen.getByLabelText(/Enter your domain/i),
     inputSupportEmail: screen.getByLabelText(/Support email address/i),
     buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
     buttonSubmit: screen.getByRole('button', {
@@ -37,14 +43,27 @@ describe('ModalAddMailDomain', () => {
     fetchMock.restore();
   });
 
-  it('renders all the elements', () => {
+const goToSecondStep = async () => {
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: /I have already domain/i }));
+  await screen.getByLabelText(/Enter your domain/i);
+};
+
+
+  it('renders all the elements', async () => {
     render(<ModalAddMailDomain closeModal={mockCloseModal} />, {
       wrapper: AppWrapper,
     });
 
+    const { buttonStep } = getElementsFirstStep();
+
+    const user = userEvent.setup();
+    await user.click(buttonStep);
+
+    await screen.findByLabelText('Enter your domain');
+
     const {
       modalElement,
-      formTag,
       inputName,
       inputSupportEmail,
       buttonCancel,
@@ -52,18 +71,18 @@ describe('ModalAddMailDomain', () => {
     } = getElements();
 
     expect(modalElement).toBeVisible();
-    expect(formTag).toBeVisible();
     expect(inputName).toBeVisible();
     expect(inputSupportEmail).toBeVisible();
-    expect(screen.getByText('Example: saint-laurent.fr')).toBeVisible();
     expect(buttonCancel).toBeVisible();
     expect(buttonSubmit).toBeVisible();
   });
 
-  it('should disable submit button when no field is filled', () => {
+  it('should disable submit button when no field is filled', async () => {
     render(<ModalAddMailDomain closeModal={mockCloseModal} />, {
       wrapper: AppWrapper,
     });
+
+    await goToSecondStep();
 
     const { buttonSubmit } = getElements();
 
@@ -79,18 +98,14 @@ describe('ModalAddMailDomain', () => {
       wrapper: AppWrapper,
     });
 
+    await goToSecondStep();
+
     const { inputName, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domain.fr');
     await user.clear(inputName);
 
     await user.click(buttonSubmit);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Example: saint-laurent.fr/i),
-      ).toBeInTheDocument();
-    });
 
     expect(fetchMock.lastUrl()).toBeFalsy();
   });
@@ -121,6 +136,8 @@ describe('ModalAddMailDomain', () => {
     render(<ModalAddMailDomain closeModal={mockCloseModal} />, {
       wrapper: AppWrapper,
     });
+
+    await goToSecondStep();
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
@@ -157,6 +174,8 @@ describe('ModalAddMailDomain', () => {
       wrapper: AppWrapper,
     });
 
+    await goToSecondStep();
+
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domain.fr');
@@ -192,6 +211,8 @@ describe('ModalAddMailDomain', () => {
       wrapper: AppWrapper,
     });
 
+    await goToSecondStep();
+
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
     await user.type(inputName, 'domainfr');
@@ -224,6 +245,8 @@ describe('ModalAddMailDomain', () => {
     render(<ModalAddMailDomain closeModal={mockCloseModal} />, {
       wrapper: AppWrapper,
     });
+
+    await goToSecondStep();
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 

@@ -25,7 +25,7 @@ import { MailDomainMailbox } from '../types';
 import { MailBoxesListView } from '@/features/mail-domains/mailboxes/components/panel';
 import { MailDomainsActions } from './MailDomainsActions';
 
-export function MailBoxesLayout({ mailDomain }: { mailDomain: MailDomain }) {
+export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
   const [searchValue, setSearchValue] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,6 +66,12 @@ export function MailBoxesLayout({ mailDomain }: { mailDomain: MailDomain }) {
       >
         {t('Email addresses')}
       </h3>
+      <div style={{
+          marginBottom: '20px',
+        }}
+      >
+       <AlertStatus status={mailDomain.status} />
+      </div>
       <div
           className="sm:block md:flex"
           style={{
@@ -124,6 +130,7 @@ export function MailBoxesLayout({ mailDomain }: { mailDomain: MailDomain }) {
           <div>
             {mailDomain?.abilities.post ? (
               <Button
+                data-testid="button-new-mailbox"
                 aria-label={t('Create a mailbox in {{name}} domain', {
                   name: mailDomain?.name,
                 })}

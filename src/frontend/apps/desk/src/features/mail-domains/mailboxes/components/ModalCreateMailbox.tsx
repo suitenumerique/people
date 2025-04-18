@@ -197,6 +197,7 @@ export const ModalCreateMailbox = ({
 
   return (
     <CustomModal
+      id="modal-new-mailbox"
       isOpen
       hideCloseButton
       step={step}

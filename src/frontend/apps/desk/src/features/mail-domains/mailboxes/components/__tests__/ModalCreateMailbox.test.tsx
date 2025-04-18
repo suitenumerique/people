@@ -48,14 +48,14 @@ describe('ModalCreateMailbox', () => {
   };
 
   const getFormElements = () => ({
-    formTag: screen.getByTitle('Mailbox creation form'),
-    inputFirstName: screen.getByLabelText(/First name/i),
-    inputLastName: screen.getByLabelText(/Last name/i),
-    inputLocalPart: screen.getByLabelText(/Email address prefix/i),
-    inputEmailAddress: screen.getByLabelText(/Secondary email address/i),
+    formTag: screen.getText('New email account'),
+    inputFirstName: screen.getByLabelText('First name'),
+    inputLastName: screen.getByLabelText('Last name'),
+    inputLocalPart: screen.getByLabelText('Name of the new address'),
+    inputEmailAddress: screen.getByLabelText('Personal email address'),
     buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
     buttonSubmit: screen.getByRole('button', {
-      name: /Create the mailbox/i,
+      name: 'Create',
       hidden: true,
     }),
   });

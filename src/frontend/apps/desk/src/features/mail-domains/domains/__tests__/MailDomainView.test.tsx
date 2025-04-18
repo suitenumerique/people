@@ -73,7 +73,7 @@ describe('<MailDomainView />', () => {
       wrapper: AppWrapper,
     });
     // Check if action required button is displayed
-    const actionButton = screen.getByText('Actions required');
+    const actionButton = screen.getByTestId('actions_required');
     expect(actionButton).toBeInTheDocument();
 
     // Click the button and verify modal content
@@ -112,7 +112,7 @@ describe('<MailDomainView />', () => {
     );
 
     // Check if action required button is displayed
-    const actionButton = screen.getByText('Actions required');
+    const actionButton = screen.getByTestId('actions_required');
     expect(actionButton).toBeInTheDocument();
 
     // Click the button and verify modal content
