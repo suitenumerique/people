@@ -26,7 +26,9 @@ test.describe('Member Grid', () => {
     await expect(cells.nth(1)).toHaveText(
       new RegExp(`E2E ${browserName}`, 'i'),
     );
-    await expect(cells.nth(2)).toHaveText(`user@${browserName}.e2e`);
+    await expect(cells.nth(2)).toHaveText(
+      `user-e2e-${browserName}@example.org`,
+    );
     await expect(cells.nth(3)).toHaveText(/Owner/i);
   });
 

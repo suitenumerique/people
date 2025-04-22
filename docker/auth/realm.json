@@ -80,7 +80,7 @@
     },
     {
       "username": "user-e2e-chromium",
-      "email": "user@chromium.e2e",
+      "email": "user-e2e-chromium@example.org",
       "firstName": "E2E",
       "lastName": "Chromium",
       "enabled": true,
@@ -97,7 +97,7 @@
     },
     {
       "username": "user-e2e-webkit",
-      "email": "user@webkit.e2e",
+      "email": "user-e2e-webkit@example.org",
       "firstName": "E2E",
       "lastName": "Webkit",
       "enabled": true,
@@ -114,7 +114,7 @@
     },
     {
       "username": "user-e2e-firefox",
-      "email": "user@firefox.e2e",
+      "email": "user-e2e-firefox@example.org",
       "firstName": "E2E",
       "lastName": "Firefox",
       "enabled": true,

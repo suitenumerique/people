@@ -69,7 +69,7 @@ test.describe('Menu', () => {
       await route.fulfill({
         json: {
           id: '52de4dcf-5ca0-4b7f-9841-3a18e8cb6a95',
-          email: 'user@chromium.e2e',
+          email: 'user-e2e-chromium@example.com',
           language: 'en-us',
           name: 'E2E Chromium',
           timezone: 'UTC',
@@ -115,7 +115,7 @@ test.describe('Menu', () => {
       await route.fulfill({
         json: {
           id: '52de4dcf-5ca0-4b7f-9841-3a18e8cb6a95',
-          email: 'user@chromium.e2e',
+          email: 'user-e2e-chromium@example.com',
           language: 'en-us',
           name: 'E2E ChromiumMM',
           timezone: 'UTC',

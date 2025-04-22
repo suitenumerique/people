@@ -18,6 +18,7 @@ export const keyCloakSignIn = async (
     ? `password-e2e.${accountName}`
     : `password-e2e-${browserName}`;
 
+  await page.waitForURL('http://localhost:8083/**');
   if (title?.includes('Sign in to your account')) {
     await page.getByRole('textbox', { name: 'username' }).fill(username);
 
@@ -25,6 +26,7 @@ export const keyCloakSignIn = async (
 
     await page.click('input[type="submit"]', { force: true });
   }
+  await page.waitForURL('http://localhost:3000/**');
 };
 
 export const randomName = (name: string, browserName: string, length: number) =>
