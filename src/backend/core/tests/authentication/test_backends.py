@@ -411,7 +411,7 @@ def test_authentication_getter_existing_user_via_email_update_organization(
 
     monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
 
-    with django_assert_num_queries(9):
+    with django_assert_num_queries(11):
         user = klass.get_or_create_user(
             access_token="test-token", id_token=None, payload=None
         )

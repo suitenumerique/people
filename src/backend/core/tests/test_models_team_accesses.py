@@ -35,7 +35,7 @@ def test_models_team_accesses_unique():
 
     with pytest.raises(
         ValidationError,
-        match="Team/user relation with this User and Team already exists.",
+        match="This user is already in this team.",
     ):
         factories.TeamAccessFactory(user=access.user, team=access.team)
 

@@ -478,9 +478,13 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
-    USER_OIDC_FIELDS_TO_FULLNAME = values.ListValue(
-        default=["first_name", "last_name"],
-        environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
+    OIDC_USERINFO_FULLNAME_FIELDS = values.ListValue(
+        default=values.ListValue(  # retrocompatibility
+            default=["first_name", "last_name"],
+            environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
+            environ_prefix=None,
+        ),
+        environ_name="OIDC_USERINFO_FULLNAME_FIELDS",
         environ_prefix=None,
     )
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = values.Value(
