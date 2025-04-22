@@ -52,8 +52,8 @@ def test_api_contacts_update_authenticated_owned(django_assert_num_queries):
     ).data
     new_contact_values["override"] = str(factories.ContactFactory().id)
 
-    with django_assert_num_queries(8):
-        # user, 2x contact, user, 3x check, update contact
+    with django_assert_num_queries(14):
+        # user, 2x contact, user, 3x check, update contact, 3x savepoint/release
         response = client.put(
             f"/api/v1.0/contacts/{contact.id!s}/",
             new_contact_values,

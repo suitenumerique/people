@@ -50,7 +50,7 @@ backend:
         key: OIDC_RP_CLIENT_SECRET
     OIDC_RP_SIGN_ALGO: RS256
     OIDC_RP_SCOPES: "openid email siret given_name usual_name"
-    USER_OIDC_FIELDS_TO_FULLNAME: "given_name,usual_name"
+    OIDC_USERINFO_FULLNAME_FIELDS: "given_name,usual_name"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
     OAUTH2_PROVIDER_OIDC_ENABLED: True
