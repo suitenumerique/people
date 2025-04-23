@@ -1,18 +1,20 @@
-import { Button, DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
+import { DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMailboxes } from '../../api/useMailboxes';
-import { PAGE_SIZE } from '../../../conf';
 
-import { Box, StyledLink, Tag, Text, TextErrors } from '@/components';
+import { Box, Tag, Text, TextErrors } from '@/components';
+import { MailDomain } from '@/features/mail-domains/domains';
 import {
-  MailDomain,
-} from '@/features/mail-domains/domains';
+  MailDomainMailbox,
+  MailDomainMailboxStatus,
+} from '@/features/mail-domains/mailboxes/types';
 
-import { PanelActions } from './PanelActions';
+import { PAGE_SIZE } from '../../../conf';
+import { useMailboxes } from '../../api/useMailboxes';
+// import { PanelActions } from './PanelActions';
 
 interface MailBoxesListViewProps {
-  mailDomain: MailDomain,
+  mailDomain: MailDomain;
   querySearch: string;
 }
 
@@ -21,39 +23,32 @@ type SortModelItem = {
   sort: 'asc' | 'desc' | null;
 };
 
-function formatSortModel(
-  sortModel: SortModelItem,
-  mapping = defaultOrderingMapping,
-) {
-  const { field, sort } = sortModel;
-  const orderingField = mapping[field] || field;
-  return sort === 'desc' ? `-${orderingField}` : orderingField;
+function formatSortModel(sortModel: SortModelItem) {
+  return sortModel.sort === 'desc' ? `-${sortModel.field}` : sortModel.field;
 }
 
 export type ViewMailbox = {
   name: string;
+  id: string;
   email: string;
-  id: UUID;
-  status: MailDomainMailbox['status'];
-  mailbox: MailDomainMailbox;
+  status: MailDomainMailboxStatus;
 };
 
-
-export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListViewProps) {
+export function MailBoxesListView({
+  mailDomain,
+  querySearch,
+}: MailBoxesListViewProps) {
   const { t } = useTranslation();
 
-  const [sortModel, setSortModel] = useState<SortModel>([]);
-  
+  const [sortModel] = useState<SortModel>([]);
+
   const pagination = usePagination({
     defaultPage: 1,
     pageSize: PAGE_SIZE,
   });
 
-  const { page, pageSize, setPagesCount } = pagination;
+  const { page } = pagination;
 
-  const defaultOrderingMapping: Record<string, string> = {
-    email: 'local_part',
-  };
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
   const { data, isLoading, error } = useMailboxes({
     mailDomainSlug: mailDomain.slug,
@@ -61,24 +56,19 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
     ordering,
   });
 
-  const mailDomains = useMemo(() => {
-    if (!data?.pages) return [];
-    return data.pages.reduce((acc, page) => {
-      return acc.concat(page.results);
-    }, [] as MailDomain[]);
-  }, [data?.pages]);
+  const mailboxes: ViewMailbox[] = useMemo(() => {
+    if (!mailDomain || !data?.results?.length) {
+      return [];
+    }
 
-
-  const mailboxes: ViewMailbox[] =
-    mailDomain && data?.results?.length
-      ? data.results.map((mailbox: MailDomainMailbox) => ({
-          email: `${mailbox.local_part}@${mailDomain.name}`,
-          name: `${mailbox.first_name} ${mailbox.last_name}`,
-          id: mailbox.id,
-          status: mailbox.status,
-          mailbox,
-        }))
-    : [];
+    return data.results.map((mailbox: MailDomainMailbox) => ({
+      email: `${mailbox.local_part}@${mailDomain.name}`,
+      name: `${mailbox.first_name} ${mailbox.last_name}`,
+      id: mailbox.id,
+      status: mailbox.status,
+      mailbox,
+    }));
+  }, [data?.results, mailDomain]);
 
   const filteredMailboxes = useMemo(() => {
     if (!querySearch) {
@@ -119,7 +109,7 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
                 >
                   {row.name}
                 </Text>
-             ),
+              ),
             },
             {
               id: 'status',
@@ -129,7 +119,7 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
                 return (
                   <Box $direction="row" $align="center">
                     <Tag
-                      showTooltip="true"
+                      showTooltip={true}
                       status={row.status}
                       tooltipType="mail"
                     ></Tag>
@@ -137,17 +127,14 @@ export function MailBoxesListView({ mailDomain, querySearch }: MailBoxesListView
                 );
               },
             },
-            {
-              id: 'actions',
-              renderCell: ({ row }) => (
-                <>
-                <PanelActions
-                  mailbox={row.mailbox}
-                  mailDomain={mailDomain}
-                />
-                </>
-              )
-            },
+            // {
+            //   id: 'actions',
+            //   renderCell: ({ row }) => (
+            //     <>
+            //       <PanelActions mailbox={row.mailbox} mailDomain={mailDomain} />
+            //     </>
+            //   ),
+            // },
           ]}
           isLoading={isLoading}
         />

@@ -11,6 +11,7 @@ import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
+import { useCreateInvitation } from '@/features/mail-domains/access-management/api';
 import {
   OptionSelect,
   OptionType,
@@ -18,7 +19,6 @@ import {
 } from '@/features/teams/member-add/types';
 
 import { MailDomain, Role } from '../../domains';
-import { useCreateInvitation } from '../api';
 
 import { ChooseRole } from './ChooseRole';
 import { OptionsSelect, SearchMembers } from './SearchMembers';
@@ -140,8 +140,10 @@ export const ModalDomainAccessesManagement = ({
         </Box>
       }
     >
-      <Box $margin={{ bottom: 'xl', top: 'large' }}
-       $padding={{ horizontal: 'md' }}>
+      <Box
+        $margin={{ bottom: 'xl', top: 'large' }}
+        $padding={{ horizontal: 'md' }}
+      >
         <SearchMembers
           mailDomain={mailDomain}
           setSelectedMembers={setSelectedMembers}

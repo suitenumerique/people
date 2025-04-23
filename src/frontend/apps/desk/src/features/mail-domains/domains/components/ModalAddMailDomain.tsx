@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Loader, ModalSize, VariantType } from '@openfun/cunningham-react';
+import { Button, Loader, ModalSize } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -10,7 +10,6 @@ import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Input, Text, TextErrors } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
 
-import { default as MailDomainsLogo } from '../../assets/mail-domains-logo.svg';
 import { useAddMailDomain } from '../api';
 
 const FORM_ID = 'form-add-mail-domain';
@@ -21,8 +20,8 @@ export const ModalAddMailDomain = ({
   closeModal: () => void;
 }) => {
   const { t } = useTranslation();
-
   const [errorCauses, setErrorCauses] = useState<string[]>([]);
+  const [step, setStep] = useState(0);
 
   const addMailDomainValidationSchema = z.object({
     name: z.string().min(1, t('Example: saint-laurent.fr')),
@@ -30,15 +29,23 @@ export const ModalAddMailDomain = ({
   });
 
   const methods = useForm<{ name: string; supportEmail: string }>({
-    delayError: 0,
-    defaultValues: {
-      name: '',
-      supportEmail: '',
-    },
+    defaultValues: { name: '', supportEmail: '' },
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: zodResolver(addMailDomainValidationSchema),
+    criteriaMode: 'all',
   });
+
+  const { isValid, isSubmitting, dirtyFields } = methods.formState;
+
+  const [name, supportEmail] = useWatch({
+    control: methods.control,
+    name: ['name', 'supportEmail'],
+  });
+
+  const isFormFilled = !!name?.trim() && !!supportEmail?.trim();
+  const isFormTouched = dirtyFields.name && dirtyFields.supportEmail;
+  const isFormReady = isFormFilled && isFormTouched && isValid;
 
   const { mutate: addMailDomain, isPending } = useAddMailDomain({
     onSuccess: () => {
@@ -55,10 +62,7 @@ export const ModalAddMailDomain = ({
             ],
             '',
             () => {
-              if (methods.formState.errors.name) {
-                return;
-              }
-
+              if (methods.formState.errors.name) return;
               methods.setError('name', {
                 type: 'manual',
                 message: t(
@@ -74,9 +78,7 @@ export const ModalAddMailDomain = ({
             'Your request cannot be processed because the server is experiencing an error. If the problem ' +
               'persists, please contact our support to resolve the issue: suiteterritoriale@anct.gouv.fr',
           ),
-          () => {
-            methods.setFocus('name');
-          },
+          () => methods.setFocus('name'),
         ],
       });
 
@@ -89,31 +91,25 @@ export const ModalAddMailDomain = ({
     },
   });
 
-
   const onSubmitCallback = (event: React.FormEvent) => {
     event.preventDefault();
-
     void methods.handleSubmit(({ name, supportEmail }) => {
       void addMailDomain({ name, supportEmail });
     })();
   };
 
-  if (!methods) {
-    return null;
-  }
-
-    const [step, setStep] = useState(0);
-
   const steps = [
     {
       title: t('Add a mail domain'),
       content: (
-        <Text>{t("You can connect an existing domain name to the DINUM organization. If you don't have a domain name, contact an administrator or read our information document.")}</Text>
+        <Text>
+          {t(
+            "You can connect an existing domain name to the DINUM organization. If you don't have a domain name, contact an administrator or read our information document.",
+          )}
+        </Text>
       ),
       rightAction: (
-        <Button onClick={() => setStep(1)}>
-          {t('I have already domain')}
-        </Button>
+        <Button onClick={() => setStep(1)}>{t('I have already domain')}</Button>
       ),
       leftAction: (
         <Button color="secondary" onClick={closeModal}>
@@ -125,71 +121,58 @@ export const ModalAddMailDomain = ({
       title: t('Add a mail domain'),
       content: (
         <>
-        {!!errorCauses?.length ? (
-        <TextErrors
-            $margin={{ bottom: 'large' }}
-            $textAlign="left"
-            causes={errorCauses}
-          />
-        ) : null}
-
-        <FormProvider {...methods}>
-          <form
-            id={FORM_ID}
-            onSubmit={onSubmitCallback}
-            title={t('Mail domain addition form')}
-          >
-            <Controller
-              control={methods.control}
-              name="name"
-              render={({ fieldState }) => (
-                <Input
-                  fullWidth
-                  type="text"
-                  {...methods.register('name')}
-                  aria-invalid={!!fieldState.error}
-                  aria-required
-                  placeholder="mondomaine.fr"
-                  required
-                  autoComplete="off"
-                  label={t('Enter your domain')}
-                  state={fieldState.error ? 'error' : 'default'}
-                  text={
-                    fieldState?.error?.message
-                      ? fieldState.error.message
-                      : t('Example: saint-laurent.fr')
-                  }
-                />
-              )}
+          {!!errorCauses.length && (
+            <TextErrors
+              $margin={{ bottom: 'large' }}
+              $textAlign="left"
+              causes={errorCauses}
             />
-            <Box $margin={{ vertical: '10px' }}>
+          )}
+          <FormProvider {...methods}>
+            <form
+              id={FORM_ID}
+              onSubmit={onSubmitCallback}
+              title={t('Mail domain addition form')}
+            >
               <Controller
                 control={methods.control}
-                name="supportEmail"
+                name="name"
                 render={({ fieldState }) => (
                   <Input
+                    type="text"
+                    {...methods.register('name')}
                     aria-invalid={!!fieldState.error}
                     aria-required
+                    placeholder="mondomaine.fr"
                     required
-                    placeholder="jean.dupont@free.fr"
-                    label={t('Support email address')}
-                    state={fieldState.error ? 'error' : 'default'}
-                    text={
-                      fieldState?.error?.message
-                        ? fieldState.error.message
-                        : t('E.g. : support@example.fr')
-                    }
-                    {...methods.register('supportEmail')}
+                    autoComplete="off"
+                    label={t('Enter your domain')}
                   />
                 )}
               />
-            </Box>
-          </form>
-
-        </FormProvider>
-            <Text $theme="grescale" $variant="600"> 
-              {t("Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.")}
-            </Text>
+              <Box $margin={{ vertical: '10px' }}>
+                <Controller
+                  control={methods.control}
+                  name="supportEmail"
+                  render={({ fieldState }) => (
+                    <Input
+                      {...methods.register('supportEmail')}
+                      aria-invalid={!!fieldState.error}
+                      aria-required
+                      required
+                      placeholder="jean.dupont@free.fr"
+                      label={t('Support email address')}
+                    />
+                  )}
+                />
+              </Box>
+            </form>
+          </FormProvider>
+          <Text $theme="greyscale" $variation="600">
+            {t(
+              'Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.',
+            )}
+          </Text>
         </>
       ),
       leftAction: (
@@ -201,15 +184,11 @@ export const ModalAddMailDomain = ({
         <Button
           type="submit"
           form={FORM_ID}
-          disabled={
-            methods.formState.isSubmitting ||
-            !methods.formState.isValid ||
-            isPending
-          }
-         >
+          disabled={isSubmitting || isPending || !isFormReady}
+        >
           {t('Add the domain')}
-         </Button>
-      )
+        </Button>
+      ),
     },
   ];
 
@@ -227,9 +206,7 @@ export const ModalAddMailDomain = ({
       size={ModalSize.MEDIUM}
       title={steps[step].title}
     >
-      <Box $padding="md">
-        {steps[step].content}
-      </Box>
+      <Box $padding="md">{steps[step].content}</Box>
       {isPending && (
         <Box $align="center">
           <Loader />

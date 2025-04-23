@@ -11,6 +11,12 @@ import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
+import { useCreateInvitation } from '@/features/mail-domains/access-management/api';
+import { ChooseRole } from '@/features/mail-domains/access-management/components/ChooseRole';
+import {
+  OptionsSelect,
+  SearchMembers,
+} from '@/features/mail-domains/access-management/components/SearchMembers';
 import {
   OptionSelect,
   OptionType,
@@ -18,10 +24,6 @@ import {
 } from '@/features/teams/member-add/types';
 
 import { MailDomain, Role } from '../../domains';
-import { useCreateInvitation } from '../api';
-
-import { ChooseRole } from './ChooseRole';
-import { OptionsSelect, SearchMembers } from './SearchMembers';
 
 interface ModalCreateAccessProps {
   mailDomain: MailDomain;

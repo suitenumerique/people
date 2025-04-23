@@ -10,8 +10,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
+import { MailDomain } from '@/features/mail-domains/domains';
 
-import { MailDomain } from '../../../../domains/types';
 import { useUpdateMailboxStatus } from '../../api/useUpdateMailboxStatus';
 import { MailDomainMailbox } from '../../types';
 
@@ -20,10 +20,7 @@ interface PanelActionsProps {
   mailDomain: MailDomain;
 }
 
-export const PanelActions = ({
-  mailDomain,
-  mailbox,
-}: PanelActionsProps) => {
+export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   const { t } = useTranslation();
   const [isDropOpen, setIsDropOpen] = useState(false);
   const isEnabled = mailbox.status === 'enabled';
@@ -58,7 +55,12 @@ export const PanelActions = ({
   return (
     <>
       <DropButton
-        button={<IconOptions isHorizontal="true" aria-label={t('Open the access options modal')} />}
+        button={
+          <IconOptions
+            isHorizontal={true}
+            aria-label={t('Open the access options modal')}
+          />
+        }
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}
       >

@@ -25,6 +25,7 @@
 
 .labelled-box label {
   color: var(--c--theme--colors--greyscale-500);
+  top: 1px;
 }
 
 .labelled-box--disabled label {
@@ -54,8 +55,8 @@
   background-color: var(--c--theme--colors--greyscale-050);
 }
 
-.c__input__wrapper__mobile {
-  @media (max-width: 768px) {
+@media screen and (width <= 768px) {
+  .c__input__wrapper__mobile {
     width: 100% !important;
     margin-bottom: 10px;
   }
@@ -68,10 +69,6 @@
 .c__input__wrapper .c__input {
   position: absolute;
   top: 16px;
-}
-
-.labelled-box label {
-  top: 1px;
 }
 
 .c__input__wrapper:has(input[readonly]),
@@ -250,12 +247,6 @@ input:-webkit-autofill:focus {
   background-color: var(--c--components--datagrid--body--background-color);
   color: var(--c--theme--colors--greyscale-900);
 }
-/*
-.c__datagrid__table__container > table tbody tr:hover {
-  background-color: var(
-    --c--components--datagrid--body--background-color-hover
-  );
-}*/
 
 .c__datagrid__table__container > table {
   table-layout: auto;
@@ -298,7 +289,7 @@ input:-webkit-autofill:focus {
   display: none;
 }
 
-@media (width <= 380px) {
+@media screen and (width <= 380px) {
   .c__datagrid > .c__pagination {
     flex-direction: column;
     align-items: center;
@@ -364,6 +355,7 @@ input:-webkit-autofill:focus {
 .c__radio input::before {
   box-shadow: inset 1em 1em var(--c--theme--colors--primary-600);
 }
+
 /**
  * Button primary
 */
@@ -446,20 +438,15 @@ input:-webkit-autofill:focus {
   );
   color: var(--c--components--button--primary-text--disabled) !important;
 }
+
 /** 
  * Button Tertiary
 */
-
 .c__button--tertiary {
   background-color: var(--c--components--button--tertiary--background--color);
   color: var(--c--components--button--tertiary--color);
 }
-.c__button--tertiary:hover {
-  background-color: var(
-    --c--components--button--tertiary--background--color-hover
-  );
-  color: var(--c--components--button--tertiary--color);
-}
+
 .c__button--tertiary:hover {
   background-color: var(
     --c--components--button--tertiary--background--color-hover
@@ -542,8 +529,9 @@ input:-webkit-autofill:focus {
   border: 1px solid transparent;
 }
 
-/**----- END NEW BUTTONS ------**/
-
+/**
+ * END NEW BUTTONS
+*/
 .c__button:hover.c__button-no-bg,
 .c__button.c__button-no-bg,
 .c__button:disabled.c__button-no-bg {
@@ -625,7 +613,7 @@ input:-webkit-autofill:focus {
   padding: var(--c--theme--spacings--md);
 }
 
-@media (width <= 576px) {
+@media screen and (width <= 576px) {
   .c__modal__footer--sided {
     gap: 0.5rem;
     flex-direction: column-reverse;

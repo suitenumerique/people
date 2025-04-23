@@ -3,44 +3,42 @@ import {
   ModalProps,
 } from '@openfun/cunningham-react';
 import React, { useEffect } from 'react';
-import { Text, HorizontalSeparator } from '@/components';
+
+import { HorizontalSeparator } from '@/components';
+
 import style from './custom-modal.module.scss';
 
-export const CustomModal: React.FC<ModalProps & { step?: number; totalSteps?: number }> = ({
-  children,
-  step = 0,
-  totalSteps = 1,
-  ...props
-}) => {
+export const CustomModal: React.FC<
+  ModalProps & { step?: number; totalSteps?: number }
+> = ({ children, step = 0, totalSteps = 1, ...props }) => {
   // Apply the hook here once for all modals
   usePreventFocusVisible(['.c__modal__content']);
 
   return (
-    <CunninghamModal {...props} className={style.modalCustom}>
+    <CunninghamModal {...props}>
       {/*<div className={style.modalContainer} onClick={(e) => e.stopPropagation()}>        */}
-       {/* modal header */}
-        { totalSteps > 1 &&
-          <div className={style.header}>
-            <div className={style.progressBar}>
-              {Array.from({ length: totalSteps }).map((_, index) => (
-                <div
-                  key={index}
-                  className={`${style.progressBarStep} ${index <= step ? style.active : ''}`}
-                ></div>
-              ))}
-            </div>
-         </div>
-        }
-        <HorizontalSeparator $withPadding="true" showSeparator={true}></HorizontalSeparator>
-        <div>
+      {/* modal header */}
+      {totalSteps > 1 && (
+        <div className={style.header}>
+          <div className={style.progressBar}>
+            {Array.from({ length: totalSteps }).map((_, index) => (
+              <div
+                key={index}
+                className={`${style.progressBarStep} ${index <= step ? style.active : ''}`}
+              ></div>
+            ))}
+          </div>
+        </div>
+      )}
+      <HorizontalSeparator $withPadding={true}></HorizontalSeparator>
+      <div>
         {children}
         {/* modal content */}
         {/*<div className={style.content}>{children}</div>*/}
-        
+
         {/* modal footer */}
-        </div>
-       <div className={style.footer}>
       </div>
+      <div className={style.footer}></div>
 
       {/*</div>*/}
     </CunninghamModal>

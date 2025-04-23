@@ -63,7 +63,7 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
                 return (
                   <Box $direction="row" $align="center">
                     <Tag
-                      showTooltip="true"
+                      showTooltip={true}
                       status={row.status}
                       tooltipType="domain"
                     ></Tag>

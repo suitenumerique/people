@@ -43,21 +43,8 @@ describe('AccountDropdown', () => {
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
-  it('opens the dropdown and shows logout button when clicked', async () => {
-    renderAccountDropdown();
-
-    const dropButton = await screen.findByText('Test User');
-    await userEvent.click(dropButton);
-
-    expect(screen.getByText('Logout')).toBeInTheDocument();
-    expect(screen.getByLabelText('Logout')).toBeInTheDocument();
-  });
-
   it('calls logout function when logout button is clicked', async () => {
     renderAccountDropdown();
-
-    const dropButton = await screen.findByText('Test User');
-    await userEvent.click(dropButton);
 
     const logoutButton = screen.getByLabelText('Logout');
     await userEvent.click(logoutButton);

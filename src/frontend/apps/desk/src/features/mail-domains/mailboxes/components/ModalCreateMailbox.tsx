@@ -14,10 +14,10 @@ import { z } from 'zod';
 import { parseAPIError } from '@/api/parseAPIError';
 import {
   Box,
+  HorizontalSeparator,
   Input,
   Text,
   TextErrors,
-  HorizontalSeparator
 } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
 
@@ -36,7 +36,7 @@ export const ModalCreateMailbox = ({
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const [errorCauses, setErrorCauses] = useState<string[]>([]);
-  const [step, setStep] = useState(0);
+  const [step] = useState(0);
 
   const createMailboxValidationSchema = z.object({
     first_name: z.string().min(1, t('Please enter your first name')),
@@ -66,7 +66,7 @@ export const ModalCreateMailbox = ({
       closeModal();
     },
     onError: (error) => {
-      const causes = parseAPIError({ error });
+      const causes = parseAPIError({ error }) || [];
       setErrorCauses(causes);
     },
   });
@@ -89,9 +89,11 @@ export const ModalCreateMailbox = ({
               <Text $size="md" $weight="bold">
                 {t('Personal informations')}
               </Text>
-              <Text $theme="greyscale" $variation="600">{t('Configure the new user.')}</Text>
+              <Text $theme="greyscale" $variation="600">
+                {t('Configure the new user.')}
+              </Text>
             </Box>
-            <Box $padding={{horizontal: 'md' }}>
+            <Box $padding={{ horizontal: 'md' }}>
               <Box $margin={{ top: 'base' }}>
                 <Controller
                   name="first_name"
@@ -136,25 +138,31 @@ export const ModalCreateMailbox = ({
                     />
                   )}
                 />
-                <Text $theme="greyscale" $variation="600">{t('The person will receive an email at this address to set up their account.')}</Text>
+                <Text $theme="greyscale" $variation="600">
+                  {t(
+                    'The person will receive an email at this address to set up their account.',
+                  )}
+                </Text>
               </Box>
             </Box>
 
-            <HorizontalSeparator $withPadding="true" showSeparator={true} />
+            <HorizontalSeparator $withPadding={true} />
 
             <Box $padding={{ top: 'base', horizontal: 'md' }}>
               <Text $size="md" $weight="bold">
                 {t('New address')}
               </Text>
             </Box>
-            <Box $padding="md"
+            <Box
+              $padding="md"
               style={{
                 display: 'flex',
                 alignItems: 'end',
                 gap: '20px',
                 flexDirection: 'row',
-                alignContent: 'flex-end'
-              }}>
+                alignContent: 'flex-end',
+              }}
+            >
               <Controller
                 name="local_part"
                 control={methods.control}
@@ -168,11 +176,16 @@ export const ModalCreateMailbox = ({
                   />
                 )}
               />
-              <Box style={{
-                display: 'flex',
-                paddingBottom: '18px'
-              }}>
-                <Text className="mb-8" $weight="500"> @ {mailDomain.name} </Text>
+              <Box
+                style={{
+                  display: 'flex',
+                  paddingBottom: '18px',
+                }}
+              >
+                <Text className="mb-8" $weight="500">
+                  {' '}
+                  @ {mailDomain.name}{' '}
+                </Text>
               </Box>
             </Box>
           </form>
@@ -196,26 +209,27 @@ export const ModalCreateMailbox = ({
   ];
 
   return (
-    <CustomModal
-      id="modal-new-mailbox"
-      isOpen
-      hideCloseButton
-      step={step}
-      totalSteps={steps.length}
-      leftActions={steps[step].leftAction}
-      rightActions={steps[step].rightAction}
-      size={ModalSize.MEDIUM}
-      title={steps[step].title}
-      onClose={closeModal}
-      closeOnEsc
-      closeOnClickOutside
-    >
-      {steps[step].content}
-      {isPending && (
-        <Box $align="center">
-          <Loader />
-        </Box>
-      )}
-    </CustomModal>
+    <div id="modal-new-mailbox">
+      <CustomModal
+        isOpen
+        hideCloseButton
+        step={step}
+        totalSteps={steps.length}
+        leftActions={steps[step].leftAction}
+        rightActions={steps[step].rightAction}
+        size={ModalSize.MEDIUM}
+        title={steps[step].title}
+        onClose={closeModal}
+        closeOnEsc
+        closeOnClickOutside
+      >
+        {steps[step].content}
+        {isPending && (
+          <Box $align="center">
+            <Loader />
+          </Box>
+        )}
+      </CustomModal>
+    </div>
   );
 };

@@ -5,7 +5,11 @@ import React, { ReactElement, useState } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { MailDomain, Role, useMailDomain } from '@/features/mail-domains/domains';
+import {
+  MailDomain,
+  Role,
+  useMailDomain,
+} from '@/features/mail-domains/domains';
 import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
@@ -15,9 +19,7 @@ const MailboxesPage: NextPageWithLayout = () => {
   const [currentMailDomain, setCurrentMailDomain] = useState<MailDomain | null>(
     null,
   );
-  const [currentRole, setCurrentRole] = useState<MailDomain | null>(
-    null,
-  );
+  const [currentRole, setCurrentRole] = useState<Role>(Role.VIEWER);
 
   if (router?.query?.slug && typeof router.query.slug !== 'string') {
     throw new Error('Invalid mail domain slug');
@@ -40,8 +42,8 @@ const MailboxesPage: NextPageWithLayout = () => {
       const role = mailDomain.abilities.delete
         ? Role.OWNER
         : mailDomain.abilities.manage_accesses
-        ? Role.ADMIN
-        : Role.VIEWER;
+          ? Role.ADMIN
+          : Role.VIEWER;
 
       setCurrentRole(role);
     }

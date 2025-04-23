@@ -14,6 +14,7 @@ import { useCreateMailDomainAccess } from '@/features/mail-domains/access-manage
 import {
   OptionSelect,
   OptionType,
+  OptionsSelect,
   isOptionNewMember,
 } from '@/features/teams/member-add/types';
 
@@ -21,7 +22,7 @@ import { MailDomain, Role } from '../../domains';
 import { useCreateInvitation } from '../api';
 
 import { ChooseRole } from './ChooseRole';
-import { OptionsSelect, SearchMembers } from './SearchMembers';
+import { SearchMembers } from './SearchMembers';
 
 interface ModalDomainAccessesManagementProps {
   mailDomain: MailDomain;

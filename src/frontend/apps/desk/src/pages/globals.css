@@ -2,15 +2,12 @@
 
 :root {
   --header-height: 52px;
-  @media (min-width: 768px) {
-    --header-height: 52px;
-  }
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: Marianne;
+  font-family: Marianne, sans-serif;
 }
 
 * {
@@ -48,16 +45,17 @@ main ::-webkit-scrollbar-thumb:hover {
   display: flex !important;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .sm\:block {
     display: block !important;
   }
+
   .sm\:flex {
     display: flex !important;
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .md\:hidden {
     display: none !important;
   }

@@ -1,15 +1,18 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, Loader, ModalSize, useToastProvider, VariantType } from '@openfun/cunningham-react';
-import React, { useState } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {
+  Button,
+  Loader,
+  ModalSize,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
 
-import { Box, Text, TextErrors } from '@/components';
+import { Box, Text } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
+import { MailDomain } from '@/features/mail-domains/domains';
 
 import { useFetchFromDimail } from '../api/useFetchMailDomain';
-import { MailDomain, Role, ModalRequiredActionDomain } from '@/features/mail-domains/domains';
 
 export const ModalRequiredActionDomain = ({
   mailDomain,
@@ -26,24 +29,21 @@ export const ModalRequiredActionDomain = ({
   const { mutate: fetchMailDomain, isPending: fetchPending } =
     useFetchFromDimail({
       onSuccess: (data: MailDomain) => {
-        setShowModal(false);
+        closeModal();
         toast(t('Domain data fetched successfully'), VariantType.SUCCESS);
         onMailDomainUpdate?.(data);
       },
       onError: () => {
         toast(t('Failed to fetch domain data'), VariantType.ERROR);
       },
-  });
+    });
 
   const copyToClipboard = async (text: string) => {
     await navigator.clipboard.writeText(text);
     toast(t('copy done'), VariantType.SUCCESS);
   };
 
-  const [errorCauses, setErrorCauses] = useState<string[]>([]);
-
-
-  const [step, setStep] = useState(0);
+  const step = 0;
 
   const steps = [
     {
@@ -118,11 +118,16 @@ export const ModalRequiredActionDomain = ({
               </pre>
             </Box>
           )}
-        </Text>),
+        </Text>
+      ),
       rightAction: fetchPending ? (
         <Loader />
       ) : (
-        <Button onClick={() => { void fetchMailDomain(mailDomain.slug); }}>
+        <Button
+          onClick={() => {
+            void fetchMailDomain(mailDomain.slug);
+          }}
+        >
           {t('Re-run check')}
         </Button>
       ),
@@ -140,17 +145,15 @@ export const ModalRequiredActionDomain = ({
       step={step}
       totalSteps={steps.length}
       leftActions={steps[step].leftAction}
-      hideCloseButton
-      closeOnClickOutside
+      hideCloseButton={true}
+      closeOnClickOutside={true}
       onClose={closeModal}
       closeOnEsc
       rightActions={steps[step].rightAction}
       size={ModalSize.MEDIUM}
       title={steps[step].title}
     >
-      <Box $padding="md">
-        {steps[step].content}
-      </Box>
+      <Box $padding="md">{steps[step].content}</Box>
     </CustomModal>
   );
 };

@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
-import { MailDomainsListView } from '@/features/mail-domains/domains/components/panel/MailDomainsListView';
 import { ModalAddMailDomain } from '@/features/mail-domains/domains/components/ModalAddMailDomain';
+import { MailDomainsListView } from '@/features/mail-domains/domains/components/panel/MailDomainsListView';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -35,10 +35,7 @@ const Page: NextPageWithLayout = () => {
   };
 
   return (
-    <div
-      aria-label="Mail Domains panel"
-      className="container"
-    >
+    <div aria-label="Mail Domains panel" className="container">
       <div
         data-testid="regie-grid"
         style={{

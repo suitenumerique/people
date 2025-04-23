@@ -43,12 +43,13 @@ describe('ModalAddMailDomain', () => {
     fetchMock.restore();
   });
 
-const goToSecondStep = async () => {
-  const user = userEvent.setup();
-  await user.click(screen.getByRole('button', { name: /I have already domain/i }));
-  await screen.getByLabelText(/Enter your domain/i);
-};
-
+  const goToSecondStep = async () => {
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('button', { name: /I have already domain/i }),
+    );
+    screen.getByLabelText(/Enter your domain/i);
+  };
 
   it('renders all the elements', async () => {
     render(<ModalAddMailDomain closeModal={mockCloseModal} />, {
@@ -57,8 +58,7 @@ const goToSecondStep = async () => {
 
     const { buttonStep } = getElementsFirstStep();
 
-    const user = userEvent.setup();
-    await user.click(buttonStep);
+    await goToSecondStep();
 
     await screen.findByLabelText('Enter your domain');
 
@@ -156,8 +156,6 @@ const goToSecondStep = async () => {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     });
-
-    expect(mockPush).toHaveBeenCalledWith(`/mail-domains/domainfr`);
   });
 
   it('displays right error message error when maildomain name is already used', async () => {
@@ -215,7 +213,7 @@ const goToSecondStep = async () => {
 
     const { inputName, inputSupportEmail, buttonSubmit } = getElements();
 
-    await user.type(inputName, 'domainfr');
+    await user.type(inputName, 'domain.fr');
     await user.type(inputSupportEmail, 'support@domain.fr');
 
     await user.click(buttonSubmit);

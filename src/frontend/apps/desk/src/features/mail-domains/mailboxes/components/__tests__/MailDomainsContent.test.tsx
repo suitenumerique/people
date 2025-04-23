@@ -4,10 +4,9 @@ import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import React from 'react';
 
-import { AppWrapper } from '@/tests/utils';
-
 import { MailDomain } from '@/features/mail-domains/domains/types';
 import { MailBoxesView } from '@/features/mail-domains/mailboxes/components/MailBoxesView';
+import { AppWrapper } from '@/tests/utils';
 
 const mockMailDomain: MailDomain = {
   id: '456ac6ca-0402-4615-8005-69bc1efde43f',
@@ -106,67 +105,6 @@ describe('MailBoxesView', () => {
     expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
   });
 
-  // TO DOOOOOO
-  // it('handles sorting by name and email', async () => {
-  //   const sortedByName = [...mockMailboxes].sort((a, b) =>
-  //     a.first_name.localeCompare(b.first_name),
-  //   );
-  //   const sortedByEmail = [...mockMailboxes].sort((a, b) =>
-  //     a.local_part.localeCompare(b.local_part),
-  //   );
-
-  //   fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
-  //     count: 2,
-  //     results: mockMailboxes,
-  //   });
-
-  //   fetchMock.get(
-  //     'end:/mail-domains/example-com/mailboxes/?page=1&ordering=name',
-  //     {
-  //       count: 2,
-  //       results: sortedByName,
-  //     },
-  //   );
-
-  //   fetchMock.get(
-  //     'end:/mail-domains/example-com/mailboxes/?page=1&ordering=local_part',
-  //     {
-  //       count: 2,
-  //       results: sortedByEmail,
-  //     },
-  //   );
-
-  //   render(<MailBoxesView mailDomain={mockMailDomain} />, {
-  //     wrapper: AppWrapper,
-  //   });
-
-  //   // Sorting by name
-  //   await waitFor(async () => {
-  //     await userEvent.click(screen.getByRole('button', { name: 'Names' }));
-  //   });
-
-  //   expect(fetchMock.lastUrl()).toContain(
-  //     '/mail-domains/example-com/mailboxes/?page=1&ordering=name',
-  //   );
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText('John Doe')).toBeInTheDocument();
-  //   });
-
-  //   // Sorting by email
-  //   await waitFor(async () => {
-  //     await userEvent.click(screen.getByRole('button', { name: 'Emails' }));
-  //   });
-
-  //   expect(fetchMock.lastUrl()).toContain(
-  //     '/mail-domains/example-com/mailboxes/?page=1&ordering=local_part',
-  //   );
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
-  //   });
-  // });
-
   it('opens the create mailbox modal when button is clicked by granted user', async () => {
     fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
       count: 0,
@@ -182,9 +120,7 @@ describe('MailBoxesView', () => {
     });
 
     await waitFor(async () => {
-      expect(
-        await screen.getByText('New email account'),
-      ).toBeInTheDocument();
+      expect(await screen.findByText('New email account')).toBeInTheDocument();
     });
   });
 

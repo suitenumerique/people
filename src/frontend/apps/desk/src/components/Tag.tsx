@@ -31,7 +31,6 @@ const TagContent = ({ status }: TagContentProps) => {
     failed: colorsTokens()['danger-100'],
   };
 
-
   return (
     <Box
       $background={backgroundColor[status]}
@@ -52,26 +51,33 @@ const TagContent = ({ status }: TagContentProps) => {
 export const Tag = ({ ...props }: TagContentProps) => {
   const { t } = useTranslation();
 
-  const tooltipText = {
+  const tooltipText: Record<
+    NonNullable<TagContentProps['tooltipType']>,
+    Partial<Record<TagContentProps['status'], string>>
+  > = {
     domain: {
       pending: 'Domain pending validation by an administrator',
       enabled: 'Active domain',
       disabled: 'Disabled domain',
       failed: 'Domain error, contact an administrator',
-      action_required: 'A configuration action from the domain manager (outside Régie) is required',
+      action_required:
+        'A configuration action from the domain manager (outside Régie) is required',
     },
     mail: {
       pending: 'Email address pending validation by an administrator',
       enabled: 'Functional email address',
       failed: 'Email address error, contact an administrator',
-      disabled: 'Disabled email address'
-    }
+      disabled: 'Disabled email address',
+    },
   };
 
+  const rawTooltip =
+    props.tooltipType && tooltipText[props.tooltipType]?.[props.status];
+
+  const tooltipContent = rawTooltip ? t(rawTooltip) : '';
+
   return props.showTooltip ? (
-    <Tooltip 
-      content={t(tooltipText[props.tooltipType]?.[props.status]) || ''} 
-      placement={props.placement || 'top'}>
+    <Tooltip content={tooltipContent} placement={props.placement || 'top'}>
       <Box>
         <TagContent status={props.status} />
       </Box>
