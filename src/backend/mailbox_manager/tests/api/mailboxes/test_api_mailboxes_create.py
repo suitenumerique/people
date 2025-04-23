@@ -613,6 +613,66 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     assert mailbox.secondary_email == mailbox_data["secondary_email"]
 
 
+@pytest.mark.parametrize(
+    "role",
+    [enums.MailDomainRoleChoices.ADMIN, enums.MailDomainRoleChoices.OWNER],
+)
+def test_api_mailboxes__domain_owner_or_admin_successful_creation_sets_password(
+    role,
+):
+    """
+    Upon successful creation, mailbox password should be synced to Dimail's.
+    """
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=role)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response using "responses":
+        rsps.add(
+            rsps.GET,
+            re.compile(r".*/token/"),
+            body=TOKEN_OK,
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsp = rsps.add(
+            rsps.POST,
+            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+            body=response_mailbox_created(
+                f"{mailbox_data['local_part']}@{access.domain.name}"
+            ),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+
+        # Checks payload sent to email-provisioning API
+        payload = json.loads(rsps.calls[1].request.body)
+        assert payload == {
+            "displayName": f"{mailbox_data['first_name']} {mailbox_data['last_name']}",
+            "givenName": mailbox_data["first_name"],
+            "surName": mailbox_data["last_name"],
+        }
+
+        # Checks response
+        assert response.status_code == status.HTTP_201_CREATED
+        assert rsp.call_count == 1
+
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.check_password("password")
+
+
 @override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
 def test_api_mailboxes__dimail_token_permission_denied(caplog):
     """

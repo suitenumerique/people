@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(mailbox) synchronize password of newly created mailbox with Dimail's
+
 ## [1.19.1] - 2025-09-19
 
 - 🐛(fix) add enabled update your mailbox
