@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Changed
 
+- ✨(mailbox) synchronize password of newly created mailbox with Dimail's
 - ✨(mailbox) remove secondary email as required field
 
 ## [1.15.0] - 2025-04-04
