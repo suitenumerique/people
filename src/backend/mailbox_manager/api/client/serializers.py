@@ -39,8 +39,7 @@ class MailboxSerializer(serializers.ModelSerializer):
         By default, we generate an unusable password for the mailbox, meaning that the mailbox
         will not be able to be used as a login credential until the password is set.
         """
-        mailbox = super().create(
-            validated_data
+        mailbox = super().create(validated_data
             | {
                 "password": make_password(None),  # generate an unusable password
             }
@@ -51,6 +50,8 @@ class MailboxSerializer(serializers.ModelSerializer):
             response = client.create_mailbox(mailbox, self.context["request"].user.sub)
 
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
+            mailbox_data = response.json()
+            mailbox.set_password(mailbox_data["password"])
             mailbox.save()
 
             if mailbox.secondary_email:
