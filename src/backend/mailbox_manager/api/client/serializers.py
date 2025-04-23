@@ -50,6 +50,8 @@ class MailboxSerializer(serializers.ModelSerializer):
             response = client.create_mailbox(mailbox, self.context["request"].user.sub)
 
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
+            mailbox_data = response.json()
+            mailbox.set_password(mailbox_data["password"])
             mailbox.save()
 
             if mailbox.secondary_email:
