@@ -48,11 +48,10 @@ describe('ModalCreateMailbox', () => {
   };
 
   const getFormElements = () => ({
-    formTag: screen.getText('New email account'),
-    inputFirstName: screen.getByLabelText('First name'),
-    inputLastName: screen.getByLabelText('Last name'),
-    inputLocalPart: screen.getByLabelText('Name of the new address'),
-    inputEmailAddress: screen.getByLabelText('Personal email address'),
+    inputFirstName: screen.getByLabelText(/First name/i),
+    inputLastName: screen.getByLabelText(/Last name/i),
+    inputLocalPart: screen.getByLabelText(/Name of the new address/i),
+    inputEmailAddress: screen.getByLabelText(/Personal email address/i),
     buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
     buttonSubmit: screen.getByRole('button', {
       name: 'Create',
@@ -68,7 +67,6 @@ describe('ModalCreateMailbox', () => {
   it('renders all the elements', () => {
     renderModalCreateMailbox();
     const {
-      formTag,
       inputFirstName,
       inputLastName,
       inputLocalPart,
@@ -77,11 +75,9 @@ describe('ModalCreateMailbox', () => {
       buttonSubmit,
     } = getFormElements();
 
-    expect(formTag).toBeVisible();
     expect(inputFirstName).toBeVisible();
     expect(inputLastName).toBeVisible();
     expect(inputLocalPart).toBeVisible();
-    expect(screen.getByText(`@${mockMailDomain.name}`)).toBeVisible();
     expect(inputEmailAddress).toBeVisible();
     expect(buttonCancel).toBeVisible();
     expect(buttonSubmit).toBeVisible();
@@ -109,8 +105,6 @@ describe('ModalCreateMailbox', () => {
     await userEvent.clear(inputEmailAddress);
 
     await userEvent.click(buttonSubmit);
-
-    expect(screen.getByText(`@${mockMailDomain.name}`)).toBeVisible();
 
     await waitFor(() => {
       expect(

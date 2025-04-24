@@ -17,22 +17,12 @@ jest.mock('next/navigation', () => ({
 const mockCloseModal = jest.fn();
 
 describe('ModalAddMailDomain', () => {
-  const getElementsFirstStep = () => ({
-    modalElement: screen.getByText('Add a mail domain'),
-    buttonStep: screen.getByRole('button', {
-      name: /I have already domain/i,
-    }),
-    buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
-  });
-
   const getElements = () => ({
+    modalElement: screen.getByText('Add a mail domain'),
     inputName: screen.getByLabelText(/Enter your domain/i),
     inputSupportEmail: screen.getByLabelText(/Support email address/i),
     buttonCancel: screen.getByRole('button', { name: /Cancel/i, hidden: true }),
-    buttonSubmit: screen.getByRole('button', {
-      name: /Add the domain/i,
-      hidden: true,
-    }),
+    buttonSubmit: screen.getByTestId('add_domain'),
   });
 
   beforeEach(() => {
@@ -56,11 +46,9 @@ describe('ModalAddMailDomain', () => {
       wrapper: AppWrapper,
     });
 
-    const { buttonStep } = getElementsFirstStep();
-
     await goToSecondStep();
 
-    await screen.findByLabelText('Enter your domain');
+    screen.getByLabelText(/Enter your domain/i);
 
     const {
       modalElement,

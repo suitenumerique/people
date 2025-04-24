@@ -62,7 +62,9 @@ export const ModalAddMailDomain = ({
             ],
             '',
             () => {
-              if (methods.formState.errors.name) return;
+              if (methods.formState.errors.name) {
+                return;
+              }
               methods.setError('name', {
                 type: 'manual',
                 message: t(
@@ -109,7 +111,9 @@ export const ModalAddMailDomain = ({
         </Text>
       ),
       rightAction: (
-        <Button onClick={() => setStep(1)}>{t('I have already domain')}</Button>
+        <Button data-testid="next_step" onClick={() => setStep(1)}>
+          {t('I have already domain')}
+        </Button>
       ),
       leftAction: (
         <Button color="secondary" onClick={closeModal}>
@@ -182,6 +186,7 @@ export const ModalAddMailDomain = ({
       ),
       rightAction: (
         <Button
+          data-testid="add_domain"
           type="submit"
           form={FORM_ID}
           disabled={isSubmitting || isPending || !isFormReady}

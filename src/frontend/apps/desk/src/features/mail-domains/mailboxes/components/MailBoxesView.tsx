@@ -1,4 +1,10 @@
-import { Button, Input, Tooltip } from '@openfun/cunningham-react';
+import {
+  Alert,
+  Button,
+  Input,
+  Tooltip,
+  VariantType,
+} from '@openfun/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +52,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
             marginBottom: '20px',
           }}
         >
-          {/*<AlertStatus status={mailDomain.status} />*/}
+          <AlertStatus status={mailDomain.status} />
         </div>
         <div
           className="sm:block md:flex"
@@ -270,53 +276,41 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
 //   );
 // };
 
-// const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
-//   const { t } = useTranslation();
+const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
+  const { t } = useTranslation();
 
-//   const getStatusAlertProps = (status?: string) => {
-//     switch (status) {
-//       case 'disabled':
-//         return {
-//           variant: VariantType.NEUTRAL,
-//           message: t(
-//             'This domain name is deactivated. No new mailboxes can be created.',
-//           ),
-//         };
-//       case 'failed':
-//         return {
-//           variant: VariantType.ERROR,
-//           message: (
-//             <Text $display="inline">
-//               {t(
-//                 'The domain name encounters an error. Please contact our support team to solve the problem:',
-//               )}{' '}
-//               <TextStyled
-//                 as="a"
-//                 target="_blank"
-//                 $display="inline"
-//                 href="mailto:suiteterritoriale@anct.gouv.fr"
-//                 aria-label={t(
-//                   'Contact our support at "suiteterritoriale@anct.gouv.fr"',
-//                 )}
-//               >
-//                 suiteterritoriale@anct.gouv.fr
-//               </TextStyled>
-//               .
-//             </Text>
-//           ),
-//         };
-//     }
-//   };
+  const getStatusAlertProps = (status?: string) => {
+    switch (status) {
+      case 'disabled':
+        return {
+          variant: VariantType.NEUTRAL,
+          message: t(
+            'This domain name is deactivated. No new mailboxes can be created.',
+          ),
+        };
+      case 'failed':
+        return {
+          variant: VariantType.ERROR,
+          message: (
+            <Text $display="inline">
+              {t(
+                'The domain name encounters an error. Please contact our support team to solve the problem:',
+              )}
+            </Text>
+          ),
+        };
+    }
+  };
 
-//   const alertStatusProps = getStatusAlertProps(status);
+  const alertStatusProps = getStatusAlertProps(status);
 
-//   if (!alertStatusProps) {
-//     return null;
-//   }
+  if (!alertStatusProps) {
+    return null;
+  }
 
-//   return (
-//     <Alert canClose={false} type={alertStatusProps.variant}>
-//       <Text $display="inline">{alertStatusProps.message}</Text>
-//     </Alert>
-//   );
-// };
+  return (
+    <Alert canClose={false} type={alertStatusProps.variant}>
+      <Text $display="inline">{alertStatusProps.message}</Text>
+    </Alert>
+  );
+};

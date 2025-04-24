@@ -71,14 +71,21 @@ export const MailDomainView = ({
             {(mailDomain?.status === 'pending' ||
               mailDomain?.status === 'action_required' ||
               mailDomain?.status) && (
-              <div data-testid="actions_required" onClick={handleShowModal}>
+              <button
+                data-testid="actions_required"
+                onClick={handleShowModal}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                }}
+              >
                 <Tag
                   showTooltip={true}
                   status={mailDomain.status}
                   tooltipType="domain"
                   placement="bottom"
                 ></Tag>
-              </div>
+              </button>
             )}
           </Box>
           <Box $align="center">
