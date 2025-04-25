@@ -26,6 +26,7 @@ urlpatterns = (
     [
         path("admin/", admin.site.urls),
         path("o/", include(oauth2_urls)),
+        path("scim/v2/", include("django_scim.urls")),
     ]
     + api_urls.urlpatterns
     + resource_server_urls.urlpatterns
