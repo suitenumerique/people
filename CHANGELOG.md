@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(plugins) add route to create first mailbox of a domain
+
 ### Changed
 
 - 🛂(dimail) simplify interop with dimail
