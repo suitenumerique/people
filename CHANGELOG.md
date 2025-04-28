@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.16.0] - 2025-04-28
+
 ### Added
 
 - 🔧(sentry) add Celery beat task integration #892
@@ -379,7 +381,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.15.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.16.0...main
+[1.16.0]: https://github.com/suitenumerique/people/releases/v1.16.0
 [1.15.0]: https://github.com/suitenumerique/people/releases/v1.15.0
 [1.14.1]: https://github.com/suitenumerique/people/releases/v1.14.1
 [1.14.0]: https://github.com/suitenumerique/people/releases/v1.14.0
