@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 08:20+0000\n"
-"PO-Revision-Date: 2025-04-04 15:29\n"
+"POT-Creation-Date: 2025-04-28 14:01+0000\n"
+"PO-Revision-Date: 2025-04-28 15:40\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -45,24 +45,24 @@ msgstr ""
 msgid "People core application"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:103
-#: core/authentication/backends.py:103
+#: build/lib/core/authentication/backends.py:104
+#: core/authentication/backends.py:104
 msgid "Claims contained no recognizable user identification"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:123
-#: core/authentication/backends.py:123
+#: build/lib/core/authentication/backends.py:124
+#: core/authentication/backends.py:124
 msgid "Claims contained no recognizable organization identification"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:180
-#: build/lib/core/authentication/backends.py:182
-#: core/authentication/backends.py:180 core/authentication/backends.py:182
+#: build/lib/core/authentication/backends.py:181
+#: build/lib/core/authentication/backends.py:183
+#: core/authentication/backends.py:181 core/authentication/backends.py:183
 msgid "Invalid authorization header."
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:187
-#: core/authentication/backends.py:187
+#: build/lib/core/authentication/backends.py:188
+#: core/authentication/backends.py:188
 msgid "Invalid api key."
 msgstr ""
 
@@ -337,24 +337,24 @@ msgstr ""
 msgid "api key"
 msgstr ""
 
-#: build/lib/core/models.py:1114 core/models.py:1114
+#: build/lib/core/models.py:1113 core/models.py:1113
 msgid "allowed scopes"
 msgstr ""
 
-#: build/lib/core/models.py:1115 core/models.py:1115
+#: build/lib/core/models.py:1114 core/models.py:1114
 msgid "Allowed scopes for this service"
 msgstr ""
 
-#: build/lib/core/models.py:1120 core/models.py:1120
+#: build/lib/core/models.py:1119 core/models.py:1119
 msgid "Account service"
 msgstr ""
 
-#: build/lib/core/models.py:1121 core/models.py:1121
+#: build/lib/core/models.py:1120 core/models.py:1120
 msgid "Account services"
 msgstr ""
 
 #: build/lib/mailbox_manager/admin.py:17 mailbox_manager/admin.py:17
-msgid "Synchronise from dimail"
+msgid "Import emails from dimail"
 msgstr ""
 
 #: build/lib/mailbox_manager/admin.py:35 mailbox_manager/admin.py:35
@@ -533,16 +533,16 @@ msgstr ""
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: build/lib/mailbox_manager/utils/dimail.py:266
-#: mailbox_manager/utils/dimail.py:266
+#: build/lib/mailbox_manager/utils/dimail.py:260
+#: mailbox_manager/utils/dimail.py:260
 msgid "Your new mailbox information"
 msgstr ""
 
-#: build/lib/people/settings.py:157 people/settings.py:157
+#: build/lib/people/settings.py:158 people/settings.py:158
 msgid "English"
 msgstr ""
 
-#: build/lib/people/settings.py:158 people/settings.py:158
+#: build/lib/people/settings.py:159 people/settings.py:159
 msgid "French"
 msgstr ""
 
