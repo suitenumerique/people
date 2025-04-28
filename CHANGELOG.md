@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 🔧(sentry) add Celery beat task integration #892
+
 ### Changed
 
 - 🛂(dimail) simplify interop with dimail
