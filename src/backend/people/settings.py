@@ -21,6 +21,7 @@ import sentry_sdk
 from configurations import Configuration, values
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 
@@ -749,7 +750,10 @@ class Base(Configuration):
                 dsn=cls.SENTRY_DSN,
                 environment=cls.__name__.lower(),
                 release=get_release(),
-                integrations=[DjangoIntegration()],
+                integrations=[
+                    DjangoIntegration(),
+                    CeleryIntegration(monitor_beat_tasks=True),
+                ],
                 traces_sample_rate=0.1,
             )
 
