@@ -113,11 +113,17 @@ const Page: NextPageWithLayout = () => {
 
           <div>
             {can_create ? (
-              <Button onClick={openModal}>{t('Add a mail domain')}</Button>
+              <Button data-testid="button-new-domain" onClick={openModal}>
+                {t('Add a mail domain')}
+              </Button>
             ) : (
               <Tooltip content="You don't have the correct access right">
                 <div>
-                  <Button onClick={openModal} disabled={!can_create}>
+                  <Button
+                    data-testid="button-new-domain"
+                    onClick={openModal}
+                    disabled={!can_create}
+                  >
                     {t('Add a mail domain')}
                   </Button>
                 </div>
@@ -133,7 +139,6 @@ const Page: NextPageWithLayout = () => {
         )}
 
         <MailDomainsListView querySearch={searchValue} />
-
         {isModalOpen && <ModalAddMailDomain closeModal={closeModal} />}
       </div>
     </div>

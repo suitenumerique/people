@@ -2,7 +2,7 @@ import { Button, DataGrid } from '@openfun/cunningham-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, StyledLink, Tag } from '@/components';
+import { Box, StyledLink, Tag, Text } from '@/components';
 import {
   MailDomain,
   useMailDomains,
@@ -39,10 +39,10 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
   }, [querySearch, mailDomains]);
 
   return (
-    <div>
+    <div role="listbox">
       {filteredMailDomains && filteredMailDomains.length ? (
         <DataGrid
-          aria-label="listbox"
+          aria-label="listboxDomains"
           rows={filteredMailDomains}
           columns={[
             {
@@ -75,9 +75,11 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
               id: 'actions',
               renderCell({ row }) {
                 return (
-                  <StyledLink href={`/mail-domains/${row.slug}`}>
+                  <StyledLink
+                    aria-label={`${row.name} listboxDomains button`}
+                    href={`/mail-domains/${row.slug}`}
+                  >
                     <Button
-                      aria-label="`${row.name} listbox button`"
                       style={{
                         fontWeight: '500',
                         fontSize: '16px',
@@ -94,6 +96,12 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
           isLoading={isLoading}
         />
       ) : null}
+      {!filteredMailDomains ||
+        (!filteredMailDomains.length && (
+          <Text $align="center" $size="small">
+            {t('No domains exist.')}
+          </Text>
+        ))}
     </div>
   );
 }

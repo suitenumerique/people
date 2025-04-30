@@ -20,6 +20,7 @@ import {
 
 import { MailDomain, Role } from '../../domains';
 
+import { AccessesList } from './AccessesList';
 import { ChooseRole } from './ChooseRole';
 import { OptionsSelect, SearchMembers } from './SearchMembers';
 
@@ -120,16 +121,6 @@ export const ModalDomainAccessesManagement = ({
       onClose={onClose}
       closeOnClickOutside
       hideCloseButton
-      rightActions={
-        <Button
-          color="primary"
-          fullWidth
-          disabled={!selectedMembers.length}
-          onClick={() => void handleValidate()}
-        >
-          {t('OK')}
-        </Button>
-      }
       size={ModalSize.MEDIUM}
       title={
         <Box $align="left" $gap="1rem">
@@ -141,7 +132,7 @@ export const ModalDomainAccessesManagement = ({
       }
     >
       <Box
-        $margin={{ bottom: 'xl', top: 'large' }}
+        $margin={{ bottom: 'base', top: 'base' }}
         $padding={{ horizontal: 'md' }}
       >
         <SearchMembers
@@ -161,9 +152,20 @@ export const ModalDomainAccessesManagement = ({
               currentRole={currentRole}
               setRole={setRole}
             />
+            <Box $align="end">
+              <Button
+                color="primary"
+                size="medium"
+                disabled={!selectedMembers.length}
+                onClick={() => void handleValidate()}
+              >
+                {t('OK')}
+              </Button>
+            </Box>
           </Box>
         )}
       </Box>
+      <AccessesList mailDomain={mailDomain} currentRole={currentRole} />
     </Modal>
   );
 };

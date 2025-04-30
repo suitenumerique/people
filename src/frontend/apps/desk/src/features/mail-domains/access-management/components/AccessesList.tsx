@@ -1,10 +1,9 @@
-import { DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
+import { QuickSearchItemTemplate, UserRow } from '@gouvfr-lasuite/ui-kit';
+import { SortModel, usePagination } from '@openfun/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import IconUser from '@/assets/icons/icon-user.svg';
-import { Box, Card, TextErrors } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
+import { Box, SeparatedSection, Text, TextErrors } from '@/components';
 
 import { MailDomain, Role } from '../../domains';
 import { useMailDomainAccesses } from '../api';
@@ -13,7 +12,7 @@ import { Access } from '../types';
 
 import { AccessAction } from './AccessAction';
 
-interface AccessesGridProps {
+interface AccessesListProps {
   mailDomain: MailDomain;
   currentRole: Role;
 }
@@ -50,16 +49,15 @@ function formatSortModel(
  * @param currentRole
  * @todo same as team members grid
  */
-export const AccessesGrid = ({
+export const AccessesList = ({
   mailDomain,
   currentRole,
-}: AccessesGridProps) => {
+}: AccessesListProps) => {
   const { t } = useTranslation();
-  const { colorsTokens } = useCunninghamTheme();
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
-  const [sortModel, setSortModel] = useState<SortModel>([]);
+  const sortModel: SortModel = [];
   const [accesses, setAccesses] = useState<Access[]>([]);
   const { page, pageSize, setPagesCount } = pagination;
 
@@ -76,12 +74,6 @@ export const AccessesGrid = ({
       return;
     }
 
-    const localizedRoles = {
-      [Role.ADMIN]: t('Administrator'),
-      [Role.VIEWER]: t('Viewer'),
-      [Role.OWNER]: t('Owner'),
-    };
-
     /*
      * Bug occurs from the Cunningham Datagrid component, when applying sorting
      * on null values. Sanitize empty values to ensure consistent sorting functionality.
@@ -89,9 +81,9 @@ export const AccessesGrid = ({
     const accesses =
       data?.results?.map((access) => ({
         ...access,
-        localizedRole: localizedRoles[access.role],
         user: {
           ...access.user,
+          full_name: access.user.name,
           name: access.user.name,
           email: access.user.email,
         },
@@ -104,72 +96,52 @@ export const AccessesGrid = ({
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
   }, [data?.count, pageSize, setPagesCount]);
 
-  return (
-    <Card
-      $overflow="auto"
-      $css={`
-          & .c__pagination__goto {
-            display: none;
-          }
-          & table th:first-child, 
-          & table td:first-child {
-            padding-right: 0;
-            width: 3.5rem;
-          }
-          & table td:last-child {
-            text-align: right;
-          }
-      `}
-      aria-label={t('Accesses list card')}
-    >
-      {error && <TextErrors causes={error.cause} />}
+  const localizedRoles = {
+    [Role.ADMIN]: t('Administrator'),
+    [Role.VIEWER]: t('Viewer'),
+    [Role.OWNER]: t('Owner'),
+  };
 
-      <DataGrid
-        columns={[
-          {
-            id: 'icon-user',
-            renderCell() {
-              return (
-                <Box $direction="row" $align="center">
-                  <IconUser
-                    aria-label={t('Access icon')}
-                    width={20}
-                    height={20}
-                    color={colorsTokens()['primary-600']}
+  return (
+    <>
+      <SeparatedSection />
+      <Box
+        $margin={{ bottom: 'xl', top: 'md' }}
+        $padding={{ horizontal: 'md' }}
+      >
+        <Text $size="small" $margin={{ bottom: 'md' }} $weight="600">
+          {t('Rights shared with ')}
+          {accesses.length}
+          {t(accesses.length > 1 ? ' peoples' : ' people')}
+        </Text>
+        {error && <TextErrors causes={error.cause} />}
+
+        {accesses.map((access) => (
+          <Box key={access.id} $direction="row" $align="space-between">
+            <QuickSearchItemTemplate
+              key={access.id}
+              left={
+                <Box $direction="row" className="c__share-member-item">
+                  <UserRow
+                    key={access.user.email}
+                    fullName={access.user.name}
+                    email={access.user.email}
+                    showEmail
                   />
                 </Box>
-              );
-            },
-          },
-          {
-            headerName: t('Names'),
-            field: 'user.name',
-          },
-          {
-            field: 'user.email',
-            headerName: t('Emails'),
-          },
-          {
-            field: 'localizedRole',
-            headerName: t('Roles'),
-          },
-          {
-            id: 'column-actions',
-            renderCell: ({ row }) => (
+              }
+            />
+            <Box $direction="row" $align="center">
+              <Text>{localizedRoles[access.role]}</Text>
               <AccessAction
                 mailDomain={mailDomain}
-                access={row}
+                access={access}
                 currentRole={currentRole}
               />
-            ),
-          },
-        ]}
-        rows={accesses}
-        isLoading={isLoading}
-        pagination={pagination}
-        onSortModelChange={setSortModel}
-        sortModel={sortModel}
-      />
-    </Card>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    </>
   );
 };

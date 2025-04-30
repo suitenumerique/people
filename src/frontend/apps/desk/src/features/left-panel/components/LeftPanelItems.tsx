@@ -40,54 +40,53 @@ export const LeftPanelItems = () => {
   };
 
   return (
-    <>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--c--theme--spacings--2xs)',
-        }}
-      >
-        {defaultQueries.map((query, index) => {
-          const isActive =
-            pathname === query.targetQuery ||
-            pathname.startsWith(`${query.targetQuery}/`);
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--c--theme--spacings--2xs)',
+      }}
+    >
+      {defaultQueries.map((query, index) => {
+        if (!query.abilities) {
+          return null;
+        }
 
-          return (
-            <>
-              {query.abilities && (
-                <SeparatedSection
-                  key={query.icon}
-                  showSeparator={defaultQueries.length - 1 > index}
-                >
-                  <Button
-                    aria-label={`${query.label} button`}
-                    onClick={() => onSelectQuery(query.targetQuery)}
-                    style={{
-                      gap: 'var(--c--theme--spacings--xs)',
-                      margin: '10px 0',
-                      cursor: 'pointer',
-                      border: 'none',
-                      backgroundColor: isActive
-                        ? colors['greyscale-100']
-                        : colors['greyscale-000'],
-                      fontWeight: isActive ? 700 : undefined,
-                    }}
-                  >
-                    <Icon
-                      $variation={isActive ? '1000' : '700'}
-                      iconName={query.icon}
-                    />
-                    <Text $variation={isActive ? '1000' : '700'} $size="sm">
-                      {query.label}
-                    </Text>
-                  </Button>
-                </SeparatedSection>
-              )}
-            </>
-          );
-        })}
-      </div>
-    </>
+        const isActive =
+          pathname === query.targetQuery ||
+          pathname.startsWith(`${query.targetQuery}/`);
+
+        return (
+          <SeparatedSection
+            key={query.label}
+            showSeparator={defaultQueries.length - 1 > index}
+          >
+            <Button
+              data-testid={`${query.label} button`}
+              aria-label={`${query.label} button`}
+              onClick={() => onSelectQuery(query.targetQuery)}
+              style={{
+                gap: 'var(--c--theme--spacings--xs)',
+                margin: '10px 0',
+                cursor: 'pointer',
+                border: 'none',
+                backgroundColor: isActive
+                  ? colors['greyscale-100']
+                  : colors['greyscale-000'],
+                fontWeight: isActive ? 700 : undefined,
+              }}
+            >
+              <Icon
+                $variation={isActive ? '1000' : '700'}
+                iconName={query.icon}
+              />
+              <Text $variation={isActive ? '1000' : '700'} $size="sm">
+                {query.label}
+              </Text>
+            </Button>
+          </SeparatedSection>
+        );
+      })}
+    </div>
   );
 };

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { AppWrapper } from '@/tests/utils';
 
 import { MailDomain, Role } from '../../../domains';
-import { AccessesContent } from '../AccessesContent';
+import { AccessesList } from '../AccessesList';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
@@ -21,7 +21,7 @@ jest.mock('@/features/mail-domains/assets/mail-domains-logo.svg', () => () => (
   <svg data-testid="mail-domains-logo" />
 ));
 
-describe('AccessesContent', () => {
+describe('AccessesList', () => {
   const mockRouterPush = jest.fn();
 
   const mockMailDomain: MailDomain = {
@@ -42,16 +42,13 @@ describe('AccessesContent', () => {
     },
   };
 
-  const renderAccessesContent = (
+  const renderAccessesList = (
     currentRole: Role = Role.ADMIN,
     mailDomain: MailDomain = mockMailDomain,
   ) =>
-    render(
-      <AccessesContent currentRole={currentRole} mailDomain={mailDomain} />,
-      {
-        wrapper: AppWrapper,
-      },
-    );
+    render(<AccessesList currentRole={currentRole} mailDomain={mailDomain} />, {
+      wrapper: AppWrapper,
+    });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -61,7 +58,7 @@ describe('AccessesContent', () => {
   });
 
   it('renders the accesses grid correctly', () => {
-    renderAccessesContent();
+    renderAccessesList();
 
     expect(screen.getByText('Mock AccessesGrid')).toBeInTheDocument();
   });

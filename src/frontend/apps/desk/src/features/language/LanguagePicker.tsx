@@ -65,6 +65,12 @@ export const LanguagePicker = () => {
     }));
   }, [languages]);
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = i18n.language;
+    }
+  }, [i18n.language]);
+
   /**
    * @description prevent select div to receive focus on keyboard navigation so the focus goes directly to inner button
    * @see https://github.com/suitenumerique/people/pull/379

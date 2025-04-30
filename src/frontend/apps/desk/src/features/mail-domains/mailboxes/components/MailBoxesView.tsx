@@ -125,6 +125,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
               <Tooltip content="You don't have the correct access right">
                 <div>
                   <Button
+                    data-testid="button-new-mailbox"
                     onClick={openModal}
                     icon={<span className="material-icons">add</span>}
                     disabled={!isCreateMailboxFormVisible}
@@ -294,8 +295,11 @@ const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
           message: (
             <Text $display="inline">
               {t(
-                'The domain name encounters an error. Please contact our support team to solve the problem:',
+                'The domain name encounters an error. Please contact our support team to solve the problem: ',
               )}
+              <a href="mailto:suiteterritoriale@anct.gouv.fr">
+                suiteterritoriale@anct.gouv.fr
+              </a>
             </Text>
           ),
         };

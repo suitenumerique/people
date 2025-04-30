@@ -21,6 +21,8 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
       </label>
       <input
         id={label}
+        aria-required={required}
+        required={required}
         style={{
           padding: '12px',
           margin: '6px 0',

@@ -75,9 +75,11 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
               id: 'actions',
               renderCell({ row }) {
                 return (
-                  <StyledLink href={`/mail-domains/${row.slug}`}>
+                  <StyledLink
+                    href={`/mail-domains/${row.slug}`}
+                    aria-label="`${row.name} listbox button`"
+                  >
                     <Button
-                      aria-label="`${row.name} listbox button`"
                       style={{
                         fontWeight: '500',
                         fontSize: '16px',
