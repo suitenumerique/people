@@ -2,7 +2,7 @@ import { VariantType } from '@openfun/cunningham-react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-import { MailDomain } from '@/features/mail-domains/domains';
+import { MailDomain, Role } from '@/features/mail-domains/domains';
 import { AppWrapper } from '@/tests/utils';
 
 import { MailDomainView } from '../components/MailDomainView';
@@ -69,9 +69,12 @@ describe('<MailDomainView />', () => {
   });
 
   it('display action required button and open modal with information when domain status is action_required', () => {
-    render(<MailDomainView mailDomain={mockMailDomain} />, {
-      wrapper: AppWrapper,
-    });
+    render(
+      <MailDomainView mailDomain={mockMailDomain} currentRole={Role.ADMIN} />,
+      {
+        wrapper: AppWrapper,
+      },
+    );
     // Check if action required button is displayed
     const actionButton = screen.getByTestId('actions_required');
     expect(actionButton).toBeInTheDocument();
@@ -103,6 +106,7 @@ describe('<MailDomainView />', () => {
     render(
       <MailDomainView
         mailDomain={mockMailDomain}
+        currentRole={Role.ADMIN}
         onMailDomainUpdate={jest.fn()}
       />,
       { wrapper: AppWrapper },

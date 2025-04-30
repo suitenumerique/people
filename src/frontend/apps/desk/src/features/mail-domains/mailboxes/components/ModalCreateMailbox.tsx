@@ -156,7 +156,7 @@ export const ModalCreateMailbox = ({
             <Box
               $padding="md"
               style={{
-                display: 'flex',
+                position: 'relative',
                 alignItems: 'end',
                 gap: '20px',
                 flexDirection: 'row',
@@ -167,24 +167,28 @@ export const ModalCreateMailbox = ({
                 name="local_part"
                 control={methods.control}
                 render={({ field, fieldState }) => (
-                  <Input
-                    {...field}
-                    label={t('Name of the new address')}
-                    required
-                    placeholder={t('firstname.lastname')}
-                    error={fieldState.error?.message}
-                  />
+                  <Box $align="center">
+                    <Input
+                      {...field}
+                      label={t('Name of the new address')}
+                      required
+                      placeholder={t('firstname.lastname')}
+                      error={fieldState.error?.message}
+                    />
+                  </Box>
                 )}
               />
               <Box
                 style={{
                   display: 'flex',
-                  paddingBottom: '18px',
+                  position: 'absolute',
+                  top: '65px',
+                  left: '220px',
                 }}
               >
                 <Text className="mb-8" $weight="500">
                   {' '}
-                  @ {mailDomain.name}{' '}
+                  @{mailDomain.name}{' '}
                 </Text>
               </Box>
             </Box>
