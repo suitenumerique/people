@@ -742,6 +742,11 @@ class Team(MP_Node, BaseModel):
     can see it.
     When a team is created from a Service Provider this one is automatically set in the
     Team `service_providers`.
+
+    The team `external_id` is used to synchronize the team with external systems, this
+    is the equivalent of the User `sub` field but for teams (note: `sub` is highly related
+    to the OIDC standard, while `external_id` is not). The `external_id` is NOT the same as
+    the `externalId` field in the SCIM standard when importing teams from SCIM.
     """
 
     # Allow up to 80 nested teams with 62^5 (916_132_832) root nodes
@@ -751,6 +756,14 @@ class Team(MP_Node, BaseModel):
     path = models.CharField(max_length=5 * 80, unique=True, db_collation="C")
 
     name = models.CharField(max_length=100)
+
+    external_id = models.UUIDField(
+        verbose_name=_("external_id"),
+        help_text=_("Team external UUID for synchronization with external systems"),
+        unique=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
 
     users = models.ManyToManyField(
         User,

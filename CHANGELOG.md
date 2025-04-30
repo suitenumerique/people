@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(resource-server) add SCIM /Me endpoint #895
+
 ## [1.17.0] - 2025-06-11
 
 ### Added
