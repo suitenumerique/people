@@ -817,6 +817,29 @@ class Development(Base):
     DEBUG = True
 
     SESSION_COOKIE_NAME = "people_sessionid"
+    SESSION_CACHE_ALIAS = "session"
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        },
+        "session": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": values.Value(
+                "redis://redis:6379/2",
+                environ_name="REDIS_URL",
+                environ_prefix=None,
+            ),
+            "TIMEOUT": values.IntegerValue(
+                30,  # timeout in seconds
+                environ_name="CACHES_DEFAULT_TIMEOUT",
+                environ_prefix=None,
+            ),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        },
+    }
 
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
