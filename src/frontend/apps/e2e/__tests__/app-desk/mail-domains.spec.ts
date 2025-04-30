@@ -98,7 +98,7 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(page.getByLabel('Mail domains panel')).toBeVisible();
+      await expect(page.getByText('Areas of the organization')).toBeVisible();
       await expect(page.getByText('No domains exist.')).toBeVisible();
     });
 
@@ -127,14 +127,13 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(page.getByLabel('Mail domains panel')).toBeVisible();
-      await expect(page.getByText('No domains exist.')).toHaveCount(0);
+      await expect(page.getByText('Areas of the organization')).toBeVisible();
+      await expect(page.getByText('Manage')).toHaveCount(4);
 
       await Promise.all(
         mailDomainsFixtures.map(async ({ name, status }) => {
-          const linkName = page.getByRole('link', { name });
+          const linkName = page.getByText(name);
           await expect(linkName).toBeVisible();
-          await expect(linkName.getByText(`[${status}]`)).toBeVisible();
         }),
       );
     });

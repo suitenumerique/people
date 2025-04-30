@@ -49,8 +49,7 @@ test.describe('Config', () => {
 
     await expect(
       page
-        .getByLabel('Mail Domains panel', { exact: true })
-        .getByText('Mail Domains'),
+        .getByText('Areas of the organization')
     ).toBeVisible();
   });
 

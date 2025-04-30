@@ -47,13 +47,6 @@ test.describe('Keyboard navigation', () => {
 
     const header = page.locator('header');
 
-    // La Gauffre button is loaded asynchronously, so we wait for it to be visible
-    await expect(
-      header.getByRole('button', {
-        name: 'Les services de La Suite numérique',
-      }),
-    ).toBeVisible();
-
     // necessary to begin the keyboard navigation directly from first button on the app and only select its elements
     await header.click();
 
