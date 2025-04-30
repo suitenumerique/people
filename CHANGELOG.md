@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🔒️(drf) disable browsable HTML API renderer #897
+
 ### Added
 
 - 🔧(sentry) add Celery beat task integration #892
