@@ -1,0 +1,22 @@
+{% extends "selftest/base.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Home</a>
+&rsaquo; <a href="{% url 'admin:selftest_index' %}">Selftest</a>
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block selftest_content %}
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <label for="id_email">Recipient Email:</label>
+        <input type="email" name="email" id="id_email" required>
+    </div>
+    <div class="submit-row">
+        <input type="submit" value="Send Test Email" class="default">
+    </div>
+</form>
+{% endblock %}
