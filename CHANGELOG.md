@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.16.0] - 2025-05-05
+
 ### Added
 
 - 🔧(sentry) add Celery beat task integration #892
