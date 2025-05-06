@@ -13,8 +13,7 @@ test.describe('When a commune, domain is created on first login via ProConnect',
   }) => {
     const menu = page.locator('menu').first();
 
-    await menu.getByLabel(`Mail Domains button`)
-      .click();
+    await menu.getByLabel(`Mail Domains button`).click();
     await expect(page).toHaveURL(/mail-domains\//);
     await expect(
       page.getByLabel('Areas of the organization', { exact: true }),

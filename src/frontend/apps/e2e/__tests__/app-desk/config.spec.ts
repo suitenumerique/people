@@ -47,10 +47,7 @@ test.describe('Config', () => {
 
     await expect(page).toHaveURL(/mail-domains\//);
 
-    await expect(
-      page
-        .getByText('Areas of the organization')
-    ).toBeVisible();
+    await expect(page.getByText('Areas of the organization')).toBeVisible();
   });
 
   // test('it checks that the user abilities display teams', async ({
