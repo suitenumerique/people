@@ -4,9 +4,7 @@ test.describe('Login to people as Identity Provider', () => {
   test('checks a user with mailbox can login via people', async ({ page }) => {
     // go to people index page, wait for the redirection to keycloak
     await page.goto('/');
-    await page.locator('h2').first().textContent({
-      timeout: 5000,
-    });
+    await page.waitForURL('http://localhost:8083/**');
 
     // keycloak - click on the login button
     await page.click('a[id=social-oidc-people-local]');
