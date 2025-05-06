@@ -8,7 +8,7 @@ test.beforeEach(async ({ page, browserName }) => {
 });
 
 test.describe('Header', () => {
-  test('checks all the elements are visible', async ({ page, browserName }) => {
+  test('checks all the elements are visible', async ({ page }) => {
     const header = page.locator('header').first();
 
     await expect(header.getByText('La Régie')).toBeVisible();
