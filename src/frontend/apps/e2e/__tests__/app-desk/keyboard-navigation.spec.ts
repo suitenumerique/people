@@ -45,23 +45,32 @@ test.describe('Keyboard navigation', () => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
 
+    await page.waitForURL('http://localhost:3000/teams/');
+
     const header = page.locator('header');
 
     // necessary to begin the keyboard navigation directly from first button on the app and only select its elements
     await header.click();
 
-    // ensure ignoring elements (like tanstack query button) that are not part of the app
     const focusableElements = await page
       .locator(
-        '.c__app a:not([tabindex="-1"]), .c__app button:not([tabindex="-1"]), ' +
-          '.c__app [tabindex]:not([tabindex="-1"])',
+        [
+          '.c__app a:not([tabindex="-1"]):visible',
+          '.c__app button:not([tabindex="-1"]):visible',
+          '.c__app input:not([disabled]):not([tabindex="-1"]):visible',
+          '.c__app select:not([disabled]):not([tabindex="-1"]):visible',
+          '.c__app textarea:not([disabled]):not([tabindex="-1"]):visible',
+          '.c__app [tabindex]:not([tabindex="-1"]):visible',
+        ].join(', '),
       )
       .all();
 
-    // expect(focusableElements.length).toEqual(18);
+    expect(focusableElements.length).toEqual(19);
 
     for (let i = 0; i < focusableElements.length; i++) {
       await page.keyboard.press('Tab');
+      // wait for the element to be visible (page scrolls)
+      await focusableElements[i].scrollIntoViewIfNeeded();
       await expect(focusableElements[i]).toBeFocused();
     }
   });
