@@ -18,6 +18,11 @@ jest.mock('next/router', () => ({
   }),
 }));
 
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: () => jest.fn(),
+}));
+
 describe('PanelTeams', () => {
   afterEach(() => {
     fetchMock.restore();

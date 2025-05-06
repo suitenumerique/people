@@ -20,7 +20,7 @@ test.describe('Teams Panel', () => {
     ).toBeVisible();
 
     await expect(
-      panel.getByRole('link', {
+      panel.getByRole('button', {
         name: 'Add a team',
       }),
     ).toBeVisible();
@@ -67,11 +67,11 @@ test.describe('Teams Panel', () => {
     const selectedTeam = panel.locator('li').nth(0);
     await expect(selectedTeam).toHaveCSS(
       'background-color',
-      'rgb(202, 202, 251)',
+      'rgb(133, 133, 246)',
     );
 
     const hoverTeam = panel.locator('li').nth(1);
     await hoverTeam.hover();
-    await expect(hoverTeam).toHaveCSS('background-color', 'rgb(227, 227, 253)');
+    await expect(hoverTeam).toHaveCSS('background-color', 'rgb(202, 202, 251)');
   });
 });
