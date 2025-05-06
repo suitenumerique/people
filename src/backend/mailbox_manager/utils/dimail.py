@@ -429,27 +429,32 @@ class DimailAPIClient:
 
     def enable_pending_mailboxes(self, domain):
         """Send requests for all pending mailboxes of a domain."""
+        failed_mailboxes = []
 
         for mailbox in domain.mailboxes.filter(
             status=enums.MailboxStatusChoices.PENDING
         ):
-            response = self.create_mailbox(mailbox)
-
-            mailbox.status = enums.MailDomainStatusChoices.ENABLED
-            mailbox.save()
-
-            if mailbox.secondary_email:
-                # send confirmation email
-                self.notify_mailbox_creation(
-                    recipient=mailbox.secondary_email,
-                    mailbox_data=response.json(),
-                )
+            try:
+                response = self.create_mailbox(mailbox)
+            except requests.exceptions.HTTPError:
+                failed_mailboxes.append(str(mailbox))
             else:
-                logger.warning(
-                    "Email notification for %s creation not sent "
-                    "because no secondary email found",
-                    mailbox,
-                )
+                mailbox.status = enums.MailDomainStatusChoices.ENABLED
+                mailbox.save()
+
+                if mailbox.secondary_email and mailbox.secondary_email != str(mailbox):
+                    # send confirmation email
+                    self.notify_mailbox_creation(
+                        recipient=mailbox.secondary_email,
+                        mailbox_data=response.json(),
+                    )
+                else:
+                    logger.warning(
+                        "Email notification for %s creation not sent "
+                        "because no secondary email found",
+                        mailbox,
+                    )
+        return {"failed_mailboxes": failed_mailboxes}
 
     def check_domain(self, domain):
         """Send a request to dimail to check domain health."""

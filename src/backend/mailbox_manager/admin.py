@@ -135,6 +135,39 @@ def fetch_domain_expected_config_from_dimail(modeladmin, request, queryset):  # 
         )
 
 
+@admin.action(description=_("Send pending mailboxes to dimail"))
+def send_pending_mailboxes(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    """Send pending mailboxes"""
+    client = DimailAPIClient()
+
+    excluded_domains = []
+    for domain in queryset:
+        # do not check disabled domains
+        if domain.status != enums.MailDomainStatusChoices.ENABLED:
+            excluded_domains.append(domain.name)
+            continue
+
+        response = client.enable_pending_mailboxes(domain)
+        if response:
+            messages.error(
+                request,
+                _("Failed to send the following mailboxes : %(mailboxes)s.")
+                % {"mailboxes": ", ".join(response["failed_mailboxes"])},
+            )
+        else:
+            messages.success(
+                request,
+                _("Pending mailboxes succesfully sent for %(domain)s.")
+                % {"domain": domain.name},
+            )
+    if excluded_domains:
+        messages.warning(
+            request,
+            _("Domains disabled are excluded from : %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
+        )
+
+
 class UserMailDomainAccessInline(admin.TabularInline):
     """Inline admin class for mail domain accesses."""
 
@@ -163,6 +196,7 @@ class MailDomainAdmin(admin.ModelAdmin):
         sync_mailboxes_from_dimail,
         fetch_domain_status_from_dimail,
         fetch_domain_expected_config_from_dimail,
+        send_pending_mailboxes,
     )
     autocomplete_fields = ["organization"]
 
