@@ -48,7 +48,7 @@ export const createTeam = async (
   const randomTeams = randomName(teamName, browserName, length);
 
   for (let i = 0; i < randomTeams.length; i++) {
-    await panel.getByRole('link', { name: 'Add a team' }).click();
+    await panel.getByRole('button', { name: 'Add a team' }).click();
     await page.getByText('Team name').fill(randomTeams[i]);
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
