@@ -63,7 +63,7 @@ test.describe('Teams Create', () => {
   }) => {
     const panel = page.getByLabel('Teams panel').first();
 
-    await panel.getByRole('link', { name: 'Add a team' }).click();
+    await panel.getByRole('button', { name: 'Add a team' }).click();
 
     const teamName = `My routing team ${browserName}-${Math.floor(Math.random() * 1000)}`;
     await page.getByText('Team name').fill(teamName);
@@ -72,7 +72,7 @@ test.describe('Teams Create', () => {
     const elTeam = page.getByRole('heading', { name: teamName });
     await expect(elTeam).toBeVisible();
 
-    await panel.getByRole('link', { name: 'Add a team' }).click();
+    await panel.getByRole('button', { name: 'Add a team' }).click();
     await expect(elTeam).toBeHidden();
 
     await panel.locator('li').getByText(teamName).click();
