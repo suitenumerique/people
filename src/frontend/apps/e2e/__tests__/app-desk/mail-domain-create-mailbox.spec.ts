@@ -14,6 +14,7 @@ const mailDomainsFixtures: MailDomain[] = [
     updated_at: currentDateIso,
     slug: 'domainfr',
     status: 'enabled',
+    support_email: 'support@domain.fr',
     abilities: {
       get: true,
       patch: true,
@@ -30,6 +31,7 @@ const mailDomainsFixtures: MailDomain[] = [
     updated_at: currentDateIso,
     slug: 'mailsfr',
     status: 'enabled',
+    support_email: 'support@mails.fr',
     abilities: {
       get: true,
       patch: true,
@@ -46,6 +48,7 @@ const mailDomainsFixtures: MailDomain[] = [
     updated_at: currentDateIso,
     slug: 'versaillesnet',
     status: 'enabled',
+    support_email: 'support@versailles.net',
     abilities: {
       get: true,
       patch: true,
@@ -62,6 +65,7 @@ const mailDomainsFixtures: MailDomain[] = [
     updated_at: currentDateIso,
     slug: 'parisfr',
     status: 'enabled',
+    support_email: 'support@paris.fr',
     abilities: {
       get: true,
       patch: true,
@@ -134,14 +138,6 @@ const interceptCommonApiRequests = async (
   );
 };
 
-const navigateToMailboxCreationFormForMailDomainFr = async (
-  page: Page,
-): Promise<void> => {
-  await page.goto('/mail-domains');
-  await page.getByLabel(`domain.fr listboxDomains button`).click();
-  await page.getByRole('button', { name: 'New mail address' }).click();
-};
-
 test.describe('Mail domain create mailbox', () => {
   test('checks user can New mail address when he has post ability', async ({
     page,
@@ -205,6 +201,8 @@ test.describe('Mail domain create mailbox', () => {
       }
     });
 
+    await interceptRequests(page);
+
     await page.goto('/');
     // Login with a user who has the visibility on the mail domains
     await keyCloakSignIn(page, browserName, 'mail-member');
@@ -213,9 +211,7 @@ test.describe('Mail domain create mailbox', () => {
 
     await page.getByLabel(`domain.fr listboxDomains button`).click();
 
-    await expect(
-      page.getByRole('button', { name: 'New mail address' }),
-    ).click();
+    await page.getByTestId('button-new-mailbox').click();
 
     await expect(page.getByText('New email account')).toBeVisible();
 

@@ -131,7 +131,7 @@ test.describe('Mail domains', () => {
       await expect(page.getByText('Manage')).toHaveCount(4);
 
       await Promise.all(
-        mailDomainsFixtures.map(async ({ name, status }) => {
+        mailDomainsFixtures.map(async ({ name }) => {
           const linkName = page.getByText(name);
           await expect(linkName).toBeVisible();
         }),
