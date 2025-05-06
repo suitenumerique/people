@@ -5,11 +5,10 @@ export const keyCloakSignIn = async (
   browserName: string,
   accountName?: string,
 ) => {
-
   const title = await page.locator('h1').first().textContent({
     timeout: 5000,
   });
-  
+
   const username = accountName
     ? `e2e.${accountName}`
     : `user-e2e-${browserName}`;

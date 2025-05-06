@@ -186,9 +186,7 @@ test.describe('Mail domain', () => {
 
         await assertMailDomainUpperElementsAreVisible(page);
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeVisible();
+        await expect(page.getByTestId('button-new-mailbox')).toBeVisible();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -237,9 +235,7 @@ test.describe('Mail domain', () => {
           page.getByRole('heading', { name: 'domain.fr' }),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeVisible();
+        await expect(page.getByTestId('button-new-mailbox')).toBeVisible();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -286,9 +282,7 @@ test.describe('Mail domain', () => {
           ),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -339,9 +333,7 @@ test.describe('Mail domain', () => {
           page.getByRole('link', { name: 'suiteterritoriale@anct.gouv.fr' }),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -523,9 +515,7 @@ test.describe('Mail domain', () => {
 
         await assertMailDomainUpperElementsAreVisible(page);
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await assertFilledMailboxesTableElementsAreVisible(
           page,
@@ -576,9 +566,7 @@ test.describe('Mail domain', () => {
           page.getByRole('heading', { name: 'domain.fr' }),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -625,9 +613,7 @@ test.describe('Mail domain', () => {
           ),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
@@ -674,9 +660,7 @@ test.describe('Mail domain', () => {
           ),
         ).toBeVisible();
 
-        await expect(
-          page.getByTestId('button-new-mailbox'),
-        ).toBeDisabled();
+        await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
 
         await expect(
           page.getByText('No mail box was created with this mail domain.'),
