@@ -143,7 +143,6 @@ const navigateToMailboxCreationFormForMailDomainFr = async (
 };
 
 test.describe('Mail domain create mailbox', () => {
-
   test('checks user can New mail address when he has post ability', async ({
     page,
     browserName,
@@ -317,8 +316,6 @@ test.describe('Mail domain create mailbox', () => {
 
     await page.getByLabel(`domain.fr listboxDomains button`).click();
 
-    await expect(
-      page.getByTestId('button-new-mailbox')
-    ).toBeDisabled();
+    await expect(page.getByTestId('button-new-mailbox')).toBeDisabled();
   });
 });
