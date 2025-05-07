@@ -96,4 +96,14 @@ test.describe('Config', () => {
 
     await expect(page.getByText('Groups')).toBeVisible();
   });
+
+  test('it checks that support chatbox is visible', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    await expect(
+      page.locator('#crisp-chatbox').getByText('Invalid website'),
+    ).toBeVisible();
+  });
 });
