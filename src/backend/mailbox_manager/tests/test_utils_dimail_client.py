@@ -348,9 +348,9 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     assert domain.last_check_details == body_domain_ok
 
 
-def test_dimail__enable_pending_mailboxes(caplog):
+def test_dimail__send_pending_mailboxes(caplog):
     """Status of pending mailboxes should switch to "enabled"
-    when calling enable_pending_mailboxes."""
+    when calling send_pending_mailboxes."""
     caplog.set_level(logging.INFO)
 
     domain = factories.MailDomainFactory()
@@ -380,7 +380,7 @@ def test_dimail__enable_pending_mailboxes(caplog):
             status=status.HTTP_201_CREATED,
             content_type="application/json",
         )
-        dimail_client.enable_pending_mailboxes(domain=domain)
+        dimail_client.send_pending_mailboxes(domain=domain)
 
     mailbox1.refresh_from_db()
     mailbox2.refresh_from_db()
