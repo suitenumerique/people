@@ -109,14 +109,16 @@ export const MailDomainsActions = ({
               setIsDropOpen(false);
               handleResetMailboxPassword();
             }}
-            fullWidth
             color="primary-text"
+            disabled={!isEnabled}
             icon={
-              <span className="material-icons" aria-hidden="true">lock_reset</span>
+              <span className="material-icons" aria-hidden="true">
+                {isEnabled ? 'lock_reset' : ' block' }
+                </span>
             }
           >
-            <Text $theme="primary">
-              {isEnabled ? t('Reset password') : ('Cannot reset password on disabled mailbox')}
+            <Text $theme={isEnabled ? "primary" : "secondary"}>
+              {isEnabled ? t('Reset password') : t('Reset password')}
             </Text>
           </Button>
         </Box>
