@@ -3,14 +3,17 @@ Test for team accesses API endpoints in People's core app : create
 """
 
 import json
+import logging
 import random
 import re
 
 import pytest
 import responses
+from rest_framework import status
 from rest_framework.test import APIClient
 
-from core import factories, models
+from core import enums, factories, models
+from core.tests.fixtures import matrix
 
 pytestmark = pytest.mark.django_db
 
@@ -171,14 +174,17 @@ def test_api_team_accesses_create_authenticated_owner():
     }
 
 
-def test_api_team_accesses_create_webhook():
+def test_api_team_accesses_create__with_scim_webhook():
     """
-    When the team has a webhook, creating a team access should fire a call.
+    If a team has a SCIM webhook, creating a team access should fire a call
+    with the expected payload.
     """
     user, other_user = factories.UserFactory.create_batch(2)
 
     team = factories.TeamFactory(users=[(user, "owner")])
-    webhook = factories.TeamWebhookFactory(team=team)
+    webhook = factories.TeamWebhookFactory(
+        team=team, protocol=enums.WebhookProtocolChoices.SCIM
+    )
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
 
@@ -226,3 +232,139 @@ def test_api_team_accesses_create_webhook():
                 }
             ],
         }
+
+    assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()
+
+
+def test_api_team_accesses_create__multiple_webhooks_success(caplog):
+    """
+    When the team has multiple webhooks, creating a team access should fire all the expected calls.
+    If all responses are positive, proceeds to add the user to the team.
+    """
+    caplog.set_level(logging.INFO)
+
+    user, other_user = factories.UserFactory.create_batch(2)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    webhook_scim = factories.TeamWebhookFactory(
+        team=team, protocol=enums.WebhookProtocolChoices.SCIM, secret="wesh"
+    )
+    webhook_matrix = factories.TeamWebhookFactory(
+        team=team,
+        url="https://www.webhookserver.fr/#/room/room_id:home_server/",
+        protocol=enums.WebhookProtocolChoices.MATRIX,
+        secret="yo",
+    )
+
+    role = random.choice([role[0] for role in models.RoleChoices.choices])
+
+    client = APIClient()
+    client.force_login(user)
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsps.add(
+            rsps.PATCH,
+            re.compile(r".*/Groups/.*"),
+            body="{}",
+            status=200,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/join"),
+            body=str(matrix.mock_join_room_successful),
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/invite"),
+            body=str(matrix.mock_invite_successful()["message"]),
+            status=matrix.mock_invite_successful()["status_code"],
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/teams/{team.id!s}/accesses/",
+            {
+                "user": str(other_user.id),
+                "role": role,
+            },
+            format="json",
+        )
+        assert response.status_code == 201
+
+    # Logger
+    log_messages = [msg.message for msg in caplog.records]
+    for webhook in [webhook_scim, webhook_matrix]:
+        assert (
+            f"add_user_to_group synchronization succeeded with {webhook.url}"
+            in log_messages
+        )
+
+    # Status
+    for webhook in [webhook_scim, webhook_matrix]:
+        webhook.refresh_from_db()
+        assert webhook.status == "success"
+    assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()
+
+
+@responses.activate
+def test_api_team_accesses_create__multiple_webhooks_failure(caplog):
+    """When a webhook fails, user should still be added to the team."""
+    caplog.set_level(logging.INFO)
+
+    user, other_user = factories.UserFactory.create_batch(2)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    webhook_scim = factories.TeamWebhookFactory(
+        team=team, protocol=enums.WebhookProtocolChoices.SCIM, secret="wesh"
+    )
+    webhook_matrix = factories.TeamWebhookFactory(
+        team=team,
+        url="https://www.webhookserver.fr/#/room/room_id:home_server/",
+        protocol=enums.WebhookProtocolChoices.MATRIX,
+        secret="secret",
+    )
+
+    role = random.choice([role[0] for role in models.RoleChoices.choices])
+    client = APIClient()
+    client.force_login(user)
+
+    responses.patch(
+        re.compile(r".*/Groups/.*"),
+        body="{}",
+        status=200,
+    )
+    responses.post(
+        re.compile(r".*/join"),
+        body=str(matrix.mock_join_room_forbidden()["message"]),
+        status=str(matrix.mock_join_room_forbidden()["status_code"]),
+    )
+
+    response = client.post(
+        f"/api/v1.0/teams/{team.id!s}/accesses/",
+        {
+            "user": str(other_user.id),
+            "role": role,
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    # Logger
+    log_messages = [msg.message for msg in caplog.records]
+    assert (
+        f"add_user_to_group synchronization succeeded with {webhook_scim.url}"
+        in log_messages
+    )
+    assert (
+        f"add_user_to_group synchronization failed with {webhook_matrix.url}"
+        in log_messages
+    )
+
+    # Status
+    webhook_scim.status = "success"
+    webhook_matrix.status = "failure"
+    assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()

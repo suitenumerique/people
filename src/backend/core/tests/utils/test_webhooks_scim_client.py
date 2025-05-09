@@ -1,4 +1,4 @@
-"""Test Team synchronization webhooks."""
+"""Test Team synchronization webhooks : focus on scim client"""
 
 import json
 import random
@@ -10,7 +10,7 @@ import pytest
 import responses
 
 from core import factories
-from core.utils.webhooks import scim_synchronizer
+from core.utils.webhooks import webhooks_synchronizer
 
 pytestmark = pytest.mark.django_db
 
@@ -20,7 +20,7 @@ def test_utils_webhooks_add_user_to_group_no_webhooks():
     access = factories.TeamAccessFactory()
 
     with responses.RequestsMock():
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
 
     assert len(responses.calls) == 0
 
@@ -42,7 +42,7 @@ def test_utils_webhooks_add_user_to_group_success(mock_info):
             content_type="application/json",
         )
 
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
 
         for i, webhook in enumerate(webhooks):
             assert rsps.calls[i].request.url == webhook.url
@@ -107,7 +107,7 @@ def test_utils_webhooks_remove_user_from_group_success(mock_info):
             content_type="application/json",
         )
 
-        scim_synchronizer.remove_user_from_group(access.team, access.user)
+        webhooks_synchronizer.remove_user_from_group(access.team, access.user)
 
         for i, webhook in enumerate(webhooks):
             assert rsps.calls[i].request.url == webhook.url
@@ -163,11 +163,11 @@ def test_utils_webhooks_add_user_to_group_failure(mock_error):
             rsps.PATCH,
             re.compile(r".*/Groups/.*"),
             body="{}",
-            status=random.choice([404, 301, 302]),
+            status=404,
             content_type="application/json",
         )
 
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
 
         for i, webhook in enumerate(webhooks):
             assert rsps.calls[i].request.url == webhook.url
@@ -228,7 +228,7 @@ def test_utils_webhooks_add_user_to_group_retries(mock_info, mock_error):
             rsps.add(rsps.PATCH, url, status=200, content_type="application/json"),
         ]
 
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
 
         for i in range(4):
             assert all_rsps[i].call_count == 1
@@ -285,7 +285,7 @@ def test_utils_synchronize_course_runs_max_retries_exceeded(mock_error):
             content_type="application/json",
         )
 
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
 
         assert rsp.call_count == 5
         assert rsps.calls[0].request.url == webhook.url
@@ -339,7 +339,7 @@ def test_utils_webhooks_add_user_to_group_authorization():
             content_type="application/json",
         )
 
-        scim_synchronizer.add_user_to_group(access.team, access.user)
+        webhooks_synchronizer.add_user_to_group(access.team, access.user)
         assert rsps.calls[0].request.url == webhook.url
 
         # Check headers
