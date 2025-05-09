@@ -11,12 +11,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { MailDomain } from '@/features/mail-domains/domains';
+import { ViewMailbox } from '@/features/mail-domains/mailboxes';
 
 import { useUpdateMailboxStatus } from '../../api/useUpdateMailboxStatus';
-import { MailDomainMailbox } from '../../types';
 
 interface PanelActionsProps {
-  mailbox: MailDomainMailbox;
+  mailbox: ViewMailbox;
   mailDomain: MailDomain;
 }
 
@@ -92,24 +92,32 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
       <Modal
         isOpen={disableModal.isOpen}
         onClose={disableModal.close}
+        hideCloseButton={true}
         title={<Text $size="h3">{t('Disable mailbox')}</Text>}
         size={ModalSize.MEDIUM}
+        leftActions={
+          <Button color="secondary" onClick={disableModal.close}>
+            {t('Cancel')}
+          </Button>
+        }
         rightActions={
           <Box $direction="row" $justify="flex-end" $gap="0.5rem">
-            <Button color="secondary" onClick={disableModal.close}>
-              {t('Cancel')}
-            </Button>
             <Button color="danger" onClick={handleUpdateMailboxStatus}>
               {t('Disable')}
             </Button>
           </Box>
         }
       >
-        <Text>
-          {t(
-            'Are you sure you want to disable this mailbox? This action results in the deletion of the calendar, address book, etc.',
-          )}
-        </Text>
+        <Box
+          $padding="md"
+          aria-label={t('Content modal to delete the mailbox')}
+        >
+          <Text>
+            {t(
+              'Are you sure you want to disable this mailbox? This action results in the deletion of the calendar, address book, etc.',
+            )}
+          </Text>
+        </Box>
       </Modal>
     </>
   );
