@@ -38,6 +38,7 @@ dependencies = [
     "django-oauth-toolkit==3.0.1",
     "django-parler==2.3",
     "django-redis==5.4.0",
+    "django-scim2==0.19.1",
     "django-storages==1.14.6",
     "django-timezone-field>=5.1",
     "django-treebeard==4.7.1",
