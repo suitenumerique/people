@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { default as IconRegie } from '@/assets/logo-regie.svg?url';
 import { Icon, StyledLink, Text } from '@/components/';
 import { ButtonLogin } from '@/core/auth';
+import { UserInfo } from '@/core/auth/UserInfo';
 import { useCunninghamTheme } from '@/cunningham';
 import { LanguagePicker } from '@/features/language';
 import { useLeftPanelStore } from '@/features/left-panel';
@@ -107,6 +108,7 @@ export const Header = () => {
             flexDirection: 'row',
           }}
         >
+          <UserInfo />
           <ButtonLogin />
           <LanguagePicker />
           <LaGaufre />

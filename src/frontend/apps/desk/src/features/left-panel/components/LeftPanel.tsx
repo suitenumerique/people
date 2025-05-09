@@ -4,6 +4,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import { SeparatedSection } from '@/components/separators';
 import { ButtonLogin } from '@/core';
+import { UserInfo } from '@/core/auth/UserInfo';
 import { LanguagePicker } from '@/features/language';
 
 import { useLeftPanelStore } from '../stores';
@@ -99,6 +100,7 @@ export const LeftPanel = () => {
                   gap: 'var(--c--theme--spacings--sm)',
                 }}
               >
+                <UserInfo />
                 <ButtonLogin />
                 <LanguagePicker />
               </div>
