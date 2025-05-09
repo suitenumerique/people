@@ -9,6 +9,7 @@ import { APIError } from '@/api';
 import { parseAPIError } from '@/api/parseAPIError';
 import { Box, Input, Text, TextErrors } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
+import { useAuthStore } from '@/core/auth';
 
 import { useAddMailDomain } from '../api';
 
@@ -22,6 +23,7 @@ export const ModalAddMailDomain = ({
   const { t } = useTranslation();
   const [errorCauses, setErrorCauses] = useState<string[]>([]);
   const [step, setStep] = useState(0);
+  const { userData } = useAuthStore();
 
   const addMailDomainValidationSchema = z.object({
     name: z.string().min(1, t('Example: saint-laurent.fr')),
@@ -106,7 +108,7 @@ export const ModalAddMailDomain = ({
       content: (
         <Text>
           {t(
-            "You can connect an existing domain name to the DINUM organization. If you don't have a domain name, contact an administrator or read our information document.",
+            `You can connect an existing domain name to the ${userData?.organization?.name || ''} organization. If you don't have a domain name, contact an administrator or read our information document.`,
           )}
         </Text>
       ),
