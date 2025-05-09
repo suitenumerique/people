@@ -24,3 +24,10 @@ class WebhookStatusChoices(models.TextChoices):
     FAILURE = "failure", _("Failure")
     PENDING = "pending", _("Pending")
     SUCCESS = "success", _("Success")
+
+
+class WebhookProtocolChoices(models.TextChoices):
+    """Defines the possible protocols of webhook."""
+
+    SCIM = "scim"
+    MATRIX = "matrix"

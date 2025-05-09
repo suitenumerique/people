@@ -39,13 +39,15 @@ class SCIMClient:
             ],
         }
 
-        return session.patch(
+        response = session.patch(
             webhook.url,
             json=payload,
             headers=webhook.get_headers(),
             verify=False,
             timeout=3,
         )
+
+        return response, response.ok
 
     def remove_user_from_group(self, webhook, user):
         """Remove a user from a group by its ID or email."""
@@ -61,10 +63,12 @@ class SCIMClient:
                 }
             ],
         }
-        return session.patch(
+        response = session.patch(
             webhook.url,
             json=payload,
             headers=webhook.get_headers(),
             verify=False,
             timeout=3,
         )
+
+        return response, response.ok
