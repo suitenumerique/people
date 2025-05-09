@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) add support chatbot
 - ✨(mailbox) allow to reset password on mailboxes #834
 
 ## [1.16.0] - 2025-05-05

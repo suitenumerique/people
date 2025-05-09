@@ -204,3 +204,43 @@ def test_fetch_domain_expected_config__should_not_fetch_for_disabled_domain(clie
     assert "Domains disabled are excluded from fetch" in response.content.decode(
         "utf-8"
     )
+
+
+@responses.activate
+@pytest.mark.django_db
+def test_send_pending_mailboxes(client):
+    """Test admin action to send pending mailboxes to dimail."""
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+    domain = factories.MailDomainFactory(status=enums.MailDomainStatusChoices.ENABLED)
+    mailboxes = factories.MailboxFactory.create_batch(
+        3, status=enums.MailboxStatusChoices.PENDING, domain=domain
+    )
+    data = {
+        "action": "send_pending_mailboxes",
+        "_selected_action": [domain.id],
+    }
+
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+    for mailbox in mailboxes:
+        responses.add(
+            responses.GET,
+            re.compile(r".*/token/"),
+            body=TOKEN_OK,
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        responses.add(
+            responses.POST,
+            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+            body=response_mailbox_created(f"{mailbox.local_part}@{domain.name}"),
+            status=status.HTTP_201_CREATED,
+            content_type="application/json",
+        )
+    response = client.post(url, data, follow=True)
+    assert response.status_code == status.HTTP_200_OK
+    domain.refresh_from_db()
+
+    for mailbox in mailboxes:
+        mailbox.refresh_from_db()
+        assert mailbox.status == enums.MailboxStatusChoices.ENABLED

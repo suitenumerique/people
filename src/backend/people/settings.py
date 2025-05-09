@@ -342,6 +342,11 @@ class Base(Configuration):
     # Sentry
     SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN")
 
+    # Crisp
+    CRISP_WEBSITE_ID = values.Value(
+        None, environ_name="CRISP_WEBSITE_ID", environ_prefix=None
+    )
+
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
     THUMBNAIL_TRANSPARENCY_EXTENSION = "webp"

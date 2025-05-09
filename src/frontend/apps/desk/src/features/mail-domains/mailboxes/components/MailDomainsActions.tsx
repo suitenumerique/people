@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, DropButton, IconOptions, Text } from '@/components';
 
 import { MailDomain } from '../../domains/types';
-import { useUpdateMailboxStatus } from '../api/useUpdateMailboxStatus';
+import { useUpdateMailboxStatus, resetPassword } from '../api/useUpdateMailboxStatus';
 import { MailDomainMailbox } from '../types';
 
 interface MailDomainsActionsProps {
@@ -43,6 +43,19 @@ export const MailDomainsActions = ({
       {
         onError: () =>
           toast(t('Failed to update mailbox status'), VariantType.ERROR),
+      },
+    );
+  };
+
+  const handleResetMailboxPassword = () => {
+    resetPassword(
+      {
+        mailDomainSlug: mailDomain.slug,
+        mailboxId: mailbox.id,
+      },
+      {
+        onError: () =>
+          toast(t('Failed to reset password'), VariantType.ERROR),
       },
     );
   };
@@ -88,6 +101,22 @@ export const MailDomainsActions = ({
           >
             <Text $theme="primary">
               {isEnabled ? t('Disable mailbox') : t('Enable mailbox')}
+            </Text>
+          </Button>
+          <Button
+            aria-label={t('Open the modal to update the role of this access')}
+            onClick={() => {
+              setIsDropOpen(false);
+              handleResetMailboxPassword();
+            }}
+            fullWidth
+            color="primary-text"
+            icon={
+              <span className="material-icons" aria-hidden="true">lock_reset</span>
+            }
+          >
+            <Text $theme="primary">
+              {isEnabled ? t('Reset password') : ('Cannot reset password on disabled mailbox')}
             </Text>
           </Button>
         </Box>

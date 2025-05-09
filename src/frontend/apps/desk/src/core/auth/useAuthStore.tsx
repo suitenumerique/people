@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { baseApiUrl } from '@/api';
-
+import { terminateSupportSession } from '@/services';
 import { User, getMe } from './api';
 
 interface AuthStore {
@@ -30,6 +30,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
   },
   logout: () => {
+    terminateSupportSession();
     window.location.replace(new URL('logout/', baseApiUrl()).href);
   },
 }));

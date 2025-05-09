@@ -19,6 +19,7 @@
     "@hookform/resolvers": "4.0.0",
     "@openfun/cunningham-react": "3.0.0",
     "@tanstack/react-query": "5.72.1",
+    "crisp-sdk-web": "1.0.25",
     "i18next": "24.2.3",
     "lodash": "4.17.21",
     "luxon": "3.6.1",
