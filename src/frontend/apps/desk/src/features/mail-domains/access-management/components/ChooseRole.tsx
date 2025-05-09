@@ -1,7 +1,7 @@
 import { Radio, RadioGroup } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
-import { Role } from '../../domains';
+import { Role } from '@/features/mail-domains/domains/types';
 
 const ORDERED_ROLES = [Role.VIEWER, Role.ADMIN, Role.OWNER];
 

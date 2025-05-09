@@ -1,3 +1,6 @@
-export const LANGUAGES_ALLOWED = ['en', 'fr'];
-export const LANGUAGE_LOCAL_STORAGE = 'people-language';
-export const BASE_LANGUAGE = 'fr';
+export const LANGUAGES_ALLOWED: { [key: string]: string } = {
+  en: 'EN',
+  fr: 'FR',
+};
+export const LANGUAGE_LOCAL_STORAGE = 'regie_language';
+export const BASE_LANGUAGE = 'en';

@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPropsWithRef } from 'react';
+import { CSSProperties, ComponentPropsWithRef, forwardRef } from 'react';
 import styled from 'styled-components';
 
 import { tokens } from '@/cunningham';
@@ -13,6 +13,8 @@ export interface TextProps extends BoxProps {
     HTMLElementTagNameMap,
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
+  $elipsis?: boolean;
+  $isMaterialIcon?: boolean;
   $weight?: CSSProperties['fontWeight'];
   $textAlign?: CSSProperties['textAlign'];
   $size?: TextSizes | (string & {});
@@ -26,6 +28,7 @@ export interface TextProps extends BoxProps {
     | 'greyscale';
   $variation?:
     | 'text'
+    | '000'
     | '100'
     | '200'
     | '300'
@@ -34,7 +37,8 @@ export interface TextProps extends BoxProps {
     | '600'
     | '700'
     | '800'
-    | '900';
+    | '900'
+    | '1000';
 }
 
 export type TextType = ComponentPropsWithRef<typeof Text>;
@@ -48,12 +52,26 @@ export const TextStyled = styled(Box)<TextProps>`
   ${({ $theme, $variation }) =>
     `color: var(--c--theme--colors--${$theme}-${$variation});`}
   ${({ $color }) => $color && `color: ${$color};`}
+  ${({ $elipsis }) =>
+    $elipsis &&
+    `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`}
 `;
 
-export const Text = ({
-  ...props
-}: ComponentPropsWithRef<typeof TextStyled>) => {
-  return (
-    <TextStyled as="span" $theme="greyscale" $variation="text" {...props} />
-  );
-};
+const Text = forwardRef<HTMLElement, ComponentPropsWithRef<typeof TextStyled>>(
+  ({ className, $isMaterialIcon, ...props }, ref) => {
+    return (
+      <TextStyled
+        ref={ref}
+        as="span"
+        $theme="greyscale"
+        $variation="text"
+        className={`${className || ''}${$isMaterialIcon ? ' material-icons' : ''}`}
+        {...props}
+      />
+    );
+  },
+);
+
+Text.displayName = 'Text';
+
+export { Text };

@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Changed
 
+- ✨(uiv2) change mail domains
 - 🛂(dimail) simplify interop with dimail
 - ✨(mailbox) remove secondary email as required field
 

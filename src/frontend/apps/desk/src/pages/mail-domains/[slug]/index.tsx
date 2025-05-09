@@ -7,10 +7,11 @@ import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import {
   MailDomain,
-  MailDomainsLayout,
+  Role,
   useMailDomain,
 } from '@/features/mail-domains/domains';
 import { MailDomainView } from '@/features/mail-domains/domains/components/MailDomainView';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const MailboxesPage: NextPageWithLayout = () => {
@@ -18,6 +19,7 @@ const MailboxesPage: NextPageWithLayout = () => {
   const [currentMailDomain, setCurrentMailDomain] = useState<MailDomain | null>(
     null,
   );
+  const [currentRole, setCurrentRole] = useState<Role>(Role.VIEWER);
 
   if (router?.query?.slug && typeof router.query.slug !== 'string') {
     throw new Error('Invalid mail domain slug');
@@ -37,6 +39,13 @@ const MailboxesPage: NextPageWithLayout = () => {
   React.useEffect(() => {
     if (mailDomain) {
       setCurrentMailDomain(mailDomain);
+      const role = mailDomain.abilities.delete
+        ? Role.OWNER
+        : mailDomain.abilities.manage_accesses
+          ? Role.ADMIN
+          : Role.VIEWER;
+
+      setCurrentRole(role);
     }
   }, [mailDomain]);
 
@@ -64,13 +73,14 @@ const MailboxesPage: NextPageWithLayout = () => {
   return (
     <MailDomainView
       mailDomain={currentMailDomain}
+      currentRole={currentRole}
       onMailDomainUpdate={setCurrentMailDomain}
     />
   );
 };
 
 MailboxesPage.getLayout = function getLayout(page: ReactElement) {
-  return <MailDomainsLayout>{page}</MailDomainsLayout>;
+  return <MainLayout backgroundColor="grey">{page}</MainLayout>;
 };
 
 export default MailboxesPage;
