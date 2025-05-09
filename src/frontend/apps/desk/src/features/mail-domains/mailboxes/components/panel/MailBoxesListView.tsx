@@ -11,7 +11,8 @@ import {
 
 import { PAGE_SIZE } from '../../../conf';
 import { useMailboxes } from '../../api/useMailboxes';
-// import { PanelActions } from './PanelActions';
+
+import { PanelActions } from './PanelActions';
 
 interface MailBoxesListViewProps {
   mailDomain: MailDomain;
@@ -127,14 +128,12 @@ export function MailBoxesListView({
                 );
               },
             },
-            // {
-            //   id: 'actions',
-            //   renderCell: ({ row }) => (
-            //     <>
-            //       <PanelActions mailbox={row.mailbox} mailDomain={mailDomain} />
-            //     </>
-            //   ),
-            // },
+            {
+              id: 'actions',
+              renderCell: ({ row }) => (
+                <PanelActions mailDomain={mailDomain} mailbox={row} />
+              ),
+            },
           ]}
           isLoading={isLoading}
         />
