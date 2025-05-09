@@ -593,6 +593,11 @@ class Base(Configuration):
         environ_name="DNS_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
+    MATRIX_ACCESS_TOKEN = values.Value(
+        default=None
+        environ_name="MATRIX_ACCESS_TOKEN",
+        environ_prefix=None,
+    )
 
     # Organizations
     ORGANIZATION_REGISTRATION_ID_VALIDATORS = json.loads(

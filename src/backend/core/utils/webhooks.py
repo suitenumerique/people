@@ -4,14 +4,16 @@ import logging
 
 import requests
 
+from core import enums
 from core.enums import WebhookStatusChoices
 
+from .matrix import MatrixAPIClient
 from .scim import SCIMClient
 
 logger = logging.getLogger(__name__)
 
 
-class WebhookSCIMClient:
+class WebhookClient:
     """Wraps the SCIM client to record call results on webhooks."""
 
     def __getattr__(self, name):
@@ -26,7 +28,13 @@ class WebhookSCIMClient:
                 if not webhook.url:
                     continue
 
-                client = SCIMClient()
+                if webhook.protocol == enums.WebhookProtocolChoices.SCIM:
+                    client = SCIMClient()
+                elif webhook.protocol == enums.WebhookProtocolChoices.MATRIX:
+                    client = MatrixAPIClient()
+                else:
+                    return
+
                 status = WebhookStatusChoices.FAILURE
                 try:
                     response = getattr(client, name)(webhook, user)
@@ -72,4 +80,4 @@ class WebhookSCIMClient:
         return wrapper
 
 
-scim_synchronizer = WebhookSCIMClient()
+webhook_synchronizer = WebhookClient()
