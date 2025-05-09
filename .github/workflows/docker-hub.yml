@@ -98,7 +98,6 @@ jobs:
           dir: 'src/frontend/apps/desk'
       -
         name: Login to DockerHub
-        if: github.event_name != 'pull_request'
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
       -
         name: Build and push
@@ -107,7 +106,7 @@ jobs:
           context: .
           target: frontend-production
           build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
