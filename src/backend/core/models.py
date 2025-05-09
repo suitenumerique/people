@@ -21,7 +21,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext, override
@@ -31,9 +31,9 @@ import jsonschema
 from timezone_field import TimeZoneField
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 
-from core.enums import WebhookStatusChoices
+from core.enums import WebhookProtocolChoices, WebhookStatusChoices
 from core.plugins.registry import registry as plugin_hooks_registry
-from core.utils.webhooks import scim_synchronizer
+from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
 
 logger = getLogger(__name__)
@@ -864,16 +864,12 @@ class TeamAccess(BaseModel):
         Override save function to fire webhooks on any addition or update
         to a team access.
         """
-
-        if self._state.adding:
+        if self._state.adding and self.team.webhooks.exists():
             self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
-            with transaction.atomic():
-                instance = super().save(*args, **kwargs)
-                scim_synchronizer.add_user_to_group(self.team, self.user)
-        else:
-            instance = super().save(*args, **kwargs)
+            # try to synchronize all webhooks
+            webhooks_synchronizer.add_user_to_group(self.team, self.user)
 
-        return instance
+        return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """
@@ -881,11 +877,12 @@ class TeamAccess(BaseModel):
         Don't allow deleting a team access until it is successfully synchronized with all
         its webhooks.
         """
-        self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
-        with transaction.atomic():
-            arguments = self.team, self.user
-            super().delete(*args, **kwargs)
-            scim_synchronizer.remove_user_from_group(*arguments)
+        if webhooks := self.team.webhooks.all():
+            webhooks.update(status=WebhookStatusChoices.PENDING)
+            # try to synchronize all webhooks
+            webhooks_synchronizer.remove_user_from_group(self.team, self.user)
+
+        super().delete(*args, **kwargs)
 
     def get_abilities(self, user):
         """
@@ -943,6 +940,11 @@ class TeamWebhook(BaseModel):
     team = models.ForeignKey(Team, related_name="webhooks", on_delete=models.CASCADE)
     url = models.URLField(_("url"))
     secret = models.CharField(_("secret"), max_length=255, null=True, blank=True)
+    protocol = models.CharField(
+        max_length=None,
+        default=WebhookProtocolChoices.SCIM,
+        choices=WebhookProtocolChoices.choices,
+    )
     status = models.CharField(
         max_length=10,
         default=WebhookStatusChoices.PENDING,
