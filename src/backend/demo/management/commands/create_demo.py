@@ -21,7 +21,11 @@ from core import models
 
 from demo import defaults
 from mailbox_manager import models as mailbox_models
-from mailbox_manager.enums import MailboxStatusChoices, MailDomainStatusChoices
+from mailbox_manager.enums import (
+    MailboxStatusChoices,
+    MailDomainRoleChoices,
+    MailDomainStatusChoices,
+)
 
 fake = Faker()
 
@@ -365,6 +369,19 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 )
 
         queue.flush()
+
+        # Enabled domain for 2E2 tests
+        enabled_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+            name="enabled-domain.com",
+            status=MailDomainStatusChoices.ENABLED,
+            support_email="support@enabled-domain.com",
+        )
+        domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
+        mailbox_models.MailDomainAccess.objects.get_or_create(
+            domain=enabled_domain,
+            user=domain_owner,
+            role=MailDomainRoleChoices.OWNER,
+        )
 
     # OIDC configuration
     if settings.OAUTH2_PROVIDER.get("OIDC_ENABLED", False):
