@@ -9,55 +9,9 @@ test.beforeEach(async ({ page, browserName }) => {
 
 test.describe('Teams Panel', () => {
   test('checks all the elements are visible', async ({ page }) => {
-    const panel = page.getByLabel('Teams panel').first();
+    await expect(page.getByRole('heading', { name: 'Teams' })).toBeVisible();
 
-    await expect(panel.getByText('Groups')).toBeVisible();
-
-    await expect(
-      panel.getByRole('button', {
-        name: 'Sort the teams',
-      }),
-    ).toBeVisible();
-
-    await expect(
-      panel.getByRole('button', {
-        name: 'Add a team',
-      }),
-    ).toBeVisible();
-  });
-
-  test('checks the sort button', async ({ page }) => {
-    const responsePromiseSortDesc = page.waitForResponse(
-      (response) =>
-        response.url().includes('/teams/?ordering=-created_at') &&
-        response.status() === 200,
-    );
-
-    const responsePromiseSortAsc = page.waitForResponse(
-      (response) =>
-        response.url().includes('/teams/?ordering=created_at') &&
-        response.status() === 200,
-    );
-
-    const panel = page.getByLabel('Teams panel').first();
-
-    await panel
-      .getByRole('button', {
-        name: 'Sort the teams by creation date ascendent',
-      })
-      .click();
-
-    const responseSortAsc = await responsePromiseSortAsc;
-    expect(responseSortAsc.ok()).toBeTruthy();
-
-    await panel
-      .getByRole('button', {
-        name: 'Sort the teams by creation date descendent',
-      })
-      .click();
-
-    const responseSortDesc = await responsePromiseSortDesc;
-    expect(responseSortDesc.ok()).toBeTruthy();
+    await expect(page.getByTestId('button-new-team')).toBeVisible();
   });
 
   test('checks the hover and selected state', async ({ page, browserName }) => {

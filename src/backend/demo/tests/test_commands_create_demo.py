@@ -40,7 +40,9 @@ def test_commands_create_demo(settings):
 
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
-    assert mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"] + 1 + 1
+    assert (
+        mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"] + 1 + 1
+    )
 
     # 3 domain access for each user with domain rights
     # 3 x 3 domain access for each user with both rights

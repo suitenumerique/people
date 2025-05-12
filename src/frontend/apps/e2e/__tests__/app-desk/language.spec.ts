@@ -10,18 +10,14 @@ test.describe('Language', () => {
   });
 
   test('checks the language picker', async ({ page }) => {
-    await expect(
-      page.getByLabel('Teams panel', { exact: true }).getByText('Groups'),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Teams' })).toBeVisible();
 
     const header = page.locator('header').first();
     await header.getByRole('combobox').getByText('EN').click();
     await header.getByRole('option', { name: 'FR' }).click();
     await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
 
-    await expect(
-      page.getByLabel('Teams panel', { exact: true }).getByText('Groupes'),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Équipes' })).toBeVisible();
   });
 
   test('checks lang attribute of html tag updates when user changes language', async ({
