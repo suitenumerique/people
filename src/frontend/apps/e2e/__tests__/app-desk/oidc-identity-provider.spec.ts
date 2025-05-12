@@ -22,7 +22,7 @@ test.describe('Login to people as Identity Provider', () => {
     await expect(page).toHaveURL('http://localhost:3000/', { timeout: 10000 });
 
     // check the user is logged in
-    await expect(page.getByText('Groups')).toBeVisible();
-    await expect(page.getByText('0 group to display.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Teams' })).toBeVisible();
+    await expect(page.getByText('No teams exist.')).toBeVisible();
   });
 });
