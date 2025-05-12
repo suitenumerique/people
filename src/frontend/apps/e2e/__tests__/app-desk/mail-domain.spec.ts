@@ -192,6 +192,89 @@ test.describe('Mail domain', () => {
           page.getByText('No mail box was created with this mail domain.'),
         ).toBeVisible();
       });
+
+      test('can disable and enable mailbox', async ({ page, browserName }) => {
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-owner');
+
+        await clickOnMailDomainsNavButton(page);
+
+        // Go to the enabled-domain.com management page
+        await expect(page).toHaveURL(/mail-domains\//);
+        await expect(
+          page.getByText('enabled-domain.com', { exact: true }),
+        ).toBeVisible();
+        await page
+          .getByLabel(`enabled-domain.com listboxDomains button`)
+          .click();
+        await expect(page).toHaveURL(/mail-domains\/enabled-domaincom\//);
+        await expect(
+          page.getByRole('heading', { name: 'enabled-domain.com' }),
+        ).toBeVisible();
+
+        // Click new mailbox button
+        await page.getByTestId('button-new-mailbox').click();
+
+        // Fill in mailbox form with random string
+        const randomString = Math.random().toString(36).substring(2, 8);
+        await page.getByLabel('First name').fill('John');
+        await page.getByLabel('Last name').fill('Doe');
+        await page.getByLabel('Name of the new address').fill(randomString);
+        await page
+          .getByLabel('Personal email address')
+          .fill(`${randomString}@example.com`);
+
+        // Submit form
+        await page.getByRole('button', { name: 'Create' }).click();
+
+        // Verify success toast appears
+        await expect(page.getByText('Mailbox created!')).toBeVisible();
+
+        // Verify mailbox appears in list
+        await expect(
+          page.getByText(`${randomString}@enabled-domain.com`),
+        ).toBeVisible();
+
+        // Click the options button for the specific mailbox
+        await page
+          .getByRole('row', { name: `${randomString}@enabled-domain.com` })
+          .getByLabel('Open the access options modal')
+          .click();
+
+        // Click disable button
+        await page.getByText('Disable mailbox').click();
+
+        // Verify modal appears
+        await expect(
+          page.getByText('Are you sure you want to disable this mailbox?'),
+        ).toBeVisible();
+
+        // Click disable in modal
+        await page.getByRole('button', { name: 'Disable' }).click();
+
+        // Verify mailbox status shows as disabled
+        await expect(
+          page
+            .getByRole('row', { name: `${randomString}@enabled-domain.com` })
+            .getByText('Disabled'),
+        ).toBeVisible();
+
+        // Click options button again
+        await page
+          .getByRole('row', { name: `${randomString}@enabled-domain.com` })
+          .getByLabel('Open the access options modal')
+          .click();
+
+        // Click enable button
+        await page.getByText('Enable mailbox').click();
+
+        // Verify mailbox status shows as enabled
+        await expect(
+          page
+            .getByRole('row', { name: `${randomString}@enabled-domain.com` })
+            .getByText('Enabled'),
+        ).toBeVisible();
+      });
     });
 
     test.describe('mail domain creation is pending', () => {
