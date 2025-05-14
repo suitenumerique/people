@@ -3,6 +3,7 @@ import { useRouter as useNavigate } from 'next/navigation';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Box, Text } from '@/components';
 import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
 import { TeamsListView } from '@/features/teams/team-management/components/TeamsListView';
@@ -27,41 +28,37 @@ const Page: NextPageWithLayout = () => {
   };
 
   return (
-    <div aria-label="Teams panel" className="container">
-      <div
+    <Box aria-label="Teams panel" className="container">
+      <Box
         data-testid="regie-grid"
-        style={{
-          height: '100%',
-          justifyContent: 'center',
-          width: '100%',
-          padding: '16px',
-          overflowX: 'hidden',
-          overflowY: 'auto',
-          background: 'white',
-          borderRadius: '4px',
-          border: `1px solid ${colorsTokens()['greyscale-200']}`,
-        }}
+        $background="white"
+        $radius="4px"
+        $direction="column"
+        $css={`
+          height: 100%;
+          width: 100%;
+          padding: 16px;
+          overflow-x: hidden;
+          overflow-y: auto;
+          border: 1px solid ${colorsTokens()['greyscale-200']};
+        `}
       >
-        <h2
-          style={{ fontWeight: 700, fontSize: '1.5rem', marginBottom: '20px' }}
+        <Text
+          as="h2"
+          $css="font-weight: 700; font-size: 1.5rem; margin-bottom: 20px;"
         >
           {t('Teams')}
-        </h2>
+        </Text>
 
-        <div
+        <Box
           className="sm:block md:flex"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '20px',
-            gap: '1em',
-          }}
+          $direction="row"
+          $justify="space-between"
+          $align="center"
+          $gap="1em"
+          $css="margin-bottom: 20px;"
         >
-          <div
-            style={{ width: 'calc(100% - 245px)' }}
-            className="c__input__wrapper__mobile"
-          >
+          <Box $css="width: calc(100% - 245px);" $flex="1">
             <Input
               style={{ width: '100%' }}
               label={t('Search a team')}
@@ -87,23 +84,18 @@ const Page: NextPageWithLayout = () => {
               value={searchValue}
               onChange={handleInputChange}
             />
-          </div>
+          </Box>
 
-          <div
+          <Box
             className="hidden md:flex"
-            style={{
-              background: colors['greyscale-200'],
-              height: '32px',
-              width: '1px',
-            }}
-          ></div>
+            $css={`
+              background: ${colors['greyscale-200']};
+              height: 32px;
+              width: 1px;
+            `}
+          ></Box>
 
-          <div
-            className="block md:hidden"
-            style={{ marginBottom: '10px' }}
-          ></div>
-
-          <div>
+          <Box>
             {can_create ? (
               <Button
                 data-testid="button-new-team"
@@ -124,8 +116,8 @@ const Page: NextPageWithLayout = () => {
                 </div>
               </Tooltip>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         {!can_create && (
           <p style={{ textAlign: 'center' }}>
@@ -134,8 +126,8 @@ const Page: NextPageWithLayout = () => {
         )}
 
         <TeamsListView querySearch={searchValue} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
