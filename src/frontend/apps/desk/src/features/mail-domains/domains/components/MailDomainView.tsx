@@ -1,4 +1,5 @@
 import { Button } from '@openfun/cunningham-react';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,6 +27,7 @@ export const MailDomainView = ({
 }: Props) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
+  const router = useRouter();
   const [showModal, setShowModal] = React.useState(false);
 
   const handleShowModal = () => {
@@ -53,7 +55,7 @@ export const MailDomainView = ({
         >
           <Box $direction="row" $align="center" $gap="8px">
             <Button
-              href="/mail-domains"
+              onClick={() => router.push('/mail-domains/')}
               icon={<span className="material-icons">arrow_back</span>}
               iconPosition="left"
               color="secondary"
