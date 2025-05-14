@@ -57,6 +57,11 @@ jest.mock('@openfun/cunningham-react', () => ({
   }),
 }));
 
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: () => jest.fn(),
+}));
+
 describe('<MailDomainView />', () => {
   const apiUrl = `end:/mail-domains/${mockMailDomain.slug}/fetch/`;
 
