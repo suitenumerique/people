@@ -1,0 +1,79 @@
+.modalCustom {
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 18, 0.16);
+}
+
+.header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--c--theme--spacings--md);
+  padding-top: var(--c--theme--spacings--sm);
+  padding-bottom: var(--c--theme--spacings--2xs);
+}
+
+.closeButton {
+  position: absolute;
+  display: block;
+  right: 10px;
+  top: 5px;
+  background: none;
+  border: none;
+  font-size: 34px;
+  cursor: pointer;
+  color: var(--c--theme--colors--greyscale-700);
+}
+
+.content {
+  padding: var(--c--theme--spacings--md);
+}
+
+.c__modal__footer {
+  padding: 0 var(--c--theme--spacings--md);
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--c--theme--spacings--md);
+  padding-top: 0;
+  align-items: center;
+  border-top: 1px solid var(--c--theme--colors--greyscale-200);
+}
+
+.progressBar {
+  display: flex;
+  width: 100%;
+  padding-top: 0;
+  align-items: stretch;
+  align-content: stretch;
+  flex-wrap: nowrap;
+  height: 4px;
+  gap: var(--c--theme--spacings--2xs);
+}
+
+.progressBarStep {
+  flex: 1;
+  height: 4px;
+  display: block;
+  width: auto;
+  flex-grow: 1;
+  border-radius: 4px;
+  background-color: var(--c--theme--colors--primary-200);
+  &.active {
+    background-color: var(--c--theme--colors--primary-800);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

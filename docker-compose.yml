@@ -1,6 +1,7 @@
 services:
   postgresql:
     image: postgres:16
+    platform: linux/amd64
     env_file:
       - env.d/development/postgresql
     ports:
@@ -116,6 +117,7 @@ services:
 
   dockerize:
     image: jwilder/dockerize
+    platform: linux/x86_64
 
   crowdin:
     image: crowdin/cli:4.6.1
@@ -173,7 +175,7 @@ services:
 
   dimail: 
     entrypoint: /opt/dimail-api/start-dev.sh
-    image: registry.mim-libre.fr/dimail/dimail-api:v0.1.1
+    image: registry.mim-libre.fr/dimail/dimail-api:v0.2.11
     pull_policy: always
     environment:
       DIMAIL_MODE: FAKE

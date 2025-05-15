@@ -4,9 +4,7 @@ test.describe('Login to people as Identity Provider', () => {
   test('checks a user with mailbox can login via people', async ({ page }) => {
     // go to people index page, wait for the redirection to keycloak
     await page.goto('/');
-    await page.locator('h1').first().textContent({
-      timeout: 5000,
-    });
+    await page.waitForURL('http://localhost:8083/**');
 
     // keycloak - click on the login button
     await page.click('a[id=social-oidc-people-local]');
@@ -24,7 +22,7 @@ test.describe('Login to people as Identity Provider', () => {
     await expect(page).toHaveURL('http://localhost:3000/', { timeout: 10000 });
 
     // check the user is logged in
-    await expect(page.getByText('Groups')).toBeVisible();
-    await expect(page.getByText('0 group to display.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Teams' })).toBeVisible();
+    await expect(page.getByText('No teams exist.')).toBeVisible();
   });
 });

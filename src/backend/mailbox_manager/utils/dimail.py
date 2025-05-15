@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 """A minimalist client to synchronize with mailbox provisioning API."""
 
 import ast
@@ -44,28 +46,31 @@ class DimailAPIClient:
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
     API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
 
-    def get_headers(self, request_user=None):
+    def get_headers(self):
         """
-        Build headers dictionary. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
+        Return Bearer token. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
         to get a token from dimail /token/ endpoint.
-        If provided, request user' sub is used for la regie to log in on behalf of this user,
-        thus allowing for more precise logs.
         """
-        headers = {"Content-Type": "application/json"}
-        params = None
 
-        if request_user:
-            params = {"username": str(request_user)}
-
-        response = requests.get(
-            f"{self.API_URL}/token/",
-            headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
-            params=params,
-            timeout=self.API_TIMEOUT,
-        )
+        try:
+            response = requests.get(
+                f"{self.API_URL}/token/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
 
         if response.status_code == status.HTTP_200_OK:
-            headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {response.json()['access_token']}",
+            }
             logger.info("Token succesfully granted by mail-provisioning API.")
             return headers
 
@@ -126,7 +131,7 @@ class DimailAPIClient:
             # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
-        headers = self.get_headers(request_user)
+        headers = self.get_headers()
 
         try:
             response = session.post(
@@ -260,34 +265,62 @@ class DimailAPIClient:
         Send email to confirm mailbox creation
         and send new mailbox information.
         """
+        title = _("Your new mailbox information")
+        template_name = "new_mailbox"
+        self._send_mailbox_related_email(
+            title, template_name, recipient, mailbox_data, issuer
+        )
+
+    def notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
+        """
+        Send email to notify of password reset
+        and send new password.
+        """
+        title = _("Your password has been updated")
+        template_name = "reset_password"
+        self._send_mailbox_related_email(
+            title, template_name, recipient, mailbox_data, issuer
+        )
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+    def _send_mailbox_related_email(
+        self, title, template_name, recipient, mailbox_data, issuer=None
+    ):
+        """
+        Send email with new mailbox or password reset information.
+        """
+
+        context = {
+            "title": title,
+            "site": Site.objects.get_current(),
+            "webmail_url": settings.WEBMAIL_URL,
+            "mailbox_data": mailbox_data,
+        }
+
         try:
             with override(issuer.language if issuer else settings.LANGUAGE_CODE):
-                template_vars = {
-                    "title": _("Your new mailbox information"),
-                    "site": Site.objects.get_current(),
-                    "webmail_url": settings.WEBMAIL_URL,
-                    "mailbox_data": mailbox_data,
-                }
-                msg_html = render_to_string("mail/html/new_mailbox.html", template_vars)
-                msg_plain = render_to_string("mail/text/new_mailbox.txt", template_vars)
                 mail.send_mail(
-                    template_vars["title"],
-                    msg_plain,
+                    context["title"],
+                    render_to_string(f"mail/text/{template_name}.txt", context),
                     settings.EMAIL_FROM,
                     [recipient],
-                    html_message=msg_html,
+                    html_message=render_to_string(
+                        f"mail/html/{template_name}.html", context
+                    ),
                     fail_silently=False,
                 )
+        except smtplib.SMTPException as exception:
+            logger.error(
+                "Failed to send mailbox information to %s was not sent: %s",
+                recipient,
+                exception,
+            )
+        else:
             logger.info(
                 "Information for mailbox %s sent to %s.",
                 mailbox_data["email"],
                 recipient,
-            )
-        except smtplib.SMTPException as exception:
-            logger.error(
-                "Mailbox confirmation email to %s was not sent: %s",
-                recipient,
-                exception,
             )
 
     def import_mailboxes(self, domain):
@@ -356,7 +389,7 @@ class DimailAPIClient:
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={"active": "no"},
-            headers=self.get_headers(request_user),
+            headers=self.get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -380,7 +413,7 @@ class DimailAPIClient:
                 "surName": mailbox.last_name,
                 "displayName": f"{mailbox.first_name} {mailbox.last_name}",
             },
-            headers=self.get_headers(request_user),
+            headers=self.get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -567,3 +600,41 @@ class DimailAPIClient:
                 exc_info=False,
             )
             return []
+
+    def reset_password(self, mailbox):
+        """Send a request to reset mailbox password."""
+        if not mailbox.secondary_email or mailbox.secondary_email == str(mailbox):
+            raise exceptions.ValidationError(
+                "Password reset requires a secondary email address. Please add a valid secondary email before trying again."
+            )
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
+                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.exception(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_200_OK:
+            # send new password to secondary email
+            self.notify_mailbox_password_reset(
+                recipient=mailbox.secondary_email,
+                mailbox_data={
+                    "email": response.json()["email"],
+                    "password": response.json()["password"],
+                },
+            )
+            logger.info(
+                "[DIMAIL] Password reset on mailbox %s.",
+                mailbox,
+            )
+            return response
+        return self.raise_exception_for_unexpected_response(response)

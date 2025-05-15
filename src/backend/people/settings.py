@@ -21,6 +21,7 @@ import sentry_sdk
 from configurations import Configuration, values
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 
@@ -275,6 +276,12 @@ class Base(Configuration):
             "nested_multipart_parser.drf.DrfNestedParser",
         ],
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+        "DEFAULT_RENDERER_CLASSES": [
+            # 🔒️ Disable BrowsableAPIRenderer which provides forms allowing a user to
+            # see all the data in the database (ie a serializer with a ForeignKey field
+            # will generate a form with a field with all possible values of the FK).
+            "rest_framework.renderers.JSONRenderer",
+        ],
         "EXCEPTION_HANDLER": "core.api.exception_handler",
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
         "PAGE_SIZE": 20,
@@ -749,7 +756,10 @@ class Base(Configuration):
                 dsn=cls.SENTRY_DSN,
                 environment=cls.__name__.lower(),
                 release=get_release(),
-                integrations=[DjangoIntegration()],
+                integrations=[
+                    DjangoIntegration(),
+                    CeleryIntegration(monitor_beat_tasks=True),
+                ],
                 traces_sample_rate=0.1,
             )
 
@@ -813,6 +823,29 @@ class Development(Base):
     DEBUG = True
 
     SESSION_COOKIE_NAME = "people_sessionid"
+    SESSION_CACHE_ALIAS = "session"
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        },
+        "session": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": values.Value(
+                "redis://redis:6379/2",
+                environ_name="REDIS_URL",
+                environ_prefix=None,
+            ),
+            "TIMEOUT": values.IntegerValue(
+                30,  # timeout in seconds
+                environ_name="CACHES_DEFAULT_TIMEOUT",
+                environ_prefix=None,
+            ),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        },
+    }
 
     # this is a dev credentials for mail provisioning API
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="

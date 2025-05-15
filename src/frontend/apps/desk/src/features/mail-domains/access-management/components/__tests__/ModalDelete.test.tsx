@@ -34,6 +34,7 @@ describe('ModalDelete', () => {
     name: 'example.com',
     slug: 'example-com',
     status: 'enabled',
+    count_mailboxes: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     support_email: 'support@example.com',

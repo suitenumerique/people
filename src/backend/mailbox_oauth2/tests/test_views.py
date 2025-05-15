@@ -20,9 +20,9 @@ def test_login_view_options(client):
     assert response.status_code == 200
     assert response.headers == {
         "Content-Type": "application/json",
-        "Vary": "Accept, Authorization, origin, Accept-Language, Cookie",
+        "Vary": "Authorization, origin, Accept-Language, Cookie",
         "Allow": "POST, OPTIONS",
-        "Content-Length": "209",
+        "Content-Length": "197",
         "X-Frame-Options": "DENY",
         "Content-Language": "en-us",
         "X-Content-Type-Options": "nosniff",
@@ -52,7 +52,7 @@ def test_login_view_authorize(client):
 
     assert response.headers == {
         "Content-Type": "application/json",
-        "Vary": "Accept, Authorization, Cookie, origin, Accept-Language",
+        "Vary": "Authorization, Cookie, origin, Accept-Language",
         "Allow": "POST, OPTIONS",
         "Content-Length": "36",
         "X-Frame-Options": "DENY",
