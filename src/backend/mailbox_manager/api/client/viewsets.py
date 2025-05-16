@@ -249,6 +249,9 @@ class MailBoxViewSet(
 
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/enable/
         Send a request to dimail to enable mailbox and change status of the mailbox in our DB
+
+    POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/reset/
+        Send a request to mail-provider to reset password.
     """
 
     permission_classes = [permissions.MailBoxPermission]

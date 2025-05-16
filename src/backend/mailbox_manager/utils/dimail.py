@@ -616,7 +616,7 @@ class DimailAPIClient:
         try:
             response = session.post(
                 f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                headers=self.get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
             )
