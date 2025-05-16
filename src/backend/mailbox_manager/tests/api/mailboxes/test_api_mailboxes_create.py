@@ -550,7 +550,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     """
     Domain owner/admin should be able to create mailboxes.
     Provisioning API should be called when owner/admin makes a call.
-    Succesfull 201 response from dimail should trigger mailbox creation on our side.
+    successful 201 response from dimail should trigger mailbox creation on our side.
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=role)
@@ -805,7 +805,7 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
     assert not mock_error.called
     # Check all expected log messages are present, order doesn't matter
     expected_messages = {
-        ("Token succesfully granted by mail-provisioning API.",),
+        ("Token successfully granted by mail-provisioning API.",),
         (
             "Mailbox successfully created on domain %s by user %s",
             str(access.domain),

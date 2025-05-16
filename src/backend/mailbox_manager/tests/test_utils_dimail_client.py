@@ -388,7 +388,7 @@ def test_dimail__send_pending_mailboxes(caplog):
     assert mailbox2.status == enums.MailboxStatusChoices.ENABLED
 
     log_messages = [msg.message for msg in caplog.records]
-    assert "Token succesfully granted by mail-provisioning API." in log_messages
+    assert "Token successfully granted by mail-provisioning API." in log_messages
     assert (
         f"Mailbox successfully created on domain {domain.name} by user None"
         in log_messages

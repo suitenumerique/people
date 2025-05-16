@@ -71,7 +71,7 @@ class DimailAPIClient:
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {response.json()['access_token']}",
             }
-            logger.info("Token succesfully granted by mail-provisioning API.")
+            logger.info("Token successfully granted by mail-provisioning API.")
             return headers
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
@@ -616,7 +616,7 @@ class DimailAPIClient:
         try:
             response = session.post(
                 f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
-                headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
+                headers=self.get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
             )

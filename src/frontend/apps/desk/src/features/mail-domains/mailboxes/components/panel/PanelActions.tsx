@@ -12,8 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { MailDomain } from '@/features/mail-domains/domains';
 import { ViewMailbox } from '@/features/mail-domains/mailboxes';
-
-import { useUpdateMailboxStatus } from '../../api/useUpdateMailboxStatus';
+import {
+  useUpdateMailboxStatus,
+  useResetPassword,
+} from '../../api/useUpdateMailboxStatus';
 
 interface PanelActionsProps {
   mailbox: ViewMailbox;
@@ -28,6 +30,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   const { toast } = useToastProvider();
 
   const { mutate: updateMailboxStatus } = useUpdateMailboxStatus();
+  const { mutate: resetPassword } = useResetPassword();
 
   const handleUpdateMailboxStatus = () => {
     disableModal.close();
@@ -40,6 +43,20 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
       {
         onError: () =>
           toast(t('Failed to update mailbox status'), VariantType.ERROR),
+      },
+    );
+  };
+
+  const handleResetMailboxPassword = () => {
+    resetPassword(
+      {
+        mailDomainSlug: mailDomain.slug,
+        mailboxId: mailbox.id,
+      },
+      {
+        onSuccess: () =>
+          toast(t('Successfully reset password.'), VariantType.SUCCESS),
+        onError: () => toast(t('Failed to reset password'), VariantType.ERROR),
       },
     );
   };
@@ -85,6 +102,24 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
           >
             <Text $theme="primary">
               {isEnabled ? t('Disable mailbox') : t('Enable mailbox')}
+            </Text>
+          </Button>
+          <Button
+            aria-label={t('Open the modal to update the role of this access')}
+            onClick={() => {
+              setIsDropOpen(false);
+              handleResetMailboxPassword();
+            }}
+            color="primary-text"
+            disabled={!isEnabled}
+            icon={
+              <span className="material-icons" aria-hidden="true">
+                {isEnabled ? 'lock_reset' : ' block'}
+              </span>
+            }
+          >
+            <Text $theme={isEnabled ? 'primary' : 'secondary'}>
+              {isEnabled ? t('Reset password') : t('Reset password')}
             </Text>
           </Button>
         </Box>
