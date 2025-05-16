@@ -71,7 +71,7 @@ class DimailAPIClient:
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {response.json()['access_token']}",
             }
-            logger.info("Token succesfully granted by mail-provisioning API.")
+            logger.info("Token successfully granted by mail-provisioning API.")
             return headers
 
         if response.status_code == status.HTTP_403_FORBIDDEN:
