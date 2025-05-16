@@ -40,7 +40,7 @@ export const MailDomainView = ({
 
   return (
     <>
-      <div aria-label="Mail Domains panel" className="container">
+      <Box aria-label="Mail Domains panel" className="container">
         <Box
           $padding={{ horizontal: 'md' }}
           $background="white"
@@ -120,7 +120,7 @@ export const MailDomainView = ({
         >
           <MailBoxesView mailDomain={mailDomain} />
         </Box>
-      </div>
+      </Box>
     </>
   );
 };
