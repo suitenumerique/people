@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-28 14:01+0000\n"
-"PO-Revision-Date: 2025-04-28 15:40\n"
+"POT-Creation-Date: 2025-05-16 09:31+0000\n"
+"PO-Revision-Date: 2025-05-16 11:22\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: build/lib/core/admin.py:62 core/admin.py:62
 msgid "Personal info"
-msgstr "Infos Personnelles"
+msgstr "Informations personnelles"
 
 #: build/lib/core/admin.py:73 core/admin.py:73
 msgid "Permissions"
@@ -43,7 +43,7 @@ msgstr "Les plugins de post-création ont été exécutés pour les organisation
 
 #: build/lib/core/apps.py:65 core/apps.py:65
 msgid "People core application"
-msgstr ""
+msgstr "Application cœur de People"
 
 #: build/lib/core/authentication/backends.py:104
 #: core/authentication/backends.py:104
@@ -59,12 +59,12 @@ msgstr "Les claims ne contiennent aucune identification reconnaissable pour l'or
 #: build/lib/core/authentication/backends.py:183
 #: core/authentication/backends.py:181 core/authentication/backends.py:183
 msgid "Invalid authorization header."
-msgstr ""
+msgstr "En-tête d'autorisation invalide."
 
 #: build/lib/core/authentication/backends.py:188
 #: core/authentication/backends.py:188
 msgid "Invalid api key."
-msgstr ""
+msgstr "Clé API invalide."
 
 #: build/lib/core/enums.py:24 core/enums.py:24
 msgid "Failure"
@@ -270,7 +270,7 @@ msgstr "Cet utilisateur est déjà dans cette organisation."
 
 #: build/lib/core/models.py:774 core/models.py:774
 msgid "is visible for all SP"
-msgstr "est visible pour tous les SP"
+msgstr "est visible pour tous les fournisseurs de service"
 
 #: build/lib/core/models.py:776 core/models.py:776
 msgid "Whether this team is visible to all service providers."
@@ -335,27 +335,27 @@ msgstr "[La Suite] Vous avez été invité(e) à être %(role)s d'un groupe"
 
 #: build/lib/core/models.py:1108 core/models.py:1108
 msgid "api key"
-msgstr ""
+msgstr "Clé d'API"
 
 #: build/lib/core/models.py:1113 core/models.py:1113
 msgid "allowed scopes"
-msgstr ""
+msgstr "périmètres autorisés"
 
 #: build/lib/core/models.py:1114 core/models.py:1114
 msgid "Allowed scopes for this service"
-msgstr ""
+msgstr "Périmètres d'application autorisés pour ce service"
 
 #: build/lib/core/models.py:1119 core/models.py:1119
 msgid "Account service"
-msgstr ""
+msgstr "Compte de service"
 
 #: build/lib/core/models.py:1120 core/models.py:1120
 msgid "Account services"
-msgstr ""
+msgstr "Comptes de service"
 
 #: build/lib/mailbox_manager/admin.py:17 mailbox_manager/admin.py:17
 msgid "Import emails from dimail"
-msgstr ""
+msgstr "Importer les emails depuis dimail"
 
 #: build/lib/mailbox_manager/admin.py:35 mailbox_manager/admin.py:35
 #, python-format
@@ -421,6 +421,25 @@ msgstr "Impossible de récupérer la configuration attendue pour %(domain)s."
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la récupération : %(domains)s"
+
+#: build/lib/mailbox_manager/admin.py:138 mailbox_manager/admin.py:138
+msgid "Send pending mailboxes to dimail"
+msgstr "Envoyer les adresses mail en attente à dimail"
+
+#: build/lib/mailbox_manager/admin.py:154 mailbox_manager/admin.py:154
+#, python-format
+msgid "Failed to send the following mailboxes : %(mailboxes)s."
+msgstr "Échec de l'envoi des adresses mail suivantes : %(mailboxes)s."
+
+#: build/lib/mailbox_manager/admin.py:160 mailbox_manager/admin.py:160
+#, python-format
+msgid "Pending mailboxes successfully sent for %(domain)s."
+msgstr "Succès de l'envoi des adresses en attente pour le domaine %(domain)s."
+
+#: build/lib/mailbox_manager/admin.py:166 mailbox_manager/admin.py:166
+#, python-format
+msgid "Domains disabled are excluded from : %(domains)s"
+msgstr "Les domaines désactivés ont été exclu : %(domains)s"
 
 #: build/lib/mailbox_manager/apps.py:11 mailbox_manager/apps.py:11
 msgid "Mailbox manager"
@@ -533,10 +552,15 @@ msgstr "Invitations au domaine de messagerie"
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
-#: build/lib/mailbox_manager/utils/dimail.py:260
-#: mailbox_manager/utils/dimail.py:260
+#: build/lib/mailbox_manager/utils/dimail.py:268
+#: mailbox_manager/utils/dimail.py:268
 msgid "Your new mailbox information"
 msgstr "Informations sur votre nouvelle boîte mail"
+
+#: build/lib/mailbox_manager/utils/dimail.py:279
+#: mailbox_manager/utils/dimail.py:279
+msgid "Your password has been updated"
+msgstr "Votre mot de passe a été mis à jour"
 
 #: build/lib/people/settings.py:158 people/settings.py:158
 msgid "English"
@@ -603,12 +627,14 @@ msgstr "Cordialement,"
 #: core/templates/mail/html/maildomain_failed.html:233
 #: core/templates/mail/html/maildomain_invitation.html:256
 #: core/templates/mail/html/new_mailbox.html:273
+#: core/templates/mail/html/reset_password.html:268
 #: core/templates/mail/html/team_invitation.html:269
 #: core/templates/mail/text/maildomain_action_required.txt:14
 #: core/templates/mail/text/maildomain_enabled.txt:14
 #: core/templates/mail/text/maildomain_failed.txt:15
 #: core/templates/mail/text/maildomain_invitation.txt:24
 #: core/templates/mail/text/new_mailbox.txt:17
+#: core/templates/mail/text/reset_password.txt:16
 #: core/templates/mail/text/team_invitation.txt:22
 msgid "La Suite Team"
 msgstr "L'équipe de La Suite"
@@ -715,7 +741,9 @@ msgid "Welcome aboard!"
 msgstr "Bienvenue à bord !"
 
 #: core/templates/mail/html/new_mailbox.html:159
+#: core/templates/mail/html/reset_password.html:159
 #: core/templates/mail/text/new_mailbox.txt:3
+#: core/templates/mail/text/reset_password.txt:3
 msgid "La Messagerie"
 msgstr "La Messagerie"
 
@@ -740,24 +768,47 @@ msgid "Please find below your login info: "
 msgstr "Voici vos identifiants de connexion : "
 
 #: core/templates/mail/html/new_mailbox.html:228
+#: core/templates/mail/html/reset_password.html:223
 #: core/templates/mail/text/new_mailbox.txt:10
+#: core/templates/mail/text/reset_password.txt:9
 msgid "Email address: "
 msgstr "Adresse email : "
 
 #: core/templates/mail/html/new_mailbox.html:233
+#: core/templates/mail/html/reset_password.html:228
 #: core/templates/mail/text/new_mailbox.txt:11
-msgid "Temporary password (to be modify on first login): "
+#: core/templates/mail/text/reset_password.txt:10
+msgid "Temporary password (to be modified on first login): "
 msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
 
 #: core/templates/mail/html/new_mailbox.html:261
+#: core/templates/mail/html/reset_password.html:256
 #: core/templates/mail/text/new_mailbox.txt:13
+#: core/templates/mail/text/reset_password.txt:12
 msgid "Go to La Messagerie"
 msgstr "Accéder à La Messagerie"
 
 #: core/templates/mail/html/new_mailbox.html:272
+#: core/templates/mail/html/reset_password.html:267
 #: core/templates/mail/text/new_mailbox.txt:15
+#: core/templates/mail/text/reset_password.txt:14
 msgid "Sincerely,"
 msgstr "Cordialement,"
+
+#: core/templates/mail/html/reset_password.html:188
+#: core/templates/mail/text/reset_password.txt:5
+msgid "Your password has been reset"
+msgstr "Votre mot de passe a été réinitialisé"
+
+#: core/templates/mail/html/reset_password.html:194
+#: core/templates/mail/text/reset_password.txt:6
+msgid "Your password has been reset."
+msgstr "Votre mot de passe a été réinitialisé."
+
+#: core/templates/mail/html/reset_password.html:199
+#: core/templates/mail/text/reset_password.txt:7
+msgid "Please find below your new login information: "
+msgstr "Veuillez trouver ci-dessous vos nouvelles informations de connexion : "
 
 #: core/templates/mail/html/team_invitation.html:206
 #: core/templates/mail/text/team_invitation.txt:7

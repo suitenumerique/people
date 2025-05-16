@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-28 14:01+0000\n"
-"PO-Revision-Date: 2025-04-28 15:40\n"
+"POT-Creation-Date: 2025-05-16 09:31+0000\n"
+"PO-Revision-Date: 2025-05-16 11:22\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -422,6 +422,25 @@ msgstr ""
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr ""
 
+#: build/lib/mailbox_manager/admin.py:138 mailbox_manager/admin.py:138
+msgid "Send pending mailboxes to dimail"
+msgstr ""
+
+#: build/lib/mailbox_manager/admin.py:154 mailbox_manager/admin.py:154
+#, python-format
+msgid "Failed to send the following mailboxes : %(mailboxes)s."
+msgstr ""
+
+#: build/lib/mailbox_manager/admin.py:160 mailbox_manager/admin.py:160
+#, python-format
+msgid "Pending mailboxes successfully sent for %(domain)s."
+msgstr ""
+
+#: build/lib/mailbox_manager/admin.py:166 mailbox_manager/admin.py:166
+#, python-format
+msgid "Domains disabled are excluded from : %(domains)s"
+msgstr ""
+
 #: build/lib/mailbox_manager/apps.py:11 mailbox_manager/apps.py:11
 msgid "Mailbox manager"
 msgstr ""
@@ -533,9 +552,14 @@ msgstr ""
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: build/lib/mailbox_manager/utils/dimail.py:260
-#: mailbox_manager/utils/dimail.py:260
+#: build/lib/mailbox_manager/utils/dimail.py:268
+#: mailbox_manager/utils/dimail.py:268
 msgid "Your new mailbox information"
+msgstr ""
+
+#: build/lib/mailbox_manager/utils/dimail.py:279
+#: mailbox_manager/utils/dimail.py:279
+msgid "Your password has been updated"
 msgstr ""
 
 #: build/lib/people/settings.py:158 people/settings.py:158
@@ -603,12 +627,14 @@ msgstr ""
 #: core/templates/mail/html/maildomain_failed.html:233
 #: core/templates/mail/html/maildomain_invitation.html:256
 #: core/templates/mail/html/new_mailbox.html:273
+#: core/templates/mail/html/reset_password.html:268
 #: core/templates/mail/html/team_invitation.html:269
 #: core/templates/mail/text/maildomain_action_required.txt:14
 #: core/templates/mail/text/maildomain_enabled.txt:14
 #: core/templates/mail/text/maildomain_failed.txt:15
 #: core/templates/mail/text/maildomain_invitation.txt:24
 #: core/templates/mail/text/new_mailbox.txt:17
+#: core/templates/mail/text/reset_password.txt:16
 #: core/templates/mail/text/team_invitation.txt:22
 msgid "La Suite Team"
 msgstr ""
@@ -715,7 +741,9 @@ msgid "Welcome aboard!"
 msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:159
+#: core/templates/mail/html/reset_password.html:159
 #: core/templates/mail/text/new_mailbox.txt:3
+#: core/templates/mail/text/reset_password.txt:3
 msgid "La Messagerie"
 msgstr ""
 
@@ -740,23 +768,46 @@ msgid "Please find below your login info: "
 msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:228
+#: core/templates/mail/html/reset_password.html:223
 #: core/templates/mail/text/new_mailbox.txt:10
+#: core/templates/mail/text/reset_password.txt:9
 msgid "Email address: "
 msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:233
+#: core/templates/mail/html/reset_password.html:228
 #: core/templates/mail/text/new_mailbox.txt:11
-msgid "Temporary password (to be modify on first login): "
+#: core/templates/mail/text/reset_password.txt:10
+msgid "Temporary password (to be modified on first login): "
 msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:261
+#: core/templates/mail/html/reset_password.html:256
 #: core/templates/mail/text/new_mailbox.txt:13
+#: core/templates/mail/text/reset_password.txt:12
 msgid "Go to La Messagerie"
 msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:272
+#: core/templates/mail/html/reset_password.html:267
 #: core/templates/mail/text/new_mailbox.txt:15
+#: core/templates/mail/text/reset_password.txt:14
 msgid "Sincerely,"
+msgstr ""
+
+#: core/templates/mail/html/reset_password.html:188
+#: core/templates/mail/text/reset_password.txt:5
+msgid "Your password has been reset"
+msgstr ""
+
+#: core/templates/mail/html/reset_password.html:194
+#: core/templates/mail/text/reset_password.txt:6
+msgid "Your password has been reset."
+msgstr ""
+
+#: core/templates/mail/html/reset_password.html:199
+#: core/templates/mail/text/reset_password.txt:7
+msgid "Please find below your new login information: "
 msgstr ""
 
 #: core/templates/mail/html/team_invitation.html:206
