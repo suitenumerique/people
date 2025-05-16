@@ -56,18 +56,19 @@ export const Tag = ({ ...props }: TagContentProps) => {
     Partial<Record<TagContentProps['status'], string>>
   > = {
     domain: {
-      pending: 'Domain pending validation by an administrator',
-      enabled: 'Active domain',
-      disabled: 'Disabled domain',
-      failed: 'Domain error, contact an administrator',
-      action_required:
+      pending: t('Domain pending validation by an administrator'),
+      enabled: t('Active domain'),
+      disabled: t('Disabled domain'),
+      failed: t('Domain error, contact an administrator'),
+      action_required: t(
         'A configuration action from the domain manager (outside Régie) is required',
+      ),
     },
     mail: {
-      pending: 'Email address pending validation by an administrator',
-      enabled: 'Functional email address',
-      failed: 'Email address error, contact an administrator',
-      disabled: 'Disabled email address',
+      pending: t('Email address pending validation by an administrator'),
+      enabled: t('Functional email address'),
+      failed: t('Email address error, contact an administrator'),
+      disabled: t('Disabled email address'),
     },
   };
 

@@ -17,7 +17,7 @@ test.describe('When a commune, domain is created on first login via ProConnect',
     await page.waitForURL('http://localhost:3000/mail-domains/**');
     await expect(
       page.getByRole('heading', {
-        name: 'Areas of the organization',
+        name: 'Domains of the organization',
         exact: true,
       }),
     ).toBeVisible();

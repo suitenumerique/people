@@ -114,7 +114,7 @@ export const ModalAddMailDomain = ({
       ),
       rightAction: (
         <Button data-testid="next_step" onClick={() => setStep(1)}>
-          {t('I have already domain')}
+          {t('I already have a domain')}
         </Button>
       ),
       leftAction: (

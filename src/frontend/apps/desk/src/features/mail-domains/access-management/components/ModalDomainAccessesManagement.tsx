@@ -125,8 +125,9 @@ export const ModalDomainAccessesManagement = ({
       title={
         <Box $align="left" $gap="1rem">
           <Text $size="small" $margin="none">
-            {t('Droits d’administration de ')}
-            {mailDomain.name}
+            {t('Administration rights of {{name}}', {
+              name: mailDomain.name,
+            })}
           </Text>
         </Box>
       }
