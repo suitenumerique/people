@@ -98,7 +98,7 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(page.getByText('Areas of the organization')).toBeVisible();
+      await expect(page.getByText('Domains of the organization')).toBeVisible();
       await expect(page.getByText('No domains exist.')).toBeVisible();
     });
 
@@ -127,7 +127,7 @@ test.describe('Mail domains', () => {
         .getByLabel(`Mail Domains button`)
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
-      await expect(page.getByText('Areas of the organization')).toBeVisible();
+      await expect(page.getByText('Domains of the organization')).toBeVisible();
       await expect(page.getByText('Manage')).toHaveCount(4);
 
       await Promise.all(

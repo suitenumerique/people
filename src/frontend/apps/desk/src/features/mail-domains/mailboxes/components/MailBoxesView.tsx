@@ -122,7 +122,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
                 {t('New mail address')}
               </Button>
             ) : (
-              <Tooltip content="You don't have the correct access right">
+              <Tooltip content={t("You don't have the correct access right")}>
                 <div>
                   <Button
                     data-testid="button-new-mailbox"

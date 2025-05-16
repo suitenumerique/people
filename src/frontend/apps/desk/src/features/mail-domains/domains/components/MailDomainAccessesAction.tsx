@@ -36,7 +36,7 @@ export const MailDomainAccessesAction = ({
                 setIsModalAccessOpen(true);
               }}
             >
-              {t('Share rights')}
+              {t('Access management')}
             </Button>
           )}
         </Box>

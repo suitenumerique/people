@@ -55,7 +55,7 @@ const Page: NextPageWithLayout = () => {
           as="h2"
           $css="font-weight: 700; font-size: 1.5rem; margin-bottom: 20px;"
         >
-          {t('Areas of the organization')}
+          {t('Domains of the organization')}
         </Text>
 
         <Box
@@ -111,7 +111,7 @@ const Page: NextPageWithLayout = () => {
                 {t('Add a mail domain')}
               </Button>
             ) : (
-              <Tooltip content="You don't have the correct access right">
+              <Tooltip content={t("You don't have the correct access right")}>
                 <div>
                   <Button
                     data-testid="button-new-domain"

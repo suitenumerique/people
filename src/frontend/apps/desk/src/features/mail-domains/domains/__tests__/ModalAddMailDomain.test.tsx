@@ -36,7 +36,7 @@ describe('ModalAddMailDomain', () => {
   const goToSecondStep = async () => {
     const user = userEvent.setup();
     await user.click(
-      screen.getByRole('button', { name: /I have already domain/i }),
+      screen.getByRole('button', { name: /I already have a domain/i }),
     );
   };
 

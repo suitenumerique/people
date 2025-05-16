@@ -38,7 +38,9 @@ test.describe('Add Mail Domains', () => {
 
     await expect(buttonClose).toBeVisible();
 
-    await page.getByRole('button', { name: /I have already domain/i }).click();
+    await page
+      .getByRole('button', { name: /I already have a domain/i })
+      .click();
 
     await expect(modal).toBeVisible();
     await expect(inputName).toBeVisible();
@@ -60,7 +62,9 @@ test.describe('Add Mail Domains', () => {
     await page.goto('/mail-domains/');
     await page.getByTestId('button-new-domain').click();
 
-    await page.getByRole('button', { name: /I have already domain/i }).click();
+    await page
+      .getByRole('button', { name: /I already have a domain/i })
+      .click();
     const { inputName, buttonSubmit } = getElements(page);
 
     await expect(buttonSubmit).toBeDisabled();
@@ -79,7 +83,9 @@ test.describe('Add Mail Domains', () => {
     await page.goto('/mail-domains/');
     await page.getByTestId('button-new-domain').click();
 
-    await page.getByRole('button', { name: /I have already domain/i }).click();
+    await page
+      .getByRole('button', { name: /I already have a domain/i })
+      .click();
 
     const { inputName, inputSupportEmail, buttonSubmit, modal } =
       getElements(page);
