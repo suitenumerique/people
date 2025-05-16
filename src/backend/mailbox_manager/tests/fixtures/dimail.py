@@ -7,7 +7,7 @@ import json
 
 
 def response_user_created(user_sub):
-    """mimic dimail response upon succesfull user creation."""
+    """mimic dimail response upon successful user creation."""
     return json.dumps(
         {
             "name": user_sub,
@@ -297,7 +297,7 @@ TOKEN_OK = json.dumps({"access_token": "token", "token_type": "bearer"})
 
 
 def response_allows_created(user_name, domain_name):
-    """mimic dimail response upon succesfull allows creation.
+    """mimic dimail response upon successful allows creation.
     Dimail expects a name but our names are ProConnect's uuids."""
     return json.dumps({"user": user_name, "domain": domain_name})
 
@@ -306,5 +306,5 @@ def response_allows_created(user_name, domain_name):
 
 
 def response_mailbox_created(email_address):
-    """mimic dimail response upon succesfull mailbox creation."""
+    """mimic dimail response upon successful mailbox creation."""
     return json.dumps({"email": email_address, "password": "password"})
