@@ -125,6 +125,12 @@ def test_api_mailboxes__reset_password_admin_successful(role):
     dimail_url = settings.MAIL_PROVISIONING_API_URL
 
     responses.add(
+        responses.GET,
+        f"{dimail_url}/token/",
+        body=dimail.TOKEN_OK,
+        status=200,
+    )
+    responses.add(
         responses.POST,
         f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
         body=dimail.response_mailbox_created(str(mailbox)),
@@ -169,6 +175,12 @@ def test_api_mailboxes__reset_password_connexion_failed():
     client.force_login(access.user)
 
     dimail_url = settings.MAIL_PROVISIONING_API_URL
+    responses.add(
+        responses.GET,
+        f"{dimail_url}/token/",
+        body=dimail.TOKEN_OK,
+        status=200,
+    )
     responses.add(
         responses.POST,
         f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
