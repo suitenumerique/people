@@ -10,6 +10,45 @@ export interface DisableMailboxParams {
   isEnabled: boolean;
 }
 
+export interface ResetPasswordParams {
+  mailDomainSlug: string;
+  mailboxId: string;
+}
+
+export const resetPassword = async ({
+  mailDomainSlug,
+  mailboxId,
+}: ResetPasswordParams): Promise<void> => {
+  const response = await fetchAPI(
+    `mail-domains/${mailDomainSlug}/mailboxes/${mailboxId}/reset_password/`,
+    {
+      method: 'POST',
+    },
+  );
+
+  if (!response.ok) {
+    throw new APIError(
+      'Failed to reset mailbox password',
+      await errorCauses(response),
+    );
+  }
+};
+
+export const useResetPassword = () => {
+  const queryClient = useQueryClient();
+  return useMutation<void, APIError, ResetPasswordParams>({
+    mutationFn: resetPassword,
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: [
+          KEY_LIST_MAILBOX,
+          { mailDomainSlug: variables.mailDomainSlug },
+        ],
+      });
+    },
+  });
+};
+
 export const disableMailbox = async ({
   mailDomainSlug,
   mailboxId,
