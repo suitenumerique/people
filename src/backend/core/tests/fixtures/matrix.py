@@ -10,8 +10,8 @@ def mock_ok_room_joined(room_id):
 
 
 # INVITE USER
-def mock_request_successful():
-    """Mock Matrix response when invite or kick request was succesful."""
+def mock_invite_successful():
+    """Mock Matrix response when invite request was succesful."""
     return {"message": {}, "status_code": status.HTTP_200_OK}
 
 
@@ -27,6 +27,11 @@ def mock_invite_user_to_room_already_in_room(user_id):
 
 
 # KICK USER
+def mock_kick_successful():
+    """Mock Matrix response when succesfully joining room."""
+    return {"message": {}, "status_code": status.HTTP_200_OK}
+
+
 def mock_kick_user_from_room_forbidden(user_id):
     """Mock Matrix response when kick request is forbidden (i.e. wrong permission or user is room admin."""
     return {

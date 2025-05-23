@@ -853,13 +853,13 @@ class TeamAccess(BaseModel):
         """
         if self._state.adding and self.team.webhooks.exists():
             self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
-            for webhook in self.team.webhook.all():
-                with transaction.atomic():
-                    instance = super().save(*args, **kwargs)
+            with transaction.atomic():
+                for webhook in self.team.webhooks.all():
                     if webhook.protocol == WebhookProtocolChoices.MATRIX:
                         webhook_synchronizer.invite_user_to_room(self.user)
                     if webhook.protocol == WebhookProtocolChoices.SCIM:
                         webhook_synchronizer.add_user_to_group(self.team, self.user)
+                instance = super().save(*args, **kwargs)
         else:
             instance = super().save(*args, **kwargs)
 
@@ -871,9 +871,9 @@ class TeamAccess(BaseModel):
         Don't allow deleting a team access until it is successfully synchronized with all
         its webhooks.
         """
-        if self.team.webhooks.exists():
+        if webhooks := self.team.webhooks.all():
             self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
-            for webhook in self.team.webhook.all():
+            for webhook in self.team.webhooks.all():
                 with transaction.atomic():
                     super().delete(*args, **kwargs)
                     arguments = self.team, self.user
@@ -881,6 +881,8 @@ class TeamAccess(BaseModel):
                         webhook_synchronizer.kick_user_from_room(self.user)
                     if webhook.protocol == WebhookProtocolChoices.SCIM:
                         webhook_synchronizer.remove_user_from_group(*arguments)
+        else:
+            super().delete(*args, **kwargs)
 
     def get_abilities(self, user):
         """
@@ -963,6 +965,13 @@ class TeamWebhook(BaseModel):
         if self.secret:
             headers["Authorization"] = f"Bearer {self.secret:s}"
         return headers
+
+    def save(self, *args, **kwargs):
+        """Override save method to add Tchap secret when revelant."""
+        if "tchap.gouv.fr" in self.url and not self.secret:
+            self.secret = TCHAP_ACCESS_TOKEN
+
+        return super().save(*args, **kwargs)
 
 
 class BaseInvitation(BaseModel):

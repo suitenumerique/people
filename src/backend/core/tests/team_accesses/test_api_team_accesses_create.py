@@ -10,7 +10,7 @@ import pytest
 import responses
 from rest_framework.test import APIClient
 
-from core import factories, models
+from core import enums, factories, models
 
 pytestmark = pytest.mark.django_db
 
@@ -171,14 +171,16 @@ def test_api_team_accesses_create_authenticated_owner():
     }
 
 
-def test_api_team_accesses_create_webhook():
+def test_api_team_accesses_create__with_scim_webhook():
     """
-    When the team has a webhook, creating a team access should fire a call.
+    When the team has a SCIM webhook, creating a team access should fire a call with the expected payload.
     """
     user, other_user = factories.UserFactory.create_batch(2)
 
     team = factories.TeamFactory(users=[(user, "owner")])
-    webhook = factories.TeamWebhookFactory(team=team)
+    webhook_scim = factories.TeamWebhookFactory(
+        team=team, protocol=enums.WebhookProtocolChoices.SCIM
+    )
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
 
@@ -226,3 +228,53 @@ def test_api_team_accesses_create_webhook():
                 }
             ],
         }
+
+    assert TeamAccess.objects.filter(user=other_user, team=team).exists()
+
+
+def test_api_team_accesses_create__with_multiple_webhooks():
+    """
+    When the team has multiple webhooks, creating a team access should fire all the expected calls.
+    If all responses are positive, proceeds to add the user to the team.
+    """
+    user, other_user = factories.UserFactory.create_batch(2)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    webhook_scim = factories.TeamWebhookFactory(
+        team=team, protocol=enums.WebhookProtocolChoices.SCIM
+    )
+    webhook_matrix = factories.TeamWebhookFactory(
+        team=team,
+        url="https://www.webhookserver.fr/#/room/room_id:home_server/",
+        protocol=enums.WebhookProtocolChoices.MATRIX,
+    )
+
+    role = random.choice([role[0] for role in models.RoleChoices.choices])
+
+    client = APIClient()
+    client.force_login(user)
+
+    with responses.RequestsMock() as rsps:
+        # Ensure successful response by scim provider using "responses":
+        rsp = rsps.add(
+            rsps.PATCH,
+            re.compile(r".*/Groups/.*"),
+            body="{}",
+            status=200,
+            content_type="application/json",
+        )
+
+        response = client.post(
+            f"/api/v1.0/teams/{team.id!s}/accesses/",
+            {
+                "user": str(other_user.id),
+                "role": role,
+            },
+            format="json",
+        )
+        assert response.status_code == 201
+
+        assert rsp.call_count == 4
+        assert rsps.calls[0].request.url == webhook.url
+
+    assert TeamAccess.objects.filter(user=other_user, team=team).exists()

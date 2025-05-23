@@ -30,8 +30,10 @@ class WebhookClient:
 
                 if webhook.protocol == enums.WebhookProtocolChoices.SCIM:
                     client = SCIMClient()
+                    name = "add_user_to_group"
                 elif webhook.protocol == enums.WebhookProtocolChoices.MATRIX:
                     client = MatrixAPIClient()
+                    name = "invite_user_to_room"
                 else:
                     return
 
