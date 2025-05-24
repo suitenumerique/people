@@ -19,6 +19,6 @@
     "eslint-plugin-playwright": "2.2.0",
     "eslint-plugin-prettier": "5.4.0",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-testing-library": "7.2.0"
+    "eslint-plugin-testing-library": "7.2.1"
   }
 }
