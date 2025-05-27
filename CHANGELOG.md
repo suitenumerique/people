@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) add crisp script #914
 - ⚡️(fix) add error when mailbox create failed
 - ✨(mailbox) allow to reset password on mailboxes #834
 

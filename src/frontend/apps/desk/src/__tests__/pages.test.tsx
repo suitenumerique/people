@@ -37,6 +37,7 @@ describe('Page', () => {
 
     useConfigStore.setState({
       config: {
+        CRISP_WEBSITE_ID: 'wesh',
         RELEASE: '1.0.0',
         COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: true },
@@ -66,6 +67,7 @@ describe('Page', () => {
 
     useConfigStore.setState({
       config: {
+        CRISP_WEBSITE_ID: 'wesh',
         RELEASE: '1.0.0',
         COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: false },
@@ -95,6 +97,7 @@ describe('Page', () => {
 
     useConfigStore.setState({
       config: {
+        CRISP_WEBSITE_ID: 'wesh',
         RELEASE: '1.0.0',
         COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: false },
@@ -124,6 +127,7 @@ describe('Page', () => {
 
     useConfigStore.setState({
       config: {
+        CRISP_WEBSITE_ID: 'wesh',
         RELEASE: '1.0.0',
         COMMIT: 'NA',
         FEATURES: { TEAMS_DISPLAY: true },
