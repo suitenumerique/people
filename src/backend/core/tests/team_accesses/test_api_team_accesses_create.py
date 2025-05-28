@@ -327,7 +327,6 @@ def test_api_team_accesses_create__multiple_webhooks_failure(caplog):
     )
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
-
     client = APIClient()
     client.force_login(user)
 
@@ -350,8 +349,8 @@ def test_api_team_accesses_create__multiple_webhooks_failure(caplog):
         rsps.add(
             rsps.POST,
             re.compile(r".*/invite"),
-            body=str(matrix.mock_invite_successful()["message"]),
-            status=matrix.mock_invite_successful()["status_code"],
+            body=str(matrix.mock_invite_user_already_in_room(user)["message"]),
+            status=matrix.mock_invite_user_already_in_room(user)["status_code"],
             content_type="application/json",
         )
 
@@ -367,11 +366,14 @@ def test_api_team_accesses_create__multiple_webhooks_failure(caplog):
 
     # Logger
     log_messages = [msg.message for msg in caplog.records]
-    for webhook in [webhook_scim, webhook_matrix]:
-        assert (
-            f"add_user_to_group synchronization succeeded with {webhook.url}"
-            in log_messages
-        )
+    assert (
+        f"add_user_to_group synchronization succeeded with {webhook_scim.url}"
+        in log_messages
+    )
+    assert (
+        f"add_user_to_group synchronization failed with {webhook_matrix.url}"
+        in log_messages
+    )
 
     # Status
     webhook_scim.status = "success"

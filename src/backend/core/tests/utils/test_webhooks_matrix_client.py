@@ -34,7 +34,7 @@ def test_matrix_webhook__invite_user_to_room_forbidden(caplog):
     )
     client = MatrixAPIClient()
 
-    error = matrix.mock_kick_user_from_room_forbidden(user.email)
+    error = matrix.mock_kick_user_forbidden(user.email)
     with responses.RequestsMock() as rsps:
         # Mock successful responses
         rsps.add(
@@ -56,7 +56,42 @@ def test_matrix_webhook__invite_user_to_room_forbidden(caplog):
 
 def test_matrix_webhook__invite_user_to_room_already_in_room(caplog):
     """If user is already in room, webhooks should be set to success."""
-    pass
+    caplog.set_level(logging.INFO)
+
+    user = factories.UserFactory()
+    webhook = factories.TeamWebhookFactory(
+        protocol=WebhookProtocolChoices.MATRIX,
+        url="https://www.tchap.gouv.fr/#/room/room_id:home_server",
+        secret=settings.TCHAP_ACCESS_TOKEN,
+    )
+    client = MatrixAPIClient()
+
+    with responses.RequestsMock() as rsps:
+        # Mock successful responses
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/join"),
+            body=str(matrix.mock_join_room_successful("room_id")["message"]),
+            status=matrix.mock_join_room_successful("room_id")["status_code"],
+            content_type="application/json",
+        )
+        rsps.add(
+            rsps.POST,
+            re.compile(r".*/invite"),
+            body=str(matrix.mock_invite_user_already_in_room(user)["message"]),
+            status=matrix.mock_invite_user_already_in_room(user)["status_code"],
+            content_type="application/json",
+        )
+        webhooks_synchronizer.invite_user_to_room(team=webhook.team, user=user)
+
+    # Logger
+    log_messages = [msg.message for msg in caplog.records]
+    expected_messages = f"invite_user_to_room synchronization failed with {webhook.url}"
+    assert expected_messages in log_messages
+
+    # Status
+    webhook.refresh_from_db()
+    assert webhook.status == "success"
 
 
 def test_matrix_webhook__invite_user_to_room_success(caplog):
@@ -111,9 +146,7 @@ def test_matrix_webhook__invite_user_to_room_success(caplog):
     assert webhook.status == "success"
 
 
-## KICk
-
-
+## KICK
 def test_matrix_webhook__kick_user_from_room_not_in_room(caplog):
     """Webhook should report a success when user was already not in room.
     To be determined."""
@@ -215,7 +248,7 @@ def test_matrix_webhook__kick_user_from_room_forbidden(caplog):
     )
     client = MatrixAPIClient()
 
-    error = matrix.mock_kick_user_from_room_forbidden(client.get_user_id(user))
+    error = matrix.mock_kick_user_forbidden(client.get_user_id(user))
     with responses.RequestsMock() as rsps:
         # Ensure successful response by scim provider using "responses":
         rsps.add(

@@ -955,11 +955,9 @@ class TeamWebhook(BaseModel):
 
     def save(self, *args, **kwargs):
         """Override save method to add Tchap secret when revelant."""
-        instance = super().save(*args, **kwargs)
         if "tchap.gouv.fr" in self.url and not self.secret:
             self.secret = TCHAP_ACCESS_TOKEN
-
-        return instance
+        return super().save(*args, **kwargs)
 
 
 class BaseInvitation(BaseModel):

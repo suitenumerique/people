@@ -34,12 +34,12 @@ def mock_invite_successful():
     return {"message": {}, "status_code": status.HTTP_200_OK}
 
 
-def mock_invite_user_to_room_already_in_room(user_id):
+def mock_invite_user_already_in_room(user):
     """Mock response when invitation forbidden for People user."""
     return {
         "message": {
             "errcode": "M_FORBIDDEN",
-            "error": f"{user_id} is already in the room.",
+            "error": f"{user.email.replace('@', ':')} is already in the room.",
         },
         "status_code": status.HTTP_403_FORBIDDEN,
     }
@@ -51,12 +51,12 @@ def mock_kick_successful():
     return {"message": {}, "status_code": status.HTTP_200_OK}
 
 
-def mock_kick_user_from_room_forbidden(user_id):
+def mock_kick_user_forbidden(user):
     """Mock response when kick request is forbidden (i.e. wrong permission or user is room admin."""
     return {
         "message": {
             "errcode": "M_FORBIDDEN",
-            "error": f"You cannot kick user @{user_id}.",
+            "error": f"You cannot kick user @{user.email.replace('@', ':')}.",
         },
         "status_code": status.HTTP_403_FORBIDDEN,
     }
