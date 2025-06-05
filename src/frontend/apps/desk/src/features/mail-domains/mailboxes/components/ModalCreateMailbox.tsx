@@ -66,6 +66,7 @@ export const ModalCreateMailbox = ({
       closeModal();
     },
     onError: (error) => {
+      toast(t('Mailbox create failed!'), VariantType.ERROR, { duration: 4000 });
       const causes = parseAPIError({ error }) || [];
       setErrorCauses(causes);
     },
