@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(mailbox) synchronize password of newly created mailbox with Dimail's
 - ✨(mailbox) allow to reset password on mailboxes #834
 
 ## [1.16.0] - 2025-05-05
