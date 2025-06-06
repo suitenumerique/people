@@ -271,10 +271,11 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
                 queue.push(
                     models.TeamAccess(team_id=team_id, user_id=user_id, role=role[0])
                 )
+        queue.flush()
 
     with Timeit(stdout, "Creating domains"):
         for i in range(defaults.NB_OBJECTS["domains"]):
-            name = f"{fake.domain_name()}-i{i:d}"
+            name = fake.domain_name().replace(".", f"-i{i:d}.")
 
             queue.push(
                 mailbox_models.MailDomain(

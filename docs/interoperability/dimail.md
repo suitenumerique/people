@@ -13,8 +13,7 @@ To ease local development, dimail provides a container that we embark in our doc
 Bootstraping with command `make bootstrap` creates a container and initializes its database.
 
 Additional commands : 
-- Reset the database by recreating the container with `dimail-recreate-container`.
-- Populate the database with all the content of your People database with `dimail-setup-db`
+- Reset and populate the database with all the content of your People database with `dimail-setup-db`
 
 ## Architecture
 
@@ -47,5 +46,5 @@ People users can have 3 levels of permissions on a domain:
 Mailboxes can be created by a domain owners or administrators in People's domain tab.
 
 On enabled domains, mailboxes are created at the same time on dimail (and a confirmation email is sent to the secondary email).
-On pending/failed domains, mailboxes are only created locally with "pending" status and are sent to dimail upon domain's activation.
+On pending/failed domains, mailboxes are only created locally with "pending" status and are sent to dimail upon domain's (re)activation.
 On disabled domains, mailboxes creation is not allowed.
