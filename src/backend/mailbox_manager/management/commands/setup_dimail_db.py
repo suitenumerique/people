@@ -47,9 +47,9 @@ class Command(BaseCommand):
                 f"This command is not meant to run in {settings.CONFIGURATION} environment."
             )
 
-        # Create a first superuser for dimail-api container. User creation is usually
-        # protected behind admin rights but dimail allows to create a first user
-        # when database is empty
+        # Create a first superuser for dimail-api container.
+        # User creation is usually protected behind admin rights
+        # but dimail allows to create a first user when database is empty
         self.create_user(
             auth=("", ""),
             name=admin["username"],
@@ -57,8 +57,8 @@ class Command(BaseCommand):
             perms=[],
         )
 
-        # Create Regie user, auth for all remaining requests
-        # and your own dev
+        # Create Regie user,
+        # auth for all remaining requests and your own local setup
         self.create_user(
             auth=(admin["username"], admin["password"]),
             name=regie["username"],
@@ -66,28 +66,22 @@ class Command(BaseCommand):
             perms=["new_domain", "create_users", "manage_users"],
         )
 
-        # we create a domain and add John Doe to it
-        domain_name = "test.domain.com"
-        domain = MailDomain.objects.get_or_create(
-            name=domain_name,
-            defaults={
-                "status": enums.MailDomainStatusChoices.ENABLED,
-                "support_email": f"support@{domain_name}",
-            },
-        )[0]
-        self.create_domain(domain_name)
-
-        # we create a dimail user for keycloak+regie user John Doe
-        # This way, la Régie will be able to make request in the name of
-        # this user
+        # Create a test domain for local development
         try:
             people_base_user = User.objects.get(email="people@people.world")
         except User.DoesNotExist:
             self.stdout.write("people@people.world user not found", ending="\n")
         else:
+            domain_name = "test.domain.com"
+            domain = MailDomain.objects.get_or_create(
+                name=domain_name,
+                defaults={
+                    "status": enums.MailDomainStatusChoices.ENABLED,
+                    "support_email": f"support@{domain_name}",
+                },
+            )[0]
+            self.create_domain(domain_name)
             # create accesses for john doe
-            self.create_user(name=people_base_user.sub)
-            self.create_allow(people_base_user.sub, domain_name)
             MailDomainAccess.objects.get_or_create(
                 user=people_base_user,
                 domain=domain,
@@ -97,7 +91,7 @@ class Command(BaseCommand):
         if options["populate_from_people"]:
             self._populate_dimail_from_people()
 
-        self.stdout.write("DONE", ending="\n")
+        self.stdout.write("DONE 🎉", ending="\n")
 
     def create_user(
         self,
@@ -148,41 +142,12 @@ class Command(BaseCommand):
                 )
             )
 
-    def create_allow(self, user, domain):
-        """
-        Send a request to create a new allows between user and domain using DimailAPIClient.
-        """
-        response = self.client.create_allow(user, domain)
-
-        if response.status_code == status.HTTP_201_CREATED:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Creating permissions for {user} on {domain} ........ OK"
-                )
-            )
-        else:
-            self.stdout.write(
-                self.style.ERROR(
-                    f"Creating permissions for {user} on {domain}\
-                     ........ failed: {response.json()['detail']}"
-                )
-            )
-
     def _populate_dimail_from_people(self):
-        self.stdout.write("Creating accounts from people database", ending="\n")
-
-        user_to_create = set()
-        domain_to_create = set()
-        access_to_create = set()
-        for mail_access in MailDomainAccess.objects.select_related(
-            "domain", "user"
-        ).all():
-            user_to_create.add(mail_access.user)
-            domain_to_create.add(mail_access.domain)
-            access_to_create.add(mail_access)
+        """Populate dimail so that it reflects people's domains."""
+        self.stdout.write("Creating domain from people database", ending="\n")
 
         # create missing domains
-        for domain in domain_to_create:
+        for domain in MailDomain.objects.all():
             # enforce domain status
             if domain.status != enums.MailDomainStatusChoices.ENABLED:
                 self.stdout.write(
@@ -191,15 +156,3 @@ class Command(BaseCommand):
                 domain.status = enums.MailDomainStatusChoices.ENABLED
                 domain.save()
             self.create_domain(domain.name)
-
-        # create missing users
-        for user in user_to_create:
-            self.create_user(
-                auth=(admin["username"], admin["password"]),
-                name=user.sub,
-                perms=[],  # no permission needed for "classic" users
-            )
-
-        # create missing accesses
-        for access in access_to_create:
-            self.create_allow(access.user.sub, access.domain.name)
