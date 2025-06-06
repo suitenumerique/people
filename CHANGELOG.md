@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(frontend) add crisp script #914
 - ✨(mailbox) allow to reset password on mailboxes #834
 
 ## [1.16.0] - 2025-05-05
