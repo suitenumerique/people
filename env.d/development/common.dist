@@ -65,3 +65,6 @@ IH5em4M/pHIcsqCi1qggBMbdvzHBUtC3R4sK0CpEFHlN+Y59aGazidcN2FPupNJv
 MbyqKyC6DAzv4jEEhHaN7oY=
 -----END PRIVATE KEY-----
 "
+
+# INTEROP
+MAIL_PROVISIONING_API_CREDENTIALS="bGFfcmVnaWU6cGFzc3dvcmQ=" # Dev and test key for dimail interop
