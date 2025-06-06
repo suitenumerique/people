@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(teams) add matrix webhook for teams #904
 - ✨(mailbox) allow to reset password on mailboxes #834
 
 ## [1.16.0] - 2025-05-05
