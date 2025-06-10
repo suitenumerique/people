@@ -66,7 +66,37 @@ export const ModalCreateMailbox = ({
       closeModal();
     },
     onError: (error) => {
-      const causes = parseAPIError({ error }) || [];
+      const causes =
+        parseAPIError({
+          error,
+          errorParams: [
+            [
+              ['Mailbox with this Local_part and Domain already exists'],
+              t('This email prefix is already used.'),
+              undefined,
+            ],
+            [
+              ['Invalid format'],
+              t('Invalid format for the email prefix.'),
+              undefined,
+            ],
+          ],
+          serverErrorParams: [
+            t(
+              'An error occurred while creating the mailbox. Please try again.',
+            ),
+            undefined,
+          ],
+        }) || [];
+      if (causes.length > 0) {
+        causes.forEach((cause) => {
+          toast(cause, VariantType.ERROR, { duration: 4000 });
+        });
+      } else {
+        toast(t('Mailbox create failed!'), VariantType.ERROR, {
+          duration: 4000,
+        });
+      }
       setErrorCauses(causes);
     },
   });

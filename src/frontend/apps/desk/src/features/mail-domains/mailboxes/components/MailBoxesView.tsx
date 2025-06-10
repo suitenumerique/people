@@ -127,7 +127,6 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
                   <Button
                     data-testid="button-new-mailbox"
                     onClick={openModal}
-                    icon={<span className="material-icons">add</span>}
                     disabled={!isCreateMailboxFormVisible}
                   >
                     {t('New mail address')}
