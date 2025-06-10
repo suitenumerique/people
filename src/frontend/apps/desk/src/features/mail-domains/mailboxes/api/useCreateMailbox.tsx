@@ -26,10 +26,13 @@ export const createMailbox = async ({
   });
 
   if (!response.ok) {
-    throw new APIError(
-      'Failed to create the mailbox',
-      await errorCauses(response),
-    );
+    const errorData = await errorCauses(response);
+    console.log('Error data:', errorData);
+    throw new APIError('Failed to create the mailbox', {
+      status: errorData.status,
+      cause: errorData.cause as string[],
+      data: errorData.data,
+    });
   }
 };
 
