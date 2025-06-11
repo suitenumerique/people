@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 09:31+0000\n"
-"PO-Revision-Date: 2025-05-16 11:22\n"
+"POT-Creation-Date: 2025-06-10 16:13+0000\n"
+"PO-Revision-Date: 2025-06-11 09:29\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -562,11 +562,11 @@ msgstr "Informations sur votre nouvelle boîte mail"
 msgid "Your password has been updated"
 msgstr "Votre mot de passe a été mis à jour"
 
-#: build/lib/people/settings.py:158 people/settings.py:158
+#: build/lib/people/settings.py:159 people/settings.py:159
 msgid "English"
 msgstr "Anglais"
 
-#: build/lib/people/settings.py:159 people/settings.py:159
+#: build/lib/people/settings.py:160 people/settings.py:160
 msgid "French"
 msgstr "Français"
 
