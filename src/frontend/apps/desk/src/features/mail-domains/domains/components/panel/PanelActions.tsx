@@ -24,6 +24,7 @@ export const PanelActions = () => {
       $css={`
         & button {
           padding: 0;
+          justify-content: start;
 
           svg {
             padding: 0.1rem;

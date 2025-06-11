@@ -11,7 +11,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { MailDomain } from '@/features/mail-domains/domains';
-import { ViewMailbox } from '@/features/mail-domains/mailboxes';
+import {
+  ModalUpdateMailbox,
+  ViewMailbox,
+} from '@/features/mail-domains/mailboxes';
 
 import {
   useResetPassword,
@@ -28,6 +31,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   const [isDropOpen, setIsDropOpen] = useState(false);
   const isEnabled = mailbox.status === 'enabled';
   const disableModal = useModal();
+  const updateModal = useModal();
   const { toast } = useToastProvider();
 
   const { mutate: updateMailboxStatus } = useUpdateMailboxStatus();
@@ -93,7 +97,6 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
                 handleUpdateMailboxStatus();
               }
             }}
-            fullWidth
             color="primary-text"
             icon={
               <span className="material-icons" aria-hidden="true">
@@ -103,6 +106,28 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
           >
             <Text $theme="primary">
               {isEnabled ? t('Disable mailbox') : t('Enable mailbox')}
+            </Text>
+          </Button>
+          <Button
+            aria-label={t('Open the modal to update mailbox')}
+            onClick={() => {
+              setIsDropOpen(false);
+              if (isEnabled) {
+                updateModal.open();
+              } else {
+                handleUpdateMailboxStatus();
+              }
+            }}
+            color="primary-text"
+            disabled={!isEnabled}
+            icon={
+              <span className="material-icons" aria-hidden="true">
+                {isEnabled ? 'settings' : 'block'}
+              </span>
+            }
+          >
+            <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
+              {t('Configure mailbox')}
             </Text>
           </Button>
           <Button
@@ -120,11 +145,17 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
             }
           >
             <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
-              {isEnabled ? t('Reset password') : t('Reset password')}
+              {t('Reset password')}
             </Text>
           </Button>
         </Box>
       </DropButton>
+      <ModalUpdateMailbox
+        isOpen={updateModal.isOpen}
+        onClose={updateModal.close}
+        mailDomain={mailDomain}
+        mailbox={mailbox}
+      />
       <Modal
         isOpen={disableModal.isOpen}
         onClose={disableModal.close}
