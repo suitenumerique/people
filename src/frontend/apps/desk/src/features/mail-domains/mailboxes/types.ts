@@ -14,3 +14,12 @@ export type MailDomainMailboxStatus =
   | 'disabled'
   | 'pending'
   | 'failed';
+
+export interface ViewMailbox {
+  id: string;
+  first_name: string;
+  last_name: string;
+  local_part: string;
+  secondary_email: string;
+  status: MailDomainMailboxStatus;
+}
