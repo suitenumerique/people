@@ -10,61 +10,6 @@ RUN python -m pip install --upgrade pip setuptools
 RUN apk update && \
   apk upgrade
 
-### ---- Front-end dependencies image ----
-FROM node:20 AS frontend-deps
-
-WORKDIR /deps
-
-COPY ./src/frontend/package.json ./package.json
-COPY ./src/frontend/yarn.lock ./yarn.lock
-COPY ./src/frontend/apps/desk/package.json ./apps/desk/package.json
-COPY ./src/frontend/packages/i18n/package.json ./packages/i18n/package.json
-COPY ./src/frontend/packages/eslint-config-people/package.json ./packages/eslint-config-people/package.json
-
-RUN yarn --frozen-lockfile
-
-### ---- Front-end builder dev image ----
-FROM node:20 AS frontend-builder-dev
-
-WORKDIR /builder
-
-COPY --from=frontend-deps /deps/node_modules ./node_modules
-COPY ./src/frontend .
-
-WORKDIR ./apps/desk
-
-### ---- Front-end builder image ----
-FROM frontend-builder-dev AS frontend-builder
-
-RUN yarn build
-
-# ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS frontend-production
-
-USER root
-
-RUN apk update && apk upgrade libssl3 libcrypto3 libxml2
-
-USER nginx
-
-# Un-privileged user running the application
-ARG DOCKER_USER
-USER ${DOCKER_USER}
-
-COPY --from=frontend-builder \
-    /builder/apps/desk/out \
-    /usr/share/nginx/html
-
-COPY ./src/frontend/apps/desk/conf/default.conf /etc/nginx/conf.d
-
-# Copy entrypoint
-COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
-
-CMD ["nginx", "-g", "daemon off;"]
-
-
 # ---- Back-end builder image ----
 FROM base AS back-builder
 

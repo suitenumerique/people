@@ -6,6 +6,11 @@ services:
       - env.d/development/postgresql
     ports:
       - "15432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 2s
+      retries: 300
 
   redis:
     image: redis:5
@@ -23,6 +28,7 @@ services:
         DOCKER_USER: ${DOCKER_USER:-1000}
     user: ${DOCKER_USER:-1000}
     image: people:backend-development
+    pull_policy: never
     environment:
       - PYLINTHOME=/app/.pylint.d
       - DJANGO_CONFIGURATION=Development
@@ -37,11 +43,69 @@ services:
       - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
-        - dimail
-        - postgresql
-        - maildev
-        - redis
-  
+      postgresql:
+        condition: service_healthy
+        restart: true
+      dimail:
+        condition: service_started
+      maildev:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  frontend-dev:
+    user: "${DOCKER_USER:-1000}"
+    build:
+      context: .
+      dockerfile: ./src/frontend/Dockerfile
+      target: frontend-dev
+    image: people:frontend-development
+    pull_policy: never
+    volumes:
+      - ./src/frontend:/home/frontend
+      - /home/frontend/node_modules
+      - /home/frontend/apps/desk/node_modules
+    ports:
+      - "3000:3000"
+
+  app:
+    build:
+      context: .
+      target: backend-production
+      args:
+        DOCKER_USER: ${DOCKER_USER:-1000}
+    user: ${DOCKER_USER:-1000}
+    image: people:backend-production
+    environment:
+      - DJANGO_CONFIGURATION=Development
+    env_file:
+      - env.d/development/common
+      - env.d/development/france
+      - env.d/development/postgresql
+    ports:
+      - "8071:8000"
+    volumes:
+      - ./data/media:/data/media
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+
+  frontend:
+    user: "${DOCKER_USER:-1000}"
+    build:
+      context: .
+      dockerfile: ./src/frontend/Dockerfile
+      target: frontend-production
+      args:
+        API_ORIGIN: "http://localhost:8071"
+    image: people:frontend-production
+    pull_policy: build
+    ports:
+      - "3000:3000"
+
   celery-dev:
     user: ${DOCKER_USER:-1000}
     image: people:backend-development
@@ -56,7 +120,11 @@ services:
       - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
-      - app-dev
+      postgresql:
+        condition: service_healthy
+        restart: true
+      app-dev:
+        condition: service_started
 
   celery-beat-dev:
     user: ${DOCKER_USER:-1000}
@@ -72,26 +140,9 @@ services:
       - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
-      - app-dev
-
-  app:
-    build:
-      context: .
-      target: backend-production
-      args:
-        DOCKER_USER: ${DOCKER_USER:-1000}
-    user: ${DOCKER_USER:-1000}
-    image: people:backend-production
-    environment:
-      - DJANGO_CONFIGURATION=Demo
-    env_file:
-      - env.d/development/common
-      - env.d/development/postgresql
-    volumes:
-      - ./data/media:/data/media
-    depends_on:
-      - postgresql
-      - redis
+      postgresql:
+        condition: service_healthy
+        restart: true
 
   celery:
     user: ${DOCKER_USER:-1000}
@@ -103,7 +154,29 @@ services:
       - env.d/development/common
       - env.d/development/postgresql
     depends_on:
-      - app
+      postgresql:
+        condition: service_healthy
+        restart: true
+      app:
+        condition: service_started
+
+  celery-beat:
+    user: ${DOCKER_USER:-1000}
+    image: people:backend-production
+    command: ["celery", "-A", "people.celery_app", "beat", "-l", "INFO"]
+    environment:
+      - DJANGO_CONFIGURATION=Demo
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    volumes:
+      - ./src/backend:/app
+      - ./data/media:/data/media
+      - ./data/static:/data/static
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
 
   nginx:
     image: nginx:1.25
@@ -112,12 +185,9 @@ services:
     volumes:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
-      - app
-      - keycloak
-
-  dockerize:
-    image: jwilder/dockerize
-    platform: linux/x86_64
+      keycloak:
+        condition: service_healthy
+        restart: true
 
   crowdin:
     image: crowdin/cli:4.6.1
@@ -137,11 +207,16 @@ services:
       - ".:/app"
 
   kc_postgresql:
-      image: postgres:14.3
-      ports:
-        - "5433:5432"
-      env_file:
-        - env.d/development/kc_postgresql
+    image: postgres:14.3
+    ports:
+      - "5433:5432"
+    env_file:
+      - env.d/development/kc_postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 2s
+      retries: 300
 
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.1
@@ -158,6 +233,8 @@ services:
       - --hostname-admin-url=http://localhost:8083/
       - --hostname-strict=false
       - --hostname-strict-https=false
+      - --health-enabled=true
+      - --metrics-enabled=true
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -168,10 +245,17 @@ services:
       KC_DB_USERNAME: people
       KC_DB_SCHEMA: public
       PROXY_ADDRESS_FORWARDING: 'true'
+    healthcheck:
+      test: [ "CMD", "curl", "--head", "-fsS", "http://localhost:8080/health/ready" ]
+      interval: 1s
+      timeout: 2s
+      retries: 300
     ports:
       - "8080:8080"
     depends_on:
-      - kc_postgresql
+      kc_postgresql:
+        condition: service_healthy
+        restart: true
 
   dimail: 
     entrypoint: /opt/dimail-api/start-dev.sh
