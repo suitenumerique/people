@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ⚡️(fix) fix button add mail domain + add modal view information mailbox 
 - ⚡️(fix) add error when mailbox create failed
 - ✨(mailbox) allow to reset password on mailboxes #834
 

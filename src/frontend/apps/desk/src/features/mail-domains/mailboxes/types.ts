@@ -1,5 +1,7 @@
 import { UUID } from 'crypto';
 
+import { ReactNode } from 'react';
+
 export interface MailDomainMailbox {
   id: UUID;
   local_part: string;
@@ -22,4 +24,11 @@ export interface ViewMailbox {
   local_part: string;
   secondary_email: string;
   status: MailDomainMailboxStatus;
+}
+
+export interface Step {
+  title: string;
+  content: ReactNode;
+  leftAction: ReactNode;
+  rightAction?: ReactNode;
 }

@@ -24,7 +24,7 @@ import { CustomModal } from '@/components/modal/CustomModal';
 
 import { MailDomain } from '../../domains/types';
 import { useUpdateMailbox } from '../api/useUpdateMailbox';
-import { ViewMailbox } from '../types';
+import { Step, ViewMailbox } from '../types';
 
 const FORM_ID = 'form-update-mailbox';
 
@@ -70,7 +70,7 @@ export const ModalUpdateMailbox = ({
       onClose();
     },
     onError: (error: APIError) => {
-      const causes =
+      const causes: string[] =
         parseAPIError({
           error,
           errorParams: [
@@ -116,7 +116,7 @@ export const ModalUpdateMailbox = ({
     return null;
   }
 
-  const steps = [
+  const steps: Step[] = [
     {
       title: t('Set up account'),
       content: (
@@ -204,15 +204,15 @@ export const ModalUpdateMailbox = ({
           {t('Cancel')}
         </Button>
       ),
-      rightAction: (
-        <Button
-          type="submit"
-          form={FORM_ID}
-          disabled={!methods.formState.isValid || isPending}
-        >
-          {t('Update')}
-        </Button>
-      ),
+      // rightAction: (
+      //   <Button
+      //     type="submit"
+      //     form={FORM_ID}
+      //     disabled={!methods.formState.isValid || isPending}
+      //   >
+      //     {t('Update')}
+      //   </Button>
+      // ),
     },
   ];
 
