@@ -40,7 +40,7 @@ jobs:
         name: Run trivy scan (frontend)
         uses: numerique-gouv/action-trivy-cache@main
         with:
-          docker-build-args: '--target frontend-production -f Dockerfile'
+          docker-build-args: '--target frontend-production -f src/frontend/Dockerfile'
           docker-image-name: 'docker.io/lasuite/people-frontend:${{ github.sha }}'
 
   build-and-push-backend:
@@ -105,6 +105,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./src/frontend/Dockerfile
           target: frontend-production
           build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
           push: ${{ github.event_name != 'pull_request' }}

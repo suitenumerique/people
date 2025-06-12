@@ -83,6 +83,7 @@ test.describe('Teams Create', () => {
 
   test('checks 404 on teams/[id] page', async ({ page }) => {
     await page.goto('/teams/some-unknown-team');
+    await page.waitForURL('/404/');
     await expect(
       page.getByText(
         'It seems that the page you are looking for does not exist or cannot be displayed correctly.',

@@ -101,6 +101,8 @@ test.describe('Add Mail Domains', () => {
   test('checks 404 on mail-domains/[slug] page', async ({ page }) => {
     await page.goto('/mail-domains/unknown-domain');
 
+    await page.waitForURL('/404/');
+
     await expect(
       page.getByText(
         'It seems that the page you are looking for does not exist or cannot be displayed correctly.',

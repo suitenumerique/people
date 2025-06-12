@@ -97,6 +97,7 @@ test.describe('Mail domain', () => {
     });
 
     await page.goto('/mail-domains/unknown-domain.fr');
+    await page.waitForURL('/404/');
     await expect(
       page.getByText(
         'It seems that the page you are looking for does not exist or cannot be displayed correctly.',
