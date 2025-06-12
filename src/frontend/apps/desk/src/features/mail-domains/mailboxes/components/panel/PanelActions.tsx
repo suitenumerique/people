@@ -104,7 +104,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
               </span>
             }
           >
-            <Text $theme="primary">{t('Configure mailbox')}</Text>
+            <Text $theme="primary">{t('Informations mailbox')}</Text>
           </Button>
           <Button
             aria-label={t('Open the modal to update the role of this access')}

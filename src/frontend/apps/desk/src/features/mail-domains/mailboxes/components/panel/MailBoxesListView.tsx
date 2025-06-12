@@ -91,6 +91,11 @@ export function MailBoxesListView({
             {
               field: 'local_part',
               headerName: `${t('Address')} • ${filteredMailboxes.length}`,
+              renderCell: ({ row }) => (
+                <Text>
+                  {row.local_part}@{mailDomain.name}
+                </Text>
+              ),
             },
             {
               field: 'first_name',
