@@ -64,6 +64,23 @@ function _dc_run() {
     _docker_compose run --rm $user_args "$@"
 }
 
+# _dc_run_no_deps: wrap docker compose run command without dependencies
+#
+# usage: _dc_run_no_deps [options] [ARGS...]
+#
+# options: docker compose run command options
+# ARGS   : docker compose run command arguments
+function _dc_run_no_deps() {
+    _set_user
+
+    user_args="--user=$USER_ID"
+    if [ -z $USER_ID ]; then
+        user_args=""
+    fi
+
+    _docker_compose run --no-deps --rm $user_args "$@"
+}
+
 # _dc_exec: wrap docker compose exec command
 #
 # usage: _dc_exec [options] [ARGS...]

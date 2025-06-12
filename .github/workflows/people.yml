@@ -167,6 +167,8 @@ jobs:
           COMPOSE_DOCKER_CLI_BUILD: 1
         run: |
           docker compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
+          make update-keycloak-realm-app
+          make add-dev-rsa-private-key-to-env
           make run
 
       - name: Apply DRF migrations
@@ -176,10 +178,6 @@ jobs:
       - name: Add dummy data
         run: |
           make demo FLUSH_ARGS='--no-input'
-
-      - name: Setup Dimail DB
-        run: |
-          make dimail-setup-db
 
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
