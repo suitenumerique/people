@@ -41,11 +41,9 @@ DOCKER_USER         = $(DOCKER_UID):$(DOCKER_GID)
 COMPOSE             = DOCKER_USER=$(DOCKER_USER) docker compose
 COMPOSE_EXEC        = $(COMPOSE) exec
 COMPOSE_EXEC_APP    = $(COMPOSE_EXEC) app-dev
-COMPOSE_RUN         = $(COMPOSE) run --rm
+COMPOSE_RUN         = $(COMPOSE) run --rm --no-deps
 COMPOSE_RUN_APP     = $(COMPOSE_RUN) app-dev
 COMPOSE_RUN_CROWDIN = $(COMPOSE_RUN) crowdin crowdin
-WAIT_DB             = @$(COMPOSE_RUN) dockerize -wait tcp://$(DB_HOST):$(DB_PORT) -timeout 60s
-WAIT_KC_DB          = $(COMPOSE_RUN) dockerize -wait tcp://kc_postgresql:5432 -timeout 60s
 
 # -- Backend
 MANAGE              = $(COMPOSE_RUN_APP) python manage.py
@@ -78,19 +76,33 @@ create-env-files: \
 	env.d/development/kc_postgresql
 .PHONY: create-env-files
 
+add-dev-rsa-private-key-to-env: ## Add a generated RSA private key to the env file
+	@echo "Generating RSA private key PEM for development..."
+	@mkdir -p env.d/development/rsa
+	@openssl genrsa -out env.d/development/rsa/private.pem 2048
+	@echo -n "\nOAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY=\"" >> env.d/development/common
+	@openssl rsa -in env.d/development/rsa/private.pem -outform PEM >> env.d/development/common
+	@echo "\"" >> env.d/development/common
+	@rm -rf env.d/development/rsa
+.PHONY: add-dev-rsa-private-key-to-env
+
+update-keycloak-realm-app: ## Create the Keycloak realm for the project
+	@echo "$(BOLD)Creating Keycloak realm for 'app'$(RESET)"
+	@sed -i 's|http://app-dev:8000|http://app:8000|g' ./docker/auth/realm.json
+.PHONY: update-keycloak-realm-app
+
 bootstrap: ## Prepare Docker images for the project and install frontend dependencies
 bootstrap: \
 	data/media \
 	data/static \
 	create-env-files \
 	build \
-	run \
+	run-dev \
 	migrate \
 	back-i18n-compile \
 	mails-install \
 	mails-build \
-	dimail-setup-db \
-	install-front-desk
+	dimail-setup-db
 .PHONY: bootstrap
 
 # -- Docker/compose
@@ -106,18 +118,13 @@ logs: ## display app-dev logs (follow mode)
 	@$(COMPOSE) logs -f app-dev
 .PHONY: logs
 
-run: ## start the wsgi (production) and development server
-	@$(COMPOSE) up --force-recreate -d nginx
-	@$(COMPOSE) up --force-recreate -d app-dev
-	@$(COMPOSE) up --force-recreate -d celery-dev
-	@$(COMPOSE) up --force-recreate -d celery-beat-dev
-	@$(COMPOSE) up --force-recreate -d flower-dev
-	@$(COMPOSE) up --force-recreate -d keycloak
-	@$(COMPOSE) up -d dimail
-	@echo "Wait for postgresql to be up..."
-	@$(WAIT_KC_DB)
-	@$(WAIT_DB)
+run: ## start the wsgi (production) and servers with production Docker images
+	@$(COMPOSE) up --force-recreate --detach app frontend celery celery-beat nginx maildev
 .PHONY: run
+
+run-dev: ## start the servers in development mode (watch) Docker images
+	@$(COMPOSE) up --force-recreate --detach app-dev frontend-dev celery-dev celery-beat-dev nginx maildev
+.PHONY: run-dev
 
 status: ## an alias for "docker compose ps"
 	@$(COMPOSE) ps
@@ -187,22 +194,16 @@ test-coverage: ## compute, display and save test coverage
 
 makemigrations:  ## run django makemigrations for the people project.
 	@echo "$(BOLD)Running makemigrations$(RESET)"
-	@$(COMPOSE) up -d postgresql
-	@$(WAIT_DB)
 	@$(MANAGE) makemigrations $(ARGS)
 .PHONY: makemigrations
 
 migrate:  ## run django migrations for the people project.
 	@echo "$(BOLD)Running migrations$(RESET)"
-	@$(COMPOSE) up -d postgresql
-	@$(WAIT_DB)
 	@$(MANAGE) migrate $(ARGS)
 .PHONY: migrate
 
 showmigrations:  ## run django showmigrations for the people project.
 	@echo "$(BOLD)Running showmigrations$(RESET)"
-	@$(COMPOSE) up -d postgresql
-	@$(WAIT_DB)
 	@$(MANAGE) showmigrations $(ARGS)
 .PHONY: showmigrations
 

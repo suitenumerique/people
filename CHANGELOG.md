@@ -12,6 +12,10 @@ and this project adheres to
 
 - ✨(resource-server) add SCIM /Me endpoint #895
 
+### Changed
+
+- 🧑‍💻(docker) split frontend to another file #924
+
 ## [1.17.0] - 2025-06-11
 
 ### Added
