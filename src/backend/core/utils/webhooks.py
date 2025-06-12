@@ -4,14 +4,16 @@ import logging
 
 import requests
 
+from core import enums
 from core.enums import WebhookStatusChoices
 
+from .matrix import MatrixAPIClient
 from .scim import SCIMClient
 
 logger = logging.getLogger(__name__)
 
 
-class WebhookSCIMClient:
+class WebhookClient:
     """Wraps the SCIM client to record call results on webhooks."""
 
     def __getattr__(self, name):
@@ -26,31 +28,16 @@ class WebhookSCIMClient:
                 if not webhook.url:
                     continue
 
-                client = SCIMClient()
                 status = WebhookStatusChoices.FAILURE
-                try:
-                    response = getattr(client, name)(webhook, user)
+                response = self._get_response(name, webhook, user)
 
-                except requests.exceptions.RetryError as exc:
-                    logger.error(
-                        "%s synchronization failed due to max retries exceeded with url %s",
-                        name,
-                        webhook.url,
-                        exc_info=exc,
-                    )
-                except requests.exceptions.RequestException as exc:
-                    logger.error(
-                        "%s synchronization failed with %s.",
-                        name,
-                        webhook.url,
-                        exc_info=exc,
-                    )
-                else:
-                    extra = {
-                        "response": response.content,
-                    }
+                if response is not None:
+                    extra = {"response": response.content}
                     # pylint: disable=no-member
-                    if response.status_code == requests.codes.ok:
+                    if (
+                        response.status_code == requests.codes.ok
+                        or self._check_false_negative(response)
+                    ):
                         logger.info(
                             "%s synchronization succeeded with %s",
                             name,
@@ -71,5 +58,56 @@ class WebhookSCIMClient:
 
         return wrapper
 
+    def _get_client(self, webhook):
+        """Get client depending on the protocol."""
+        if webhook.protocol == enums.WebhookProtocolChoices.MATRIX:
+            return MatrixAPIClient()
 
-scim_synchronizer = WebhookSCIMClient()
+        return SCIMClient()
+
+    def _get_response(self, name, webhook, user):
+        """Get response from webhook outside party."""
+        client = self._get_client(webhook)
+
+        if webhook.protocol == enums.WebhookProtocolChoices.MATRIX:
+            if name == "add_user_to_group":
+                name = "invite_user_to_room"
+            elif name == "remove_user_from_group":
+                name = "kick_user_from_room"
+            else:
+                pass
+
+        try:
+            response = getattr(client, name)(webhook, user)
+        except requests.exceptions.RetryError as exc:
+            logger.error(
+                "%s synchronization failed due to max retries exceeded with url %s",
+                name,
+                webhook.url,
+                exc_info=exc,
+            )
+        except requests.exceptions.RequestException as exc:
+            logger.error(
+                "%s synchronization failed with %s.",
+                name,
+                webhook.url,
+                exc_info=exc,
+            )
+        else:
+            return response
+
+        return None
+
+    def _check_false_negative(self, response):
+        """ "Check for false negative. If situation is already as desired,
+        webhook action will fail when all is actually well."""
+        content = response.content.decode("utf-8")
+        if (
+            "is already in the room." in content
+            or "The target user is not in the room" in content
+        ):
+            return True
+        return False
+
+
+webhooks_synchronizer = WebhookClient()
