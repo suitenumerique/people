@@ -1,9 +1,8 @@
-import { Button, Input, Tooltip } from '@openfun/cunningham-react';
+import { Button, Input } from '@openfun/cunningham-react';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
-import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
 import { ModalAddMailDomain } from '@/features/mail-domains/domains/components/ModalAddMailDomain';
 import { MailDomainsListView } from '@/features/mail-domains/domains/components/panel/MailDomainsListView';
@@ -12,8 +11,6 @@ import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
-  const { userData } = useAuthStore();
-  const can_create = userData?.abilities?.mailboxes.can_create;
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState('');
   const { colorsTokens } = useCunninghamTheme();
@@ -106,31 +103,11 @@ const Page: NextPageWithLayout = () => {
           <Box className="block md:hidden" $css="margin-bottom: 10px;"></Box>
 
           <Box>
-            {can_create ? (
-              <Button data-testid="button-new-domain" onClick={openModal}>
-                {t('Add a mail domain')}
-              </Button>
-            ) : (
-              <Tooltip content={t("You don't have the correct access right")}>
-                <div>
-                  <Button
-                    data-testid="button-new-domain"
-                    onClick={openModal}
-                    disabled={!can_create}
-                  >
-                    {t('Add a mail domain')}
-                  </Button>
-                </div>
-              </Tooltip>
-            )}
+            <Button data-testid="button-new-domain" onClick={openModal}>
+              {t('Add a mail domain')}
+            </Button>
           </Box>
         </Box>
-
-        {!can_create && (
-          <p style={{ textAlign: 'center' }}>
-            {t('Click on mailbox to view details')}
-          </p>
-        )}
 
         <MailDomainsListView querySearch={searchValue} />
         {isModalOpen && <ModalAddMailDomain closeModal={closeModal} />}

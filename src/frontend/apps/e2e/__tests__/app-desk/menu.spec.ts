@@ -81,12 +81,6 @@ test.describe('Menu', () => {
     await expect(
       page.getByText('Click on team to view details').first(),
     ).toBeVisible();
-
-    buttonMenu = menu.getByLabel(`Mail Domains`);
-    await buttonMenu.click();
-    await expect(
-      page.getByText('Click on mailbox to view details').first(),
-    ).toBeVisible();
   });
 
   test(`it checks that the menu is not displaying when all abilities`, async ({

@@ -238,7 +238,7 @@ test.describe('Mail domain create mailbox', () => {
     await inputLastName.fill('Doe');
     await inputLocalPart.fill('john.doe');
 
-    await expect(page.locator('span').getByText('@domain.fr')).toBeVisible();
+    await expect(page.locator('span').getByText('domain.fr')).toBeVisible();
     await inputSecondaryEmailAddress.fill('john.doe@mail.com');
 
     await page.getByRole('button', { name: 'Create' }).click();
