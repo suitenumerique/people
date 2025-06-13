@@ -141,3 +141,26 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert response.json()["__all__"] == [
         "Mail domain invitation with this Email address and Domain already exists."
     ]
+
+
+def test_api_domain_invitations__should_not_invite_when_user_already_exists():
+    """Already existing users should not be invited but given access directly."""
+    existing_user = core_factories.UserFactory()
+
+    # Grant privileged role on the domain to the user
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    invitation_values = serializers.MailDomainInvitationSerializer(
+        factories.MailDomainInvitationFactory.build(email=existing_user.email)
+    ).data
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
+        invitation_values,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json()["email"] == [
+        "This email is already associated to a registered user."
+    ]
