@@ -33,7 +33,7 @@ The easiest way to start working on the project is to use GNU Make:
 $ make bootstrap
 ```
 
-This command builds the `app` container, installs dependencies, performs
+This command builds the `app-dev` container, installs dependencies, performs
 database migrations and compile translations. It's a good idea to use this
 command each time you are pulling code from the project repository to avoid
 dependency-related or migration-related issues.
@@ -44,6 +44,12 @@ Note that if you need to run them afterward, you can use the eponym Make rule:
 
 ```bash
 $ make run
+```
+
+or if you want to run them in development mode (with live reloading):
+
+```bash
+$ make run-dev
 ```
 
 You can check all available Make rules using:
