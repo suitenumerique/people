@@ -23,7 +23,6 @@ def convert_domain_invitations(sender, created, instance, **kwargs):  # pylint: 
     Convert valid domain invitations to domain accesses for a given user.
     Expired invitations are ignored.
     """
-    logger.info("Convert domain invitations for user %s", instance)
     if created:
         valid_domain_invitations = MailDomainInvitation.objects.filter(
             email=instance.email,
@@ -36,6 +35,11 @@ def convert_domain_invitations(sender, created, instance, **kwargs):  # pylint: 
         if not valid_domain_invitations.exists():
             return
 
+        logger.info(
+            "Converting %s domain invitations for new user %s",
+            len(valid_domain_invitations),
+            instance,
+        )
         MailDomainAccess.objects.bulk_create(
             [
                 MailDomainAccess(
@@ -46,4 +50,3 @@ def convert_domain_invitations(sender, created, instance, **kwargs):  # pylint: 
         )
 
         valid_domain_invitations.delete()
-        logger.info("Invitations converted to domain accesses for user %s", instance)
