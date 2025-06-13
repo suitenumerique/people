@@ -38,11 +38,15 @@ def test_models_domain_invitations__is_expired():
     assert expired_invitation.is_expired is True
 
 
-def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_joining():
+def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_joining(
+    caplog,
+):
     """
     Upon creating a new user, domain invitations linked to that email
     should be converted to accesses and then deleted.
     """
+    caplog.set_level("INFO")
+
     # Two invitations to the same mail but to different domains
     email = "future_admin@example.com"
     invitation_to_domain1 = factories.MailDomainInvitationFactory(
@@ -81,3 +85,8 @@ def test_models_domain_invitation__should_convert_invitations_to_accesses_upon_j
     assert models.MailDomainInvitation.objects.filter(
         domain=invitation_to_domain2.domain, email=other_invitation.email
     ).exists()  # the other invitation remains
+
+    log_messages = [msg.message for msg in caplog.records]
+    assert (
+        f"Converting 2 domain invitations for new user {str(new_user)}" in log_messages
+    )
