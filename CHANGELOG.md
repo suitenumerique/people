@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ⚡️(fix) fix button add mail domain + add modal view information mailbox 
 - ✨(resource-server) add SCIM /Me endpoint #895
 
 ## [1.17.0] - 2025-06-11
