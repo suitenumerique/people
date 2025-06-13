@@ -132,6 +132,7 @@ stop: ## stop the development server using Docker
 demo: ## flush db then create a demo for load testing purpose
 	@$(MAKE) resetdb
 	@$(MANAGE) create_demo
+	@$(MAKE) dimail-setup-db
 .PHONY: demo
 
 
@@ -293,12 +294,8 @@ i18n-generate-and-upload: \
 
 # -- INTEROPERABILTY
 # -- Dimail configuration
-
-dimail-recreate-container:
-	@$(COMPOSE) up --force-recreate -d dimail
-.PHONY: dimail-recreate-container
-
 dimail-setup-db:
+	@$(COMPOSE) up --force-recreate -d dimail
 	@echo "$(BOLD)Populating database of local dimail API container$(RESET)"
 	@$(MANAGE) setup_dimail_db --populate-from-people
 .PHONY: dimail-setup-db

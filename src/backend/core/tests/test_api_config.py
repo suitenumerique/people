@@ -19,6 +19,7 @@ def test_api_config_anonymous():
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
+        "CRISP_WEBSITE_ID": None,
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "COMMIT": "NA",
         "FEATURES": {
@@ -42,6 +43,7 @@ def test_api_config_authenticated():
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
+        "CRISP_WEBSITE_ID": None,
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "COMMIT": "NA",
         "FEATURES": {

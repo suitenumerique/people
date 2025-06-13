@@ -21,6 +21,7 @@ test.describe('Config', () => {
         ['fr-fr', 'French'],
       ],
       COMMIT: 'NA',
+      CRISP_WEBSITE_ID: null,
       FEATURES: {
         CONTACTS_CREATE: true,
         CONTACTS_DISPLAY: true,
