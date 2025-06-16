@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 
 - ✨(resource-server) add SCIM /Me endpoint #895
+- 🔧(git) set LF line endings for all text files #928
 
 ### Changed
 
