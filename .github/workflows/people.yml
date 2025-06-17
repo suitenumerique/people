@@ -123,7 +123,6 @@ jobs:
 
   test-e2e:
     runs-on: ubuntu-latest
-    needs: [dependencies, build-front]
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -139,34 +138,12 @@ jobs:
           make create-env-files
           cat env.d/development/common.e2e.dist >> env.d/development/common
 
-      - name: Restore the mail templates
-        uses: actions/cache@v4
-        id: mail-templates
-        with:
-          path: "src/backend/core/templates/mail"
-          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
-          fail-on-cache-miss: true  
-
-      - name: Restore the frontend cache
-        uses: actions/cache@v4
-        id: front-node_modules
-        with:
-          path: 'src/frontend/**/node_modules'
-          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
-
-      - name: Restore the build cache
-        uses: actions/cache@v4
-        id: cache-build
-        with:
-          path: src/frontend/apps/desk/out/
-          key: build-front-${{ github.run_id }}
-
       - name: Build and Start Docker Servers
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
         run: |
-          docker compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
+          COMPOSE_BAKE=true docker compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
           make update-keycloak-realm-app
           make add-dev-rsa-private-key-to-env
           make run
@@ -178,6 +155,10 @@ jobs:
       - name: Add dummy data
         run: |
           make demo FLUSH_ARGS='--no-input'
+
+      - name: Install playwright
+        run: |
+          cd src/frontend/ && yarn install && yarn playwright install --with-deps
 
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
