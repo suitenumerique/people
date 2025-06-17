@@ -16,6 +16,7 @@ and this project adheres to
 ### Changed
 
 - 🧑‍💻(docker) split frontend to another file #924
+- 🔒️(organization) the first user is not admin #776
 
 ## [1.17.0] - 2025-06-11
 
