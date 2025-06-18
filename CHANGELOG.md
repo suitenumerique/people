@@ -10,9 +10,7 @@ and this project adheres to
 
 ### Added
 
-<<<<<<< evo/fix-button-add-mail-domain
-- ⚡️(fix) fix button add mail domain + add modal view information mailbox 
-=======
+- ⚡️(fix) fix button add mail domain
 - ✨(resource-server) add SCIM /Me endpoint #895
 - 🔧(git) set LF line endings for all text files #928
 
@@ -25,7 +23,6 @@ and this project adheres to
 ### Added
 
 - ✨(frontend) add crisp script #914
->>>>>>> main
 - ⚡️(fix) add error when mailbox create failed
 - ✨(mailbox) allow to reset password on mailboxes #834
 
