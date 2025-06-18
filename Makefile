@@ -427,3 +427,13 @@ install-secret: ## install the kubernetes secrets from Vaultwarden
 fetch-domain-status:
 	@$(MANAGE) fetch_domain_status
 .PHONY: fetch-domain-status
+
+# -- Keycloak related
+create-new-client:  ## run the add-keycloak-client.sh script for keycloak.
+	@echo "$(BOLD)Running add-keycloak-client.sh$(RESET)"
+	@$(COMPOSE_RUN) \
+		-v ./scripts/keycloak/add-keycloak-client.sh:/tmp/add-keycloak-client.sh \
+		--entrypoint="/tmp/add-keycloak-client.sh" \
+		keycloak \
+		$(filter-out $@,$(MAKECMDGOALS))
+.PHONY: create-new-client
