@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import json
 import os
+from socket import gethostbyname, gethostname
 
 from django.utils.translation import gettext_lazy as _
 
@@ -547,6 +548,13 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    # SUPPORT
+    CRISP_WEBSITE_ID = values.Value(
+        default=None,
+        environ_name="CRISP_WEBSITE_ID",
+        environ_prefix=None,
+    )
+
     # MAILBOX-PROVISIONING API
     WEBMAIL_URL = values.Value(
         default=None,
@@ -935,7 +943,10 @@ class Production(Base):
     """
 
     # Security
-    ALLOWED_HOSTS = values.ListValue(None)
+    ALLOWED_HOSTS = [
+        *values.ListValue([], environ_name="ALLOWED_HOSTS"),
+        gethostbyname(gethostname()),
+    ]
     CSRF_TRUSTED_ORIGINS = values.ListValue([])
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True

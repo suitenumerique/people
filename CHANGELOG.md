@@ -10,7 +10,22 @@ and this project adheres to
 
 ### Added
 
+<<<<<<< evo/fix-button-add-mail-domain
 - ⚡️(fix) fix button add mail domain + add modal view information mailbox 
+=======
+- ✨(resource-server) add SCIM /Me endpoint #895
+- 🔧(git) set LF line endings for all text files #928
+
+### Changed
+
+- 🧑‍💻(docker) split frontend to another file #924
+
+## [1.17.0] - 2025-06-11
+
+### Added
+
+- ✨(frontend) add crisp script #914
+>>>>>>> main
 - ⚡️(fix) add error when mailbox create failed
 - ✨(mailbox) allow to reset password on mailboxes #834
 
@@ -392,7 +407,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.16.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.17.0...main
+[1.17.0]: https://github.com/suitenumerique/people/releases/v1.17.0
 [1.16.0]: https://github.com/suitenumerique/people/releases/v1.16.0
 [1.15.0]: https://github.com/suitenumerique/people/releases/v1.15.0
 [1.14.1]: https://github.com/suitenumerique/people/releases/v1.14.1
