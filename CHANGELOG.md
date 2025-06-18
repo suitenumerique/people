@@ -10,7 +10,7 @@ and this project adheres to
 
 ### Added
 
-- ⚡️(fix) fix button add mail domain
+- 🐛(domains) fix button add mail domain
 - ✨(resource-server) add SCIM /Me endpoint #895
 - 🔧(git) set LF line endings for all text files #928
 
