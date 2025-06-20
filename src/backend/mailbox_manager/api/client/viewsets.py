@@ -228,9 +228,10 @@ class MailDomainAccessViewSet(
 
 
 class MailBoxViewSet(
+    viewsets.GenericViewSet,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin,
 ):
     """MailBox ViewSet
 
@@ -252,6 +253,12 @@ class MailBoxViewSet(
 
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/reset/
         Send a request to mail-provider to reset password.
+
+    PUT /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
+        Send a request to update mailbox
+
+    PATCH /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
+        Send a request to partially update mailbox
     """
 
     permission_classes = [permissions.MailBoxPermission]
