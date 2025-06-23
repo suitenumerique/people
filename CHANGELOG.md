@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 🐛(front) fix button add mail domain
 - ✨(teams) add matrix webhook for teams #904
 - ✨(resource-server) add SCIM /Me endpoint #895
 - 🔧(git) set LF line endings for all text files #928

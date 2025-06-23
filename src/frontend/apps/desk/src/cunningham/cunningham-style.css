@@ -243,6 +243,10 @@ input:-webkit-autofill:focus {
   border-bottom: 1px var(--c--theme--colors--greyscale-100) solid;
 }
 
+.c__datagrid__table__container > table tbody tr:hover {
+  background-color: var(--c--theme--colors--greyscale-050);
+}
+
 .c__datagrid__table__container > table tbody {
   background-color: var(--c--components--datagrid--body--background-color);
   color: var(--c--theme--colors--greyscale-900);
@@ -259,7 +263,7 @@ input:-webkit-autofill:focus {
 
 .c__datagrid__table__container > table th:first-child,
 .c__datagrid__table__container > table td:first-child {
-  padding-left: 0;
+  padding-left: 15px;
 }
 
 .c__datagrid__table__container > table tr:last-child {

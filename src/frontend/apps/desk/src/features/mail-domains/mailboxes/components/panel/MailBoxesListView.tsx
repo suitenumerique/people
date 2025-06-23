@@ -97,6 +97,7 @@ export function MailBoxesListView({
             {
               field: 'email',
               headerName: `${t('Address')} • ${filteredMailboxes.length}`,
+              renderCell: ({ row }) => <Text>{row.email}</Text>,
             },
             {
               field: 'name',
