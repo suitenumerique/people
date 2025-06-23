@@ -34,9 +34,12 @@ class MatrixAPIClient:
     def get_headers(self, webhook):
         """Build header dict from webhook object."""
         headers = {"Content-Type": "application/json"}
-        token = webhook.secret if webhook.secret else None
         if "tchap.gouv.fr" in webhook.url:
             token = settings.TCHAP_ACCESS_TOKEN
+        elif webhook.secret:
+            token = webhook.secret
+        else:
+            raise ValueError("Please configure this webhook's secret access token.")
         headers["Authorization"] = f"Bearer {token}"
         return headers
 
@@ -58,9 +61,6 @@ class MatrixAPIClient:
     def join_room(self, webhook):
         """Accept invitation to the room. As of today, it is a mandatory step
         to make sure our account will be able to invite/remove users."""
-        if webhook.secret is None:
-            raise ValueError("Please configure this webhook's secret access token.")
-
         return session.post(
             f"{self._get_room_url(webhook.url)}/join",
             json={},

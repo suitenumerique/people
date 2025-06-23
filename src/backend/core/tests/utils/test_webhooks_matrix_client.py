@@ -138,7 +138,7 @@ def test_matrix_webhook__override_secret_for_tchap():
     webhook = factories.TeamWebhookFactory(
         protocol=WebhookProtocolChoices.MATRIX,
         url="https://www.tchap.gouv.fr/#/room/room_id:home_server",
-        secret="secret-about-to-be-overridden",
+        secret=None,
     )
 
     # Mock successful responses
