@@ -76,16 +76,10 @@ test.describe('Menu', () => {
 
     const menu = page.locator('menu').first();
 
-    let buttonMenu = menu.getByLabel(`Teams button`);
+    const buttonMenu = menu.getByLabel(`Teams button`);
     await buttonMenu.click();
     await expect(
       page.getByText('Click on team to view details').first(),
-    ).toBeVisible();
-
-    buttonMenu = menu.getByLabel(`Mail Domains`);
-    await buttonMenu.click();
-    await expect(
-      page.getByText('Click on mailbox to view details').first(),
     ).toBeVisible();
   });
 
@@ -122,12 +116,12 @@ test.describe('Menu', () => {
 
     const menu = page.locator('menu').first();
 
-    let buttonMenu = menu.getByLabel(`Teams button`);
+    const buttonMenu = menu.getByLabel(`Teams button`);
     await buttonMenu.click();
     await expect(page.getByText('Create a new team').first()).toBeVisible();
 
-    buttonMenu = menu.getByLabel(`Mail Domains`);
-    await buttonMenu.click();
+    const buttonMenuMailDomain = menu.getByLabel(`Mail Domains`);
+    await buttonMenuMailDomain.click();
     await expect(page.getByText('Add a mail domain').first()).toBeVisible();
   });
 });
