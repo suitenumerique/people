@@ -236,6 +236,67 @@ def test_api_team_accesses_create__with_scim_webhook():
     assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()
 
 
+@responses.activate
+def test_api_team_accesses_create__with_matrix_webhook():
+    """
+    If a team has a Matrix webhook, creating a team access should fire a call
+    with the expected payload.
+    """
+    user, other_user = factories.UserFactory.create_batch(2)
+
+    team = factories.TeamFactory(users=[(user, "owner")])
+    webhook = factories.TeamWebhookFactory(
+        team=team,
+        url="https://server.fr/#/room/room_id:home_server.fr",
+        secret="some-secret-you-should-not-store-on-a-postit",
+        protocol=enums.WebhookProtocolChoices.MATRIX,
+    )
+
+    role = random.choice([role[0] for role in models.RoleChoices.choices])
+
+    client = APIClient()
+    client.force_login(user)
+
+    # Mock successful responses by matrix server
+    responses.post(
+        re.compile(r".*/join"),
+        body=str(matrix.mock_join_room_successful("room_id")["message"]),
+        status=matrix.mock_join_room_successful("room_id")["status_code"],
+        content_type="application/json",
+    )
+    responses.post(
+        re.compile(r".*/invite"),
+        body=str(matrix.mock_invite_successful()["message"]),
+        status=matrix.mock_invite_successful()["status_code"],
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/teams/{team.id!s}/accesses/",
+        {
+            "user": str(other_user.id),
+            "role": role,
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    assert len(responses.calls) == 2
+    assert (
+        responses.calls[0].request.url
+        == "https://home_server.fr/_matrix/client/v3/rooms/room_id:home_server.fr/join"
+    )
+
+    # Payload sent to matrix server
+    assert webhook.secret in responses.calls[0].request.headers["Authorization"]
+    assert json.loads(responses.calls[1].request.body) == {
+        "user_id": f"@{other_user.email.replace('@', ':')}",
+        "reason": f"User added to team {webhook.team} on People",
+    }
+
+    assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()
+
+
 def test_api_team_accesses_create__multiple_webhooks_success(caplog):
     """
     When the team has multiple webhooks, creating a team access should fire all the expected calls.
