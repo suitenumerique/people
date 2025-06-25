@@ -255,10 +255,10 @@ class MailBoxViewSet(
         Send a request to mail-provider to reset password.
 
     PUT /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
-        Send a request to update mailbox
+        Send a request to update mailbox. Cannot modify domain and local_part.
 
     PATCH /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
-        Send a request to partially update mailbox
+        Send a request to partially update mailbox. Cannot modify domain and local_part.
     """
 
     permission_classes = [permissions.MailBoxPermission]

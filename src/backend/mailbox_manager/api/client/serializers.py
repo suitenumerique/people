@@ -29,7 +29,6 @@ class MailboxSerializer(serializers.ModelSerializer):
             "secondary_email",
             "status",
         ]
-        # everything is actually read-only as we do not allow update for now
         read_only_fields = ["id", "status"]
 
     def create(self, validated_data):
