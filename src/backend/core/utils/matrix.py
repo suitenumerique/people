@@ -65,7 +65,7 @@ class MatrixAPIClient:
             f"{self._get_room_url(webhook.url)}/join",
             json={},
             headers=self.get_headers(webhook),
-            verify=False,
+            verify=True,
             timeout=3,
         )
 
@@ -87,7 +87,7 @@ class MatrixAPIClient:
                 "reason": f"User added to team {webhook.team} on People",
             },
             headers=self.get_headers(webhook),
-            verify=False,
+            verify=True,
             timeout=3,
         )
 
@@ -120,7 +120,7 @@ class MatrixAPIClient:
                 "reason": f"User removed from team {webhook.team} on People",
             },
             headers=self.get_headers(webhook),
-            verify=False,
+            verify=True,
             timeout=3,
         )
 
