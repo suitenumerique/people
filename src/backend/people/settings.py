@@ -601,6 +601,11 @@ class Base(Configuration):
         environ_name="DNS_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
+    MATRIX_BASE_HOME_SERVER = values.Value(
+        default="https://matrix.agent.dinum.tchap.gouv.fr",
+        environ_name="MATRIX_BASE_HOME_SERVER",
+        environ_prefix=None,
+    )
     MATRIX_BOT_ACCESS_TOKEN = values.Value(
         default=None,
         environ_name="MATRIX_BOT_ACCESS_TOKEN",
