@@ -28,14 +28,12 @@ session.mount("https://", adapter)
 
 class MatrixAPIClient:
     """A client to interact with Matrix API"""
-
-    secret = settings.TCHAP_ACCESS_TOKEN
-
+    
     def get_headers(self, webhook):
         """Build header dict from webhook object."""
         headers = {"Content-Type": "application/json"}
         if "tchap.gouv.fr" in webhook.url:
-            token = settings.TCHAP_ACCESS_TOKEN
+            token = settings.MATRIX_BOT_ACCESS_TOKEN
         elif webhook.secret:
             token = webhook.secret
         else:

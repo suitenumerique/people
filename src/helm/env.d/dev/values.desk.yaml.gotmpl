@@ -73,7 +73,7 @@ backend:
       secretKeyRef:
         name: backend
         key: MAIL_PROVISIONING_API_CREDENTIALS
-    TCHAP_ACCESS_TOKEN: service_account_key
+    MATRIX_BOT_ACCESS_TOKEN: service_account_key
   command:
     - "gunicorn"
     - "-c"

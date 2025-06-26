@@ -131,7 +131,7 @@ def test_matrix_webhook__invite_user_to_room_success(caplog):
 
 
 @responses.activate
-@override_settings(TCHAP_ACCESS_TOKEN="TCHAP_TOKEN")
+@override_settings(MATRIX_BOT_ACCESS_TOKEN="TCHAP_TOKEN")
 def test_matrix_webhook__override_secret_for_tchap():
     """The user passed to the function should get invited."""
     user = factories.UserFactory()
