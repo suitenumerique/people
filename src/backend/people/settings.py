@@ -601,9 +601,9 @@ class Base(Configuration):
         environ_name="DNS_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
-    TCHAP_ACCESS_TOKEN = values.Value(
+    MATRIX_BOT_ACCESS_TOKEN = values.Value(
         default=None,
-        environ_name="TCHAP_ACCESS_TOKEN",
+        environ_name="MATRIX_BOT_ACCESS_TOKEN",
         environ_prefix=None,
     )
 
