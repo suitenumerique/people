@@ -247,7 +247,7 @@ def test_api_team_accesses_create__with_matrix_webhook():
     team = factories.TeamFactory(users=[(user, "owner")])
     webhook = factories.TeamWebhookFactory(
         team=team,
-        url="https://server.fr/#/room/room_id:home_server.fr",
+        url="https://server.fr/#/room/room_id:room_server.fr",
         secret="some-secret-you-should-not-store-on-a-postit",
         protocol=enums.WebhookProtocolChoices.MATRIX,
     )
@@ -263,6 +263,11 @@ def test_api_team_accesses_create__with_matrix_webhook():
         body=str(matrix.mock_join_room_successful("room_id")["message"]),
         status=matrix.mock_join_room_successful("room_id")["status_code"],
         content_type="application/json",
+    )
+    responses.post(
+        re.compile(r".*/search"),
+        body=json.dumps(matrix.mock_search_successful(other_user)["message"]),
+        status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
         re.compile(r".*/invite"),
@@ -281,22 +286,23 @@ def test_api_team_accesses_create__with_matrix_webhook():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    assert len(responses.calls) == 2
+    assert len(responses.calls) == 3
     assert (
         responses.calls[0].request.url
-        == "https://home_server.fr/_matrix/client/v3/rooms/room_id:home_server.fr/join"
+        == "https://room_server.fr/_matrix/client/v3/rooms/room_id:room_server.fr/join"
     )
 
     # Payload sent to matrix server
     assert webhook.secret in responses.calls[0].request.headers["Authorization"]
-    assert json.loads(responses.calls[1].request.body) == {
-        "user_id": f"@{other_user.email.replace('@', ':')}",
+    assert json.loads(responses.calls[2].request.body) == {
+        "user_id": f"@{other_user.email.replace('@', '-')}:user_server.com",
         "reason": f"User added to team {webhook.team} on People",
     }
 
     assert models.TeamAccess.objects.filter(user=other_user, team=team).exists()
 
 
+@responses.activate
 def test_api_team_accesses_create__multiple_webhooks_success(caplog):
     """
     When the team has multiple webhooks, creating a team access should fire all the expected calls.
@@ -312,7 +318,7 @@ def test_api_team_accesses_create__multiple_webhooks_success(caplog):
     )
     webhook_matrix = factories.TeamWebhookFactory(
         team=team,
-        url="https://www.webhookserver.fr/#/room/room_id:home_server/",
+        url="https://www.webhookserver.fr/#/room/room_id:home_server.fr/",
         protocol=enums.WebhookProtocolChoices.MATRIX,
         secret="yo",
     )
@@ -322,39 +328,40 @@ def test_api_team_accesses_create__multiple_webhooks_success(caplog):
     client = APIClient()
     client.force_login(user)
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response by scim provider using "responses":
-        rsps.add(
-            rsps.PATCH,
-            re.compile(r".*/Groups/.*"),
-            body="{}",
-            status=200,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(r".*/join"),
-            body=str(matrix.mock_join_room_successful),
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(r".*/invite"),
-            body=str(matrix.mock_invite_successful()["message"]),
-            status=matrix.mock_invite_successful()["status_code"],
-            content_type="application/json",
-        )
+    # Ensure successful response by scim provider using "responses":
+    responses.patch(
+        re.compile(r".*/Groups/.*"),
+        body="{}",
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.post(
+        re.compile(r".*/join"),
+        body=str(matrix.mock_join_room_successful("room_id")["message"]),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.post(
+        re.compile(r".*/search"),
+        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        status=matrix.mock_search_successful(user)["status_code"],
+    )
+    responses.post(
+        re.compile(r".*/invite"),
+        body=str(matrix.mock_invite_successful()["message"]),
+        status=matrix.mock_invite_successful()["status_code"],
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/teams/{team.id!s}/accesses/",
-            {
-                "user": str(other_user.id),
-                "role": role,
-            },
-            format="json",
-        )
-        assert response.status_code == 201
+    response = client.post(
+        f"/api/v1.0/teams/{team.id!s}/accesses/",
+        {
+            "user": str(other_user.id),
+            "role": role,
+        },
+        format="json",
+    )
+    assert response.status_code == 201
 
     # Logger
     log_messages = [msg.message for msg in caplog.records]

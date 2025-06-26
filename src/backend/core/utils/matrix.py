@@ -28,7 +28,7 @@ session.mount("https://", adapter)
 
 class MatrixAPIClient:
     """A client to interact with Matrix API"""
-    
+
     def get_headers(self, webhook):
         """Build header dict from webhook object."""
         headers = {"Content-Type": "application/json"}
@@ -49,12 +49,27 @@ class MatrixAPIClient:
             base_url = f"matrix.{base_url}"
         return f"https://{base_url}/_matrix/client/v3/rooms/{room_id}"
 
-    def get_user_id(self, user):
+    def get_user_id(self, user, webhook):
         """Returns user id from email."""
         if user.email is None:
             raise ValueError("You must first set an email for the user.")
 
-        return f"@{user.email.replace('@', ':')}"
+        if settings.MATRIX_BASE_HOME_SERVER:
+            home_server = settings.MATRIX_BASE_HOME_SERVER
+            search = session.post(
+                f"{home_server}/_matrix/client/v3/user_directory/search",
+                json={"search_term": f"@{user.email.replace('@', '-')}"},
+                headers=self.get_headers(webhook),
+                verify=True,
+                timeout=3,
+            )
+            results = search.json()["results"]
+            if len(results) > 0:
+                return results[0]["user_id"]
+
+        # try and invite unknown user using room home server
+        room_home_server = webhook.url.split(":")[2]
+        return f"@{user.email.replace('@', '-')}:{room_home_server}"
 
     def join_room(self, webhook):
         """Accept invitation to the room. As of today, it is a mandatory step
@@ -76,8 +91,11 @@ class MatrixAPIClient:
                 webhook.url,
             )
             return join_response, False
+        logger.info(
+            "Succesfully joined room",
+        )
 
-        user_id = self.get_user_id(user)
+        user_id = self.get_user_id(user, webhook)
         response = session.post(
             f"{self._get_room_url(webhook.url)}/invite",
             json={
@@ -110,7 +128,7 @@ class MatrixAPIClient:
             )
             return join_response, False
 
-        user_id = self.get_user_id(user)
+        user_id = self.get_user_id(user, webhook)
         response = session.post(
             f"{self._get_room_url(webhook.url)}/kick",
             json={

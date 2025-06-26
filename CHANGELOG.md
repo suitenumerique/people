@@ -19,6 +19,10 @@ and this project adheres to
 
 - 🧑‍💻(docker) split frontend to another file #924
 
+### Fixed 
+
+- 🐛(webhook) handle user on different home server than room server
+
 ## [1.17.0] - 2025-06-11
 
 ### Added
