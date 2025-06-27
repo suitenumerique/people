@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
-import { Modal } from '@/components/Modal';
+import { CustomModal } from '@/components/modal/CustomModal';
 import { Role } from '@/features/teams/team-management';
 
 import { useUpdateTeamAccess } from '../api/useUpdateTeamAccess';
@@ -50,10 +50,56 @@ export const ModalRole = ({
 
   const isNotAllowed = isOtherOwner || isLastOwner;
 
-  return (
-    <Modal
-      isOpen
-      leftActions={
+  const step = 0;
+  const steps = [
+    {
+      title: t('Update the role'),
+      content: (
+        <Box
+          $padding={{ horizontal: 'md', bottom: 'md' }}
+          aria-label={t('Radio buttons to update the roles')}
+        >
+          {isErrorUpdate && (
+            <TextErrors
+              $margin={{ bottom: 'small' }}
+              causes={errorUpdate.cause}
+            />
+          )}
+
+          <Text $margin={{ bottom: 'md' }}>
+            {' '}
+            {t('Update the role of {{memberName}}', {
+              memberName: access.user.name,
+            })}{' '}
+          </Text>
+
+          {(isLastOwner || isOtherOwner) && (
+            <Text
+              $theme="warning"
+              $direction="row"
+              $align="center"
+              $gap="1rem"
+              $margin={{ bottom: 'md' }}
+              $justify="center"
+            >
+              <span className="material-icons">warning</span>
+              {isLastOwner &&
+                t(
+                  'You are the sole owner of this group. Make another member the group owner, before you can change your own role.',
+                )}
+              {isOtherOwner && t('You cannot update the role of other owner.')}
+            </Text>
+          )}
+
+          <ChooseRole
+            defaultRole={access.role}
+            currentRole={currentRole}
+            disabled={isNotAllowed}
+            setRole={setLocalRole}
+          />
+        </Box>
+      ),
+      leftAction: (
         <Button
           color="secondary"
           fullWidth
@@ -62,11 +108,8 @@ export const ModalRole = ({
         >
           {t('Cancel')}
         </Button>
-      }
-      onClose={() => onClose()}
-      closeOnClickOutside
-      hideCloseButton
-      rightActions={
+      ),
+      rightAction: (
         <Button
           color="primary"
           fullWidth
@@ -81,43 +124,25 @@ export const ModalRole = ({
         >
           {t('Validate')}
         </Button>
-      }
+      ),
+    },
+  ];
+
+  return (
+    <CustomModal
+      isOpen
+      leftActions={steps[step].leftAction}
+      rightActions={steps[step].rightAction}
       size={ModalSize.MEDIUM}
-      title={t('Update the role')}
+      title={steps[step].title}
+      onClose={onClose}
+      closeOnClickOutside
+      hideCloseButton
+      closeOnEsc
+      step={step}
+      totalSteps={steps.length}
     >
-      <Box aria-label={t('Radio buttons to update the roles')}>
-        {isErrorUpdate && (
-          <TextErrors
-            $margin={{ bottom: 'small' }}
-            causes={errorUpdate.cause}
-          />
-        )}
-
-        {(isLastOwner || isOtherOwner) && (
-          <Text
-            $theme="warning"
-            $direction="row"
-            $align="center"
-            $gap="0.5rem"
-            $margin={{ bottom: 'tiny' }}
-            $justify="center"
-          >
-            <span className="material-icons">warning</span>
-            {isLastOwner &&
-              t(
-                'You are the sole owner of this group. Make another member the group owner, before you can change your own role.',
-              )}
-            {isOtherOwner && t('You cannot update the role of other owner.')}
-          </Text>
-        )}
-
-        <ChooseRole
-          defaultRole={access.role}
-          currentRole={currentRole}
-          disabled={isNotAllowed}
-          setRole={setLocalRole}
-        />
-      </Box>
-    </Modal>
+      {steps[step].content}
+    </CustomModal>
   );
 };

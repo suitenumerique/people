@@ -79,11 +79,11 @@ test.describe('Members Create', () => {
 
     // Check roles are displayed
     await expect(page.getByText(/Choose a role/)).toBeVisible();
-    await expect(page.getByRole('radio', { name: 'Member' })).toBeChecked();
-    await expect(page.getByRole('radio', { name: 'Owner' })).toBeVisible();
-    await expect(
-      page.getByRole('radio', { name: 'Administration' }),
-    ).toBeVisible();
+    const roleSelect = await page.getByRole('combobox', { name: /role/i });
+    await expect(roleSelect).toBeVisible();
+    await expect(roleSelect).toHaveValue('MEMBER');
+    await expect(page.getByRole('option', { name: 'Owner' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Administrator' })).toBeVisible();
   });
 
   test('it sends a new invitation and adds a new member', async ({
@@ -115,7 +115,7 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Administration' }).click();
+    await page.getByRole('combobox', { name: /role/i }).selectOption('ADMIN');
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
@@ -164,7 +164,7 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /role/i }).selectOption('OWNER');
 
     const responsePromiseAddMember = page.waitForResponse(
       (response) =>
@@ -202,7 +202,7 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: email }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /role/i }).selectOption('OWNER');
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>

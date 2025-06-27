@@ -82,17 +82,13 @@ describe('ModalRole', () => {
       { wrapper: AppWrapper },
     );
 
-    expect(
-      screen.getByRole('radio', {
-        name: 'Administration',
-      }),
-    ).toBeChecked();
+    const select = screen.getByRole('combobox', { name: /role/i });
+    expect(select).toBeInTheDocument();
+    expect(screen.getByText('Administrator')).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getByRole('radio', {
-        name: 'Member',
-      }),
-    );
+    await userEvent.click(select);
+    const memberOption = await screen.findByRole('option', { name: 'Member' });
+    await userEvent.click(memberOption);
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -111,7 +107,6 @@ describe('ModalRole', () => {
     });
 
     expect(fetchMock.lastUrl()).toContain(`/teams/123/accesses/789/`);
-
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -133,11 +128,10 @@ describe('ModalRole', () => {
       { wrapper: AppWrapper },
     );
 
-    await userEvent.click(
-      screen.getByRole('radio', {
-        name: 'Member',
-      }),
-    );
+    const select = screen.getByRole('combobox', { name: /role/i });
+    await userEvent.click(select);
+    const memberOption = await screen.findByRole('option', { name: 'Member' });
+    await userEvent.click(memberOption);
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -179,24 +173,8 @@ describe('ModalRole', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('radio', {
-        name: 'Administration',
-      }),
-    ).toBeDisabled();
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'Owner',
-      }),
-    ).toBeDisabled();
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'Member',
-      }),
-    ).toBeDisabled();
-
+    const select = screen.getByRole('combobox', { name: /role/i });
+    expect(select).toHaveAttribute('disabled');
     expect(
       screen.getByRole('button', {
         name: 'Validate',
@@ -232,23 +210,8 @@ describe('ModalRole', () => {
       screen.getByText('You cannot update the role of other owner.'),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('radio', {
-        name: 'Administration',
-      }),
-    ).toBeDisabled();
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'Owner',
-      }),
-    ).toBeDisabled();
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'Member',
-      }),
-    ).toBeDisabled();
+    const select = screen.getByRole('combobox', { name: /role/i });
+    expect(select).toHaveAttribute('disabled');
 
     expect(
       screen.getByRole('button', {
@@ -257,7 +220,7 @@ describe('ModalRole', () => {
     ).toBeDisabled();
   });
 
-  it('checks the render when current user is admin', () => {
+  it('checks the render when current user is admin', async () => {
     render(
       <ModalRole
         access={access}
@@ -268,22 +231,11 @@ describe('ModalRole', () => {
       { wrapper: AppWrapper },
     );
 
-    expect(
-      screen.getByRole('radio', {
-        name: 'Member',
-      }),
-    ).toBeEnabled();
+    const select = screen.getByRole('combobox', { name: /role/i });
+    expect(select).toBeEnabled();
+    await userEvent.click(select);
 
-    expect(
-      screen.getByRole('radio', {
-        name: 'Administration',
-      }),
-    ).toBeEnabled();
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'Owner',
-      }),
-    ).toBeDisabled();
+    const adminOption = screen.getByRole('option', { name: 'Administrator' });
+    expect(adminOption).toBeEnabled();
   });
 });
