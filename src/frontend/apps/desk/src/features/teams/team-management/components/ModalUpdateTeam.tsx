@@ -8,11 +8,9 @@ import { t } from 'i18next';
 import { useState } from 'react';
 
 import { Box, Text } from '@/components';
-import { Modal } from '@/components/Modal';
-import { useCunninghamTheme } from '@/cunningham';
+import { CustomModal } from '@/components/modal/CustomModal';
 
 import { useUpdateTeam } from '../api';
-import IconEdit from '../assets/icon-edit.svg';
 import { Team } from '../types';
 
 import { InputTeamName } from './InputTeamName';
@@ -23,7 +21,6 @@ interface ModalUpdateTeamProps {
 }
 
 export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
-  const { colorsTokens } = useCunninghamTheme();
   const [teamName, setTeamName] = useState(team.name);
   const { toast } = useToastProvider();
 
@@ -41,12 +38,26 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
     },
   });
 
-  return (
-    <Modal
-      isOpen
-      closeOnClickOutside
-      hideCloseButton
-      leftActions={
+  const step = 0;
+  const steps = [
+    {
+      title: t('Update team {{teamName}}', { teamName: team.name }),
+      content: (
+        <Box
+          $padding={{ bottom: 'md' }}
+          aria-label={t('Content modal to update the team')}
+        >
+          <Text as="p" $margin={{ bottom: 'big' }}>
+            {t('Enter the new name of the selected team')}
+          </Text>
+          <InputTeamName
+            label={t('New name...')}
+            defaultValue={team.name}
+            {...{ error, isError, isPending, setTeamName }}
+          />
+        </Box>
+      ),
+      leftAction: (
         <Button
           aria-label={t('Close the modal')}
           color="secondary"
@@ -55,9 +66,8 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
         >
           {t('Cancel')}
         </Button>
-      }
-      onClose={() => onClose()}
-      rightActions={
+      ),
+      rightAction: (
         <Button
           aria-label={t('Validate the modification')}
           color="primary"
@@ -71,35 +81,25 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
         >
           {t('Validate the modification')}
         </Button>
-      }
-      size={ModalSize.MEDIUM}
-      title={
-        <Box $align="center" $gap="1rem">
-          <IconEdit
-            width={48}
-            color={colorsTokens()['primary-text']}
-            aria-hidden="true"
-          />
-          <Text $size="h3" $margin="none">
-            {t('Update team {{teamName}}', { teamName: team.name })}
-          </Text>
-        </Box>
-      }
-    >
-      <Box
-        $margin={{ bottom: 'xl' }}
-        aria-label={t('Content modal to update the team')}
-      >
-        <Text as="p" $margin={{ bottom: 'big' }}>
-          {t('Enter the new name of the selected team')}
-        </Text>
+      ),
+    },
+  ];
 
-        <InputTeamName
-          label={t('New name...')}
-          defaultValue={team.name}
-          {...{ error, isError, isPending, setTeamName }}
-        />
-      </Box>
-    </Modal>
+  return (
+    <CustomModal
+      isOpen
+      step={step}
+      totalSteps={steps.length}
+      leftActions={steps[step].leftAction}
+      rightActions={steps[step].rightAction}
+      size={ModalSize.MEDIUM}
+      title={steps[step].title}
+      onClose={onClose}
+      closeOnClickOutside
+      hideCloseButton
+      closeOnEsc
+    >
+      <Box $padding={{ horizontal: 'md' }}>{steps[step].content}</Box>
+    </CustomModal>
   );
 };

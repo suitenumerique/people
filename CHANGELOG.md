@@ -9,7 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-
+- 🐛(front) add teams ui V2
 - 🐛(front) fix button add mail domain
 - ✨(teams) add matrix webhook for teams #904
 - ✨(resource-server) add SCIM /Me endpoint #895

@@ -14,22 +14,21 @@ test.describe('Member Grid', () => {
   }) => {
     await createTeam(page, 'team-owner', browserName, 1);
 
-    const table = page.getByLabel('List members card').getByRole('table');
+    const table = page.getByRole('table');
 
     const thead = table.locator('thead');
-    await expect(thead.getByText(/Names/i)).toBeVisible();
-    await expect(thead.getByText(/Emails/i)).toBeVisible();
-    await expect(thead.getByText(/Roles/i)).toBeVisible();
+    await expect(thead.getByText(/Member/i)).toBeVisible();
+    await expect(thead.getByText(/Role/i)).toBeVisible();
 
     const cells = table.getByRole('row').nth(1).getByRole('cell');
     await expect(cells.nth(0).getByLabel('Member icon')).toBeVisible();
-    await expect(cells.nth(1)).toHaveText(
+    await expect(cells.nth(0)).toContainText(
       new RegExp(`E2E ${browserName}`, 'i'),
     );
-    await expect(cells.nth(2)).toHaveText(
+    await expect(cells.nth(0)).toContainText(
       `user-e2e-${browserName}@example.org`,
     );
-    await expect(cells.nth(3)).toHaveText(/Owner/i);
+    await expect(cells.nth(1)).toContainText(/Owner/i);
   });
 
   test('try to update the owner role but cannot because it is the last owner', async ({
@@ -38,13 +37,13 @@ test.describe('Member Grid', () => {
   }) => {
     await createTeam(page, 'team-owner-role', browserName, 1);
 
-    const table = page.getByLabel('List members card').getByRole('table');
+    const table = page.getByRole('table');
 
     const cells = table.getByRole('row').nth(1).getByRole('cell');
-    await expect(cells.nth(1)).toHaveText(
+    await expect(cells.nth(0)).toContainText(
       new RegExp(`E2E ${browserName}`, 'i'),
     );
-    await cells.nth(4).getByLabel('Member options').click();
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByText('Update role').click();
 
     await expect(
@@ -53,12 +52,11 @@ test.describe('Member Grid', () => {
       ),
     ).toBeVisible();
 
-    const radioGroup = page.getByLabel('Radio buttons to update the roles');
-
-    const radios = await radioGroup.getByRole('radio').all();
-    for (const radio of radios) {
-      await expect(radio).toBeDisabled();
-    }
+    const roleSelect = page.getByRole('combobox', { name: /Role/i });
+    const cursor = await roleSelect.evaluate(
+      (el) => getComputedStyle(el).cursor,
+    );
+    expect(cursor).toBe('not-allowed');
 
     await expect(
       page.getByRole('button', {

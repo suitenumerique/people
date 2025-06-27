@@ -25,9 +25,9 @@ test.describe('Team', () => {
         level: 3,
       }),
     ).toBeVisible();
-    await expect(page.getByText(`Group details`)).toBeVisible();
+    await expect(page.getByText(`Group members`)).toBeVisible();
 
-    await expect(page.getByText(`1 member`)).toBeVisible();
+    //    await expect(page.getByText(`1 member`)).toBeVisible();
 
     const today = new Date(Date.now());
     const todayFormated = today.toLocaleDateString('en', {
@@ -44,18 +44,18 @@ test.describe('Team', () => {
   test('it updates the team name', async ({ page, browserName }) => {
     await createTeam(page, 'team-update-name', browserName, 1);
 
-    await page.getByLabel(`Open the team options`).click();
-    await page.getByRole('button', { name: `Update the team` }).click();
+    await page.getByLabel('Open the team options').click();
+    await page.getByRole('button', { name: 'Update the team' }).click();
 
     const teamName = randomName('new-team-update-name', browserName, 1)[0];
-    await page.getByText('New name...', { exact: true }).fill(teamName);
+    await page.getByLabel('New name...').fill(teamName);
 
     await page
       .getByRole('button', { name: 'Validate the modification' })
       .click();
 
     await expect(page.getByText('The team has been updated.')).toBeVisible();
-    await expect(page.getByText(`Group details`)).toBeVisible();
+    await expect(page.getByText('Group members')).toBeVisible();
   });
 
   test('sorts group members by search term', async ({

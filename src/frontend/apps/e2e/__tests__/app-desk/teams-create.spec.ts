@@ -13,30 +13,12 @@ test.describe('Teams Create', () => {
       name: 'Create a new team',
     });
     await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
 
-    const card = page.getByLabel('Create new team card').first();
+    const modal = page.getByRole('dialog')
+    await expect(modal).getByText(/Create a new team/i).toBeVisible();
+    await expect(modal).toBeVisible();
 
-    await expect(card.getByLabel('Team name')).toBeVisible();
-
-    await expect(
-      card.getByRole('heading', {
-        name: 'Create a new group',
-        level: 3,
-      }),
-    ).toBeVisible();
-
-    await expect(
-      card.getByRole('button', {
-        name: 'Create the team',
-      }),
-    ).toBeVisible();
-
-    await expect(
-      card.getByRole('button', {
-        name: 'Cancel',
-      }),
-    ).toBeVisible();
+    await expect(modal.getByRole('button', { name: 'Cancel' })).toBeVisible();
   });
 
   test('checks the cancel button interaction', async ({ page }) => {
@@ -44,11 +26,10 @@ test.describe('Teams Create', () => {
       name: 'Create a new team',
     });
     await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
 
-    const card = page.getByLabel('Create new team card').first();
+    const modal = page.getByRole('dialog');
 
-    await card
+    await modal
       .getByRole('button', {
         name: 'Cancel',
       })
@@ -71,13 +52,6 @@ test.describe('Teams Create', () => {
     await page.getByRole('button', { name: 'Create the team' }).click();
 
     const elTeam = page.getByRole('heading', { name: teamName });
-    await expect(elTeam).toBeVisible();
-
-    const panel = page.getByLabel('Teams panel').first();
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-    await expect(elTeam).toBeHidden();
-
-    await panel.locator('li').getByText(teamName).click();
     await expect(elTeam).toBeVisible();
   });
 

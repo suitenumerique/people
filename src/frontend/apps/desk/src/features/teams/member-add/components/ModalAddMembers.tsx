@@ -10,13 +10,11 @@ import { createGlobalStyle } from 'styled-components';
 
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
-import { Modal } from '@/components/Modal';
-import { useCunninghamTheme } from '@/cunningham';
+import { CustomModal } from '@/components/modal/CustomModal';
 import { ChooseRole } from '@/features/teams/member-management';
 import { Role, Team } from '@/features/teams/team-management';
 
 import { useCreateInvitation, useCreateTeamAccess } from '../api';
-import IconAddMember from '../assets/add-member.svg';
 import {
   OptionInvitation,
   OptionNewMember,
@@ -49,7 +47,6 @@ export const ModalAddMembers = ({
   onClose,
   team,
 }: ModalAddMembersProps) => {
-  const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const [selectedMembers, setSelectedMembers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>(Role.MEMBER);
@@ -135,10 +132,40 @@ export const ModalAddMembers = ({
     });
   };
 
-  return (
-    <Modal
-      isOpen
-      leftActions={
+  const step = 0;
+  const steps = [
+    {
+      title: t('Add a member'),
+      content: (
+        <>
+          <GlobalStyle />
+          <Box
+            $padding={{ horizontal: 'md', bottom: 'md' }}
+            $margin={{ bottom: 'xl', top: 'large' }}
+          >
+            <SearchMembers
+              team={team}
+              setSelectedMembers={setSelectedMembers}
+              selectedMembers={selectedMembers}
+              disabled={isPending}
+            />
+            {selectedMembers.length > 0 && (
+              <Box $margin={{ top: 'small' }}>
+                <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
+                  {t('Choose a role')}
+                </Text>
+                <ChooseRole
+                  currentRole={currentRole}
+                  disabled={isPending}
+                  defaultRole={Role.MEMBER}
+                  setRole={setSelectedRole}
+                />
+              </Box>
+            )}
+          </Box>
+        </>
+      ),
+      leftAction: (
         <Button
           color="secondary"
           fullWidth
@@ -147,56 +174,35 @@ export const ModalAddMembers = ({
         >
           {t('Cancel')}
         </Button>
-      }
-      onClose={onClose}
-      closeOnClickOutside
-      hideCloseButton
-      rightActions={
+      ),
+      rightAction: (
         <Button
           color="primary"
           fullWidth
           disabled={!selectedMembers.length || isPending}
           onClick={() => void handleValidate()}
         >
-          {t('Add to group')}
+          {t('Add to team')}
         </Button>
-      }
+      ),
+    },
+  ];
+
+  return (
+    <CustomModal
+      isOpen
+      leftActions={steps[step].leftAction}
+      rightActions={steps[step].rightAction}
+      onClose={onClose}
+      closeOnClickOutside
+      hideCloseButton
       size={ModalSize.MEDIUM}
-      title={
-        <Box $align="center" $gap="1rem">
-          <IconAddMember
-            width={48}
-            color={colorsTokens()['primary-text']}
-            aria-hidden="true"
-          />
-          <Text $size="h3" $margin="none">
-            {t('Add a member')}
-          </Text>
-        </Box>
-      }
+      title={steps[step].title}
+      step={step}
+      totalSteps={steps.length}
+      closeOnEsc
     >
-      <GlobalStyle />
-      <Box $margin={{ bottom: 'xl', top: 'large' }}>
-        <SearchMembers
-          team={team}
-          setSelectedMembers={setSelectedMembers}
-          selectedMembers={selectedMembers}
-          disabled={isPending}
-        />
-        {selectedMembers.length > 0 && (
-          <Box $margin={{ top: 'small' }}>
-            <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
-              {t('Choose a role')}
-            </Text>
-            <ChooseRole
-              currentRole={currentRole}
-              disabled={isPending}
-              defaultRole={Role.MEMBER}
-              setRole={setSelectedRole}
-            />
-          </Box>
-        )}
-      </Box>
-    </Modal>
+      {steps[step].content}
+    </CustomModal>
   );
 };

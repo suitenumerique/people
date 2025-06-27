@@ -60,6 +60,7 @@ export const InputTeamName = ({
         fullWidth
         type="text"
         label={label}
+        aria-label={label}
         defaultValue={defaultValue}
         onChange={(e) => {
           setTeamName(e.target.value);

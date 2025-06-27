@@ -42,7 +42,6 @@ export const createTeam = async (
   browserName: string,
   length: number,
 ) => {
-  const panel = page.getByLabel('Teams panel').first();
   const buttonCreateHomepage = page.getByRole('button', {
     name: 'Create a new team',
   });
@@ -51,17 +50,10 @@ export const createTeam = async (
   const randomTeams = randomName(teamName, browserName, length);
 
   for (let i = 0; i < randomTeams.length; i++) {
-    if (i == 0) {
-      // for the first team, we need to click on the button in the homepage
-      await buttonCreateHomepage.click();
-    } else {
-      // for the other teams, we need to click on the button in the panel of the detail view
-      await panel.getByRole('button', { name: 'Add a team' }).click();
-    }
+    await buttonCreateHomepage.click();
     await page.getByText('Team name').fill(randomTeams[i]);
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
-    await expect(panel.locator('li').getByText(randomTeams[i])).toBeVisible();
   }
 
   return randomTeams;
@@ -70,7 +62,7 @@ export const createTeam = async (
 export const addNewMember = async (
   page: Page,
   index: number,
-  role: 'Administration' | 'Owner' | 'Member',
+  role: 'Administrator' | 'Owner' | 'Member',
   fillText: string = 'test',
 ) => {
   const responsePromiseSearchUser = page.waitForResponse(
@@ -94,11 +86,12 @@ export const addNewMember = async (
   await page.getByRole('option', { name: users[index].name }).click();
 
   // Choose a role
-  await page.getByRole('radio', { name: role }).click();
+  await page.getByRole('combobox', { name: /role/i }).click();
+  await page.getByRole('option', { name: role ? role : /Owner/i }).click();
 
-  await page.getByRole('button', { name: 'Add to group' }).click();
+  await page.getByRole('button', { name: 'Add to team' }).click();
 
-  const table = page.getByLabel('List members card').getByRole('table');
+  const table = page.getByRole('table');
 
   await expect(table.getByText(users[index].name)).toBeVisible();
   await expect(

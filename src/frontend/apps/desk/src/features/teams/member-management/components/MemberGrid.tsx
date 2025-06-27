@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useDebounce } from '@/api';
 import IconUser from '@/assets/icons/icon-user.svg';
-import { Box, Card, Text, TextErrors } from '@/components';
+import { Box, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { ModalAddMembers } from '@/features/teams/member-add';
 import { Role, Team } from '@/features/teams/team-management';
@@ -110,104 +110,92 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
   }, [data?.count, pageSize, setPagesCount]);
 
   return (
-    <>
-      <Box $margin={{ horizontal: 'big', bottom: 'small' }}>
-        <Text
-          $theme="primary"
-          $weight="bold"
-          $size="h3"
-          $margin={{ bottom: 'big' }}
-        >
+    <div aria-label="Team panel" className="container">
+      <Box
+        aria-label={t('List members card')}
+        $padding={{ all: 'md' }}
+        $background="white"
+        $justify="space-between"
+        $gap="8px"
+        $radius="4px"
+        $direction="column"
+        $css={`
+          border: 1px solid ${colorsTokens()['greyscale-200']};
+        `}
+      >
+        <h3 style={{ fontWeight: 700, fontSize: '18px', marginBottom: 'base' }}>
           {t('Group members')}
-        </Text>
+        </h3>
         <Box
-          $display="flex"
           $direction="row"
           $justify="space-between"
           $align="center"
-          $gap="1rem"
-          $css={`
-            & > * {
-              flex: 0.23 0 auto;
-            }
-          `}
+          $gap="1em"
+          $css="width: 100%; margin-bottom: 20px;"
         >
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              gap: '1em',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ width: 'calc(100% - 175px)' }}>
-              <Input
-                label={t('Filter member list')}
-                icon={<IconMagnifyingGlass />}
-                onChange={(event) => setQueryValue(event.target.value)}
-              />
-            </div>
+          <Box $css="width: calc(100% - 210px);">
+            <Input
+              label={t('Filter member list')}
+              icon={<IconMagnifyingGlass />}
+              value={queryValue}
+              onChange={(event) => setQueryValue(event.target.value)}
+            />
+          </Box>
+          <Box
+            className="hidden md:flex"
+            $css={`
+              background: ${colorsTokens()['greyscale-200']};
+              height: 32px;
+              width: 1px;
+            `}
+          />
+          <Box className="block md:hidden" $css="margin-bottom: 10px;" />
+          <Box>
             {currentRole !== Role.MEMBER && (
               <Button
                 aria-label={t('Add members to the team')}
-                style={{
-                  minWidth: 'auto',
-                  maxWidth: 'fit-content',
-                }}
+                style={{ minWidth: 'auto', maxWidth: 'fit-content' }}
                 onClick={() => setIsModalMemberOpen(true)}
               >
                 {t('Add a member')}
               </Button>
             )}
-          </div>
+          </Box>
         </Box>
-      </Box>
-      <Card
-        $padding={{ bottom: 'small' }}
-        $margin={{ all: 'big', top: 'none' }}
-        $overflow="auto"
-        $css={`
-          & .c__pagination__goto {
-            display: none;
-          }
-          & table th:first-child, 
-          & table td:first-child {
-            padding-right: 0;
-            width: 3.5rem;
-          }
-          & table td:last-child {
-            text-align: right;
-          }
-      `}
-        aria-label={t('List members card')}
-      >
-        {error && <TextErrors causes={error.cause} />}
 
+        {error && <TextErrors causes={error.cause} />}
         <DataGrid
           columns={[
             {
-              id: 'icon-user',
-              renderCell() {
-                return (
-                  <Box $direction="row" $align="center">
+              headerName: t('Member'),
+              id: 'user-info',
+              renderCell: ({ row }) => (
+                <>
+                  <Box $direction="row" $align="center" $gap="1.2em">
                     <IconUser
                       aria-label={t('Member icon')}
                       width={20}
                       height={20}
                       color={colorsTokens()['primary-600']}
                     />
+                    <div>
+                      <Text
+                        $weight="500"
+                        $css="text-transform: capitalize;"
+                        color={colorsTokens()['greyscale-1000']}
+                      >
+                        {row.user.name}
+                      </Text>
+                      <Text
+                        $weight="400"
+                        color={colorsTokens()['greyscale-600']}
+                      >
+                        {row.user.email}
+                      </Text>
+                    </div>
                   </Box>
-                );
-              },
-            },
-            {
-              headerName: t('Names'),
-              field: 'user.name',
-            },
-            {
-              field: 'user.email',
-              headerName: t('Emails'),
+                </>
+              ),
             },
             {
               field: 'localizedRole',
@@ -226,13 +214,14 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
               },
             },
           ]}
+          aria-label={t('List members card')}
           rows={accesses}
           isLoading={isLoading}
           pagination={pagination}
           onSortModelChange={setSortModel}
           sortModel={sortModel}
         />
-      </Card>
+      </Box>
       {isModalMemberOpen && (
         <ModalAddMembers
           currentRole={currentRole}
@@ -240,6 +229,6 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
           team={team}
         />
       )}
-    </>
+    </div>
   );
 };

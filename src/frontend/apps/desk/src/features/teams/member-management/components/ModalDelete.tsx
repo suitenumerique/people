@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Text, TextErrors } from '@/components';
-import { Modal } from '@/components/Modal';
+import { CustomModal } from '@/components/modal/CustomModal';
 import { useCunninghamTheme } from '@/cunningham';
 import { Role, Team } from '@/features/teams/team-management';
 
@@ -56,18 +56,66 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
     },
   });
 
-  return (
-    <Modal
-      isOpen
-      closeOnClickOutside
-      hideCloseButton
-      leftActions={
+  const step = 0;
+  const steps = [
+    {
+      title: t('Remove this member from the group'),
+      content: (
+        <Box
+          $padding={{ horizontal: 'md', bottom: 'md' }}
+          aria-label={t('Radio buttons to update the roles')}
+        >
+          <Text>
+            {t(
+              'Are you sure you want to remove this member from the {{team}} group?',
+              { team: team.name },
+            )}
+          </Text>
+
+          {isErrorUpdate && (
+            <TextErrors
+              $margin={{ bottom: 'small' }}
+              causes={errorUpdate.cause}
+            />
+          )}
+
+          {(isLastOwner || isOtherOwner) && (
+            <Text
+              $theme="warning"
+              $direction="row"
+              $align="center"
+              $gap="1rem"
+              $margin="md"
+              $justify="center"
+            >
+              <span className="material-icons">warning</span>
+              {isLastOwner &&
+                t(
+                  'You are the last owner, you cannot be removed from your team.',
+                )}
+              {isOtherOwner && t('You cannot remove other owner.')}
+            </Text>
+          )}
+
+          <Text
+            as="p"
+            $padding="big"
+            $direction="row"
+            $gap="0.5rem"
+            $background={colorsTokens()['primary-150']}
+            $theme="primary"
+          >
+            <IconUser width={20} height={20} aria-hidden="true" />
+            <Text>{access.user.name}</Text>
+          </Text>
+        </Box>
+      ),
+      leftAction: (
         <Button color="secondary" fullWidth onClick={() => onClose()}>
           {t('Cancel')}
         </Button>
-      }
-      onClose={onClose}
-      rightActions={
+      ),
+      rightAction: (
         <Button
           color="primary"
           fullWidth
@@ -81,61 +129,25 @@ export const ModalDelete = ({ access, onClose, team }: ModalDeleteProps) => {
         >
           {t('Remove from the group')}
         </Button>
-      }
+      ),
+    },
+  ];
+
+  return (
+    <CustomModal
+      isOpen
+      closeOnClickOutside
+      hideCloseButton
+      leftActions={steps[step].leftAction}
+      rightActions={steps[step].rightAction}
+      onClose={onClose}
       size={ModalSize.MEDIUM}
-      title={
-        <Box $align="center" $gap="1rem">
-          <Text $size="h3" $margin="none">
-            {t('Remove this member from the group')}
-          </Text>
-        </Box>
-      }
+      title={steps[step].title}
+      step={step}
+      totalSteps={steps.length}
+      closeOnEsc
     >
-      <Box aria-label={t('Radio buttons to update the roles')}>
-        <Text>
-          {t(
-            'Are you sure you want to remove this member from the {{team}} group?',
-            { team: team.name },
-          )}
-        </Text>
-
-        {isErrorUpdate && (
-          <TextErrors
-            $margin={{ bottom: 'small' }}
-            causes={errorUpdate.cause}
-          />
-        )}
-
-        {(isLastOwner || isOtherOwner) && (
-          <Text
-            $theme="warning"
-            $direction="row"
-            $align="center"
-            $gap="0.5rem"
-            $margin="tiny"
-            $justify="center"
-          >
-            <span className="material-icons">warning</span>
-            {isLastOwner &&
-              t(
-                'You are the last owner, you cannot be removed from your team.',
-              )}
-            {isOtherOwner && t('You cannot remove other owner.')}
-          </Text>
-        )}
-
-        <Text
-          as="p"
-          $padding="big"
-          $direction="row"
-          $gap="0.5rem"
-          $background={colorsTokens()['primary-150']}
-          $theme="primary"
-        >
-          <IconUser width={20} height={20} aria-hidden="true" />
-          <Text>{access.user.name}</Text>
-        </Text>
-      </Box>
-    </Modal>
+      {steps[step].content}
+    </CustomModal>
   );
 };

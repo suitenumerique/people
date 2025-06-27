@@ -6,12 +6,8 @@ import { ReactElement } from 'react';
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import { MemberGrid } from '@/features/teams/member-management';
-import {
-  Role,
-  TeamInfo,
-  TeamLayout,
-  useTeam,
-} from '@/features/teams/team-management';
+import { Role, TeamView, useTeam } from '@/features/teams/team-management';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
@@ -59,14 +55,14 @@ const Team = ({ id }: TeamProps) => {
 
   return (
     <>
-      <TeamInfo team={team} currentRole={currentRole} />
+      <TeamView team={team} currentRole={currentRole} />
       <MemberGrid team={team} currentRole={currentRole} />
     </>
   );
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <TeamLayout>{page}</TeamLayout>;
+  return <MainLayout backgroundColor="grey">{page}</MainLayout>;
 };
 
 export default Page;
