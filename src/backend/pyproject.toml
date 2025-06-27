@@ -57,7 +57,7 @@ dependencies = [
     "mozilla-django-oidc==4.0.1",
     "nested-multipart-parser==1.5.0",
     "psycopg[binary]==3.2.9",
-    "redis==5.2.1",
+    "redis<=6.0.0",
     "requests==2.32.4",
     "sentry-sdk[django]==2.32.0",
     "whitenoise==6.9.0",
