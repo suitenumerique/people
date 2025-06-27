@@ -65,7 +65,7 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
           </Box>
         </Box>
         <Box
-          $padding={{ all: 'small', left: '1.5rem' }}
+          $padding={{ left: '1.5rem', top: '1.5rem' }}
           $gap="3rem"
           $direction="row"
           $justify="start"

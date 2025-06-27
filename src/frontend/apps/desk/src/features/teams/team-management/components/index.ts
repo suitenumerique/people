@@ -1,3 +1,2 @@
-export * from './CardCreateTeam';
 export * from './TeamInfo';
-export * from './TeamLayout';
+export * from './TeamView';
