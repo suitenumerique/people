@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-10 16:13+0000\n"
-"PO-Revision-Date: 2025-06-11 09:29\n"
+"POT-Creation-Date: 2025-06-19 15:31+0000\n"
+"PO-Revision-Date: 2025-06-30 10:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -148,9 +148,9 @@ msgid "contacts"
 msgstr "contacts"
 
 #: build/lib/core/models.py:250 build/lib/core/models.py:364
-#: build/lib/core/models.py:510 build/lib/core/models.py:1106
+#: build/lib/core/models.py:510 build/lib/core/models.py:1121
 #: build/lib/mailbox_manager/models.py:53 core/models.py:250 core/models.py:364
-#: core/models.py:510 core/models.py:1106 mailbox_manager/models.py:53
+#: core/models.py:510 core/models.py:1121 mailbox_manager/models.py:53
 msgid "name"
 msgstr "nom"
 
@@ -211,8 +211,8 @@ msgstr "sub"
 msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
 msgstr "Obligatoire. 255 caractères ou moins. Lettres, chiffres et caractères @/./+/-/_ seulement."
 
-#: build/lib/core/models.py:509 build/lib/core/models.py:958 core/models.py:509
-#: core/models.py:958
+#: build/lib/core/models.py:509 build/lib/core/models.py:973 core/models.py:509
+#: core/models.py:973
 msgid "email address"
 msgstr "adresse email"
 
@@ -268,88 +268,96 @@ msgstr "Relations organisation/utilisateur"
 msgid "This user is already in this organization."
 msgstr "Cet utilisateur est déjà dans cette organisation."
 
-#: build/lib/core/models.py:774 core/models.py:774
+#: build/lib/core/models.py:761 core/models.py:761
+msgid "external_id"
+msgstr ""
+
+#: build/lib/core/models.py:762 core/models.py:762
+msgid "Team external UUID for synchronization with external systems"
+msgstr ""
+
+#: build/lib/core/models.py:787 core/models.py:787
 msgid "is visible for all SP"
 msgstr "est visible pour tous les fournisseurs de service"
 
-#: build/lib/core/models.py:776 core/models.py:776
+#: build/lib/core/models.py:789 core/models.py:789
 msgid "Whether this team is visible to all service providers."
 msgstr "Si cette équipe est visible pour tous les fournisseurs de services."
 
-#: build/lib/core/models.py:784 core/models.py:784
+#: build/lib/core/models.py:797 core/models.py:797
 msgid "Team"
 msgstr "Équipe"
 
-#: build/lib/core/models.py:785 core/models.py:785
+#: build/lib/core/models.py:798 core/models.py:798
 msgid "Teams"
 msgstr "Équipes"
 
-#: build/lib/core/models.py:836 core/models.py:836
+#: build/lib/core/models.py:849 core/models.py:849
 msgid "Team/user relation"
 msgstr "Relation équipe/utilisateur"
 
-#: build/lib/core/models.py:837 core/models.py:837
+#: build/lib/core/models.py:850 core/models.py:850
 msgid "Team/user relations"
 msgstr "Relations équipe/utilisateur"
 
-#: build/lib/core/models.py:842 core/models.py:842
+#: build/lib/core/models.py:855 core/models.py:855
 msgid "This user is already in this team."
 msgstr "Cet utilisateur est déjà dans cette équipe."
 
-#: build/lib/core/models.py:931 core/models.py:931
+#: build/lib/core/models.py:941 core/models.py:941
 msgid "url"
 msgstr "url"
 
-#: build/lib/core/models.py:932 core/models.py:932
+#: build/lib/core/models.py:942 core/models.py:942
 msgid "secret"
 msgstr "secret"
 
-#: build/lib/core/models.py:941 core/models.py:941
+#: build/lib/core/models.py:956 core/models.py:956
 msgid "Team webhook"
 msgstr "Webhook d'équipe"
 
-#: build/lib/core/models.py:942 core/models.py:942
+#: build/lib/core/models.py:957 core/models.py:957
 msgid "Team webhooks"
 msgstr "Webhooks d'équipe"
 
-#: build/lib/core/models.py:986 core/models.py:986
+#: build/lib/core/models.py:1001 core/models.py:1001
 msgid "This email is already associated to a registered user."
 msgstr "Cette adresse email est déjà associée à un utilisateur enregistré."
 
-#: build/lib/core/models.py:1000 core/models.py:1000
+#: build/lib/core/models.py:1015 core/models.py:1015
 msgid "Invitation to join La Régie!"
 msgstr "Invitation à rejoindre La Régie !"
 
-#: build/lib/core/models.py:1046 core/models.py:1046
+#: build/lib/core/models.py:1061 core/models.py:1061
 msgid "Team invitation"
 msgstr "Invitation d'équipe"
 
-#: build/lib/core/models.py:1047 core/models.py:1047
+#: build/lib/core/models.py:1062 core/models.py:1062
 msgid "Team invitations"
 msgstr "Invitations d'équipe"
 
-#: build/lib/core/models.py:1060 core/models.py:1060
+#: build/lib/core/models.py:1075 core/models.py:1075
 #, python-format
 msgid "[La Suite] You have been invited to become a %(role)s of a group"
 msgstr "[La Suite] Vous avez été invité(e) à être %(role)s d'un groupe"
 
-#: build/lib/core/models.py:1108 core/models.py:1108
+#: build/lib/core/models.py:1123 core/models.py:1123
 msgid "api key"
 msgstr "Clé d'API"
 
-#: build/lib/core/models.py:1113 core/models.py:1113
+#: build/lib/core/models.py:1128 core/models.py:1128
 msgid "allowed scopes"
 msgstr "périmètres autorisés"
 
-#: build/lib/core/models.py:1114 core/models.py:1114
+#: build/lib/core/models.py:1129 core/models.py:1129
 msgid "Allowed scopes for this service"
 msgstr "Périmètres d'application autorisés pour ce service"
 
-#: build/lib/core/models.py:1119 core/models.py:1119
+#: build/lib/core/models.py:1134 core/models.py:1134
 msgid "Account service"
 msgstr "Compte de service"
 
-#: build/lib/core/models.py:1120 core/models.py:1120
+#: build/lib/core/models.py:1135 core/models.py:1135
 msgid "Account services"
 msgstr "Comptes de service"
 
