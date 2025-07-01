@@ -24,7 +24,7 @@ test.describe('Members Create', () => {
     ).toBeVisible();
 
     await expect(
-      page.getByRole('button', { name: 'Add to group' }),
+      page.getByRole('button', { name: 'Add to team' }),
     ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
   });
@@ -38,7 +38,7 @@ test.describe('Members Create', () => {
 
     await page.getByLabel('Add members to the team').click();
 
-    await expect(page.getByRole('radio', { name: 'Owner' })).toBeHidden();
+    const roleSelect = page.getByRole('combobox', { name: /role/i });
 
     const inputSearch = page.getByLabel(/Find a member to add to the team/);
 
@@ -51,6 +51,8 @@ test.describe('Members Create', () => {
     }[];
 
     await page.getByRole('option', { name: users[0].name }).click();
+
+    await expect(roleSelect).toBeVisible();
 
     // Select user 2
     await inputSearch.fill('test');
@@ -78,11 +80,11 @@ test.describe('Members Create', () => {
     await expect(page.getByLabel(`Remove ${email}`)).toBeVisible();
 
     // Check roles are displayed
-    await expect(page.getByText(/Choose a role/)).toBeVisible();
-    await expect(page.getByRole('radio', { name: 'Member' })).toBeChecked();
-    await expect(page.getByRole('radio', { name: 'Owner' })).toBeVisible();
+    await expect(page.getByText(/Choose a role/i)).toBeVisible();
+    await expect(roleSelect).toBeVisible();
+    await expect(page.getByRole('option', { name: /Owner/i })).toBeVisible();
     await expect(
-      page.getByRole('radio', { name: 'Administration' }),
+      page.getByRole('option', { name: /Administrator/i }),
     ).toBeVisible();
   });
 
@@ -115,7 +117,8 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Administration' }).click();
+    await page.getByRole('combobox', { name: /Role/i }).click();
+    await page.getByRole('option', { name: /Administrator/i }).click();
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
@@ -126,23 +129,23 @@ test.describe('Members Create', () => {
         response.url().includes('/accesses/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Add to group' }).click();
+    await page.getByRole('button', { name: 'Add to team' }).click();
 
     // Check invitation sent
     await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
     const responseCreateInvitation = await responsePromiseCreateInvitation;
-    expect(responseCreateInvitation.ok()).toBeTruthy();
+    expect(responseCreateInvitation.status()).toBe(201);
 
     // Check member added
     await expect(
       page.getByText(`Member ${users[0].name} added to the team`),
     ).toBeVisible();
     const responseAddMember = await responsePromiseAddMember;
-    expect(responseAddMember.ok()).toBeTruthy();
+    expect(responseAddMember.status()).toBe(201);
 
     const table = page.getByLabel('List members card').getByRole('table');
-    await expect(table.getByText(users[0].name)).toBeVisible();
-    await expect(table.getByText('Administration')).toBeVisible();
+    await expect(table).toContainText(users[0].name);
+    await expect(table).toContainText('Administration');
   });
 
   test('it try to add twice the same user', async ({ page, browserName }) => {
@@ -164,20 +167,21 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: users[0].name }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /role/i }).click();
+    await page.getByRole('option', { name: /Owner/i }).click();
 
     const responsePromiseAddMember = page.waitForResponse(
       (response) =>
         response.url().includes('/accesses/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Add to group' }).click();
+    await page.getByRole('button', { name: 'Add to team' }).click();
 
     await expect(
       page.getByText(`Member ${users[0].name} added to the team`),
     ).toBeVisible();
     const responseAddMember = await responsePromiseAddMember;
-    expect(responseAddMember.ok()).toBeTruthy();
+    expect(responseAddMember.status()).toBe(201);
 
     await page.getByLabel('Add members to the team').click();
 
@@ -202,19 +206,20 @@ test.describe('Members Create', () => {
     await page.getByRole('option', { name: email }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /role/i }).click();
+    await page.getByRole('option', { name: /Owner/i }).click();
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
         response.url().includes('/invitations/') && response.status() === 201,
     );
 
-    await page.getByRole('button', { name: 'Add to group' }).click();
+    await page.getByRole('button', { name: 'Add to team' }).click();
 
     // Check invitation sent
     await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
     const responseCreateInvitation = await responsePromiseCreateInvitation;
-    expect(responseCreateInvitation.ok()).toBeTruthy();
+    expect(responseCreateInvitation.status()).toBe(201);
 
     await page.getByLabel('Add members to the team').click();
 

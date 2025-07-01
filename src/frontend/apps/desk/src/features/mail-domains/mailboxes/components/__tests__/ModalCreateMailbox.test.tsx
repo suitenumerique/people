@@ -212,7 +212,7 @@ describe('ModalCreateMailbox', () => {
   });
 
   it('disables the submit button while the form is submitting', async () => {
-    fetchMock.postOnce(apiUrl, new Promise(() => {})); // Simulate pending state
+    fetchMock.postOnce(apiUrl, new Promise(() => {}));
 
     renderModalCreateMailbox();
 

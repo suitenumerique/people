@@ -5,7 +5,9 @@ import React from 'react';
 
 import { AppWrapper } from '@/tests/utils';
 
-import { CardCreateTeam } from '../CardCreateTeam';
+import { ModalCreateTeam } from '../ModalCreateTeam';
+
+const mockClose = jest.fn();
 
 const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
@@ -14,9 +16,9 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-describe('CardCreateTeam', () => {
-  const renderCardCreateTeam = () =>
-    render(<CardCreateTeam />, { wrapper: AppWrapper });
+describe('ModalCreateTeam', () => {
+  const renderModal = () =>
+    render(<ModalCreateTeam closeModal={mockClose} />, { wrapper: AppWrapper });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,10 +29,8 @@ describe('CardCreateTeam', () => {
   });
 
   it('renders all the elements', () => {
-    renderCardCreateTeam();
-
-    expect(screen.getByLabelText('Create new team card')).toBeInTheDocument();
-    expect(screen.getByText('Create a new group')).toBeInTheDocument();
+    renderModal();
+    expect(screen.getByText('Create a new team')).toBeInTheDocument();
     expect(screen.getByLabelText('Team name')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('Create the team')).toBeInTheDocument();
@@ -38,13 +38,10 @@ describe('CardCreateTeam', () => {
 
   it('handles input for team name and enables submit button', async () => {
     const user = userEvent.setup();
-    renderCardCreateTeam();
-
+    renderModal();
     const teamNameInput = screen.getByLabelText('Team name');
     const createButton = screen.getByText('Create the team');
-
     expect(createButton).toBeDisabled();
-
     await user.type(teamNameInput, 'New Team');
     expect(createButton).toBeEnabled();
   });
@@ -54,22 +51,17 @@ describe('CardCreateTeam', () => {
       id: '270328ea-c2c0-4f74-a449-5cdc976dcdb6',
       name: 'New Team',
     });
-
     const user = userEvent.setup();
-    renderCardCreateTeam();
-
+    renderModal();
     const teamNameInput = screen.getByLabelText('Team name');
     const createButton = screen.getByText('Create the team');
-
     await user.type(teamNameInput, 'New Team');
     await user.click(createButton);
-
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
         '/teams/270328ea-c2c0-4f74-a449-5cdc976dcdb6',
       );
     });
-
     expect(fetchMock.calls()).toHaveLength(1);
     expect(fetchMock.lastCall()?.[0]).toContain('/teams/');
     expect(fetchMock.lastCall()?.[1]?.body).toEqual(
@@ -84,16 +76,12 @@ describe('CardCreateTeam', () => {
       },
       status: 400,
     });
-
     const user = userEvent.setup();
-    renderCardCreateTeam();
-
+    renderModal();
     const teamNameInput = screen.getByLabelText('Team name');
     const createButton = screen.getByText('Create the team');
-
     await user.type(teamNameInput, 'Existing Team');
     await user.click(createButton);
-
     await waitFor(() => {
       expect(
         screen.getByText(/This name is already used for another group/i),
@@ -106,16 +94,12 @@ describe('CardCreateTeam', () => {
       body: {},
       status: 500,
     });
-
     const user = userEvent.setup();
-    renderCardCreateTeam();
-
+    renderModal();
     const teamNameInput = screen.getByLabelText('Team name');
     const createButton = screen.getByText('Create the team');
-
     await user.type(teamNameInput, 'Server Error Team');
     await user.click(createButton);
-
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -123,7 +107,6 @@ describe('CardCreateTeam', () => {
         ),
       ).toBeInTheDocument();
     });
-
     expect(fetchMock.calls()).toHaveLength(1);
     expect(fetchMock.lastCall()?.[0]).toContain('/teams/');
     expect(fetchMock.lastCall()?.[1]?.body).toEqual(
@@ -134,16 +117,12 @@ describe('CardCreateTeam', () => {
   it('disables create button when API request is pending', async () => {
     // Never resolves
     fetchMock.post('end:teams/', new Promise(() => {}));
-
     const user = userEvent.setup();
-    renderCardCreateTeam();
-
+    renderModal();
     const teamNameInput = screen.getByLabelText('Team name');
     const createButton = screen.getByText('Create the team');
-
     await user.type(teamNameInput, 'Pending Team');
     await user.click(createButton);
-
     expect(createButton).toBeDisabled();
   });
 });

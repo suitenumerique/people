@@ -6,7 +6,7 @@ import { Box, DropButton, IconOptions, Text } from '@/components';
 
 import { Role, Team } from '../types';
 
-import { ModalRemoveTeam } from './ModalRemoveTeam';
+import { ModalDeleteTeam } from './ModalDeleteTeam';
 import { ModalUpdateTeam } from './ModalUpdateTeam';
 
 interface TeamActionsProps {
@@ -71,7 +71,7 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
         />
       )}
       {isModalRemoveOpen && (
-        <ModalRemoveTeam
+        <ModalDeleteTeam
           onClose={() => setIsModalRemoveOpen(false)}
           team={team}
         />

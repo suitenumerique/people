@@ -14,11 +14,11 @@ test.describe('Members Delete', () => {
   }) => {
     await createTeam(page, 'member-delete-1', browserName, 1);
 
-    const table = page.getByLabel('List members card').getByRole('table');
+    const table = page.getByRole('table');
 
     const cells = table.getByRole('row').nth(1).getByRole('cell');
-    await expect(cells.nth(1)).toHaveText('E2E Group Member');
-    await cells.nth(4).getByLabel('Member options').click();
+    await expect(cells.nth(0)).toContainText('E2E Group Member');
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
     await expect(
@@ -44,9 +44,9 @@ test.describe('Members Delete', () => {
     // find row where regexp match the name
     const cells = table
       .getByRole('row')
-      .filter({ hasText: 'E2E Group Member' })
+      .filter({ hasText: /E2E Group Member/i })
       .getByRole('cell');
-    await cells.nth(4).getByLabel('Member options').click();
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
     await page.getByRole('button', { name: 'Remove from the group' }).click();
@@ -70,7 +70,7 @@ test.describe('Members Delete', () => {
       .getByRole('row')
       .filter({ hasText: username })
       .getByRole('cell');
-    await cells.nth(4).getByLabel('Member options').click();
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
     await expect(
@@ -84,7 +84,7 @@ test.describe('Members Delete', () => {
   test('it deletes admin member', async ({ page, browserName }) => {
     await createTeam(page, 'member-delete-4', browserName, 1);
 
-    const username = await addNewMember(page, 0, 'Administration');
+    const username = await addNewMember(page, 0, 'Administrator');
 
     const table = page.getByLabel('List members card').getByRole('table');
 
@@ -93,7 +93,7 @@ test.describe('Members Delete', () => {
       .getByRole('row')
       .filter({ hasText: username })
       .getByRole('cell');
-    await cells.nth(4).getByLabel('Member options').click();
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
     await page.getByRole('button', { name: 'Remove from the group' }).click();
@@ -118,12 +118,13 @@ test.describe('Members Delete', () => {
       .getByRole('row')
       .filter({ hasText: 'E2E Group Member' })
       .getByRole('cell');
-    await myCells.nth(4).getByLabel('Member options').click();
+    await myCells.nth(2).getByLabel('Open the member options modal').click();
 
     // Change role to Admin
     await page.getByText('Update role').click();
-    const radioGroup = page.getByLabel('Radio buttons to update the roles');
-    await radioGroup.getByRole('radio', { name: 'Administration' }).click();
+
+    await page.getByRole('combobox', { name: /Role/i }).click();
+    await page.getByRole('option', { name: /Administrator/i }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
     const cells = table
@@ -146,20 +147,20 @@ test.describe('Members Delete', () => {
       .getByRole('row')
       .filter({ hasText: 'E2E Group Member' })
       .getByRole('cell');
-    await myCells.nth(4).getByLabel('Member options').click();
+    await myCells.nth(2).getByLabel('Member options').click();
 
     // Change role to Admin
     await page.getByText('Update role').click();
-    const radioGroup = page.getByLabel('Radio buttons to update the roles');
-    await radioGroup.getByRole('radio', { name: 'Administration' }).click();
+    await page.getByRole('combobox', { name: /Role/i }).click();
+    await page.getByRole('option', { name: /Administrator/i }).click();
     await page.getByRole('button', { name: 'Validate' }).click();
 
-    const username = await addNewMember(page, 0, 'Administration', 'Monique');
+    const username = await addNewMember(page, 0, 'Administrator', 'Monique');
     const cells = table
       .getByRole('row')
       .filter({ hasText: username })
       .getByRole('cell');
-    await cells.nth(4).getByLabel('Member options').click();
+    await cells.nth(2).getByLabel('Member options').click();
     await page.getByLabel('Open the modal to delete this member').click();
 
     await page.getByRole('button', { name: 'Remove from the group' }).click();

@@ -1,18 +1,18 @@
 import { Button, Input, Tooltip } from '@openfun/cunningham-react';
-import { useRouter as useNavigate } from 'next/navigation';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
+import { ModalCreateTeam } from '@/features/teams/team-management/components/ModalCreateTeam';
 import { TeamsListView } from '@/features/teams/team-management/components/TeamsListView';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
-  const router = useNavigate();
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { userData } = useAuthStore();
   const can_create = userData?.abilities?.teams.can_create ?? false;
   const [searchValue, setSearchValue] = React.useState('');
@@ -25,6 +25,14 @@ const Page: NextPageWithLayout = () => {
 
   const clearInput = () => {
     setSearchValue('');
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -97,10 +105,7 @@ const Page: NextPageWithLayout = () => {
 
           <Box>
             {can_create ? (
-              <Button
-                data-testid="button-new-team"
-                onClick={() => void router.push('/teams/create')}
-              >
+              <Button data-testid="button-new-team" onClick={openModal}>
                 {t('Create a new team')}
               </Button>
             ) : (
@@ -108,7 +113,7 @@ const Page: NextPageWithLayout = () => {
                 <div>
                   <Button
                     data-testid="button-new-team"
-                    onClick={() => void router.push('/teams/create')}
+                    onClick={openModal}
                     disabled={!can_create}
                   >
                     {t('Create a new team')}
@@ -126,6 +131,7 @@ const Page: NextPageWithLayout = () => {
         )}
 
         <TeamsListView querySearch={searchValue} />
+        {isModalOpen && <ModalCreateTeam closeModal={closeModal} />}
       </Box>
     </Box>
   );

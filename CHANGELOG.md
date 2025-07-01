@@ -11,7 +11,7 @@ and this project adheres to
 ## [1.18.0] - 2025-06-30
 
 ### Added
-
+- 🐛(front) add teams ui V2
 - 🐛(front) fix button add mail domain
 - ✨(teams) add matrix webhook for teams #904
 - ✨(resource-server) add SCIM /Me endpoint #895

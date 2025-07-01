@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from '@openfun/cunningham-react';
+import { Select } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
 import { Role } from '@/features/teams/team-management';
@@ -18,32 +18,23 @@ export const ChooseRole = ({
 }: ChooseRoleProps) => {
   const { t } = useTranslation();
 
+  const options = [
+    { label: t('Member'), value: Role.MEMBER, disabled: false },
+    { label: t('Administrator'), value: Role.ADMIN, disabled: false },
+    {
+      label: t('Owner'),
+      value: Role.OWNER,
+      disabled: disabled || currentRole !== Role.OWNER,
+    },
+  ];
+
   return (
-    <RadioGroup>
-      <Radio
-        label={t('Member')}
-        value={Role.MEMBER}
-        name="role"
-        onChange={(evt) => setRole(evt.target.value as Role)}
-        defaultChecked={defaultRole === Role.MEMBER}
-        disabled={disabled}
-      />
-      <Radio
-        label={t('Administration')}
-        value={Role.ADMIN}
-        name="role"
-        onChange={(evt) => setRole(evt.target.value as Role)}
-        defaultChecked={defaultRole === Role.ADMIN}
-        disabled={disabled}
-      />
-      <Radio
-        label={t('Owner')}
-        value={Role.OWNER}
-        name="role"
-        onChange={(evt) => setRole(evt.target.value as Role)}
-        defaultChecked={defaultRole === Role.OWNER}
-        disabled={disabled || currentRole !== Role.OWNER}
-      />
-    </RadioGroup>
+    <Select
+      label={t('Role')}
+      value={defaultRole}
+      onChange={(evt) => setRole(evt.target.value as Role)}
+      disabled={disabled}
+      options={options}
+    />
   );
 };
