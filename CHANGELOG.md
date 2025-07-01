@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- 🐛(front) fix missing pagination mail domains
 - 🐛(front) fix button add mail domain
 - ✨(teams) add matrix webhook for teams #904
 - ✨(resource-server) add SCIM /Me endpoint #895
