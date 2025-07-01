@@ -45,7 +45,7 @@ class MatrixAPIClient:
         """Returns room id from webhook url."""
         room_id = webhook_url.split("/room/")[1]
         base_url = room_id.split(":")[1]
-        if "tchap.gouv.fr" in webhook_url:
+        if "tchap.gouv.fr" in webhook_url and "i.tchap.gouv.fr" not in webhook_url:
             base_url = f"matrix.{base_url}"
         return f"https://{base_url}/_matrix/client/v3/rooms/{room_id}"
 

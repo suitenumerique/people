@@ -230,6 +230,9 @@ def test_matrix_webhook__override_secret_for_tchap():
     headers = responses.calls[0].request.headers
     assert "TCHAP_TOKEN" in headers["Authorization"]
 
+    # Check correctly inferred base url from room_id
+    assert "matrix.home_server" in responses.calls[0].request.url
+
 
 ## KICK
 @responses.activate
