@@ -102,7 +102,7 @@ class Base(Configuration):
     DATABASES = {
         "default": {
             "ENGINE": values.Value(
-                "django.db.backends.postgresql_psycopg2",
+                "django.db.backends.postgresql",
                 environ_name="DB_ENGINE",
                 environ_prefix=None,
             ),
@@ -601,9 +601,14 @@ class Base(Configuration):
         environ_name="DNS_PROVISIONING_API_CREDENTIALS",
         environ_prefix=None,
     )
-    TCHAP_ACCESS_TOKEN = values.Value(
+    MATRIX_BASE_HOME_SERVER = values.Value(
+        default="https://matrix.agent.dinum.tchap.gouv.fr",
+        environ_name="MATRIX_BASE_HOME_SERVER",
+        environ_prefix=None,
+    )
+    MATRIX_BOT_ACCESS_TOKEN = values.Value(
         default=None,
-        environ_name="TCHAP_ACCESS_TOKEN",
+        environ_name="MATRIX_BOT_ACCESS_TOKEN",
         environ_prefix=None,
     )
 

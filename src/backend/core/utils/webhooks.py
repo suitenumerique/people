@@ -32,7 +32,6 @@ class WebhookClient:
                 response, webhook_succeeded = self._get_response_and_status(
                     name, webhook, user
                 )
-
                 if response is not None:
                     extra = {"response": response.content}
                     # pylint: disable=no-member
