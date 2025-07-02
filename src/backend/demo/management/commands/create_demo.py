@@ -181,7 +181,7 @@ def create_oidc_people_idp_client_user():
     )
 
 
-def create_demo(stdout):  # pylint: disable=too-many-locals
+def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statements too-many-locals # noqa: PLR0912, PLR0915
     """
     Create a database with demo data for developers to work in a realistic environment.
     The code is engineered to create a huge number of objects fast.
@@ -407,7 +407,13 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
         user=domain_owner,
         role=MailDomainRoleChoices.OWNER,
     )
-    
+    mailbox_models.MailDomainInvitation.objects.create(
+        issuer=domain_owner,
+        domain=enabled_domain,
+        email="people@people.world",
+        role=MailDomainRoleChoices.ADMIN,
+    )
+
     # Many mailboxes domain
     many_boxes_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
         name="many-boxes-domain.com",
@@ -418,6 +424,12 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
     mailbox_models.MailDomainAccess.objects.get_or_create(
         domain=many_boxes_domain,
         user=domain_owner,
+        role=MailDomainRoleChoices.OWNER,
+    )
+    mailbox_models.MailDomainInvitation.objects.create(
+        issuer=domain_owner,
+        domain=many_boxes_domain,
+        email="people@people.world",
         role=MailDomainRoleChoices.OWNER,
     )
     for _i in range(30):
