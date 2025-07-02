@@ -8,7 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(front) fix missing pagination mail domains #950
+
 ## [1.18.1] - 2025-07-02
+
+### Fixed
 
 - 🐛(front) fix missing pagination on mail domains #946
 
