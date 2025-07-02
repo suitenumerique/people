@@ -174,10 +174,10 @@ export function MailBoxesListView({
             ]}
             isLoading={isLoading}
           />
-          <div ref={loadMoreRef} style={{ height: 32 }} />
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>
       ) : null}
+      <div ref={loadMoreRef} style={{ height: 32 }} />
     </div>
   );
 }
