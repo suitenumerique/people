@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 15:31+0000\n"
-"PO-Revision-Date: 2025-06-30 10:05\n"
+"PO-Revision-Date: 2025-07-02 08:51\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -270,7 +270,7 @@ msgstr "Cet utilisateur est déjà dans cette organisation."
 
 #: build/lib/core/models.py:761 core/models.py:761
 msgid "external_id"
-msgstr ""
+msgstr "ID externe"
 
 #: build/lib/core/models.py:762 core/models.py:762
 msgid "Team external UUID for synchronization with external systems"
