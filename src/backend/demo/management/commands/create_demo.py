@@ -303,6 +303,30 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
 
         queue.flush()
 
+    with Timeit(stdout, "Creating mailboxes"):
+        domains_ids = list(
+            mailbox_models.MailDomain.objects.values_list("id", flat=True)
+        )
+        for domain_id in domains_ids:
+            for i in range(random.randint(1, 10)):
+                first_name = fake.first_name()
+                last_name = fake.last_name()
+                local_part = f"{first_name.lower()}.{last_name.lower()}{i}"
+
+                queue.push(
+                    mailbox_models.Mailbox(
+                        first_name=first_name,
+                        last_name=last_name,
+                        local_part=local_part,
+                        domain_id=domain_id,
+                        secondary_email=f"{local_part}@example.fr",
+                        status=random.choice(MailboxStatusChoices.values),
+                        dn_email=local_part,
+                    )
+                )
+
+        queue.flush()
+
     with Timeit(stdout, "Creating specific users"):
         # ⚠️ Warning: this users also need to be created in the keycloak
         # realm.json AND the OIDC setting to fallback on user email
@@ -371,17 +395,44 @@ def create_demo(stdout):  # pylint: disable=too-many-locals
 
         queue.flush()
 
-        # Enabled domain for 2E2 tests
-        enabled_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
-            name="enabled-domain.com",
-            status=MailDomainStatusChoices.ENABLED,
-            support_email="support@enabled-domain.com",
-        )
-        domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
-        mailbox_models.MailDomainAccess.objects.get_or_create(
-            domain=enabled_domain,
-            user=domain_owner,
-            role=MailDomainRoleChoices.OWNER,
+    # Enabled domain for 2E2 tests
+    enabled_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+        name="enabled-domain.com",
+        status=MailDomainStatusChoices.ENABLED,
+        support_email="support@enabled-domain.com",
+    )
+    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
+    mailbox_models.MailDomainAccess.objects.get_or_create(
+        domain=enabled_domain,
+        user=domain_owner,
+        role=MailDomainRoleChoices.OWNER,
+    )
+    
+    # Many mailboxes domain
+    many_boxes_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+        name="many-boxes-domain.com",
+        status=MailDomainStatusChoices.ENABLED,
+        support_email="support@mbd.com",
+    )
+    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
+    mailbox_models.MailDomainAccess.objects.get_or_create(
+        domain=many_boxes_domain,
+        user=domain_owner,
+        role=MailDomainRoleChoices.OWNER,
+    )
+    for _i in range(30):
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        local_part = f"{first_name.lower()}.{last_name.lower()}"
+        mailbox_models.Mailbox.objects.create(
+            domain=many_boxes_domain,
+            first_name=first_name,
+            last_name=last_name,
+            local_part=local_part,
+            secondary_email=f"{local_part}@example.fr",
+            status=random.choice(MailboxStatusChoices.values),
+            password=make_password(None),  # unusable password
+            dn_email=f"{local_part}@{many_boxes_domain}",
         )
 
     # OIDC configuration
