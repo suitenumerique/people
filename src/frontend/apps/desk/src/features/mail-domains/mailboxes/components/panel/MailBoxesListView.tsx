@@ -1,5 +1,6 @@
-import { DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
-import { useMemo, useState } from 'react';
+import { DataGrid, SortModel } from '@openfun/cunningham-react';
+import type { InfiniteData } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Tag, Text, TextErrors } from '@/components';
@@ -9,10 +10,16 @@ import {
   MailDomainMailboxStatus,
 } from '@/features/mail-domains/mailboxes/types';
 
-import { PAGE_SIZE } from '../../../conf';
-import { useMailboxes } from '../../api/useMailboxes';
+import { useMailboxesInfinite } from '../../api/useMailboxesInfinite';
 
 import { PanelActions } from './PanelActions';
+
+type MailDomainMailboxesResponse = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: MailDomainMailbox[];
+};
 
 interface MailBoxesListViewProps {
   mailDomain: MailDomain;
@@ -43,101 +50,133 @@ export function MailBoxesListView({
 
   const [sortModel] = useState<SortModel>([]);
 
-  const pagination = usePagination({
-    defaultPage: 1,
-    pageSize: PAGE_SIZE,
-  });
-
-  const { page } = pagination;
-
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
-  const { data, isLoading, error } = useMailboxes({
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMailboxesInfinite({
     mailDomainSlug: mailDomain.slug,
-    page,
     ordering,
-  });
+  }) as {
+    data: InfiniteData<MailDomainMailboxesResponse, number> | undefined;
+    isLoading: boolean;
+    error: { cause?: string[] };
+    fetchNextPage: () => void;
+    hasNextPage: boolean | undefined;
+    isFetchingNextPage: boolean;
+  };
 
   const mailboxes: ViewMailbox[] = useMemo(() => {
-    if (!mailDomain || !data?.results?.length) {
+    if (!mailDomain || !data?.pages?.length) {
       return [];
     }
-
-    return data.results.map((mailbox: MailDomainMailbox) => ({
-      email: `${mailbox.local_part}@${mailDomain.name}`,
-      name: `${mailbox.first_name} ${mailbox.last_name}`,
-      id: mailbox.id,
-      status: mailbox.status,
-      mailbox,
-    }));
-  }, [data?.results, mailDomain]);
+    return data.pages.flatMap((page) =>
+      page.results.map((mailbox: MailDomainMailbox) => ({
+        email: `${mailbox.local_part}@${mailDomain.name}`,
+        name: `${mailbox.first_name} ${mailbox.last_name}`,
+        id: mailbox.id,
+        status: mailbox.status,
+        mailbox,
+      })),
+    );
+  }, [data, mailDomain]);
 
   const filteredMailboxes = useMemo(() => {
     if (!querySearch) {
       return mailboxes;
     }
     const lowerCaseSearch = querySearch.toLowerCase();
-    return (
-      (mailboxes &&
-        mailboxes.filter((mailbox) =>
-          mailbox.email.toLowerCase().includes(lowerCaseSearch),
-        )) ||
-      []
+    return mailboxes.filter((mailbox) =>
+      mailbox.email.toLowerCase().includes(lowerCaseSearch),
     );
   }, [querySearch, mailboxes]);
 
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasNextPage) {
+      return;
+    }
+    const ref = loadMoreRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 },
+    );
+    if (ref) {
+      observer.observe(ref);
+    }
+    return () => {
+      if (ref) {
+        observer.unobserve(ref);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   return (
     <div>
-      {error && <TextErrors causes={error.cause} />}
+      {error && <TextErrors causes={error.cause ?? []} />}
 
       {filteredMailboxes && filteredMailboxes.length ? (
-        <DataGrid
-          aria-label="listbox"
-          rows={filteredMailboxes}
-          columns={[
-            {
-              field: 'email',
-              headerName: `${t('Address')} • ${filteredMailboxes.length}`,
-              renderCell: ({ row }) => <Text>{row.email}</Text>,
-            },
-            {
-              field: 'name',
-              headerName: t('User'),
-              enableSorting: true,
-              renderCell: ({ row }) => (
-                <Text
-                  $weight="500"
-                  $theme="greyscale"
-                  $css="text-transform: capitalize;"
-                >
-                  {row.name}
-                </Text>
-              ),
-            },
-            {
-              id: 'status',
-              headerName: t('Status'),
-              enableSorting: true,
-              renderCell({ row }) {
-                return (
-                  <Box $direction="row" $align="center">
-                    <Tag
-                      showTooltip={true}
-                      status={row.status}
-                      tooltipType="mail"
-                    ></Tag>
-                  </Box>
-                );
+        <>
+          <DataGrid
+            aria-label="listbox"
+            rows={filteredMailboxes}
+            columns={[
+              {
+                field: 'email',
+                headerName: `${t('Address')} • ${filteredMailboxes.length}`,
+                renderCell: ({ row }) => <Text>{row.email}</Text>,
               },
-            },
-            {
-              id: 'actions',
-              renderCell: ({ row }) => (
-                <PanelActions mailDomain={mailDomain} mailbox={row} />
-              ),
-            },
-          ]}
-          isLoading={isLoading}
-        />
+              {
+                field: 'name',
+                headerName: t('User'),
+                enableSorting: true,
+                renderCell: ({ row }) => (
+                  <Text
+                    $weight="500"
+                    $theme="greyscale"
+                    $css="text-transform: capitalize;"
+                  >
+                    {row.name}
+                  </Text>
+                ),
+              },
+              {
+                id: 'status',
+                headerName: t('Status'),
+                enableSorting: true,
+                renderCell({ row }) {
+                  return (
+                    <Box $direction="row" $align="center">
+                      <Tag
+                        showTooltip={true}
+                        status={row.status}
+                        tooltipType="mail"
+                      ></Tag>
+                    </Box>
+                  );
+                },
+              },
+              {
+                id: 'actions',
+                renderCell: ({ row }) => (
+                  <PanelActions mailDomain={mailDomain} mailbox={row} />
+                ),
+              },
+            ]}
+            isLoading={isLoading}
+          />
+          <div ref={loadMoreRef} style={{ height: 32 }} />
+          {isFetchingNextPage && <div>{t('Loading more...')}</div>}
+        </>
       ) : null}
     </div>
   );

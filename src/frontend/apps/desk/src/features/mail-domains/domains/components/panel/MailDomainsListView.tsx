@@ -1,5 +1,5 @@
 import { Button, DataGrid } from '@openfun/cunningham-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Tag, Text } from '@/components';
@@ -17,7 +17,8 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
   const { t } = useTranslation();
 
   const { ordering } = useMailDomainsStore();
-  const { data, isLoading } = useMailDomains({ ordering });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMailDomains({ ordering });
   const mailDomains = useMemo(() => {
     return data?.pages.reduce((acc, page) => {
       return acc.concat(page.results);
@@ -38,6 +39,31 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
     );
   }, [querySearch, mailDomains]);
 
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasNextPage) {
+      return;
+    }
+    const ref = loadMoreRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          void fetchNextPage();
+        }
+      },
+      { threshold: 1 },
+    );
+    if (ref) {
+      observer.observe(ref);
+    }
+    return () => {
+      if (ref) {
+        observer.unobserve(ref);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   return (
     <div role="listbox">
       {filteredMailDomains && filteredMailDomains.length ? (
@@ -47,17 +73,17 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
           columns={[
             {
               field: 'name',
-              headerName: 'Domaine',
+              headerName: `${t('Domain')} (${filteredMailDomains.length})`,
               enableSorting: true,
             },
             {
               field: 'count_mailboxes',
-              headerName: "Nombre d'adresses",
+              headerName: `${t('Number of mailboxes')}`,
               enableSorting: true,
             },
             {
               id: 'status',
-              headerName: 'Statut',
+              headerName: `${t('Status')}`,
               enableSorting: true,
               renderCell({ row }) {
                 return (
@@ -96,6 +122,8 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
           isLoading={isLoading}
         />
       ) : null}
+      <div ref={loadMoreRef} style={{ height: 32 }} />
+      {isFetchingNextPage && <div>{t('Loading more...')}</div>}
       {!filteredMailDomains ||
         (!filteredMailDomains.length && (
           <Text $align="center" $size="small">

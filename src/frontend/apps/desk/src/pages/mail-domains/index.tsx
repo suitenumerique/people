@@ -63,7 +63,7 @@ const Page: NextPageWithLayout = () => {
           $gap="1em"
           $css="margin-bottom: 20px;"
         >
-          <Box $css="width: calc(100% - 245px);" $flex="1">
+          <Box $flex="1">
             <Input
               style={{ width: '100%' }}
               label={t('Search a mail domain')}
