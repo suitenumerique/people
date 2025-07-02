@@ -208,7 +208,7 @@ class MailboxAdmin(UserAdmin):
     list_display = ("__str__", "domain", "status", "updated_at")
     list_filter = ("status",)
     search_fields = ("local_part", "domain__name")
-    readonly_fields = ["updated_at", "local_part", "domain"]
+    readonly_fields = ["updated_at"]
 
     fieldsets = None
     add_fieldsets = (
