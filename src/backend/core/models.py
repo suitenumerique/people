@@ -36,6 +36,8 @@ from core.plugins.registry import registry as plugin_hooks_registry
 from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
 
+from mailbox_manager.exceptions import EmailAlreadyKnownException
+
 logger = getLogger(__name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -997,9 +999,7 @@ class BaseInvitation(BaseModel):
 
         # Check if a user already exists for the provided email
         if User.objects.filter(email=self.email).exists():
-            raise exceptions.ValidationError(
-                {"email": _("This email is already associated to a registered user.")}
-            )
+            raise EmailAlreadyKnownException
 
     @property
     def is_expired(self):
