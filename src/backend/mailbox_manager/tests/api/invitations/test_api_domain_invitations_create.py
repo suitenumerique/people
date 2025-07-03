@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 
 from core import factories as core_factories
 
-from mailbox_manager import enums, factories
+from mailbox_manager import enums, factories, models
 from mailbox_manager.api.client import serializers
 
 pytestmark = pytest.mark.django_db
@@ -141,9 +141,10 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert response.json()["__all__"] == [
         "Mail domain invitation with this Email address and Domain already exists."
     ]
+    assert models.MailDomainInvitation.objects.count() == 1  # and specifically, not 2
 
 
-def test_api_domain_invitations__should_not_invite_when_user_already_exists():
+def test_api_domain_invitations__should_create_access_when_user_already_exists():
     """Already existing users should not be invited but given access directly."""
     existing_user = core_factories.UserFactory()
 
@@ -152,15 +153,19 @@ def test_api_domain_invitations__should_not_invite_when_user_already_exists():
 
     client = APIClient()
     client.force_login(access.user)
-    invitation_values = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build(email=existing_user.email)
-    ).data
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
-        invitation_values,
+        {
+            "email": existing_user.email,
+            "role": "owner",
+        },
         format="json",
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["email"] == [
-        "This email is already associated to a registered user."
-    ]
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        response.json()["detail"]
+        == "Email already known. Invitation not sent but access created instead."
+    )
+
+    assert not models.MailDomainInvitation.objects.exists()
+    assert models.MailDomainAccess.objects.filter(user=existing_user).exists()
