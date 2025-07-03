@@ -4,5 +4,5 @@ NB_OBJECTS = {
     "users": 1000,
     "teams": 100,
     "max_users_per_team": 100,
-    "domains": 20,
+    "domains": 10,
 }
