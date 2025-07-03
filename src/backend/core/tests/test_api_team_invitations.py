@@ -171,10 +171,11 @@ def test_api_team_invitations__create__cannot_invite_existing_users():
         format="json",
     )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["email"] == [
-        "This email is already associated to a registered user."
-    ]
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        response.json()["detail"]
+        == "Email already known. Invitation not sent but access created instead."
+    )
 
 
 def test_api_team_invitations__list__anonymous_user():
