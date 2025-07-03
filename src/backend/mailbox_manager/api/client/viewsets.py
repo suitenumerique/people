@@ -349,6 +349,7 @@ class MailDomainInvitationViewset(
         - issuer : User, automatically added from user making query, if allowed
         - domain : Domain, automatically added from requested URI
         Return a newly created invitation
+        or an access if email is already linked to an existing user
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,
         delete and create a new one.
@@ -392,3 +393,16 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+    def perform_create(self, serializer):
+        """Lookup for existing user before inviting."""
+        if email := serializer.validated_data["email"]:
+            existing_user = models.User.objects.filter(email=email)
+            if existing_user.exists():
+                return models.MailDomainAccess.objects.create(
+                    user=existing_user[0],
+                    domain=serializer.validated_data["domain"],
+                    role=serializer.validated_data["role"],
+                )
+
+        return super().perform_create(serializer)
