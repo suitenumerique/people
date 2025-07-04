@@ -69,6 +69,12 @@ class MailboxSerializer(serializers.ModelSerializer):
         # actually save mailbox on our database
         return mailbox
 
+    def update(self, instance, validated_data):
+        """Make "local_domain" field readonly but only on update."""
+        validated_data.pop("local_part", None)
+        validated_data.pop("domain", None)
+        return super().update(instance, validated_data)
+
 
 class MailDomainSerializer(serializers.ModelSerializer):
     """Serialize mail domain."""

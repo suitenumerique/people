@@ -2,27 +2,13 @@
 Unit tests for the mailbox API
 """
 
-import json
-import re
-from logging import Logger
-from unittest import mock
-
-from django.test.utils import override_settings
-
 import pytest
-import responses
-from requests.exceptions import HTTPError
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core import factories as core_factories
 
-from mailbox_manager import enums, factories, models
-from mailbox_manager.api.client import serializers
-from mailbox_manager.tests.fixtures.dimail import (
-    TOKEN_OK,
-    response_mailbox_created,
-)
+from mailbox_manager import enums, factories
 
 pytestmark = pytest.mark.django_db
 
@@ -66,17 +52,24 @@ def test_api_mailboxes__update_unauthorized_failure():
 
 
 def test_api_mailboxes__update_reader():
-    """User having viewer access on a domain should not be able to update secondary email on a mailbox, except theirs."""
-    viewer_access = factories.MailDomainAccessFactory(
+    """User having viewer access on a domain should not be able to update
+    secondary email on a mailbox, except theirs."""
+    # setup user, around which the test revolves
+    user = core_factories.UserFactory()
+    domain = factories.MailDomainEnabledFactory(name=user.email.split("@")[1])
+    factories.MailDomainAccessFactory(
+        user=user,
+        domain=domain,
         role=enums.MailDomainRoleChoices.VIEWER,
     )
-    mailbox = factories.MailboxFactory(domain=viewer_access.domain)
-    saved_secondary = mailbox.secondary_email
-
     client = APIClient()
-    client.force_login(viewer_access.user)
+    client.force_login(user)
+
+    # update someone else's secondary email fails
+    mailbox = factories.MailboxFactory(domain=domain)
+    saved_secondary = mailbox.secondary_email
     response = client.patch(
-        f"/api/v1.0/mail-domains/{viewer_access.domain.slug}/mailboxes/{mailbox.pk}/",
+        f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/{mailbox.pk}/",
         {"secondary_email": "new_secondary@newdomain.fr"},
         format="json",
     )
@@ -85,26 +78,20 @@ def test_api_mailboxes__update_reader():
     mailbox.refresh_from_db()
     assert mailbox.secondary_email == saved_secondary
 
-    # updating your own secondary email ?
-    own_domain = factories.MailDomainEnabledFactory(
-        name=viewer_access.user.email.split("@")[1]
-    )
-    viewer_access_own_domain = factories.MailDomainAccessFactory(
-        domain=own_domain,
-        role=enums.MailDomainRoleChoices.VIEWER,
-    )
+    # updating your own secondary email succeeds
     own_mailbox = factories.MailboxFactory(
-        local_part=viewer_access.user.email.split("@")[0], domain=own_domain
+        local_part=user.email.split("@")[0], domain=domain
     )
+    new_secondary_email = "new_secondary@newdomain.fr"
+
     response = client.patch(
-        f"/api/v1.0/mail-domains/{own_domain.slug}/mailboxes/{own_mailbox.pk}/",
-        {"secondary_email": "new_secondary@newdomain.fr"},
+        f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/{own_mailbox.pk}/",
+        {"secondary_email": new_secondary_email},
         format="json",
     )
-
     assert response.status_code == status.HTTP_200_OK
     mailbox.refresh_from_db()
-    assert mailbox.secondary_email == saved_secondary
+    assert mailbox.secondary_email == new_secondary_email
 
 
 @pytest.mark.parametrize(
@@ -154,7 +141,7 @@ def test_api_mailboxes__no_updating_domain(role):
         format="json",
     )
 
-    # assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     mailbox.refresh_from_db()
     assert mailbox.domain == access.domain
 
@@ -179,6 +166,6 @@ def test_api_mailboxes__no_updating_local_part(role):
         format="json",
     )
 
-    # assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     mailbox.refresh_from_db()
     assert mailbox.local_part == mailbox_local_part

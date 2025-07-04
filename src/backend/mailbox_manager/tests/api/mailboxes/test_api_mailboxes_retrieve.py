@@ -2,27 +2,13 @@
 Unit tests for the mailbox API
 """
 
-import json
-import re
-from logging import Logger
-from unittest import mock
-
-from django.test.utils import override_settings
-
 import pytest
-import responses
-from requests.exceptions import HTTPError
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core import factories as core_factories
 
-from mailbox_manager import enums, factories, models
-from mailbox_manager.api.client import serializers
-from mailbox_manager.tests.fixtures.dimail import (
-    TOKEN_OK,
-    response_mailbox_created,
-)
+from mailbox_manager import factories
 
 pytestmark = pytest.mark.django_db
 
