@@ -345,23 +345,23 @@ class Mailbox(AbstractBaseUser, BaseModel):
         """Compute and return abilities for a given user."""
         role = None
 
-        if user.is_authenticated:
+        if not user.is_authenticated:
+            return False
+
+        try:
+            role = self.user_role
+        except AttributeError:
             try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self.domain.accesses.filter(user=user).values("role")[0][
-                        "role"
-                    ]
-                except (self._meta.model.DoesNotExist, IndexError):
-                    role = None
+                role = self.domain.accesses.filter(user=user).values("role")[0]["role"]
+            except (self._meta.model.DoesNotExist, IndexError):
+                role = None
 
-            is_owner_or_admin = role in [
-                MailDomainRoleChoices.OWNER,
-                MailDomainRoleChoices.ADMIN,
-            ]
+        is_owner_or_admin = role in [
+            MailDomainRoleChoices.OWNER,
+            MailDomainRoleChoices.ADMIN,
+        ]
 
-            is_self = self.get_email() == user.email
+        is_self = self.get_email() == user.email
 
         return {
             "get": bool(role),
