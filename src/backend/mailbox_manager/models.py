@@ -452,3 +452,27 @@ class MailDomainInvitation(BaseInvitation):
             "patch": False,
             "put": False,
         }
+
+
+class Alias(BaseModel):
+    """Model for aliases."""
+
+    local_part = models.CharField(max_length=100, blank=False)
+    destination = models.EmailField(_("destination address"), null=False, blank=False)
+    domain = models.ForeignKey(
+        MailDomain,
+        on_delete=models.CASCADE,
+        related_name="aliases",
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        db_table = "people_aliases"
+        verbose_name = _("Alias")
+        verbose_name_plural = _("Aliases")
+        unique_together = ("local_part", "destination")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.local_part} to {self.destination}"

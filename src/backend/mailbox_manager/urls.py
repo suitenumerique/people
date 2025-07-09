@@ -29,7 +29,11 @@ maildomain_related_router.register(
     viewsets.MailDomainInvitationViewset,
     basename="invitations",
 )
-
+maildomain_related_router.register(
+    "aliases",
+    viewsets.AliasViewSet,
+    basename="aliases",
+)
 
 urlpatterns = [
     path(
