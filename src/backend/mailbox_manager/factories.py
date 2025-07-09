@@ -98,3 +98,14 @@ class MailDomainInvitationFactory(factory.django.DjangoModelFactory):
         [role[0] for role in enums.MailDomainRoleChoices.choices]
     )
     issuer = factory.SubFactory(core_factories.UserFactory)
+
+
+class AliasFactory(factory.django.DjangoModelFactory):
+    """A factory to create aliases."""
+
+    class Meta:
+        model = models.Alias
+
+    domain = factory.SubFactory(MailDomainEnabledFactory)
+    local_part = factory.Faker("word")
+    destination = factory.Faker("email")
