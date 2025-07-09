@@ -285,3 +285,16 @@ class MailDomainInvitationSerializer(serializers.ModelSerializer):
         attrs["domain"] = domain
         attrs["issuer"] = user
         return attrs
+
+
+class AliasSerializer(serializers.ModelSerializer):
+    """Serialize mailbox."""
+
+    class Meta:
+        model = models.Alias
+        fields = [
+            "id",
+            "local_part",
+            "destination",
+        ]
+        read_only_fields = ["id"]

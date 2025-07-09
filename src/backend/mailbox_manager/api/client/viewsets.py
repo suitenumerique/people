@@ -367,3 +367,55 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+
+class AliasViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for user invitations to domain management.
+
+    POST /api/<version>/mail-domains/<domain_slug>/aliases/ with expected data:
+        - local_part: str
+        - destination: str
+        Return a newly created alias
+    """
+
+    lookup_field = "id"
+    permission_classes = [permissions.AccessPermission]
+    queryset = (
+        models.Alias.objects.all()
+        .select_related("domain")
+        .order_by("-created_at")
+    )
+    serializer_class = serializers.MailDomainInvitationSerializer
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(domain__slug=self.kwargs["domain_slug"])
+
+        if self.action == "list":
+            # Determine which role the logged-in user has in the domain
+            user_role_query = models.MailDomainAccess.objects.filter(
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
+            ).values("role")
+
+            queryset = (
+                # The logged-in user should be part of a domain to see its accesses
+                queryset.filter(
+                    domain__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each domain access
+                .annotate(user_role=Subquery(user_role_query))
+                .distinct()
+            )
+
+        return queryset
