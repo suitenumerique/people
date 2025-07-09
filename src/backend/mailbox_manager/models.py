@@ -341,6 +341,23 @@ class Mailbox(AbstractBaseUser, BaseModel):
         """Return the email address of the mailbox."""
         return f"{self.local_part}@{self.domain.name}"
 
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user."""
+        role = user.mail_domain_accesses.get(domain=self.domain).role
+
+        is_owner_or_admin = role in [
+            MailDomainRoleChoices.OWNER,
+            MailDomainRoleChoices.ADMIN,
+        ]
+
+        return {
+            "get": bool(role),
+            "post": is_owner_or_admin,
+            "patch": is_owner_or_admin,
+            "put": is_owner_or_admin,
+            "delete": False,
+        }
+
 
 class MailDomainInvitation(BaseInvitation):
     """User invitation to mail domains."""

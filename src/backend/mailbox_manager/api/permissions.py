@@ -23,6 +23,11 @@ class MailBoxPermission(core_permissions.IsAuthenticated):
         abilities = domain.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)
 
+    def has_object_permission(self, request, view, obj):
+        """Check permission for a given object."""
+        abilities = obj.get_abilities(request.user)
+        return abilities.get(request.method.lower(), False)
+
 
 class MailDomainAccessRolePermission(core_permissions.IsAuthenticated):
     """Permission class to manage mailboxes for a mail domain"""

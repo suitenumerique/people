@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(api) update mailboxes #934
+
 ### Changed
 
 - 💥(sentry) remove `DJANGO_` before Sentry DSN env variable #957
