@@ -16,8 +16,8 @@ class AccessPermission(core_permissions.IsAuthenticated):
         return abilities.get(request.method.lower(), False)
 
 
-class MailBoxPermission(AccessPermission):
-    """Permission class to manage mailboxes for a mail domain"""
+class DomainPermission(AccessPermission):
+    """Permission class to manage mailboxes and aliases for a mail domain"""
 
     def has_permission(self, request, view):
         """Check permission based on domain."""
