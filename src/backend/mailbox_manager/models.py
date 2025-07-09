@@ -350,11 +350,13 @@ class Mailbox(AbstractBaseUser, BaseModel):
             MailDomainRoleChoices.ADMIN,
         ]
 
+        is_self = self.get_email() == user.email
+
         return {
             "get": bool(role),
             "post": is_owner_or_admin,
-            "patch": is_owner_or_admin,
-            "put": is_owner_or_admin,
+            "patch": is_owner_or_admin or is_self,
+            "put": is_owner_or_admin or is_self,
             "delete": False,
         }
 
