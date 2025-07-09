@@ -228,9 +228,10 @@ class MailDomainAccessViewSet(
 
 
 class MailBoxViewSet(
+    viewsets.GenericViewSet,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin,
 ):
     """MailBox ViewSet
 
@@ -252,6 +253,12 @@ class MailBoxViewSet(
 
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/reset/
         Send a request to mail-provider to reset password.
+
+    PUT /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
+        Send a request to update mailbox. Cannot modify domain or local_part.
+
+    PATCH /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
+        Send a request to partially update mailbox. Cannot modify domain or local_part.
     """
 
     permission_classes = [permissions.MailBoxPermission]
@@ -266,6 +273,12 @@ class MailBoxViewSet(
         if domain_slug:
             return self.queryset.filter(domain__slug=domain_slug)
         return self.queryset
+
+    def get_serializer_class(self):
+        """Chooses list or detail serializer according to the action."""
+        if self.action in {"update", "partial_update"}:
+            return serializers.MailboxUpdateSerializer
+        return self.serializer_class
 
     def perform_create(self, serializer):
         """Create new mailbox."""
