@@ -3,6 +3,7 @@
 from logging import getLogger
 
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
 
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
@@ -29,7 +30,6 @@ class MailboxSerializer(serializers.ModelSerializer):
             "secondary_email",
             "status",
         ]
-        # everything is actually read-only as we do not allow update for now
         read_only_fields = ["id", "status"]
 
     def create(self, validated_data):
@@ -69,6 +69,12 @@ class MailboxSerializer(serializers.ModelSerializer):
 
         # actually save mailbox on our database
         return mailbox
+
+    def update(self, instance, validated_data):
+        """Make "local_part" and "domain" fields read-only."""
+        if "local_part" in validated_data:
+            raise ValidationError("Domain and local part cannot be updated.")
+        return super().update(instance, validated_data)
 
 
 class MailDomainSerializer(serializers.ModelSerializer):

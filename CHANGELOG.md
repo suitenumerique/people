@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(api) update mailboxes #934
+- ✨(api) give edition rights to domain viewer on own mailbox #934
+
+
 ## [1.18.2] - 2025-07-03
 
 ### Fixed
