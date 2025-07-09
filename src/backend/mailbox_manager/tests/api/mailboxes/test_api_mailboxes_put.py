@@ -140,6 +140,41 @@ def test_api_mailboxes_put__admins_can_update_mailboxes(role):
     assert result["secondary_email"] == valid_new_values["secondary_email"]
 
 
+def test_api_mailboxes_put__viewer_can_update_own_mailbox():
+    """Domain owners and admins should be allowed to update secondary email on a mailbox"""
+    mailbox = factories.MailboxFactory()
+    user = core_factories.UserFactory(email=f"{mailbox.local_part}@{mailbox.domain}")
+    factories.MailDomainAccessFactory(
+        user=user,
+        domain=mailbox.domain,
+        role=enums.MailDomainRoleChoices.VIEWER,
+    )
+
+    client = APIClient()
+    client.force_login(user)
+
+    valid_new_values = {
+        "secondary_email": "marsha.p@social.us",
+        "first_name": "Marsha",
+        "last_name": "Johnson",
+    }
+    response = client.put(
+        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
+        {
+            "first_name": valid_new_values["first_name"],
+            "last_name": valid_new_values["last_name"],
+            "secondary_email": valid_new_values["secondary_email"],
+        },
+        format="json",
+    )
+    result = response.json()
+    assert response.status_code == status.HTTP_200_OK
+    mailbox.refresh_from_db()
+    assert result["first_name"] == valid_new_values["first_name"]
+    assert result["last_name"] == valid_new_values["last_name"]
+    assert result["secondary_email"] == valid_new_values["secondary_email"]
+
+
 # DOMAIN AND LOCAL PART
 @pytest.mark.parametrize(
     "role",

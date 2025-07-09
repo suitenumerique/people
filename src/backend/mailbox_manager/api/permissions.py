@@ -29,6 +29,20 @@ class MailBoxPermission(core_permissions.IsAuthenticated):
         return abilities.get(request.method.lower(), False)
 
 
+class IsMailboxOwnerPermission(core_permissions.IsAuthenticated):
+    """Authorize update for domain viewers on their own mailbox."""
+
+    def has_permission(self, request, view):
+        """This permission is specifically about updates"""
+        domain = models.MailDomain.objects.get(slug=view.kwargs.get("domain_slug", ""))
+        abilities = domain.get_abilities(request.user)
+        return abilities["get"]
+
+    def has_object_permission(self, request, view, obj):
+        """If the user is trying to update their own mailbox."""
+        return obj.get_email() == request.user.email
+
+
 class MailDomainAccessRolePermission(core_permissions.IsAuthenticated):
     """Permission class to manage mailboxes for a mail domain"""
 
