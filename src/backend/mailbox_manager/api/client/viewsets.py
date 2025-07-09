@@ -262,7 +262,7 @@ class MailBoxViewSet(
         Send a request to partially update mailbox. Cannot modify domain or local_part.
     """
 
-    permission_classes = [permissions.MailBoxPermission]
+    permission_classes = [permissions.DomainPermission]
     serializer_class = serializers.MailboxSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ["-created_at"]
@@ -279,7 +279,7 @@ class MailBoxViewSet(
         """Add a specific permission for domain viewers to update their own mailbox."""
         if self.action in ["update", "partial_update"]:
             permission_classes = [
-                permissions.MailBoxPermission | permissions.IsMailboxOwnerPermission
+                permissions.DomainPermission | permissions.IsMailboxOwnerPermission
             ]
         else:
             return super().get_permissions()
@@ -392,3 +392,62 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+
+class AliasViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for aliases.
+
+    POST /api/<version>/mail-domains/<domain_slug>/aliases/ with expected data:
+        - local_part: str
+        - destination: str
+        Return a newly created alias
+    """
+
+    lookup_field = "id"
+    permission_classes = [permissions.DomainPermission]
+    serializer_class = serializers.AliasSerializer
+    queryset = (
+        models.Alias.objects.all().select_related("domain").order_by("-created_at")
+    )
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(domain__slug=self.kwargs["domain_slug"])
+
+        if self.action == "list":
+            # Determine which role the logged-in user has in the domain
+            user_role_query = models.MailDomainAccess.objects.filter(
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
+            ).values("role")
+
+            queryset = (
+                # The logged-in user should be part of a domain to see its accesses
+                queryset.filter(
+                    domain__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each domain access
+                .annotate(user_role=Subquery(user_role_query))
+                .distinct()
+            )
+
+        return queryset
+
+    def perform_create(self, serializer):
+        """Create new mailbox."""
+        domain_slug = self.kwargs.get("domain_slug", "")
+        if domain_slug:
+            serializer.validated_data["domain"] = models.MailDomain.objects.get(
+                slug=domain_slug
+            )
+        super().perform_create(serializer)
