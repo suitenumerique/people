@@ -35,7 +35,7 @@ dependencies = [
     "django-cors-headers==4.7.0",
     "django-countries==7.6.1",
     "django-extensions==4.1",
-    "django-lasuite==0.0.10",
+    "django-lasuite==0.0.11",
     "django-oauth-toolkit==3.0.1",
     "django-parler==2.3",
     "django-redis==5.4.0",
