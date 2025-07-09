@@ -274,6 +274,17 @@ class MailBoxViewSet(
             return self.queryset.filter(domain__slug=domain_slug)
         return self.queryset
 
+    def get_permissions(self):
+        """Add a specific permission for domain viewers to update their own mailbox."""
+        if self.action in ["update", "partial_update"]:
+            permission_classes = [
+                permissions.MailBoxPermission | permissions.IsMailboxOwnerPermission
+            ]
+        else:
+            return super().get_permissions()
+
+        return [permission() for permission in permission_classes]
+
     def get_serializer_class(self):
         """Chooses list or detail serializer according to the action."""
         if self.action in {"update", "partial_update"}:

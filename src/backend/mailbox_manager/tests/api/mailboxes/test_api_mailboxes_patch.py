@@ -17,12 +17,10 @@ def test_api_mailboxes_patch__anonymous_forbidden():
     """Anonymous users should not be able to update a mailbox."""
     mailbox = factories.MailboxFactory()
     saved_secondary = mailbox.secondary_email
-    APIClient().get(
-        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/"
-    )
+
     response = APIClient().patch(
         f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
-        {"something": "updated"},
+        {"secondary_email": "updated@example.com"},
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -39,7 +37,7 @@ def test_api_mailboxes_patch__unauthorized_forbidden():
     saved_secondary = mailbox.secondary_email
     response = client.patch(
         f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
-        {"something": "updated"},
+        {"secondary_email": "updated@example.com"},
         format="json",
     )
 
@@ -57,7 +55,7 @@ def test_api_mailboxes_patch__unauthorized_no_mailbox():
     domain = factories.MailDomainEnabledFactory()
     response = client.patch(
         f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/nonexistent_mailbox_pk/",
-        {"something": "updated"},
+        {"secondary_email": "updated@example.com"},
         format="json",
     )
 
@@ -81,23 +79,17 @@ def test_api_mailboxes_patch__viewer_forbidden():
     client.force_login(viewer)
 
     # should not be able to update any field
-    for field_name in [
-        "secondary_email",
-        "first_name",
-        "last_name",
-        "domain",
-        "local_part",
-    ]:
-        old_value = getattr(mailbox, field_name)
-        response = client.patch(
-            f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
-            {field_name: "something_else"},
-            format="json",
-        )
+    # we only try one field as 403 is global in our implementation
+    old_value = mailbox.secondary_email
+    response = client.patch(
+        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
+        {"secondary_email": "updated@example.com"},
+        format="json",
+    )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        mailbox.refresh_from_db()
-        assert getattr(mailbox, field_name) == old_value
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    mailbox.refresh_from_db()
+    assert mailbox.secondary_email == old_value
 
 
 # UPDATABLE FIELDS : SECONDARY EMAIL FIRST NAME AND LAST NAME
@@ -124,7 +116,35 @@ def test_api_mailboxes_patch__admins_can_update_mailboxes(role):
         "last_name": "Johnson",
     }
     for field_name in ["first_name", "last_name", "secondary_email"]:
-        getattr(mailbox, field_name)
+        response = client.patch(
+            f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
+            {field_name: valid_new_values[field_name]},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_200_OK
+        mailbox.refresh_from_db()
+        assert getattr(mailbox, field_name) == valid_new_values[field_name]
+
+
+def test_api_mailboxes_patch__viewer_can_update_own_mailbox():
+    """Domain owners and admins should be allowed to update secondary email on a mailbox"""
+    mailbox = factories.MailboxFactory()
+    user = core_factories.UserFactory(email=f"{mailbox.local_part}@{mailbox.domain}")
+    factories.MailDomainAccessFactory(
+        user=user,
+        domain=mailbox.domain,
+        role=enums.MailDomainRoleChoices.VIEWER,
+    )
+
+    client = APIClient()
+    client.force_login(user)
+
+    valid_new_values = {
+        "secondary_email": "updated_mail@validformat.com",
+        "first_name": "Marsha",
+        "last_name": "Johnson",
+    }
+    for field_name in ["first_name", "last_name", "secondary_email"]:
         response = client.patch(
             f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
             {field_name: valid_new_values[field_name]},
