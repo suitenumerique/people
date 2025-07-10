@@ -292,9 +292,5 @@ class AliasSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Alias
-        fields = [
-            "id",
-            "local_part",
-            "destination",
-        ]
+        fields = "__all__"
         read_only_fields = ["id"]

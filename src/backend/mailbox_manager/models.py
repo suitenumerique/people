@@ -419,7 +419,6 @@ class MailDomainInvitation(BaseInvitation):
 
 
 class Alias(BaseModel):
-
     local_part = models.CharField(max_length=100, blank=False)
     destination = models.EmailField(_("destination address"), null=False, blank=False)
 

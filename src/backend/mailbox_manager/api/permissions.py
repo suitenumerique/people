@@ -10,6 +10,9 @@ class AccessPermission(core_permissions.IsAuthenticated):
 
     def has_object_permission(self, request, view, obj):
         """Check permission for a given object."""
+        import pdb
+
+        pdb.set_trace()
         abilities = obj.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)
 

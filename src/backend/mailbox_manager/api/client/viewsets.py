@@ -383,12 +383,10 @@ class AliasViewSet(
 
     lookup_field = "id"
     permission_classes = [permissions.AccessPermission]
+    serializer_class = serializers.AliasSerializer
     queryset = (
-        models.Alias.objects.all()
-        .select_related("domain")
-        .order_by("-created_at")
+        models.Alias.objects.all().select_related("domain").order_by("-created_at")
     )
-    serializer_class = serializers.MailDomainInvitationSerializer
 
     def get_serializer_context(self):
         """Extra context provided to the serializer class."""
