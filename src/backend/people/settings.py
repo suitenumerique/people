@@ -216,6 +216,7 @@ class Base(Configuration):
         "django.contrib.auth.backends.ModelBackend",
         "mailbox_oauth2.backends.MailboxModelBackend",
         "core.authentication.backends.OIDCAuthenticationBackend",
+        "scim_importer.authentication.ScimClientBackend",
     ]
 
     # Django's applications from the highest priority to the lowest
@@ -232,6 +233,7 @@ class Base(Configuration):
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
         "mailbox_oauth2",
+        "scim_importer",
         *INSTALLED_PLUGINS,
         # Third party apps
         "django_zxcvbn_password_validator",
@@ -240,6 +242,7 @@ class Base(Configuration):
         "corsheaders",
         "django_celery_beat",
         "django_celery_results",
+        "django_scim",
         "dockerflow.django",
         "easy_thumbnails",
         "oauth2_provider",
@@ -653,6 +656,26 @@ class Base(Configuration):
         environ_name="MANAGEMENT_COMMAND_AS_TASK",
         environ_prefix=None,
     )
+
+    # SCIM
+    SCIM_SERVICE_PROVIDER = {
+        "NETLOC": "localhost",
+        "AUTHENTICATION_SCHEMES": [
+            {
+                "type": "oauth2",
+                "name": "OAuth 2",
+                "description": "Oauth 2 implemented with bearer token",
+            },
+        ],
+        "USER_MODEL_GETTER": "scim_importer.utils.get_scim_importer_user_model",
+        "GROUP_MODEL": "scim_importer.models.ScimImportedGroup",
+        "SERVICE_PROVIDER_CONFIG_MODEL": "scim_importer.models.SCIMServiceProviderConfig",
+        "USER_ADAPTER": "scim_importer.adapters.SCIMUser",
+        "GROUP_ADAPTER": "scim_importer.adapters.SCIMGroup",
+        "USER_FILTER_PARSER": "scim_importer.filters.UserFilterQuery",
+        "GROUP_FILTER_PARSER": "scim_importer.filters.GroupFilterQuery",
+        "GET_EXTRA_MODEL_FILTER_KWARGS_GETTER": "scim_importer.utils.default_get_extra_model_filter_kwargs_getter",
+    }
 
     # pylint: disable=invalid-name
     @property
