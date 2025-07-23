@@ -7,7 +7,7 @@ import { Box, Tag, Text, TextErrors } from '@/components';
 import { MailDomain } from '@/features/mail-domains/domains';
 import {
   MailDomainMailbox,
-  MailDomainMailboxStatus,
+  ViewMailbox,
 } from '@/features/mail-domains/mailboxes/types';
 
 import { useMailboxesInfinite } from '../../api/useMailboxesInfinite';
@@ -34,13 +34,6 @@ type SortModelItem = {
 function formatSortModel(sortModel: SortModelItem) {
   return sortModel.sort === 'desc' ? `-${sortModel.field}` : sortModel.field;
 }
-
-export type ViewMailbox = {
-  name: string;
-  id: string;
-  email: string;
-  status: MailDomainMailboxStatus;
-};
 
 export function MailBoxesListView({
   mailDomain,
@@ -76,9 +69,13 @@ export function MailBoxesListView({
     }
     return data.pages.flatMap((page) =>
       page.results.map((mailbox: MailDomainMailbox) => ({
-        email: `${mailbox.local_part}@${mailDomain.name}`,
-        name: `${mailbox.first_name} ${mailbox.last_name}`,
         id: mailbox.id,
+        email: `${mailbox.local_part}@${mailDomain.name}`,
+        first_name: mailbox.first_name,
+        last_name: mailbox.last_name,
+        name: `${mailbox.first_name} ${mailbox.last_name}`,
+        local_part: mailbox.local_part,
+        secondary_email: mailbox.secondary_email,
         status: mailbox.status,
         mailbox,
       })),
@@ -86,12 +83,15 @@ export function MailBoxesListView({
   }, [data, mailDomain]);
 
   const filteredMailboxes = useMemo(() => {
-    if (!querySearch) {
+    if (typeof querySearch !== 'string' || !querySearch) {
       return mailboxes;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const lowerCaseSearch = querySearch.toLowerCase();
-    return mailboxes.filter((mailbox) =>
-      mailbox.email.toLowerCase().includes(lowerCaseSearch),
+    return mailboxes.filter(
+      (mailbox) =>
+        typeof mailbox.email === 'string' &&
+        mailbox.email.toLowerCase().includes(lowerCaseSearch),
     );
   }, [querySearch, mailboxes]);
 
@@ -145,7 +145,7 @@ export function MailBoxesListView({
                     $theme="greyscale"
                     $css="text-transform: capitalize;"
                   >
-                    {row.name}
+                    {`${row.first_name} ${row.last_name}`}
                   </Text>
                 ),
               },
