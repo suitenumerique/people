@@ -1067,7 +1067,7 @@ class Production(Base):
         },
     }
     SENTRY_DSN = values.Value(
-        "https://b72746c73d669421e7a8ccd3fab0fad2@sentry.incubateur.net/171",
+        None,
         environ_name="SENTRY_DSN",
     )
 
