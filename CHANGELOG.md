@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- 💥(sentry) remove `DJANGO_` before Sentry DSN env variable #957
+
 ## [1.18.2] - 2025-07-03
 
 ### Fixed
