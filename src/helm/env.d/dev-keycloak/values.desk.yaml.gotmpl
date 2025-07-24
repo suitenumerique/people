@@ -18,7 +18,6 @@ backend:
     DJANGO_EMAIL_HOST: "maildev"
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
-    DJANGO_SENTRY_DSN: null
     OIDC_RS_CLIENT_ID: people
     OIDC_RS_CLIENT_SECRET: ThisIsAnExampleKeyForDevPurposeOnly
     OIDC_RS_SIGNING_ALGO: RS256
@@ -52,6 +51,7 @@ backend:
     POSTGRES_USER: dinum
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
+    SENTRY_DSN: null
     WEBMAIL_URL: "https://onestendev.yapasdewebmail.fr"
     MAIL_PROVISIONING_API_URL: "http://dimail:8000"
     MAIL_PROVISIONING_API_CREDENTIALS: changeme
