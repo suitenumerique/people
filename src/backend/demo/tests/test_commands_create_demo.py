@@ -19,7 +19,7 @@ TEST_NB_OBJECTS = {
     "users": 100,
     "teams": 100,
     "max_users_per_team": 5,
-    "domains": 100,
+    "domains": 10,
 }
 
 
@@ -40,16 +40,19 @@ def test_commands_create_demo(settings):
 
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
+
+    # nb_domains + example.com + enabled + many-boxed-domain
     assert (
-        mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"] + 1 + 1
+        mailbox_models.MailDomain.objects.count()
+        == TEST_NB_OBJECTS["domains"] + 1 + 1 + 1
     )
 
     # 3 domain access for each user with domain rights
     # 3 x 3 domain access for each user with both rights
-    # 1 domain for E2E mail owner user
+    # 2 domains for E2E mail owner user
     assert (
         mailbox_models.MailDomainAccess.objects.count()
-        == TEST_NB_OBJECTS["domains"] + 3 + 9 + 1
+        == TEST_NB_OBJECTS["domains"] + 3 + 9 + 2
     )
 
 
