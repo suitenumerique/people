@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(plugins) add route to create first mailbox of a domain
+
 ### Changed
 
 - 💥(sentry) remove `DJANGO_` before Sentry DSN env variable #957
