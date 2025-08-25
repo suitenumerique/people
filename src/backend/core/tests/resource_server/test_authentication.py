@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from joserfc import jwe as jose_jwe
 from joserfc import jwt as jose_jwt
-from joserfc.rfc7518.rsa_key import RSAKey
+from joserfc.jwk import RSAKey
 from jwt.utils import to_base64url_uint
 from lasuite.oidc_resource_server.authentication import (
     ResourceServerAuthentication,
