@@ -15,4 +15,5 @@ class MailboxManagerConfig(AppConfig):
         """
         Import signals when the app is ready.
         """
-        import mailbox_manager.signals  # pylint: disable=import-outside-toplevel, unused-import
+        # pylint: disable=import-outside-toplevel, unused-import
+        import mailbox_manager.signals  # noqa: PLC0415

@@ -11,7 +11,6 @@ from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
 # Prevent Ruff complaining about mark_safe below
-# ruff: noqa: S308
 
 
 @admin.action(description=_("Import emails from dimail"))
