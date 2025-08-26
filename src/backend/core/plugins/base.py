@@ -18,6 +18,7 @@ class BasePluginAppConfigMixIn:
         Initialize the hooks registry when the application is ready.
         This is called by Django when the application is loaded.
         """
-        from .registry import registry  # pylint: disable=import-outside-toplevel
+        # pylint: disable=import-outside-toplevel
+        from .registry import registry  # noqa: PLC0415
 
         registry.register_app(self.name)  # pylint: disable=no-member
