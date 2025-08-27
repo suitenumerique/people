@@ -1,5 +1,7 @@
 """Permission handlers for the People mailbox manager app."""
 
+from rest_framework import permissions
+
 from core.api import permissions as core_permissions
 
 from mailbox_manager import models
@@ -24,7 +26,7 @@ class MailBoxPermission(AccessPermission):
         return abilities.get(request.method.lower(), False)
 
 
-class IsMailboxOwnerPermission(core_permissions.IsAuthenticated):
+class IsMailboxOwnerPermission(permissions.BasePermission):
     """Authorize update for domain viewers on their own mailbox."""
 
     def has_permission(self, request, view):
