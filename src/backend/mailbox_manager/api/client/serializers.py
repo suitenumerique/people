@@ -83,7 +83,7 @@ class MailboxUpdateSerializer(MailboxSerializer):
             "secondary_email",
             "status",
         ]
-        read_only_fields = ("id", "status", "local_part", "status")
+        read_only_fields = ("id", "local_part", "status")
 
 
 class MailDomainSerializer(serializers.ModelSerializer):
