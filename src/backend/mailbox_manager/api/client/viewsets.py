@@ -232,6 +232,7 @@ class MailBoxViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
 ):
     """MailBox ViewSet
 
