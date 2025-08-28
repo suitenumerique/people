@@ -51,7 +51,7 @@ def test_dimail_synchronization__already_sync():
         rsps.add(
             rsps.GET,
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body=str(
+            body=json.dumps(
                 [
                     {
                         "type": "mailbox",
@@ -129,7 +129,7 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
         rsps.add(
             rsps.GET,
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body=str(
+            body=json.dumps(
                 [
                     mailbox_valid,
                     mailbox_with_wrong_domain,
