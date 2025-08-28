@@ -2,7 +2,6 @@
 
 """A minimalist client to synchronize with mailbox provisioning API."""
 
-import ast
 import json
 import smtplib
 from email.errors import HeaderParseError, NonASCIILocalPartDefect
@@ -346,10 +345,7 @@ class DimailAPIClient:
         if response.status_code != status.HTTP_200_OK:
             return self.raise_exception_for_unexpected_response(response)
 
-        dimail_mailboxes = ast.literal_eval(
-            response.content.decode("utf-8")
-        )  # format output str to proper list
-
+        dimail_mailboxes = response.json()
         people_mailboxes = models.Mailbox.objects.filter(domain=domain)
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
