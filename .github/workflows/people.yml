@@ -49,7 +49,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Check that the CHANGELOG has been modified in the current branch
-        run: git whatchanged --name-only --pretty="" origin/${{ github.event.pull_request.base.ref }}..HEAD | grep CHANGELOG
+        run: git log --name-only --pretty="" origin/${{ github.event.pull_request.base.ref }}..HEAD | grep CHANGELOG
 
   lint-changelog:
     runs-on: ubuntu-latest
