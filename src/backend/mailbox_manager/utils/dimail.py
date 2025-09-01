@@ -165,6 +165,35 @@ class DimailAPIClient:
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
+        # Dimail doesn't return a clear error for duplicate yet
+        # but a 500 internal error
+        if response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
+            try:
+                address = session.get(
+                    f"{self.API_URL}/domains/{mailbox.domain.name}/address/{mailbox.local_part}/",
+                    json=payload,
+                    headers=headers,
+                    verify=True,
+                    timeout=self.API_TIMEOUT,
+                )
+            except requests.exceptions.ConnectionError as error:
+                logger.error(
+                    "Connection error while trying to reach %s.",
+                    self.API_URL,
+                    exc_info=error,
+                )
+                raise error
+
+            if address.status_code == status.HTTP_200_OK:
+                primary = address.json()["ox_primary_email"]
+                raise exceptions.ValidationError(
+                    {
+                        "NON_FIELD_ERRORS": [
+                            f"First name + last name combination already in use in this context : {primary}."
+                        ]
+                    }
+                )
+
         return self.raise_exception_for_unexpected_response(response)
 
     def create_user(self, user_id):
