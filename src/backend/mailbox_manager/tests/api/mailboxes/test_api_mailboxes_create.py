@@ -768,9 +768,12 @@ def test_api_mailboxes__user_unrelated_to_domain():
         assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
-def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
+@responses.activate
+def test_api_mailboxes__duplicate_display_name():
     """
-    API should raise a clear error when dimail returns an unexpected response.
+    In OpenXchange, the display name (first + last name) must be unique.
+    In absence of clear duplicate message from dimail (yet), we catch errors 500 and
+    check if it's not due to the display name already existing in the context
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
@@ -781,44 +784,184 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body='{"detail": "Internal server error"}',
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content_type="application/json",
-        )
-
-        with pytest.raises(HTTPError):
-            response = client.post(
-                f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-                mailbox_data,
-                format="json",
-            )
-            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-            assert response.json() == {
-                "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}"
+        ),
+        body=json.dumps(
+            {
+                "domain_name": str(access.domain),
+                "user_name": mailbox_data["local_part"],
+                "is_alias": "false",
+                "is_mailbox": "false",
+                "is_ox": "true",
+                "ox_primary_email": f"{mailbox_data['local_part']}@some_other_domain.com",
+                "ox_senders": [
+                    "some-alias@un-domaine.fr",
+                    f"{mailbox_data['local_part']}@some_third_domain.com",
+                ],
             }
+        ),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
 
-        # mailbox was created in our side only and in pending status
-        mailbox = models.Mailbox.objects.get()
-        assert mailbox.status == enums.MailboxStatusChoices.PENDING
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "NON_FIELD_ERRORS": [
+            f"First name + last name combination already in use in this context : \
+{mailbox_data['local_part']}@some_other_domain.com."
+        ]
+    }
 
-        # Check error logger was called
-        assert caplog.records[0].levelname == "ERROR"
-        assert (
-            caplog.records[0].message
-            == "[DIMAIL] unexpected error: 500 {'detail': 'Internal server error'}"
+
+@responses.activate
+def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
+    """
+    API should raise a clear error when dimail returns an unexpected response.
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
+        ),
+        body='{"detail": "Domain not found"}',
+        status=status.HTTP_404_NOT_FOUND,
+        content_type="application/json",
+    )
+
+    with pytest.raises(HTTPError):
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
         )
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.json() == {
+            "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
+        }
+
+    # mailbox was created in our side only and in pending status
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+    # Check error logger was called
+    assert caplog.records[0].levelname == "ERROR"
+    assert (
+        caplog.records[0].message
+        == "[DIMAIL] unexpected error: 500 {'detail': 'Internal server error'}"
+    )
+
+
+@responses.activate
+def test_api_mailboxes__display_name_duplicate_error(caplog):
+    """
+    API should raise a clear error when display_name is already used on context.
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
+        ),
+        body=json.dumps(
+            {
+                "domain_name": access.domain.name,
+                "user_name": mailbox_data["local_part"],
+                "is_alias": False,
+                "is_mailbox": False,
+                "is_ox": True,
+                "ox_primary_email": f"{mailbox_data['local_part']}@primary.domain.com",
+                "ox_senders": [
+                    f"{mailbox_data['local_part']}@secondary.domain.com",
+                ],
+            }
+        ),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "NON_FIELD_ERRORS": [
+            f"First name + last name combination already in use in this context : {mailbox_data['local_part']}@primary.domain.com."
+        ]
+    }
+
+    # mailbox was created in our side only and in pending status
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
 @mock.patch.object(Logger, "error")
