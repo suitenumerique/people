@@ -187,10 +187,7 @@ class DimailAPIClient:
             if address.status_code == status.HTTP_200_OK:
                 primary = address.json()["ox_primary_email"]
                 raise exceptions.ValidationError(
-                    {
-                        "NON_FIELD_ERRORS": f"First name - last name combination already in use in this context : {primary}."
-                    }
-                )
+                    {"NON_FIELD_ERRORS": [f"First name + last name combination already in use in this context : {primary}."]})
 
         return self.raise_exception_for_unexpected_response(response)
 

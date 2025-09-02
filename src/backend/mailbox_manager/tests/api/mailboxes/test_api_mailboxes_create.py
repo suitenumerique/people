@@ -767,10 +767,11 @@ def test_api_mailboxes__duplicate_display_name():
         mailbox_data,
         format="json",
     )
+    import pdb; pdb.set_trace()
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
-        "detail": f"First name + last name combination already in use in this context : \
-        {mailbox_data['local_part']}@some_other_domain.com."
+        "NON_FIELD_ERRORS": [f"First name + last name combination already in use in this context : \
+{mailbox_data['local_part']}@some_other_domain.com."]
     }
 
 
