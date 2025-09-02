@@ -88,7 +88,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
       >
         <Box>
           <Button
-            aria-label={t('Open the modal to update the role of this access')}
+            aria-label={t('Open a modal to enable or disable mailbox')}
             onClick={() => {
               setIsDropOpen(false);
               if (isEnabled) {
@@ -109,7 +109,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
             </Text>
           </Button>
           <Button
-            aria-label={t('Open the modal to update mailbox')}
+            aria-label={t('Open the modal to update mailbox attributes')}
             onClick={() => {
               setIsDropOpen(false);
               if (isEnabled) {
@@ -131,7 +131,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
             </Text>
           </Button>
           <Button
-            aria-label={t('Open the modal to update the role of this access')}
+            aria-label={t('Reset password for this mailbox')}
             onClick={() => {
               setIsDropOpen(false);
               handleResetMailboxPassword();
