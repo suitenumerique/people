@@ -12,7 +12,6 @@ from rest_framework.test import APIClient
 from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
-from mailbox_manager.api.client import serializers
 
 pytestmark = pytest.mark.django_db
 
@@ -20,13 +19,12 @@ pytestmark = pytest.mark.django_db
 def test_api_domain_invitations__create__anonymous():
     """Anonymous users should not be able to create invitations."""
     domain = factories.MailDomainEnabledFactory()
-    invitation_values = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build()
-    ).data
-
     response = APIClient().post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
-        invitation_values,
+        {
+            "email": "some.email@domain.com",
+            "role": "admin",
+        },
         format="json",
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -40,16 +38,15 @@ def test_api_domain_invitations__create__no_access_forbidden_not_found():
     for a domain they don't manage."""
     user = core_factories.UserFactory()
     domain = factories.MailDomainEnabledFactory()
-    invitation_values = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build()
-    ).data
 
     client = APIClient()
     client.force_login(user)
-
     response = client.post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
-        invitation_values,
+        {
+            "email": "some.email@domain.com",
+            "role": "viewer",
+        },
         format="json",
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -65,24 +62,21 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     domain = factories.MailDomainEnabledFactory()
     factories.MailDomainAccessFactory(domain=domain, user=user, role=role)
 
-    invitation_values = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build()
-    ).data
-
     client = APIClient()
     client.force_login(user)
-
     assert len(mail.outbox) == 0
-
     response = client.post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
-        invitation_values,
+        {
+            "email": "some.email@domain.com",
+            "role": "owner",
+        },
         format="json",
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert len(mail.outbox) == 1
     email = mail.outbox[0]
-    assert email.to == [invitation_values["email"]]
+    assert email.to == ["some.email@domain.com"]
     assert email.subject == "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
 
@@ -96,16 +90,14 @@ def test_api_domain_invitations__no_access_forbidden_not_found():
         domain=domain, user=user, role=enums.MailDomainRoleChoices.VIEWER
     )
 
-    invitation_values = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build()
-    ).data
-
     client = APIClient()
     client.force_login(user)
-
     response = client.post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
-        invitation_values,
+        {
+            "email": "some.email@domain.com",
+            "role": "viewer",
+        },
         format="json",
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -125,16 +117,15 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
         domain=domain, user=user, role=enums.MailDomainRoleChoices.OWNER
     )
 
-    # Create a new invitation to the same domain with the exact same email address
-    duplicated_invitation = serializers.MailDomainInvitationSerializer(
-        factories.MailDomainInvitationFactory.build(email=existing_invitation.email)
-    ).data
-
+    # New invitation to the same domain with the exact same email address
     client = APIClient()
     client.force_login(user)
     response = client.post(
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
-        duplicated_invitation,
+        {
+            "email": existing_invitation.email,
+            "role": "owner",
+        },
         format="json",
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -144,11 +135,9 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert models.MailDomainInvitation.objects.count() == 1  # and specifically, not 2
 
 
-def test_api_domain_invitations__should_create_access_when_user_already_exists():
+def test_api_domain_invitations__inviting_known_email_should_create_access():
     """Already existing users should not be invited but given access directly."""
     existing_user = core_factories.UserFactory()
-
-    # Grant privileged role on the domain to the user
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
 
     client = APIClient()

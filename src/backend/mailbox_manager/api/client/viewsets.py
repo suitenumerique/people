@@ -412,23 +412,10 @@ class MailDomainInvitationViewset(
 
         return queryset
 
-    def perform_create(self, serializer):
-        """Lookup for existing user before inviting."""
-        if email := serializer.validated_data["email"]:
-            existing_user = models.User.objects.filter(email=email)
-            if existing_user.exists():
-                return models.MailDomainAccess.objects.create(
-                    user=existing_user[0],
-                    domain=serializer.validated_data["domain"],
-                    role=serializer.validated_data["role"],
-                )
-
-        return super().perform_create(serializer)
-
-
     def create(self, request, *args, **kwargs):
         """Attempt to create invitation. If user is already registered,
         they don't need an invitation but an access, which we create here."""
+        email = request.data["email"]
         try:
             return super().create(request, *args, **kwargs)
         except EmailAlreadyKnownException as exc:
@@ -440,6 +427,7 @@ class MailDomainInvitationViewset(
                 role=request.data["role"],
             )
             raise exc
+
 
 class AliasViewSet(
     mixins.CreateModelMixin,
