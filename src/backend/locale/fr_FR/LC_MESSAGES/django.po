@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 15:31+0000\n"
-"PO-Revision-Date: 2025-07-02 08:51\n"
+"POT-Creation-Date: 2025-09-02 11:47+0000\n"
+"PO-Revision-Date: 2025-09-03 09:14\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -361,90 +361,90 @@ msgstr "Compte de service"
 msgid "Account services"
 msgstr "Comptes de service"
 
-#: build/lib/mailbox_manager/admin.py:17 mailbox_manager/admin.py:17
+#: build/lib/mailbox_manager/admin.py:16 mailbox_manager/admin.py:16
 msgid "Import emails from dimail"
 msgstr "Importer les emails depuis dimail"
 
-#: build/lib/mailbox_manager/admin.py:35 mailbox_manager/admin.py:35
+#: build/lib/mailbox_manager/admin.py:34 mailbox_manager/admin.py:34
 #, python-format
 msgid "Synchronisation failed for %(domain)s with message: %(err)s"
 msgstr "La synchronisation a échoué pour %(domain)s avec le message : %(err)s"
 
-#: build/lib/mailbox_manager/admin.py:42 mailbox_manager/admin.py:42
+#: build/lib/mailbox_manager/admin.py:41 mailbox_manager/admin.py:41
 #, python-format
 msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
 msgstr "La synchronisation a réussi pour %(domain)s. Importation des boîtes mails : %(mailboxes)s"
 
-#: build/lib/mailbox_manager/admin.py:49 mailbox_manager/admin.py:49
+#: build/lib/mailbox_manager/admin.py:48 mailbox_manager/admin.py:48
 #, python-format
 msgid "Sync require enabled domains. Excluded domains: %(domains)s"
 msgstr "La synchro nécessite des domaines activés. Les domaines exclus sont : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:54 mailbox_manager/admin.py:54
+#: build/lib/mailbox_manager/admin.py:53 mailbox_manager/admin.py:53
 msgid "Check and update status from dimail"
 msgstr "Vérifier et mettre à jour le statut à partir de dimail"
 
-#: build/lib/mailbox_manager/admin.py:71 mailbox_manager/admin.py:71
+#: build/lib/mailbox_manager/admin.py:70 mailbox_manager/admin.py:70
 #, python-format
 msgid "- %(domain)s with message: %(err)s"
 msgstr "- %(domain)s avec le message : %(err)s"
 
-#: build/lib/mailbox_manager/admin.py:84 mailbox_manager/admin.py:84
+#: build/lib/mailbox_manager/admin.py:83 mailbox_manager/admin.py:83
 msgid "Check domains done with success."
 msgstr "Vérification des domaines effectuée avec succès."
 
-#: build/lib/mailbox_manager/admin.py:85 mailbox_manager/admin.py:85
+#: build/lib/mailbox_manager/admin.py:84 mailbox_manager/admin.py:84
 #, python-format
 msgid "Domains updated: %(domains)s"
 msgstr "Domaines mis à jour : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:87 mailbox_manager/admin.py:87
+#: build/lib/mailbox_manager/admin.py:86 mailbox_manager/admin.py:86
 msgid "No domain updated."
 msgstr "Aucun domaine mis à jour."
 
-#: build/lib/mailbox_manager/admin.py:94 mailbox_manager/admin.py:94
+#: build/lib/mailbox_manager/admin.py:93 mailbox_manager/admin.py:93
 msgid "Check domain failed for:"
 msgstr "La vérification du domaine a échoué pour :"
 
-#: build/lib/mailbox_manager/admin.py:102 mailbox_manager/admin.py:102
+#: build/lib/mailbox_manager/admin.py:101 mailbox_manager/admin.py:101
 #, python-format
 msgid "Domains disabled are excluded from check: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la vérification : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:107 mailbox_manager/admin.py:107
+#: build/lib/mailbox_manager/admin.py:106 mailbox_manager/admin.py:106
 msgid "Fetch domain expected config from dimail"
 msgstr "Récupérer la configuration attendue du domaine depuis dimail"
 
-#: build/lib/mailbox_manager/admin.py:121 mailbox_manager/admin.py:121
+#: build/lib/mailbox_manager/admin.py:120 mailbox_manager/admin.py:120
 #, python-format
 msgid "Domain expected config fetched with success for %(domain)s."
 msgstr "La configuration du domaine attendue a été récupérée avec succès pour %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:127 mailbox_manager/admin.py:127
+#: build/lib/mailbox_manager/admin.py:126 mailbox_manager/admin.py:126
 #, python-format
 msgid "Failed to fetch domain expected config for %(domain)s."
 msgstr "Impossible de récupérer la configuration attendue pour %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:133 mailbox_manager/admin.py:133
+#: build/lib/mailbox_manager/admin.py:132 mailbox_manager/admin.py:132
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la récupération : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:138 mailbox_manager/admin.py:138
+#: build/lib/mailbox_manager/admin.py:137 mailbox_manager/admin.py:137
 msgid "Send pending mailboxes to dimail"
 msgstr "Envoyer les adresses mail en attente à dimail"
 
-#: build/lib/mailbox_manager/admin.py:154 mailbox_manager/admin.py:154
+#: build/lib/mailbox_manager/admin.py:153 mailbox_manager/admin.py:153
 #, python-format
 msgid "Failed to send the following mailboxes : %(mailboxes)s."
 msgstr "Échec de l'envoi des adresses mail suivantes : %(mailboxes)s."
 
-#: build/lib/mailbox_manager/admin.py:160 mailbox_manager/admin.py:160
+#: build/lib/mailbox_manager/admin.py:159 mailbox_manager/admin.py:159
 #, python-format
 msgid "Pending mailboxes successfully sent for %(domain)s."
 msgstr "Succès de l'envoi des adresses en attente pour le domaine %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:166 mailbox_manager/admin.py:166
+#: build/lib/mailbox_manager/admin.py:165 mailbox_manager/admin.py:165
 #, python-format
 msgid "Domains disabled are excluded from : %(domains)s"
 msgstr "Les domaines désactivés ont été exclu : %(domains)s"
@@ -548,25 +548,25 @@ msgstr "Boîtes mail"
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr "Vous ne pouvez pas créer ou mettre à jour une boîte mail pour un domaine désactivé."
 
-#: build/lib/mailbox_manager/models.py:369 mailbox_manager/models.py:369
+#: build/lib/mailbox_manager/models.py:388 mailbox_manager/models.py:388
 msgid "Mail domain invitation"
 msgstr "Invitation au domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:370 mailbox_manager/models.py:370
+#: build/lib/mailbox_manager/models.py:389 mailbox_manager/models.py:389
 msgid "Mail domain invitations"
 msgstr "Invitations au domaine de messagerie"
 
-#: build/lib/mailbox_manager/models.py:382 mailbox_manager/models.py:382
+#: build/lib/mailbox_manager/models.py:401 mailbox_manager/models.py:401
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
-#: build/lib/mailbox_manager/utils/dimail.py:268
-#: mailbox_manager/utils/dimail.py:268
+#: build/lib/mailbox_manager/utils/dimail.py:267
+#: mailbox_manager/utils/dimail.py:267
 msgid "Your new mailbox information"
 msgstr "Informations sur votre nouvelle boîte mail"
 
-#: build/lib/mailbox_manager/utils/dimail.py:279
-#: mailbox_manager/utils/dimail.py:279
+#: build/lib/mailbox_manager/utils/dimail.py:278
+#: mailbox_manager/utils/dimail.py:278
 msgid "Your password has been updated"
 msgstr "Votre mot de passe a été mis à jour"
 
