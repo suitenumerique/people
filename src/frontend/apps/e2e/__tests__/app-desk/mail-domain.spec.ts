@@ -251,7 +251,9 @@ test.describe('Mail domain', () => {
         ).toBeVisible();
 
         // Click disable in modal
-        await page.getByRole('button', { name: 'Disable' }).click();
+        await page
+          .getByRole('button', { name: 'Disable', exact: true })
+          .click();
 
         // Verify mailbox status shows as disabled
         await expect(
