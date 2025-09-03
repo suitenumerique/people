@@ -2,7 +2,7 @@
 
 from django.db.models import Q, Subquery
 
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -394,15 +394,22 @@ class MailDomainInvitationViewset(
 
         return queryset
 
-    def perform_create(self, serializer):
-        """Lookup for existing user before inviting."""
-        if email := serializer.validated_data["email"]:
-            existing_user = models.User.objects.filter(email=email)
-            if existing_user.exists():
-                return models.MailDomainAccess.objects.create(
-                    user=existing_user[0],
-                    domain=serializer.validated_data["domain"],
-                    role=serializer.validated_data["role"],
+    def create(self, request, *args, **kwargs):
+        """Lookup for existing user before attempting to invite."""
+        if email := request.data["email"]:
+            try:
+                models.MailDomainAccess.objects.create(
+                    user=models.User.objects.get(email=email),
+                    domain=models.MailDomain.objects.get(slug=kwargs["domain_slug"]),
+                    role=request.data["role"],
                 )
+            except core_models.User.DoesNotExist:
+                # The user doesn't exist, this is a real invitation
+                return super().create(request)
+            except models.MailDomain.DoesNotExist as exc:
+                raise exc
 
-        return super().perform_create(serializer)
+        return Response(
+            {"This email is already associated to a registered user. Access created."},
+            status=status.HTTP_200_OK,
+        )
