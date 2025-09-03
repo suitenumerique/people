@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(front) add modal update mailboxes #954
+
 ### Added
 
 - ✨(api) update mailboxes #934
