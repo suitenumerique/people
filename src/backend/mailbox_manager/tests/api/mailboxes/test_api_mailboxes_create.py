@@ -708,6 +708,74 @@ def test_api_mailboxes__user_unrelated_to_domain():
         assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
+@responses.activate
+def test_api_mailboxes__duplicate_display_name():
+    """
+    In OpenXchange, display name (first + last name) is the primary key and must be unique.
+    In absence of clear duplicate message from dimail (yet), we catch errors 500 and
+    check if it's not due to the display name already existing in the context
+    """
+    # creating all needed objects
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}"
+        ),
+        body=json.dumps(
+            {
+                "domain_name": str(access.domain),
+                "user_name": mailbox_data["local_part"],
+                "is_alias": "false",
+                "is_mailbox": "false",
+                "is_ox": "true",
+                "ox_primary_email": f"{mailbox_data['local_part']}@some_other_domain.com",
+                "ox_senders": [
+                    "some-alias@un-domaine.fr",
+                    f"{mailbox_data['local_part']}@some_third_domain.com",
+                ],
+            }
+        ),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "NON_FIELD_ERRORS": [
+            f"First name + last name combination already in use in this context : \
+{mailbox_data['local_part']}@some_other_domain.com."
+        ]
+    }
+
+
 def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
     """
     API should raise a clear error when dimail returns an unexpected response.
