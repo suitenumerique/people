@@ -2,7 +2,7 @@
 
 from django.db.models import Q, Subquery
 
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -349,6 +349,7 @@ class MailDomainInvitationViewset(
         - issuer : User, automatically added from user making query, if allowed
         - domain : Domain, automatically added from requested URI
         Return a newly created invitation
+        or an access if email is already linked to an existing user
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,
         delete and create a new one.
@@ -392,3 +393,23 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        """Lookup for existing user before attempting to invite."""
+        if email := request.data["email"]:
+            try:
+                models.MailDomainAccess.objects.create(
+                    user=models.User.objects.get(email=email),
+                    domain=models.MailDomain.objects.get(slug=kwargs["domain_slug"]),
+                    role=request.data["role"],
+                )
+            except core_models.User.DoesNotExist:
+                # The user doesn't exist, this is a real invitation
+                return super().create(request)
+            except models.MailDomain.DoesNotExist as exc:
+                raise exc
+
+        return Response(
+            {"This email is already associated to a registered user. Access created."},
+            status=status.HTTP_200_OK,
+        )
