@@ -86,6 +86,79 @@ def test_api_mailboxes__create_viewer_failure():
     assert not models.Mailbox.objects.exists()
 
 
+def test_api_mailboxes__create_display_name_must_be_unique():
+    """Primary id on OpenXchange is display name (first_name + last_name).
+    It needs to be unique on each context. We don't track context info for now
+    but can impose uniqueness by domain."""
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+    existing_mailbox = factories.MailboxFactory(domain=access.domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    new_mailbox_data = {
+        "local_part": "something_else",
+        "first_name": existing_mailbox.first_name,
+        "last_name": existing_mailbox.last_name,
+    }
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        new_mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "__all__": [
+            "Mailbox with this First name, Last name and Domain already exists.",
+        ]
+    }
+    assert models.Mailbox.objects.count() == 1
+
+
+@responses.activate
+def test_api_mailboxes__create_display_name_no_constraint_on_different_domains():
+    """Should still be allowed to user same display name on another domain"""
+    existing_mailbox = factories.MailboxFactory()
+
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
+    new_mailbox_data = {
+        "local_part": "something_else",
+        "first_name": existing_mailbox.first_name,
+        "last_name": existing_mailbox.last_name,
+    }
+
+    # ensure response
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{new_mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        new_mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["first_name"] == existing_mailbox.first_name
+    assert response.json()["last_name"] == existing_mailbox.last_name
+    assert response.json()["status"] == enums.MailboxStatusChoices.ENABLED
+    assert models.Mailbox.objects.count() == 2
+
+
 @pytest.mark.parametrize(
     "role",
     [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
@@ -772,7 +845,7 @@ def test_api_mailboxes__user_unrelated_to_domain():
 def test_api_mailboxes__duplicate_display_name():
     """
     In OpenXchange, the display name (first + last name) must be unique.
-    In absence of clear duplicate message from dimail (yet), we catch errors 500 and
+    In absence of a specific response from dimail (yet), we catch errors 500 and
     check if it's not due to the display name already existing in the context
     """
     # creating all needed objects
@@ -898,7 +971,7 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
 
 
 @responses.activate
-def test_api_mailboxes__display_name_duplicate_error(caplog):
+def test_api_mailboxes__display_name_duplicate_error():
     """
     API should raise a clear error when display_name is already used on context.
     """
@@ -955,7 +1028,8 @@ def test_api_mailboxes__display_name_duplicate_error(caplog):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
         "NON_FIELD_ERRORS": [
-            f"First name + last name combination already in use in this context : {mailbox_data['local_part']}@primary.domain.com."
+            f"First name + last name combination already in use in this \
+context : {mailbox_data['local_part']}@primary.domain.com."
         ]
     }
 
