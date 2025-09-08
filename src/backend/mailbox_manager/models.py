@@ -303,7 +303,15 @@ class Mailbox(AbstractBaseUser, BaseModel):
         db_table = "people_mail_box"
         verbose_name = _("Mailbox")
         verbose_name_plural = _("Mailboxes")
-        unique_together = ("local_part", "domain")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["local_part", "domain"], name="unique_username"
+            ),
+            models.UniqueConstraint(
+                fields=["first_name", "last_name", "domain"],
+                name="unique_ox_display_name",
+            ),
+        ]
         ordering = ["-created_at"]
 
     def __str__(self):
