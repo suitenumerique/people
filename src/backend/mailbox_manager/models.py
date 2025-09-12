@@ -311,6 +311,9 @@ class Mailbox(AbstractBaseUser, BaseModel):
                 fields=["first_name", "last_name", "domain"],
                 name="unique_ox_display_name",
             ),
+            # Display name in OpenXChange must be unique
+            # To avoid sending failing requests to dimail,
+            # we impose uniqueness here too
         ]
         ordering = ["-created_at"]
 
