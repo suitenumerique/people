@@ -43,7 +43,7 @@ dependencies = [
     "django-timezone-field>=5.1",
     "django-treebeard==4.7.1",
     "django-zxcvbn-password-validator==1.4.5",
-    "django==5.2.5",
+    "django==5.2.6",
     "djangorestframework==3.16.1",
     "dockerflow==2024.4.2",
     "drf_spectacular==0.28.0",
