@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+ 🐛(domains) fix attemps to send invitations to existing users #953
+
 ## [1.19.0] - 2025-09-03
 
 - ✨(front) add modal update mailboxes #954

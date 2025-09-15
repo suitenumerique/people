@@ -1,8 +1,9 @@
 """API endpoints"""
 
+from django.core import exceptions as django_exceptions
 from django.db.models import Q, Subquery
 
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -349,6 +350,7 @@ class MailDomainInvitationViewset(
         - issuer : User, automatically added from user making query, if allowed
         - domain : Domain, automatically added from requested URI
         Return a newly created invitation
+        or an access if email is already linked to an existing user
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,
         delete and create a new one.
@@ -392,3 +394,30 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        """Attempt to create invitation. If user is already registered,
+        they don't need an invitation but an access, which we create here."""
+        try:
+            return super().create(request, *args, **kwargs)
+        except django_exceptions.ValidationError as exc:
+            if exc.messages == [
+                "This email is already associated to a registered user."
+            ]:
+                # if this is only error being returned, we actually want to create
+                # an access for the corresponding email
+                access = models.MailDomainAccess.objects.create(
+                    user=models.User.objects.get(email=request.data["email"]),
+                    domain=models.MailDomain.objects.get(slug=kwargs["domain_slug"]),
+                    role=request.data["role"],
+                )
+                return Response(
+                    {
+                        f"{access.user.name} already registered on another organization. \
+Access created."
+                    },
+                    status=status.HTTP_200_OK,
+                )
+
+            # else, this is a valid exception
+            raise exc
