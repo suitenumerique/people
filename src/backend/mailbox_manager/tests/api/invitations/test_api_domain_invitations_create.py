@@ -135,7 +135,7 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert models.MailDomainInvitation.objects.count() == 1  # and specifically, not 2
 
 
-def test_api_domain_invitations__should_not_invite_when_user_already_exists():
+def test_api_domain_invitations__should_create_access_when_user_already_exists():
     """Already existing users should not be invited but given access directly."""
     existing_user = core_factories.UserFactory()
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
@@ -152,7 +152,7 @@ def test_api_domain_invitations__should_not_invite_when_user_already_exists():
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
-        "This email is already associated to a registered user. Access created."
+        f"{existing_user.name} already registered on another organization. Access created."
     ]
 
     assert not models.MailDomainInvitation.objects.exists()

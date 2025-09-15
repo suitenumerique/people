@@ -1,5 +1,6 @@
 """API endpoints"""
 
+from django.core import exceptions as django_exceptions
 from django.db.models import Q, Subquery
 
 from rest_framework import exceptions, filters, mixins, status, viewsets
@@ -395,21 +396,28 @@ class MailDomainInvitationViewset(
         return queryset
 
     def create(self, request, *args, **kwargs):
-        """Lookup for existing user before attempting to invite."""
-        if email := request.data["email"]:
-            try:
-                models.MailDomainAccess.objects.create(
-                    user=models.User.objects.get(email=email),
+        """Attempt to create invitation. If user is already registered,
+        they don't need an invitation but an access, which we create here."""
+        try:
+            return super().create(request, *args, **kwargs)
+        except django_exceptions.ValidationError as exc:
+            if exc.messages == [
+                "This email is already associated to a registered user."
+            ]:
+                # if this is only error being returned, we actually want to create
+                # an access for the corresponding email
+                access = models.MailDomainAccess.objects.create(
+                    user=models.User.objects.get(email=request.data["email"]),
                     domain=models.MailDomain.objects.get(slug=kwargs["domain_slug"]),
                     role=request.data["role"],
                 )
-            except core_models.User.DoesNotExist:
-                # The user doesn't exist, this is a real invitation
-                return super().create(request)
-            except models.MailDomain.DoesNotExist as exc:
-                raise exc
+                return Response(
+                    {
+                        f"{access.user.name} already registered on another organization. \
+Access created."
+                    },
+                    status=status.HTTP_200_OK,
+                )
 
-        return Response(
-            {"This email is already associated to a registered user. Access created."},
-            status=status.HTTP_200_OK,
-        )
+            # else, this is a valid exception
+            raise exc
