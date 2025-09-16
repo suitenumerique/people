@@ -1,7 +1,7 @@
 """Client serializers for People's mailbox manager app."""
 
 from logging import getLogger
-
+from django.db import transaction
 from django.contrib.auth.hashers import make_password
 
 from requests.exceptions import HTTPError
@@ -38,19 +38,20 @@ class MailboxSerializer(serializers.ModelSerializer):
         By default, we generate an unusable password for the mailbox, meaning that the mailbox
         will not be able to be used as a login credential until the password is set.
         """
-        mailbox = super().create(
-            validated_data
-            | {
-                "password": make_password(None),  # generate an unusable password
-            }
-        )
-        if mailbox.domain.status == enums.MailDomainStatusChoices.ENABLED:
-            client = DimailAPIClient()
-            # send new mailbox request to dimail
-            response = client.create_mailbox(mailbox, self.context["request"].user.sub)
+        if validated_data['domain'].status == enums.MailDomainStatusChoices.ENABLED:
+            with transaction.atomic():
+                mailbox = super().create(
+                    validated_data
+                    | {
+                        "password": make_password(None),  # generate an unusable password
+                    }
+                )
+                client = DimailAPIClient()
+                # send new mailbox request to dimail
+                response = client.create_mailbox(mailbox, self.context["request"].user.sub)
 
-            mailbox.status = enums.MailDomainStatusChoices.ENABLED
-            mailbox.save()
+                mailbox.status = enums.MailDomainStatusChoices.ENABLED
+                mailbox.save()
 
             if mailbox.secondary_email:
                 # send confirmation email

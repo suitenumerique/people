@@ -891,10 +891,7 @@ def test_api_mailboxes__display_name_duplicate_error(response_token_ok):
 context : {mailbox_data['local_part']}@primary.domain.com."
         ]
     }
-
-    # mailbox was created in our side only and in pending status
-    mailbox = models.Mailbox.objects.get()
-    assert mailbox.status == enums.MailboxStatusChoices.PENDING
+    assert not models.Mailbox.objects.exists() # failing mailbox was not created
 
 
 @responses.activate
