@@ -69,7 +69,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   if (
     mailbox.status === 'pending' ||
     mailbox.status === 'failed' ||
-    mailDomain.abilities.post === false
+    (mailDomain.abilities.post === false && !mailbox.isCurrentUser)
   ) {
     return null;
   }
