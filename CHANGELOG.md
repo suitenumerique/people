@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(fix) add enabled update your mailbox
+
 ## [1.19.0] - 2025-09-03
 
 - ✨(front) add modal update mailboxes #954

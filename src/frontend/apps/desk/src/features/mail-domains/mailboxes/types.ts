@@ -18,9 +18,12 @@ export type MailDomainMailboxStatus =
 export interface ViewMailbox {
   id: string;
   email: string;
+  name: string;
   first_name: string;
   last_name: string;
   local_part: string;
   secondary_email: string;
   status: MailDomainMailboxStatus;
+  mailbox: MailDomainMailbox;
+  isCurrentUser?: boolean;
 }
