@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.19.1] - 2025-09-19
+
 ## [1.19.0] - 2025-09-03
 
 - ✨(front) add modal update mailboxes #954
@@ -437,7 +439,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.19.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.19.1...main
+[1.19.1]: https://github.com/suitenumerique/people/releases/v1.19.1
 [1.19.0]: https://github.com/suitenumerique/people/releases/v1.19.0
 [1.18.2]: https://github.com/suitenumerique/people/releases/v1.18.2
 [1.18.1]: https://github.com/suitenumerique/people/releases/v1.18.1
