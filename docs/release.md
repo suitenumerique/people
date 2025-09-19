@@ -29,36 +29,36 @@ Whenever we are cooking a new release (e.g. `4.18.1`) we should follow a standar
         🔖(minor) release version 4.18.1
         ```
 
-3.  Open a pull request ask you to wait for an approval from your peers and merge it.
+    5. Open a PR. Wait for an approval from your peers and merge it.
 
-4.  Ask you to tag and push your commit:
+    > [!NOTE]  
+    > It also open the PR for pre-prod deployment, see following section.
+
+3.  Following release script instructions, tag and push your commit:
 
     ```bash
     git tag v4.18.1 && git push origin tag v4.18.1
     ```
 
     Doing this triggers the CI and tells it to build the new Docker image versions that you targeted earlier in the Helm files.
+    
+    You can ensure the new [backend](https://hub.docker.com/r/lasuite/people-backend/tags) and [frontend](https://hub.docker.com/r/lasuite/people-frontend/tags) image tags are on Docker Hub.
 
-5.  Ensure the new [backend](https://hub.docker.com/r/lasuite/people-backend/tags) and [frontend](https://hub.docker.com/r/lasuite/people-frontend/tags) image tags are on Docker Hub.
 
-6. Create a PR on the [lasuite-deploiement](https://github.com/numerique-gouv/lasuite-deploiement) repository to bump the preprod version.
+# Deploying 
 
-7.  The release is now done!
+## Staging
 
-# Deploying
+The `staging` platform is deployed automatically with every update of the `main` branch.
 
-> [!TIP]
-> The `staging` platform is deployed automatically with every update of the `main` branch.
+## Pre-prod and production
 
-Making a new release doesn't publish it automatically in production.
+If you used the release script and had permission to push on [lasuite-deploiement](https://github.com/numerique-gouv/lasuite-deploiement), a deployment branch has been created. You can skip step 1.
 
-Deployment is done by ArgoCD. ArgoCD checks for the `production` tag and automatically deploys the production platform with the targeted commit.
+Otherwise, for manual pre-prod and production deployments :
+1. Bump tag version for both front-end and back-end images in the `.gotmpl` file located in `manifests/<your-product>/env.d/<your-environment>/`, 
+2. Add optional new secrets and variables, if applicable
+3. Create a pull request
+4. Wait for approval and merge PR
 
-To publish, we mark the commit we want with the `production` tag. ArgoCD is then notified that the tag has changed. It then deploys the Docker image tags specified in the Helm files of the targeted commit.
-
-To publish the release you just made:
-
-```bash
-git tag --force production v4.18.1
-git push --force origin production
-```
+The release is now done! 🎉
