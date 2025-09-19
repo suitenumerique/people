@@ -2,10 +2,14 @@
 """Define here some fake data from dimail, useful to mock dimail response"""
 
 import json
+import re
+
+import pytest
+import responses
+from rest_framework import status
+
 
 ## USERS
-
-
 def response_user_created(user_sub):
     """mimic dimail response upon successful user creation."""
     return json.dumps(
@@ -19,7 +23,6 @@ def response_user_created(user_sub):
 
 
 ## DOMAINS
-
 CHECK_DOMAIN_BROKEN = {
     "name": "example.fr",
     "state": "broken",
@@ -290,12 +293,22 @@ DOMAIN_SPEC = [
 
 
 ## TOKEN
-
 TOKEN_OK = json.dumps({"access_token": "token", "token_type": "bearer"})
 
+
+@pytest.fixture(name="response_token_ok")
+def response_token_ok():
+    """Mock dimail response when /token/ endpoit is given valid credentials."""
+    return responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body=TOKEN_OK,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+
 ## ALLOWS
-
-
 def response_allows_created(user_name, domain_name):
     """mimic dimail response upon successful allows creation.
     Dimail expects a name but our names are ProConnect's uuids."""
@@ -303,8 +316,6 @@ def response_allows_created(user_name, domain_name):
 
 
 ## MAILBOXES
-
-
 def response_mailbox_created(email_address):
     """mimic dimail response upon successful mailbox creation."""
     return json.dumps({"email": email_address, "password": "password"})

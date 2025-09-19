@@ -20,8 +20,8 @@ from core import factories as core_factories
 from mailbox_manager import enums, factories, models
 from mailbox_manager.api.client import serializers
 from mailbox_manager.tests.fixtures.dimail import (
-    TOKEN_OK,
     response_mailbox_created,
+    response_token_ok,
 )
 
 pytestmark = pytest.mark.django_db
@@ -86,11 +86,81 @@ def test_api_mailboxes__create_viewer_failure():
     assert not models.Mailbox.objects.exists()
 
 
+def test_api_mailboxes__create_display_name_must_be_unique():
+    """Primary id on OpenXchange is display name (first_name + last_name).
+    It needs to be unique on each context. We don't track context info for now
+    but can impose uniqueness by domain."""
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+    existing_mailbox = factories.MailboxFactory(domain=access.domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    new_mailbox_data = {
+        "local_part": "something_else",
+        "first_name": existing_mailbox.first_name,
+        "last_name": existing_mailbox.last_name,
+    }
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        new_mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "__all__": [
+            "Mailbox with this First name, Last name and Domain already exists.",
+        ]
+    }
+    assert models.Mailbox.objects.count() == 1
+
+
+@responses.activate
+def test_api_mailboxes__create_display_name_no_constraint_on_different_domains(
+    response_token_ok,
+):
+    """Should still be allowed to user same display name on another domain"""
+    existing_mailbox = factories.MailboxFactory()
+
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
+    new_mailbox_data = {
+        "local_part": "something_else",
+        "first_name": existing_mailbox.first_name,
+        "last_name": existing_mailbox.last_name,
+    }
+
+    # ensure response
+    # token call in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{new_mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        new_mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["first_name"] == existing_mailbox.first_name
+    assert response.json()["last_name"] == existing_mailbox.last_name
+    assert response.json()["status"] == enums.MailboxStatusChoices.ENABLED
+    assert models.Mailbox.objects.count() == 2
+
+
+@responses.activate
 @pytest.mark.parametrize(
     "role",
     [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
 )
-def test_api_mailboxes__create_roles_success(role):
+def test_api_mailboxes__create_roles_success(role, response_token_ok):
     """Users with owner or admin role should be able to create mailbox on the mail domain."""
     mail_domain = factories.MailDomainEnabledFactory()
     access = factories.MailDomainAccessFactory(role=role, domain=mail_domain)
@@ -101,29 +171,23 @@ def test_api_mailboxes__create_roles_success(role):
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build()
     ).data
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_values['local_part']}@{mail_domain.name}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        response = client.post(
-            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-            mailbox_values,
-            format="json",
-        )
+
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_values['local_part']}@{mail_domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
 
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
@@ -140,11 +204,12 @@ def test_api_mailboxes__create_roles_success(role):
     }
 
 
+@responses.activate
 @pytest.mark.parametrize(
     "role",
     [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
 )
-def test_api_mailboxes__create_with_accent_success(role):
+def test_api_mailboxes__create_with_accent_success(role, response_token_ok):
     """Users with proper abilities should be able to create mailbox on the mail domain with a
     first_name accentuated."""
     mail_domain = factories.MailDomainEnabledFactory()
@@ -156,29 +221,23 @@ def test_api_mailboxes__create_with_accent_success(role):
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build(first_name="Aimé")
     ).data
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_values['local_part']}@{mail_domain.name}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        response = client.post(
-            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-            mailbox_values,
-            format="json",
-        )
+
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_values['local_part']}@{mail_domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
 
@@ -225,7 +284,7 @@ def test_api_mailboxes__create_administrator_missing_fields():
     "role",
     [enums.MailDomainRoleChoices.OWNER, enums.MailDomainRoleChoices.ADMIN],
 )
-def test_api_mailboxes__create_without_secondary_email(role, caplog):
+def test_api_mailboxes__create_without_secondary_email(role, caplog, response_token_ok):
     """
     Creating a new mailbox should not require a secondary email.
     We should be able to create a mailbox but not send any email notification.
@@ -239,13 +298,7 @@ def test_api_mailboxes__create_without_secondary_email(role, caplog):
     ).data
     del mailbox_values["secondary_email"]
 
-    responses.add(
-        responses.GET,
-        re.compile(r".*/token/"),
-        body=TOKEN_OK,
-        status=status.HTTP_200_OK,
-        content_type="application/json",
-    )
+    # token response in fixtures
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
@@ -301,7 +354,10 @@ def test_api_mailboxes__cannot_create_on_disabled_domain(role):
     ]
 
 
-def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
+@responses.activate
+def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed(
+    response_token_ok,
+):
     """Duplication case fails on our side at creation step thanks to unique_together
     on Mailbox model and no dimail call should be made."""
     mail_domain = factories.MailDomainEnabledFactory()
@@ -315,27 +371,8 @@ def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
 
     # now we try to make the same mailbox
     mailbox_data = serializers.MailboxSerializer(mailbox).data
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=str(
-                {
-                    "email": f"{mailbox_data['local_part']}@{access.domain.name}",
-                    "password": "newpass",
-                    "uuid": "uuid",
-                }
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
+    with responses.RequestsMock() as rsps:
+        # no call expected
 
         response = client.post(
             f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -350,7 +387,8 @@ def test_api_mailboxes__no_dimail_call_if_mailbox_creation_failed():
         assert len(rsps.calls) == 0
 
 
-def test_api_mailboxes__same_local_part_on_different_domains():
+@responses.activate
+def test_api_mailboxes__same_local_part_on_different_domains(response_token_ok):
     """A domain admin should be able to create a mailbox with the same local part
     of another mailbox, on different domain."""
     # a mailbox exists on another domain
@@ -368,28 +406,20 @@ def test_api_mailboxes__same_local_part_on_different_domains():
         factories.MailboxFactory.build(local_part=existing_mailbox.local_part)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_values['local_part']}@{access.domain.name}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_values,
-            format="json",
-        )
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_values['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
 
     assert response.status_code == status.HTTP_201_CREATED
     assert (
@@ -397,6 +427,7 @@ def test_api_mailboxes__same_local_part_on_different_domains():
     )
 
 
+@responses.activate
 @pytest.mark.parametrize(
     "domain_status",
     [
@@ -421,14 +452,13 @@ def test_api_mailboxes__create_pending_mailboxes(domain_status):
     mailbox_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build()
     ).data
-    with responses.RequestsMock():
-        # We add no response in RequestsMock
-        # because we expect no outside calls to be made
-        response = client.post(
-            f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
-            mailbox_values,
-            format="json",
-        )
+    # We add no response in RequestsMock
+    # because we expect no outside calls to be made
+    response = client.post(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
+        mailbox_values,
+        format="json",
+    )
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
     assert mailbox.status == "pending"
@@ -436,8 +466,7 @@ def test_api_mailboxes__create_pending_mailboxes(domain_status):
 
 ### REACTING TO DIMAIL-API
 ### We mock dimail's responses to avoid testing dimail's container too
-
-
+@responses.activate
 def test_api_mailboxes__unrelated_user_provisioning_api_not_called():
     """
     Provisioning API should not be called if an user tries
@@ -450,19 +479,20 @@ def test_api_mailboxes__unrelated_user_provisioning_api_not_called():
     body_values = serializers.MailboxSerializer(
         factories.MailboxFactory.build(domain=domain)
     ).data
-    with responses.RequestsMock():
-        # We add no simulated response in RequestsMock
-        # because we expected no "outside" calls to be made
-        response = client.post(
-            f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/",
-            body_values,
-            format="json",
-        )
-        # No exception raised by RequestsMock means no call was sent
-        # our API blocked the request before sending it
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # We add no simulated response in RequestsMock
+    # because we expected no "outside" calls to be made
+    response = client.post(
+        f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/",
+        body_values,
+        format="json",
+    )
+    # No exception raised by RequestsMock means no call was sent
+    # our API blocked the request before sending it
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+@responses.activate
 def test_api_mailboxes__domain_viewer_provisioning_api_not_called():
     """
     Provisioning API should not be called if a domain viewer tries
@@ -477,21 +507,21 @@ def test_api_mailboxes__domain_viewer_provisioning_api_not_called():
     client = APIClient()
     client.force_login(access.user)
     body_values = serializers.MailboxSerializer(factories.MailboxFactory.build()).data
-    with responses.RequestsMock():
-        # We add no simulated response in RequestsMock
-        # because we expected no "outside" calls to be made
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            body_values,
-            format="json",
-        )
-        # No exception raised by RequestsMock means no call was sent
-        # our API blocked the request before sending it
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+    # We add no simulated response in RequestsMock
+    # because we expected no "outside" calls to be made
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        body_values,
+        format="json",
+    )
+    # No exception raised by RequestsMock means no call was sent
+    # our API blocked the request before sending it
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+@responses.activate
 @mock.patch.object(Logger, "error")
-def test_api_mailboxes__async_dimail_unauthorized(mock_error):
+def test_api_mailboxes__async_dimail_unauthorized(mock_error, response_token_ok):
     """
     Dimail should raise an error if token has been successfully granted
     but mailbox creation request returns a 403.
@@ -508,30 +538,23 @@ def test_api_mailboxes__async_dimail_unauthorized(mock_error):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,  # user is in dimail-api
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(
-                rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part']}"
-            ),
-            status=status.HTTP_403_FORBIDDEN,
-            content_type="application/json",
-        )
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(
+            rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part']}"
+        ),
+        status=status.HTTP_403_FORBIDDEN,
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_data,
-            format="json",
-        )
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
     assert mock_error.call_count == 1
     assert mock_error.call_args_list[0][0] == (
@@ -540,12 +563,13 @@ def test_api_mailboxes__async_dimail_unauthorized(mock_error):
     )
 
 
+@responses.activate
 @pytest.mark.parametrize(
     "role",
     [enums.MailDomainRoleChoices.ADMIN, enums.MailDomainRoleChoices.OWNER],
 )
 def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioning(
-    role,
+    role, response_token_ok
 ):
     """
     Domain owner/admin should be able to create mailboxes.
@@ -561,42 +585,35 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsp = rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_data['local_part']}@{access.domain.name}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    rsp = responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_data,
-            format="json",
-        )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
 
-        # Checks payload sent to email-provisioning API
-        payload = json.loads(rsps.calls[1].request.body)
-        assert payload == {
-            "displayName": f"{mailbox_data['first_name']} {mailbox_data['last_name']}",
-            "givenName": mailbox_data["first_name"],
-            "surName": mailbox_data["last_name"],
-        }
+    # Checks payload sent to email-provisioning API
+    payload = json.loads(responses.calls[1].request.body)
+    assert payload == {
+        "displayName": f"{mailbox_data['first_name']} {mailbox_data['last_name']}",
+        "givenName": mailbox_data["first_name"],
+        "surName": mailbox_data["last_name"],
+    }
 
-        # Checks response
-        assert response.status_code == status.HTTP_201_CREATED
-        assert rsp.call_count == 1
+    # Checks response
+    assert response.status_code == status.HTTP_201_CREATED
+    assert rsp.call_count == 1
 
     mailbox = models.Mailbox.objects.get()
     assert response.json() == {
@@ -613,6 +630,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     assert mailbox.secondary_email == mailbox_data["secondary_email"]
 
 
+@responses.activate
 @override_settings(MAIL_PROVISIONING_API_CREDENTIALS="wrongCredentials")
 def test_api_mailboxes__dimail_token_permission_denied(caplog):
     """
@@ -628,40 +646,40 @@ def test_api_mailboxes__dimail_token_permission_denied(caplog):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body='{"details": "Permission denied"}',
-            status=status.HTTP_403_FORBIDDEN,
-            content_type="application/json",
-        )
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.GET,
+        re.compile(r".*/token/"),
+        body='{"details": "Permission denied"}',
+        status=status.HTTP_403_FORBIDDEN,
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_data,
-            format="json",
-        )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
-        }
-        # mailbox was created in our side only and in pending status
-        mailbox = models.Mailbox.objects.get()
-        assert mailbox.status == enums.MailboxStatusChoices.PENDING
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {
+        "detail": "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+    }
+    # mailbox was created in our side only and in pending status
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
-        # Check error logger was called
-        log_messages = [msg.message for msg in caplog.records]
-        assert (
-            "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
+    # Check error logger was called
+    log_messages = [msg.message for msg in caplog.records]
+    assert (
+        "[DIMAIL] 403 Forbidden: Could not retrieve a token,\
 please check 'MAIL_PROVISIONING_API_CREDENTIALS' setting."
-            in log_messages
-        )
+        in log_messages
+    )
 
 
-def test_api_mailboxes__user_unrelated_to_domain():
+@responses.activate
+def test_api_mailboxes__user_unrelated_to_domain(response_token_ok):
     """
     API should raise a clear "permission denied" when dimail returns a permission denied
     on mailbox creation. This means token was granted for this user
@@ -676,41 +694,37 @@ def test_api_mailboxes__user_unrelated_to_domain():
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body='{"details": "Permission denied"}',
-            status=status.HTTP_403_FORBIDDEN,
-            content_type="application/json",
-        )
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"details": "Permission denied"}',
+        status=status.HTTP_403_FORBIDDEN,
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_data,
-            format="json",
-        )
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
-        }
-        # mailbox was created in our side only and in pending status
-        mailbox = models.Mailbox.objects.get()
-        assert mailbox.status == enums.MailboxStatusChoices.PENDING
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {
+        "detail": "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+    }
+    # mailbox was created in our side only and in pending status
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
 
 
-def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
+@responses.activate
+def test_api_mailboxes__duplicate_display_name(response_token_ok):
     """
-    API should raise a clear error when dimail returns an unexpected response.
+    In OpenXchange, the display name (first + last name) must be unique.
+    In absence of a specific response from dimail (yet), we catch errors 500 and
+    check if it's not due to the display name already existing in the context
     """
     # creating all needed objects
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
@@ -721,49 +735,171 @@ def test_api_mailboxes__handling_dimail_unexpected_error(caplog):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body='{"detail": "Internal server error"}',
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content_type="application/json",
-        )
-
-        with pytest.raises(HTTPError):
-            response = client.post(
-                f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-                mailbox_data,
-                format="json",
-            )
-            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-            assert response.json() == {
-                "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}"
+        ),
+        body=json.dumps(
+            {
+                "domain_name": str(access.domain),
+                "user_name": mailbox_data["local_part"],
+                "is_alias": "false",
+                "is_mailbox": "false",
+                "is_ox": "true",
+                "ox_primary_email": f"{mailbox_data['local_part']}@some_other_domain.com",
+                "ox_senders": [
+                    "some-alias@un-domaine.fr",
+                    f"{mailbox_data['local_part']}@some_third_domain.com",
+                ],
             }
+        ),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
 
-        # mailbox was created in our side only and in pending status
-        mailbox = models.Mailbox.objects.get()
-        assert mailbox.status == enums.MailboxStatusChoices.PENDING
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "NON_FIELD_ERRORS": [
+            f"First name + last name combination already in use in this context : \
+{mailbox_data['local_part']}@some_other_domain.com."
+        ]
+    }
 
-        # Check error logger was called
-        assert caplog.records[0].levelname == "ERROR"
-        assert (
-            caplog.records[0].message
-            == "[DIMAIL] unexpected error: 500 {'detail': 'Internal server error'}"
+
+@responses.activate
+def test_api_mailboxes__handling_dimail_unexpected_error(response_token_ok, caplog):
+    """
+    API should raise a clear error when dimail returns an unexpected response.
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
+        ),
+        body='{"detail": "Domain not found"}',
+        status=status.HTTP_404_NOT_FOUND,
+        content_type="application/json",
+    )
+
+    with pytest.raises(HTTPError):
+        response = client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
         )
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.json() == {
+            "detail": "Unexpected response from dimail: {'details': 'Internal server error'}"
+        }
+
+    # mailbox was created in our side only and in pending status
+    mailbox = models.Mailbox.objects.get()
+    assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+    # Check error logger was called
+    assert caplog.records[0].levelname == "ERROR"
+    assert (
+        caplog.records[0].message
+        == "[DIMAIL] unexpected error: 500 {'detail': 'Internal server error'}"
+    )
 
 
+@responses.activate
+def test_api_mailboxes__display_name_duplicate_error(response_token_ok):
+    """
+    API should raise a clear error when display_name is already used on context.
+    """
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+    mailbox_data = serializers.MailboxSerializer(
+        factories.MailboxFactory.build(domain=access.domain)
+    ).data
+
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body='{"detail": "Internal server error"}',
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content_type="application/json",
+    )
+    responses.add(
+        responses.GET,
+        re.compile(
+            rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
+        ),
+        body=json.dumps(
+            {
+                "domain_name": access.domain.name,
+                "user_name": mailbox_data["local_part"],
+                "is_alias": False,
+                "is_mailbox": False,
+                "is_ox": True,
+                "ox_primary_email": f"{mailbox_data['local_part']}@primary.domain.com",
+                "ox_senders": [
+                    f"{mailbox_data['local_part']}@secondary.domain.com",
+                ],
+            }
+        ),
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "NON_FIELD_ERRORS": [
+            f"First name + last name combination already in use in this \
+context : {mailbox_data['local_part']}@primary.domain.com."
+        ]
+    }
+    assert not models.Mailbox.objects.exists() # failing mailbox was not created
+
+
+@responses.activate
 @mock.patch.object(Logger, "error")
 @mock.patch.object(Logger, "info")
-def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
+def test_api_mailboxes__send_correct_logger_infos(
+    mock_info, mock_error, response_token_ok
+):
     """
     Upon requesting mailbox creation, logs should report request user.
     """
@@ -775,31 +911,23 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_data['local_part']}@{access.domain.name}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
 
-        response = client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-            mailbox_data,
-            format="json",
-        )
-        assert response.status_code == status.HTTP_201_CREATED
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
 
     # Logger
     assert not mock_error.called
@@ -816,8 +944,9 @@ def test_api_mailboxes__send_correct_logger_infos(mock_info, mock_error):
     assert expected_messages.issubset(actual_messages)
 
 
+@responses.activate
 @mock.patch.object(Logger, "info")
-def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
+def test_api_mailboxes__sends_new_mailbox_notification(mock_info, response_token_ok):
     """
     Creating a new mailbox should send confirmation email
     to secondary email.
@@ -834,37 +963,24 @@ def test_api_mailboxes__sends_new_mailbox_notification(mock_info):
         factories.MailboxFactory.build(domain=access.domain)
     ).data
 
-    with responses.RequestsMock() as rsps:
-        # Ensure successful response using "responses":
-        rsps.add(
-            rsps.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
+    # Ensure successful response using "responses":
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(f"{mailbox_data['local_part']}@{access.domain}"),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    with mock.patch("django.core.mail.send_mail") as mock_send:
+        client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
         )
-        rsps.add(
-            rsps.POST,
-            re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-            body=response_mailbox_created(
-                f"{mailbox_data['local_part']}@{access.domain}"
-            ),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
-        )
-        with mock.patch("django.core.mail.send_mail") as mock_send:
-            client.post(
-                f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
-                mailbox_data,
-                format="json",
-            )
 
-        assert mock_send.call_count == 1
-        assert (
-            "Informations sur votre nouvelle boîte mail"
-            in mock_send.mock_calls[0][1][1]
-        )
-        assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
+    assert mock_send.call_count == 1
+    assert "Informations sur votre nouvelle boîte mail" in mock_send.mock_calls[0][1][1]
+    assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
 
     expected_messages = {
         (

@@ -21,6 +21,10 @@ and this project adheres to
 - ✨(api) update mailboxes #934
 - ✨(api) give update rights to domain viewer on own mailbox #934
 
+### Fixed
+
+- 🐛(dimail) grab duplicate displayname error #961
+
 ### Changed
 
 - 💥(sentry) remove `DJANGO_` before Sentry DSN env variable #957
