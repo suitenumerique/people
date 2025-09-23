@@ -47,6 +47,13 @@ RUN yarn build
 # ---- Front-end image ----
 FROM nginxinc/nginx-unprivileged:alpine3.21 AS frontend-production
 
+# Upgrade system packages to install security updates
+USER root
+RUN apk update && \
+  apk upgrade && \
+  rm -rf /var/cache/apk/*
+USER -
+
 # Un-privileged user running the application
 ARG DOCKER_USER
 USER ${DOCKER_USER}
