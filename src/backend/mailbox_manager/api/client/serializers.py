@@ -3,6 +3,7 @@
 from logging import getLogger
 
 from django.contrib.auth.hashers import make_password
+from django.core import exceptions as django_exceptions
 
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
@@ -44,31 +45,38 @@ class MailboxSerializer(serializers.ModelSerializer):
                 "password": make_password(None),  # generate an unusable password
             }
         )
-        if mailbox.domain.status == enums.MailDomainStatusChoices.ENABLED:
-            client = DimailAPIClient()
+
+        if validated_data["domain"].status == enums.MailDomainStatusChoices.ENABLED:
             # send new mailbox request to dimail
-            response = client.create_mailbox(mailbox, self.context["request"].user.sub)
+            client = DimailAPIClient()
+            try:
+                response = client.create_mailbox(
+                    mailbox, self.context["request"].user.sub
+                )
+            except django_exceptions.ValidationError as exc:
+                mailbox.delete()
+                raise exc
 
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
             mailbox_data = response.json()
             mailbox.set_password(mailbox_data["password"])
             mailbox.save()
 
-            if mailbox.secondary_email:
-                # send confirmation email
-                client.notify_mailbox_creation(
-                    recipient=mailbox.secondary_email,
-                    mailbox_data=response.json(),
-                    issuer=self.context["request"].user,
-                )
-            else:
-                logger.warning(
-                    "Email notification for %s creation not sent "
-                    "because no secondary email found",
-                    mailbox,
-                )
+            if mailbox:
+                if mailbox.secondary_email:
+                    # send confirmation email
+                    client.notify_mailbox_creation(
+                        recipient=mailbox.secondary_email,
+                        mailbox_data=response.json(),
+                        issuer=self.context["request"].user,
+                    )
+                else:
+                    logger.warning(
+                        "Email notification for %s creation not sent "
+                        "because no secondary email found",
+                        mailbox,
+                    )
 
-        # actually save mailbox on our database
         return mailbox
 
 
