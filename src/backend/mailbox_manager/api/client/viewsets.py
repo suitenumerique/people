@@ -396,6 +396,7 @@ class MailDomainInvitationViewset(
 
 class AliasViewSet(
     mixins.CreateModelMixin,
+    mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     """API ViewSet for aliases.
