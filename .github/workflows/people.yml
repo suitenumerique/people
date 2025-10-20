@@ -13,7 +13,7 @@ jobs:
   dependencies:
     uses: ./.github/workflows/dependencies.yml
     with:
-      node_version: '18.x'
+      node_version: '22.x'
       with-front-dependencies-installation: true
       with-build_mails: true
 
