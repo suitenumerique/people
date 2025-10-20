@@ -23,7 +23,7 @@ RUN mkdir /install && \
 
 
 # ---- mails ----
-FROM node:20 AS mail-builder
+FROM node:22 AS mail-builder
 
 COPY ./src/mail /mail/app
 
