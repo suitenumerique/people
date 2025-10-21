@@ -395,9 +395,10 @@ class MailDomainInvitationViewset(
 
 
 class AliasViewSet(
+    viewsets.GenericViewSet,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    viewsets.GenericViewSet,
+    mixins.DestroyModelMixin,
 ):
     """API ViewSet for aliases.
 
@@ -405,6 +406,9 @@ class AliasViewSet(
         - local_part: str
         - destination: str
         Return a newly created alias
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/accesses/<alias-local-part>/
+        Delete targeted alias
     """
 
     lookup_field = "id"
