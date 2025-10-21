@@ -476,3 +476,26 @@ class Alias(BaseModel):
 
     def __str__(self):
         return f"{self.local_part} to {self.destination}"
+
+    def get_abilities(self, user):
+        """Compute and return abilities for a given user. Admin and owners can
+        edit aliases, but also viewer if the alias points to their email."""
+        try:
+            role = user.mail_domain_accesses.get(domain=self.domain).role
+        except (MailDomainAccess.DoesNotExist, IndexError):
+            role = None
+
+        is_owner_or_admin = role in [
+            MailDomainRoleChoices.OWNER,
+            MailDomainRoleChoices.ADMIN,
+        ]
+
+        is_self = self.destination == user.email
+
+        return {
+            "get": bool(role),
+            "post": is_owner_or_admin,
+            "patch": False,
+            "put": False,
+            "delete": is_owner_or_admin or is_self,
+        }

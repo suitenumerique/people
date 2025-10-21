@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailbox_manager', '0025_alter_mailbox_secondary_email'),
+        ('mailbox_manager', '0026_alter_mailbox_unique_together_and_more'),
     ]
 
     operations = [
