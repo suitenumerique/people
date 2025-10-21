@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(mailbox) fix case-sensitive duplicates on display names
 - ✨(mailbox) synchronize password of newly created mailbox with Dimail's
 
 ## [1.19.1] - 2025-09-19
