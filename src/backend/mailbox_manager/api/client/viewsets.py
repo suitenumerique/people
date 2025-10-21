@@ -40,7 +40,7 @@ class MailDomainViewSet(
         Fetch domain status and expected config from dimail.
     """
 
-    permission_classes = [permissions.AccessPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.MailDomainSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "name"]
@@ -112,7 +112,7 @@ class MailDomainAccessViewSet(
         Delete targeted domain access
     """
 
-    permission_classes = [permissions.MailDomainAccessRolePermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.MailDomainAccessSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["role", "user__email", "user__name"]
@@ -355,7 +355,7 @@ class MailDomainInvitationViewset(
     """
 
     lookup_field = "id"
-    permission_classes = [permissions.AccessPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     queryset = (
         models.MailDomainInvitation.objects.all()
         .select_related("domain")
@@ -395,12 +395,15 @@ class MailDomainInvitationViewset(
 
 
 class AliasViewSet(
-    viewsets.GenericViewSet,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
 ):
     """API ViewSet for aliases.
+
+    GET /api/<version>/mail-domains/<domain_slug>/aliases/
+        Return list of aliases related to that domain
 
     POST /api/<version>/mail-domains/<domain_slug>/aliases/ with expected data:
         - local_part: str
@@ -411,7 +414,7 @@ class AliasViewSet(
         Delete targeted alias
     """
 
-    lookup_field = "id"
+    lookup_field = "local_part"
     permission_classes = [permissions.DomainPermission]
     serializer_class = serializers.AliasSerializer
     queryset = (
@@ -447,6 +450,18 @@ class AliasViewSet(
             )
 
         return queryset
+
+    def get_permissions(self):
+        """Add a specific permission for domain viewers to delete their aliases."""
+        if self.action in ["destroy"]:
+            permission_classes = [
+                permissions.DomainResourcePermission
+                | permissions.IsAliasDestinationPermission
+            ]
+        else:
+            return super().get_permissions()
+
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         """Create new mailbox."""

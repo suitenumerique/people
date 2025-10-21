@@ -45,21 +45,63 @@ def test_api_aliases_delete__no_access_forbidden():
 
 def test_api_aliases_delete__viewer_forbidden():
     """
-    Authenticated users should not be allowed to delete a mail domain access for a
+    Authenticated users should not be allowed to delete aliases for a
     mail domain in which they are a simple viewer.
     """
     authenticated_user = core_factories.UserFactory()
     mail_domain = factories.MailDomainFactory(
         users=[(authenticated_user, enums.MailDomainRoleChoices.VIEWER)]
     )
-    access = factories.MailDomainAccessFactory(domain=mail_domain)
+    alias = factories.AliasFactory(domain=mail_domain)
 
     client = APIClient()
     client.force_login(authenticated_user)
     response = client.delete(
-        f"/api/v1.0/mail-domains/{mail_domain.slug}/accesses/{access.id!s}/",
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/aliases/{alias.local_part}/",
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert models.MailDomainAccess.objects.count() == 2
-    assert models.MailDomainAccess.objects.filter(user=access.user).exists()
+    assert models.Alias.objects.count() == 1
+
+
+def test_api_aliases_delete__viewer_can_delete_self_alias():
+    """
+    Authenticated users should be allowed to delete aliases when linking
+    to their own mailbox.
+    """
+    authenticated_user = core_factories.UserFactory()
+    mail_domain = factories.MailDomainFactory(
+        users=[(authenticated_user, enums.MailDomainRoleChoices.VIEWER)]
+    )
+    alias = factories.AliasFactory(
+        domain=mail_domain, destination=authenticated_user.email
+    )
+
+    client = APIClient()
+    client.force_login(authenticated_user)
+    response = client.delete(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/aliases/{alias.local_part}/",
+    )
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not models.Alias.objects.exists()
+
+
+def test_api_aliases_delete__administrators_allowed():
+    """
+    Administrators of a mail domain should be allowed to delete accesses excepted owner accesses.
+    """
+    authenticated_user = core_factories.UserFactory()
+    mail_domain = factories.MailDomainFactory(
+        users=[(authenticated_user, enums.MailDomainRoleChoices.ADMIN)]
+    )
+    alias = factories.AliasFactory(domain=mail_domain)
+
+    client = APIClient()
+    client.force_login(authenticated_user)
+    response = client.delete(
+        f"/api/v1.0/mail-domains/{mail_domain.slug}/aliases/{alias.local_part}/",
+    )
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not models.Alias.objects.exists()

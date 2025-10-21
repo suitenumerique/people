@@ -327,18 +327,15 @@ class AliasSerializer(serializers.ModelSerializer):
         """
         Override create function to fire a request to dimail on alias creation.
         """
-        alias = super().create(validated_data)
+        if validated_data["domain"].status == enums.MailDomainStatusChoices.ENABLED:
+            alias = models.Alias(**validated_data)
 
-        if alias.domain.status == enums.MailDomainStatusChoices.ENABLED:
-            client = DimailAPIClient()
             # send new alias request to dimail
-            try:
-                client.create_alias(alias, self.context["request"].user.sub)
-            except django_exceptions.ValidationError as exc:
-                alias.delete()
-                raise exc
+            client = DimailAPIClient()
+            client.create_alias(alias, self.context["request"].user.sub)
+            return super().create(validated_data)
 
-        return alias
+        return None
 
     def validate_local_part(self, value):
         """Validate this local part does not match a mailbox."""
