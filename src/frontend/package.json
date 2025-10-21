@@ -25,10 +25,10 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@types/node": "22.15.18",
-    "@types/react-dom": "19.1.5",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "typescript": "5.8.3"
+    "@types/node": "22.18.12",
+    "@types/react-dom": "19.2.2",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "typescript": "5.9.3"
   }
 }
