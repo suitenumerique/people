@@ -711,4 +711,17 @@ class DimailAPIClient:
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
+        if response.status_code == status.HTTP_409_CONFLICT:
+            logger.error(
+                "[DIMAIL] Out of sync with dimail. Admin, please import aliases for domain %s",
+                str(alias.domain),
+            )
+            raise exceptions.ValidationError(
+                {
+                    "NON_FIELD_ERRORS": [
+                        "Alias already exists. Your domain is out of sync, please contact our support."
+                    ]
+                }
+            )
+
         return self.raise_exception_for_unexpected_response(response)
