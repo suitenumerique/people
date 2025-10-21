@@ -77,7 +77,7 @@ def test_api_mailboxes__create_viewer_failure(mailbox_data):
 def test_api_mailboxes__create_display_name_must_be_unique():
     """Primary id on OpenXchange is display name (first_name + last_name).
     It needs to be unique on each context. We don't track context info for now
-    but can impose uniqueness by domain."""
+    but can impose case-insensitive uniqueness by domain."""
     access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
     existing_mailbox = factories.MailboxFactory(domain=access.domain)
 
@@ -86,8 +86,8 @@ def test_api_mailboxes__create_display_name_must_be_unique():
 
     new_mailbox_data = {
         "local_part": "something_else",
-        "first_name": existing_mailbox.first_name,
-        "last_name": existing_mailbox.last_name,
+        "first_name": existing_mailbox.first_name.upper(),  # ensure case-insensitivity
+        "last_name": existing_mailbox.last_name.lower(),
     }
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",

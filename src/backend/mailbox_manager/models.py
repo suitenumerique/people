@@ -10,6 +10,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.db import models
+from django.db.models.functions import Lower
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext, override
@@ -308,12 +309,17 @@ class Mailbox(AbstractBaseUser, BaseModel):
                 fields=["local_part", "domain"], name="unique_username"
             ),
             models.UniqueConstraint(
-                fields=["first_name", "last_name", "domain"],
+                Lower("first_name"),
+                Lower("last_name"),
+                "domain",
                 name="unique_ox_display_name",
+                violation_error_message="Mailbox with this First name, \
+Last name and Domain already exists.",
             ),
             # Display name in OpenXChange must be unique
             # To avoid sending failing requests to dimail,
             # we impose uniqueness here too
+            # And compare to lowercase to enforce case-insensitive uniqueness
         ]
         ordering = ["-created_at"]
 
