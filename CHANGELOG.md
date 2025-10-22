@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.20.0] - 2025-10-22
+
 - 🐛(mailbox) fix case-sensitive duplicates on display names
 - ✨(mailbox) synchronize password of newly created mailbox with Dimail's
 
@@ -448,7 +450,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.19.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.20.0...main
+[1.20.0]: https://github.com/suitenumerique/people/releases/v1.20.0
 [1.19.1]: https://github.com/suitenumerique/people/releases/v1.19.1
 [1.19.0]: https://github.com/suitenumerique/people/releases/v1.19.0
 [1.18.2]: https://github.com/suitenumerique/people/releases/v1.18.2
