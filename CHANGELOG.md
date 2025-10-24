@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(alias) can create, list and delete aliases #974
+
 ## [1.20.0] - 2025-10-22
 
 - 🐛(mailbox) fix case-sensitive duplicates on display names
