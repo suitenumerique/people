@@ -1,7 +1,7 @@
 """
 Unit tests for the mailbox API
 """
-# pylint: disable=W0613
+# pylint: disable=W0613, C0302
 
 import json
 import re
@@ -434,6 +434,35 @@ def test_api_mailboxes__create_pending_mailboxes(domain_status, mailbox_data):
     assert response.status_code == status.HTTP_201_CREATED
     mailbox = models.Mailbox.objects.get()
     assert mailbox.status == "pending"
+
+
+def test_api_mailboxes__existing_alias_bad_request(mailbox_data):
+    """
+    Cannot create mailbox if local_part is already used by an alias.
+    """
+    alias = factories.AliasFactory()
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN, domain=alias.domain
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    # No response because we expect no outside calls to be made
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        {
+            "local_part": alias.local_part,
+            "first_name": mailbox_data["first_name"],
+            "last_name": mailbox_data["last_name"],
+            "secondary_email": mailbox_data["secondary_email"],
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "local_part": [f'Local part "{alias.local_part}" already used by an alias.']
+    }
+    assert not models.Mailbox.objects.exists()
 
 
 ### REACTING TO DIMAIL-API

@@ -725,3 +725,44 @@ class DimailAPIClient:
             )
 
         return self.raise_exception_for_unexpected_response(response)
+
+    def delete_alias(self, alias, request_user=None):
+        """Send a Delete alias request to mail provisioning API."""
+
+        headers = self.get_headers()
+
+        try:
+            response = session.delete(
+                f"{self.API_URL}/domains/{alias.domain.name}/aliases/{alias.local_part}/{alias.destination}",
+                json={},
+                headers=headers,
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_201_CREATED:
+            logger.info(
+                "User %s removed destination %s from alias %s.",
+                request_user,
+                alias.destination,
+                f"{alias.local_part}@{alias.domain}",
+            )
+            return response
+
+        if response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: you cannot access domain %s",
+                str(alias.domain),
+            )
+            raise exceptions.PermissionDenied(
+                "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+            )
+
+        return self.raise_exception_for_unexpected_response(response)
