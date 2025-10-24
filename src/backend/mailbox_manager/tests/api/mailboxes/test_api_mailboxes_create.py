@@ -436,6 +436,36 @@ def test_api_mailboxes__create_pending_mailboxes(domain_status, mailbox_data):
     assert mailbox.status == "pending"
 
 
+def test_api_mailboxes__cannot_duplicate_existing_alias(mailbox_data):
+    """
+    Cannot create mailbox if local_part is already used by an alias.
+    """
+    alias = factories.AliasFactory()
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN, domain=alias.domain
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    # No response because we expect no outside calls to be made
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        {
+            "local_part": alias.local_part,
+            "first_name": mailbox_data["first_name"],
+            "last_name": mailbox_data["last_name"],
+            "secondary_email": mailbox_data["secondary_email"],
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    import pdb
+
+    pdb.set_trace()
+    assert response.json() == f'Local part "{value}" already used by an alias.'
+    assert not models.Mailbox.objects.exists()
+
+
 ### REACTING TO DIMAIL-API
 ### We mock dimail's responses to avoid testing dimail's container too
 @responses.activate
