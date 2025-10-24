@@ -275,6 +275,12 @@ class MailBoxViewSet(
             return self.queryset.filter(domain__slug=domain_slug)
         return self.queryset
 
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
     def get_permissions(self):
         """Add a specific permission for domain viewers to update their own mailbox."""
         if self.action in ["update", "partial_update"]:

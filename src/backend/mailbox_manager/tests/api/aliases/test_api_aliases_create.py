@@ -80,7 +80,7 @@ def test_api_aliases_create__duplicate_forbidden():
     assert models.Alias.objects.filter(domain=access.domain).count() == 1
 
 
-def test_api_aliases_create__existing_alias_bad_request():
+def test_api_aliases_create__existing_mailbox_bad_request():
     """Cannot create alias if local_part is already used by a mailbox."""
     access = factories.MailDomainAccessFactory(
         role="owner", domain=factories.MailDomainEnabledFactory()
@@ -95,7 +95,7 @@ def test_api_aliases_create__existing_alias_bad_request():
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
-        "local_part": [f'Local part "{mailbox.local_part}" already used for a mailbox.']
+        "local_part": [f'Local part "{mailbox.local_part}" already used by a mailbox.']
     }
     assert not models.Alias.objects.exists()
 
