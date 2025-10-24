@@ -8,11 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
-- ✨(alias) can create, list and delete aliases #974
+- ✨(aliases) can create, list and delete aliases #974
 
 ## [1.20.0] - 2025-10-22
 
-- 🐛(mailbox) fix case-sensitive duplicates on display names
+- ✨(models) impose uniqueness on display name, to match ox's constraint
+- 🐛(dimail) catch duplicate displayname error
 - ✨(mailbox) synchronize password of newly created mailbox with Dimail's
 
 ## [1.19.1] - 2025-09-19
