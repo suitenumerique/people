@@ -3,7 +3,10 @@ Tests for aliases API endpoint in People's app mailbox_manager.
 Focus on "list" action.
 """
 
+import re
+
 import pytest
+import responses
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -87,6 +90,7 @@ def test_api_aliases_delete__viewer_can_delete_self_alias():
     assert not models.Alias.objects.exists()
 
 
+@responses.activate
 def test_api_aliases_delete__administrators_allowed():
     """
     Administrators of a mail domain should be allowed to delete accesses excepted owner accesses.
@@ -96,6 +100,14 @@ def test_api_aliases_delete__administrators_allowed():
         users=[(authenticated_user, enums.MailDomainRoleChoices.ADMIN)]
     )
     alias = factories.AliasFactory(domain=mail_domain)
+
+    # Mock dimail response
+    responses.add(
+        responses.POST,
+        re.compile(r".*/aliases/"),
+        status=status.HTTP_204_NO_CONTENT,
+        content_type="application/json",
+    )
 
     client = APIClient()
     client.force_login(authenticated_user)
