@@ -49,7 +49,7 @@ export const useDeleteMailDomainAccess = (
   return useMutation<void, APIError, DeleteMailDomainAccessProps>({
     mutationFn: deleteMailDomainAccess,
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_MAIL_DOMAIN_ACCESSES],
       });
@@ -60,12 +60,12 @@ export const useDeleteMailDomainAccess = (
         queryKey: [KEY_LIST_MAIL_DOMAIN],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, context);
+        options.onSuccess(data, variables, onMutateResult, context);
       }
     },
-    onError: (error, variables, context) => {
+    onError: (error, variables, onMutateResult, context) => {
       if (options?.onError) {
-        options.onError(error, variables, context);
+        options.onError(error, variables, onMutateResult, context);
       }
     },
   });
