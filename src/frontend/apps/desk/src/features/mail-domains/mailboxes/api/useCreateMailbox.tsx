@@ -46,7 +46,7 @@ export const useCreateMailbox = (options: UseCreateMailboxParams) => {
   const queryClient = useQueryClient();
   return useMutation<void, APIError, CreateMailboxParams>({
     mutationFn: createMailbox,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       void queryClient.invalidateQueries({
         queryKey: [
           KEY_LIST_MAILBOX,
@@ -54,12 +54,12 @@ export const useCreateMailbox = (options: UseCreateMailboxParams) => {
         ],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, context);
+        options.onSuccess(data, variables, onMutateResult, context);
       }
     },
-    onError: (error, variables, context) => {
+    onError: (error, variables, onMutateResult, context) => {
       if (options?.onError) {
-        options.onError(error, variables, context);
+        options.onError(error, variables, onMutateResult, context);
       }
     },
   });
