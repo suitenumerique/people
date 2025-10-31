@@ -2,7 +2,7 @@
 
 from django.db.models import Q, Subquery
 
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -477,3 +477,19 @@ class AliasViewSet(
                 slug=domain_slug
             )
         super().perform_create(serializer)
+
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy method to send a delete request to dimail
+        and return clear message if domain out of sync."""
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        client = DimailAPIClient()
+        dimail_response = client.delete_alias(instance)
+        if dimail_response.status_code == status.HTTP_404_NOT_FOUND:
+            return Response(
+                "Alias already deleted. Domain out of sync, please contact our support.",
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

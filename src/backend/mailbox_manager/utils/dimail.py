@@ -747,7 +747,7 @@ class DimailAPIClient:
             )
             raise error
 
-        if response.status_code == status.HTTP_201_CREATED:
+        if response.status_code == status.HTTP_204_NO_CONTENT:
             logger.info(
                 "User %s removed destination %s from alias %s.",
                 request_user,
@@ -764,5 +764,15 @@ class DimailAPIClient:
             raise exceptions.PermissionDenied(
                 "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
+
+        if response.status_code == status.HTTP_404_NOT_FOUND:
+            logger.error(
+                "[DIMAIL] 404, alias %s not found. Domain out of sync with dimail. Admin, please import aliases for domain %s",
+                str(alias.local_part),
+                str(alias.domain),
+            )
+            # we don't raise error because we actually want this alias to be deleted
+            # to match dimail's states
+            return response
 
         return self.raise_exception_for_unexpected_response(response)
