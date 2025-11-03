@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(aliases) import existing aliases from dimail
 - 🛂(permissions) return 404 to users with no access to domain #985 
 - ✨(aliases) can create, list and delete aliases #974
 
