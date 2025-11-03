@@ -10,8 +10,6 @@ from requests import exceptions
 from mailbox_manager import enums, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
-# Prevent Ruff complaining about mark_safe below
-
 
 @admin.action(description=_("Import emails from dimail"))
 def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
@@ -41,6 +39,50 @@ def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disabl
                     "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
                 )
                 % {"domain": domain.name, "mailboxes": ", ".join(imported_mailboxes)},
+            )
+    if excluded_domains:
+        messages.warning(
+            request,
+            _("Sync require enabled domains. Excluded domains: %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
+        )
+
+
+@admin.action(description=_("Import aliases from dimail"))
+def sync_aliases_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    """
+    Admin action to import existing aliases from dimail.
+    Checks alias is not a duplicate and that usernames don't clash with existing mailboxes.
+    """
+    excluded_domains = []
+
+    client = DimailAPIClient()
+
+    for domain in queryset:
+        if domain.status != enums.MailDomainStatusChoices.ENABLED:
+            excluded_domains.append(domain.name)
+            continue
+
+        try:
+            imported_aliases = client.import_aliases(domain)
+        except exceptions.HTTPError as err:
+            messages.error(
+                request,
+                _("Synchronisation failed for %(domain)s with message: %(err)s")
+                % {"domain": domain.name, "err": err},
+            )
+        else:
+            messages.success(
+                request,
+                _(
+                    "Synchronisation succeed for %(domain)s. %(imported_aliases)\
+imported aliases: %(mailboxes)s"
+                )
+                % {
+                    "domain": domain.name,
+                    "number_imported": len(imported_aliases),
+                    "mailboxes": ", ".join(imported_aliases),
+                },
             )
     if excluded_domains:
         messages.warning(
