@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(aliases) import existing aliases from dimail
 - ✨(aliases) can create, list and delete aliases #974
 
 ## [1.20.0] - 2025-10-22

@@ -50,6 +50,42 @@ def sync_mailboxes_from_dimail(modeladmin, request, queryset):  # pylint: disabl
         )
 
 
+@admin.action(description=_("Import aliases from dimail"))
+def sync_aliases_from_dimail(modeladmin, request, queryset): 
+    """Admin action to import existing aliases from dimail. On enabled domains only."""
+    excluded_domains = []
+
+    client = DimailAPIClient()
+
+    for domain in queryset:
+        if domain.status != enums.MailDomainStatusChoices.ENABLED:
+            excluded_domains.append(domain.name)
+            continue
+
+        try:
+            imported_aliases = client.import_aliases(domain)
+        except exceptions.HTTPError as err:
+            messages.error(
+                request,
+                _("Synchronisation failed for %(domain)s with message: %(err)s")
+                % {"domain": domain.name, "err": err},
+            )
+        else:
+            messages.success(
+                request,
+                _(
+                    "Synchronisation succeed for %(domain)s. %(imported_mailboxes) imported aliases: %(mailboxes)s"
+                )
+                % {"domain": domain.name, "number_imported": len(imported_mailboxes), "mailboxes": ", ".join(imported_mailboxes)},
+            )
+    if excluded_domains:
+        messages.warning(
+            request,
+            _("Sync require enabled domains. Excluded domains: %(domains)s")
+            % {"domains": ", ".join(excluded_domains)},
+        )
+
+
 @admin.action(description=_("Check and update status from dimail"))
 def fetch_domain_status_from_dimail(modeladmin, request, queryset):  # pylint: disable=unused-argument
     """Admin action to check domain health with dimail and update domain status."""

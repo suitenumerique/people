@@ -776,3 +776,52 @@ class DimailAPIClient:
             return response
 
         return self.raise_exception_for_unexpected_response(response)
+
+    def import_aliases(self, domain):
+        """Import aliases from dimail. Useful if people fall out of sync with dimail."""
+
+        try:
+            response = session.get(
+                f"{self.API_URL}/domains/{domain.name}/aliases/",
+                headers=self.get_headers(),
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code != status.HTTP_200_OK:
+            return self.raise_exception_for_unexpected_response(response)
+
+        incoming_aliases = response.json()
+        known_aliases = [
+            (known_alias.local_part, known_alias.destination)
+            for known_alias in models.Alias.objects.filter(domain=domain)
+        ]
+        imported_aliases = []
+        for incoming_alias in incoming_aliases:
+            if (
+                not (incoming_alias["username"], incoming_alias["destination"])
+                in known_aliases
+            ):
+                try:
+                    new_alias = models.Alias.objects.create(
+                        local_part=incoming_alias["username"],
+                        destination=incoming_alias["destination"],
+                        domain=domain,
+                    )
+                except (HeaderParseError, NonASCIILocalPartDefect) as err:
+                    logger.warning(
+                        "Import of alias %s to %s failed with error %s",
+                        incoming_alias["username"],
+                        incoming_alias["destination"],
+                        err,
+                    )
+                else:
+                    imported_aliases.append(str(new_alias))
+        return imported_aliases
