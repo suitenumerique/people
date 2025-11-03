@@ -375,12 +375,16 @@ class DimailAPIClient:
             return self.raise_exception_for_unexpected_response(response)
 
         dimail_mailboxes = response.json()
-        people_mailboxes = models.Mailbox.objects.filter(domain=domain)
+        known_mailboxes = models.Mailbox.objects.filter(domain=domain)
+        known_aliases = [
+            known_alias.local_part 
+            for known_alias in models.Alias.objects.filter(domain=domain)
+        ]
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
-            if not dimail_mailbox["email"] in [
-                str(people_mailbox) for people_mailbox in people_mailboxes
-            ]:
+            if dimail_mailbox["email"] not in [
+                str(known_mailboxes) for known_mailboxes in known_mailboxes 
+            ] and dimail_mailbox['email'].split('@')[0] not in known_aliases:
                 try:
                     # sometimes dimail api returns email from another domain,
                     # so we decide to exclude this kind of email
@@ -776,3 +780,58 @@ class DimailAPIClient:
             return response
 
         return self.raise_exception_for_unexpected_response(response)
+
+    def import_aliases(self, domain):
+        """Import aliases from dimail. Useful if people fall out of sync with dimail."""
+
+        try:
+            response = session.get(
+                f"{self.API_URL}/domains/{domain.name}/aliases/",
+                headers=self.get_headers(),
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code != status.HTTP_200_OK:
+            return self.raise_exception_for_unexpected_response(response)
+
+        incoming_aliases = response.json()
+        known_aliases = [
+            (known_alias.local_part, known_alias.destination)
+            for known_alias in models.Alias.objects.filter(domain=domain)
+        ]
+        known_mailboxes = [
+            known_mailbox.local_part
+            for known_mailbox in models.Mailbox.objects.filter(domain=domain)
+        ]
+        imported_aliases = []
+        for incoming_alias in incoming_aliases:
+            if (
+                incoming_alias["username"],
+                incoming_alias["destination"],
+            ) not in known_aliases and incoming_alias[
+                "username"
+            ] not in known_mailboxes:
+                try:
+                    new_alias = models.Alias.objects.create(
+                        local_part=incoming_alias["username"],
+                        destination=incoming_alias["destination"],
+                        domain=domain,
+                    )
+                except (HeaderParseError, NonASCIILocalPartDefect) as err:
+                    logger.warning(
+                        "Import of alias %s to %s failed with error %s",
+                        incoming_alias["username"],
+                        incoming_alias["destination"],
+                        err,
+                    )
+                else:
+                    imported_aliases.append(str(new_alias))
+        return imported_aliases
