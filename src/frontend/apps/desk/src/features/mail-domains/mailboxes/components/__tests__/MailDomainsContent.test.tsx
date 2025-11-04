@@ -115,9 +115,7 @@ describe('MailBoxesView', () => {
       wrapper: AppWrapper,
     });
 
-    await waitFor(async () => {
-      await userEvent.click(screen.getByTestId('button-new-mailbox'));
-    });
+    await userEvent.click(screen.getByTestId('button-new-mailbox'));
 
     await waitFor(async () => {
       expect(await screen.findByText('New email account')).toBeInTheDocument();
