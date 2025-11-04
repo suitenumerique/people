@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { Button, Loader, ModalSize } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -27,14 +27,14 @@ export const ModalAddMailDomain = ({
 
   const addMailDomainValidationSchema = z.object({
     name: z.string().min(1, t('Example: saint-laurent.fr')),
-    supportEmail: z.string().email(t('Please enter a valid email address')),
+    supportEmail: z.email(t('Please enter a valid email address')),
   });
 
   const methods = useForm<{ name: string; supportEmail: string }>({
     defaultValues: { name: '', supportEmail: '' },
     mode: 'onChange',
     reValidateMode: 'onChange',
-    resolver: zodResolver(addMailDomainValidationSchema),
+    resolver: standardSchemaResolver(addMailDomainValidationSchema),
     criteriaMode: 'all',
   });
 

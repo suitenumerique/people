@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import {
   Button,
   Loader,
@@ -49,7 +49,7 @@ export const ModalCreateMailbox = ({
   });
 
   const methods = useForm<CreateMailboxParams>({
-    resolver: zodResolver(createMailboxValidationSchema),
+    resolver: standardSchemaResolver(createMailboxValidationSchema),
     defaultValues: {
       first_name: '',
       last_name: '',
