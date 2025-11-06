@@ -668,3 +668,111 @@ class DimailAPIClient:
             )
             return response
         return self.raise_exception_for_unexpected_response(response)
+
+    def create_alias(self, alias, request_user=None):
+        """Send a Create alias request to mail provisioning API."""
+
+        payload = {
+            "user_name": alias.local_part,
+            "destination": alias.destination,
+        }
+        headers = self.get_headers()
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/domains/{alias.domain.name}/aliases/",
+                json=payload,
+                headers=headers,
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_201_CREATED:
+            logger.info(
+                "User %s linked alias %s to a new email.",
+                request_user,
+                f"{alias.local_part}@{alias.domain}",
+            )
+            return response
+
+        if response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: you cannot access domain %s",
+                str(alias.domain),
+            )
+            raise exceptions.PermissionDenied(
+                "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+            )
+
+        if response.status_code == status.HTTP_409_CONFLICT:
+            logger.error(
+                "[DIMAIL] Out of sync with dimail. Admin, please import aliases for domain %s",
+                str(alias.domain),
+            )
+            raise exceptions.ValidationError(
+                {
+                    "NON_FIELD_ERRORS": [
+                        "Alias already exists. Your domain is out of sync, please contact our support."
+                    ]
+                }
+            )
+
+        return self.raise_exception_for_unexpected_response(response)
+
+    def delete_alias(self, alias, request_user=None):
+        """Send a Delete alias request to mail provisioning API."""
+
+        headers = self.get_headers()
+
+        try:
+            response = session.delete(
+                f"{self.API_URL}/domains/{alias.domain.name}/aliases/{alias.local_part}/{alias.destination}",
+                json={},
+                headers=headers,
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            logger.info(
+                "User %s removed destination %s from alias %s.",
+                request_user,
+                alias.destination,
+                f"{alias.local_part}@{alias.domain}",
+            )
+            return response
+
+        if response.status_code == status.HTTP_403_FORBIDDEN:
+            logger.error(
+                "[DIMAIL] 403 Forbidden: you cannot access domain %s",
+                str(alias.domain),
+            )
+            raise exceptions.PermissionDenied(
+                "Permission denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
+            )
+
+        if response.status_code == status.HTTP_404_NOT_FOUND:
+            logger.error(
+                "[DIMAIL] 404, alias %s not found. Domain out of sync with dimail. Admin, please import aliases for domain %s",
+                str(alias.local_part),
+                str(alias.domain),
+            )
+            # we don't raise error because we actually want this alias to be deleted
+            # to match dimail's states
+            return response
+
+        return self.raise_exception_for_unexpected_response(response)
