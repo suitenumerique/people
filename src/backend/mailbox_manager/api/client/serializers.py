@@ -78,6 +78,17 @@ class MailboxSerializer(serializers.ModelSerializer):
 
         return mailbox
 
+    def validate_local_part(self, value):
+        """Validate this local part does not match a mailbox."""
+        if models.Alias.objects.filter(
+            local_part=value, domain__slug=self.context["domain_slug"]
+        ):
+            raise exceptions.ValidationError(
+                f'Local part "{value}" already used by an alias.'
+            )
+
+        return value
+
 
 class MailboxUpdateSerializer(MailboxSerializer):
     """A more restrictive serializer when updating mailboxes"""
@@ -309,3 +320,41 @@ class MailDomainInvitationSerializer(serializers.ModelSerializer):
         attrs["domain"] = domain
         attrs["issuer"] = user
         return attrs
+
+
+class AliasSerializer(serializers.ModelSerializer):
+    """Serialize mailbox."""
+
+    class Meta:
+        model = models.Alias
+        fields = [
+            "id",
+            "local_part",
+            "destination",
+        ]
+        read_only_fields = ["id"]
+
+    def create(self, validated_data):
+        """
+        Override create function to fire a request to dimail on alias creation.
+        """
+        if validated_data["domain"].status == enums.MailDomainStatusChoices.ENABLED:
+            alias = models.Alias(**validated_data)
+
+            # send new alias request to dimail
+            client = DimailAPIClient()
+            client.create_alias(alias, self.context["request"].user.sub)
+            return super().create(validated_data)
+
+        return None
+
+    def validate_local_part(self, value):
+        """Validate this local part does not match a mailbox."""
+        if models.Mailbox.objects.filter(
+            local_part=value, domain__slug=self.context["domain_slug"]
+        ):
+            raise exceptions.ValidationError(
+                f'Local part "{value}" already used by a mailbox.'
+            )
+
+        return value

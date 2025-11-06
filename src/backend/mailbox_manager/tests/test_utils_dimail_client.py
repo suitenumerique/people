@@ -168,6 +168,46 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning):
         assert imported_mailboxes == [mailbox_valid["email"]]
 
 
+@responses.activate
+def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint: disable=unused-argument
+    """Should import aliases from dimail if they don't exist already"""
+    alias = factories.AliasFactory()
+    dimail_client = DimailAPIClient()
+
+    # Ensure successful response using "responses":
+    incoming_aliases = [
+        {
+            "username": "contact",
+            "domain": alias.domain.name,
+            "destination": alias.destination,  # same destination
+            "allow_to_send": False,
+        },
+        {
+            "username": alias.local_part,  # same username
+            "domain": alias.domain.name,
+            "destination": "maheius.endorecles@somethingelse.com",
+            "allow_to_send": False,
+        },
+        {  # same username + same destination = big nono
+            "username": alias.local_part,
+            "domain": alias.domain.name,
+            "destination": alias.destination,
+            "allow_to_send": False,
+        },
+    ]
+    responses.get(
+        re.compile(rf".*/domains/{alias.domain.name}/aliases/"),
+        json=incoming_aliases,
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )
+
+    imported_aliases = dimail_client.import_aliases(alias.domain)
+
+    assert len(imported_aliases) == 2
+    assert models.Alias.objects.count() == 3
+
+
 @pytest.mark.parametrize(
     "domain_status",
     [

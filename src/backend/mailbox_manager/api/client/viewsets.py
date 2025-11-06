@@ -2,7 +2,7 @@
 
 from django.db.models import Q, Subquery
 
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -40,7 +40,7 @@ class MailDomainViewSet(
         Fetch domain status and expected config from dimail.
     """
 
-    permission_classes = [permissions.AccessPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.MailDomainSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "name"]
@@ -112,7 +112,7 @@ class MailDomainAccessViewSet(
         Delete targeted domain access
     """
 
-    permission_classes = [permissions.MailDomainAccessRolePermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.MailDomainAccessSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["role", "user__email", "user__name"]
@@ -262,7 +262,7 @@ class MailBoxViewSet(
         Send a request to partially update mailbox. Cannot modify domain or local_part.
     """
 
-    permission_classes = [permissions.MailBoxPermission]
+    permission_classes = [permissions.DomainPermission]
     serializer_class = serializers.MailboxSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ["-created_at"]
@@ -275,11 +275,17 @@ class MailBoxViewSet(
             return self.queryset.filter(domain__slug=domain_slug)
         return self.queryset
 
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
     def get_permissions(self):
         """Add a specific permission for domain viewers to update their own mailbox."""
         if self.action in ["update", "partial_update"]:
             permission_classes = [
-                permissions.MailBoxPermission | permissions.IsMailboxOwnerPermission
+                permissions.DomainPermission | permissions.IsMailboxOwnerPermission
             ]
         else:
             return super().get_permissions()
@@ -355,7 +361,7 @@ class MailDomainInvitationViewset(
     """
 
     lookup_field = "id"
-    permission_classes = [permissions.AccessPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     queryset = (
         models.MailDomainInvitation.objects.all()
         .select_related("domain")
@@ -392,3 +398,98 @@ class MailDomainInvitationViewset(
             )
 
         return queryset
+
+
+class AliasViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for aliases.
+
+    GET /api/<version>/mail-domains/<domain_slug>/aliases/
+        Return list of aliases related to that domain
+
+    POST /api/<version>/mail-domains/<domain_slug>/aliases/ with expected data:
+        - local_part: str
+        - destination: str
+        Return a newly created alias
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/accesses/<alias-local-part>/
+        Delete targeted alias
+    """
+
+    lookup_field = "local_part"
+    permission_classes = [permissions.DomainPermission]
+    serializer_class = serializers.AliasSerializer
+    queryset = (
+        models.Alias.objects.all().select_related("domain").order_by("-created_at")
+    )
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["domain_slug"] = self.kwargs["domain_slug"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(domain__slug=self.kwargs["domain_slug"])
+
+        if self.action == "list":
+            # Determine which role the logged-in user has in the domain
+            user_role_query = models.MailDomainAccess.objects.filter(
+                user=self.request.user, domain__slug=self.kwargs["domain_slug"]
+            ).values("role")
+
+            queryset = (
+                # The logged-in user should be part of a domain to see its accesses
+                queryset.filter(
+                    domain__accesses__user=self.request.user,
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each domain access
+                .annotate(user_role=Subquery(user_role_query))
+                .distinct()
+            )
+
+        return queryset
+
+    def get_permissions(self):
+        """Add a specific permission for domain viewers to delete their aliases."""
+        if self.action in ["destroy"]:
+            permission_classes = [
+                permissions.DomainResourcePermission
+                | permissions.IsAliasDestinationPermission
+            ]
+        else:
+            return super().get_permissions()
+
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        """Create new mailbox."""
+        domain_slug = self.kwargs.get("domain_slug", "")
+        if domain_slug:
+            serializer.validated_data["domain"] = models.MailDomain.objects.get(
+                slug=domain_slug
+            )
+        super().perform_create(serializer)
+
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy method to send a delete request to dimail
+        and return clear message if domain out of sync."""
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        client = DimailAPIClient()
+        dimail_response = client.delete_alias(instance)
+        if dimail_response.status_code == status.HTTP_404_NOT_FOUND:
+            return Response(
+                "Alias already deleted. Domain out of sync, please contact our support.",
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
