@@ -29,7 +29,7 @@ def test_api_aliases_delete__anonymous():
     assert models.Alias.objects.count() == 1
 
 
-def test_api_aliases_delete__no_access_forbidden():
+def test_api_aliases_delete__no_access_forbidden_not_found():
     """
     Authenticated users should not be allowed to delete an alias in a
     mail domain to which they are not related.
@@ -43,7 +43,7 @@ def test_api_aliases_delete__no_access_forbidden():
         f"/api/v1.0/mail-domains/{alias.domain.slug}/aliases/{alias.local_part}/",
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert models.Alias.objects.count() == 1
 
 

@@ -35,7 +35,7 @@ def test_api_mail_domain__accesses_create_anonymous():
         assert models.MailDomainAccess.objects.exists() is False
 
 
-def test_api_mail_domain__accesses_create_authenticated_unrelated():
+def test_api_mail_domain__accesses_create_no_access_forbidden_not_found():
     """
     Authenticated users should not be allowed to create domain accesses for a domain to
     which they are not related.
@@ -56,14 +56,14 @@ def test_api_mail_domain__accesses_create_authenticated_unrelated():
             format="json",
         )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": "You are not allowed to manage accesses for this domain."
+            "detail": "No MailDomain matches the given query.",
         }
         assert not models.MailDomainAccess.objects.filter(user=other_user).exists()
 
 
-def test_api_mail_domain__accesses_create_authenticated_viewer():
+def test_api_mail_domain__accesses_create_viewer_forbidden():
     """Viewer of a mail domain should not be allowed to create mail domain accesses."""
     authenticated_user = core_factories.UserFactory()
     mail_domain = factories.MailDomainFactory(
@@ -85,7 +85,7 @@ def test_api_mail_domain__accesses_create_authenticated_viewer():
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": "You are not allowed to manage accesses for this domain."
+            "detail": "You do not have permission to perform this action.",
         }
 
     assert not models.MailDomainAccess.objects.filter(user=other_user).exists()

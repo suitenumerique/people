@@ -26,7 +26,7 @@ def test_api_mailboxes__disable_anonymous_forbidden():
     assert models.Mailbox.objects.get().status == enums.MailboxStatusChoices.ENABLED
 
 
-def test_api_mailboxes__disable_authenticated_failure():
+def test_api_mailboxes__disable_no_access_forbidden_not_found():
     """Authenticated users should not be able to disable mailbox
     without specific role on mail domain."""
     user = core_factories.UserFactory()
@@ -39,7 +39,7 @@ def test_api_mailboxes__disable_authenticated_failure():
         f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/disable/",
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert models.Mailbox.objects.get().status == enums.MailboxStatusChoices.ENABLED
 
 

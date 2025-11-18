@@ -43,7 +43,7 @@ def test_api_mail_domain__accesses_retrieve_authenticated_unrelated():
         f"/api/v1.0/mail-domains/{access.domain.slug}/accesses/{access.id!s}/",
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "No MailDomainAccess matches the given query."}
+    assert response.json() == {"detail": "No MailDomain matches the given query."}
 
     # Accesses related to another mail_domain should be excluded even if the user is related to it
     for other_access in [
@@ -55,9 +55,7 @@ def test_api_mail_domain__accesses_retrieve_authenticated_unrelated():
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": "No MailDomainAccess matches the given query."
-        }
+        assert response.json() == {"detail": "No MailDomain matches the given query."}
 
 
 def test_api_mail_domain__accesses_retrieve_authenticated_related():

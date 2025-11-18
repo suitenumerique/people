@@ -27,8 +27,7 @@ def test_api_mail_domain__accesses_list_anonymous():
 
 def test_api_mail_domain__accesses_list_authenticated_unrelated():
     """
-    Authenticated users should not be allowed to list mail_domain accesses for a mail_domain
-    to which they are not related.
+    User with no access should not be allowed to list domain accesses.
     """
     user = core_factories.UserFactory()
     mail_domain = factories.MailDomainFactory()
@@ -43,12 +42,9 @@ def test_api_mail_domain__accesses_list_authenticated_unrelated():
     response = client.get(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/accesses/",
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {
-        "count": 0,
-        "next": None,
-        "previous": None,
-        "results": [],
+        "detail": "No MailDomain matches the given query.",
     }
 
 
@@ -178,8 +174,12 @@ def test_api_mail_domain__accesses_list_authenticated_constant_numqueries(
     # related users :
     # - query retrieving logged-in user for user_role annotation
     # - count from pagination
+
+    #  - filter on slug and domain on permission (to return 404 instead of 403 when no access)
+    #  - count ?
+
     # - distinct from viewset
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(5):
         client.get(
             f"/api/v1.0/mail-domains/{mail_domain.slug}/accesses/",
         )
@@ -189,7 +189,7 @@ def test_api_mail_domain__accesses_list_authenticated_constant_numqueries(
         factories.MailDomainAccessFactory(domain=mail_domain)
 
     # num queries should still be the same
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(5):
         response = client.get(
             f"/api/v1.0/mail-domains/{mail_domain.slug}/accesses/",
         )
