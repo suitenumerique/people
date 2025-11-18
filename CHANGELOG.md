@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🛂(permissions) return 404 to users with no access to domain #985 
 - ✨(aliases) can create, list and delete aliases #974
 
 ## [1.20.0] - 2025-10-22

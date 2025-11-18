@@ -25,8 +25,8 @@ def test_api_mailboxes__list_anonymous():
     }
 
 
-def test_api_mailboxes__list_authenticated():
-    """Authenticated users should not be able to list mailboxes"""
+def test_api_mailboxes__list_unrelated_not_found():
+    """Unrelated users should not be able to list mailboxes"""
     user = core_factories.UserFactory()
 
     client = APIClient()
@@ -36,10 +36,8 @@ def test_api_mailboxes__list_authenticated():
     factories.MailboxFactory.create_batch(2, domain=mail_domain)
 
     response = client.get(f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No MailDomain matches the given query."}
 
 
 @pytest.mark.parametrize(

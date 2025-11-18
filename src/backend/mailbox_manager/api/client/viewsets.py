@@ -40,7 +40,10 @@ class MailDomainViewSet(
         Fetch domain status and expected config from dimail.
     """
 
-    permission_classes = [permissions.DomainResourcePermission]
+    permission_classes = [
+        permissions.DomainPermission,
+        permissions.DomainResourcePermission,
+    ]
     serializer_class = serializers.MailDomainSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "name"]
@@ -262,7 +265,7 @@ class MailBoxViewSet(
         Send a request to partially update mailbox. Cannot modify domain or local_part.
     """
 
-    permission_classes = [permissions.DomainPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.MailboxSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ["-created_at"]
@@ -283,9 +286,12 @@ class MailBoxViewSet(
 
     def get_permissions(self):
         """Add a specific permission for domain viewers to update their own mailbox."""
-        if self.action in ["update", "partial_update"]:
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [permissions.DomainPermission]
+        elif self.action in ["update", "partial_update"]:
             permission_classes = [
-                permissions.DomainPermission | permissions.IsMailboxOwnerPermission
+                permissions.DomainResourcePermission
+                | permissions.IsMailboxOwnerPermission
             ]
         else:
             return super().get_permissions()
@@ -421,7 +427,7 @@ class AliasViewSet(
     """
 
     lookup_field = "local_part"
-    permission_classes = [permissions.DomainPermission]
+    permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.AliasSerializer
     queryset = (
         models.Alias.objects.all().select_related("domain").order_by("-created_at")
@@ -445,14 +451,10 @@ class AliasViewSet(
             ).values("role")
 
             queryset = (
-                # The logged-in user should be part of a domain to see its accesses
-                queryset.filter(
-                    domain__accesses__user=self.request.user,
-                )
+                queryset
                 # Abilities are computed based on logged-in user's role and
                 # the user role on each domain access
-                .annotate(user_role=Subquery(user_role_query))
-                .distinct()
+                .annotate(user_role=Subquery(user_role_query)).distinct()
             )
 
         return queryset
@@ -462,7 +464,7 @@ class AliasViewSet(
         if self.action in ["destroy"]:
             permission_classes = [
                 permissions.DomainResourcePermission
-                | permissions.IsAliasDestinationPermission
+                | permissions.IsAliasDestinationPermission,
             ]
         else:
             return super().get_permissions()

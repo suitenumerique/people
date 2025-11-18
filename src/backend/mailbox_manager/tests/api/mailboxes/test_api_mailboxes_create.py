@@ -38,20 +38,23 @@ def test_api_mailboxes__create_anonymous_forbidden(mailbox_data):
     assert not models.Mailbox.objects.exists()
 
 
-def test_api_mailboxes__create_authenticated_failure(mailbox_data):
+@responses.activate
+def test_api_mailboxes__create_no_access_forbidden_not_found(mailbox_data):
     """Authenticated users should not be able to create mailbox
     without specific role on mail domain."""
     mail_domain = factories.MailDomainEnabledFactory()
 
     client = APIClient()
     client.force_login(core_factories.UserFactory())
+    # We add no simulated response in Responses
+    # because we expect no "outside" calls to be made
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         mailbox_data,
         format="json",
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert not models.Mailbox.objects.exists()
 
 
@@ -467,28 +470,6 @@ def test_api_mailboxes__existing_alias_bad_request(mailbox_data):
 
 ### REACTING TO DIMAIL-API
 ### We mock dimail's responses to avoid testing dimail's container too
-@responses.activate
-def test_api_mailboxes__unrelated_user_provisioning_api_not_called(mailbox_data):
-    """
-    Provisioning API should not be called if an user tries
-    to create a mailbox on a domain they have no access to.
-    """
-    domain = factories.MailDomainEnabledFactory()
-
-    client = APIClient()
-    client.force_login(core_factories.UserFactory())  # user with no access
-    # We add no simulated response in RequestsMock
-    # because we expected no "outside" calls to be made
-    response = client.post(
-        f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/",
-        mailbox_data,
-        format="json",
-    )
-    # No exception raised by RequestsMock means no call was sent
-    # our API blocked the request before sending it
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 @responses.activate
 def test_api_mailboxes__domain_viewer_provisioning_api_not_called(mailbox_data):
     """
@@ -957,7 +938,6 @@ def test_api_mailboxes__send_correct_logger_infos(
     assert expected_messages.issubset(actual_messages)
 
 
-@pytest.mark.usefixtures()
 @responses.activate
 @mock.patch.object(Logger, "info")
 def test_api_mailboxes__sends_new_mailbox_notification(

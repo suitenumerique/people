@@ -28,40 +28,22 @@ def test_api_mailboxes_patch__anonymous_forbidden():
     assert mailbox.secondary_email == saved_secondary
 
 
-def test_api_mailboxes_patch__unauthorized_forbidden():
+def test_api_mailboxes_patch__no_access_forbidden_not_found():
     """Authenticated but unauthoriezd users should not be able to update mailboxes."""
-    client = APIClient()
-    client.force_login(core_factories.UserFactory())
-
     mailbox = factories.MailboxFactory()
     saved_secondary = mailbox.secondary_email
-    response = client.patch(
-        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/",
-        {"secondary_email": "updated@example.com"},
-        format="json",
-    )
 
-    # permission denied at domain level
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    mailbox.refresh_from_db()
-    assert mailbox.secondary_email == saved_secondary
-
-
-def test_api_mailboxes_patch__unauthorized_no_mailbox():
-    """Authenticated but unauthoriezd users should not be able to update mailboxes."""
     client = APIClient()
     client.force_login(core_factories.UserFactory())
-
-    domain = factories.MailDomainEnabledFactory()
     response = client.patch(
-        f"/api/v1.0/mail-domains/{domain.slug}/mailboxes/nonexistent_mailbox_pk/",
+        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.local_part}/",
         {"secondary_email": "updated@example.com"},
         format="json",
     )
-
     # permission denied at domain level
-    # the existence of the mailbox is not checked
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    mailbox.refresh_from_db()
+    assert mailbox.secondary_email == saved_secondary
 
 
 def test_api_mailboxes_patch__viewer_forbidden():
@@ -90,6 +72,23 @@ def test_api_mailboxes_patch__viewer_forbidden():
     assert response.status_code == status.HTTP_403_FORBIDDEN
     mailbox.refresh_from_db()
     assert mailbox.secondary_email == old_value
+
+
+def test_api_mailboxes_patch__unauthorized_no_mailbox():
+    """No mailbox returns a 404."""
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
+
+    client = APIClient()
+    client.force_login(access.user)
+    response = client.patch(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/nonexistent_mailbox_pk/",
+        {"secondary_email": "updated@example.com"},
+        format="json",
+    )
+
+    # permission denied at domain level
+    # the existence of the mailbox is not checked
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 # UPDATABLE FIELDS : SECONDARY EMAIL FIRST NAME AND LAST NAME

@@ -31,8 +31,8 @@ def test_api_aliases_create__anonymous():
     assert not models.Alias.objects.exists()
 
 
-def test_api_aliases_create__no_access_forbidden():
-    """User authenticated but not having domain permission should not create aliases."""
+def test_api_aliases_create__no_access_forbidden_not_found():
+    """Unrelated user not having domain permission should not create aliases."""
     domain = factories.MailDomainEnabledFactory()
 
     client = APIClient()
@@ -41,7 +41,7 @@ def test_api_aliases_create__no_access_forbidden():
         f"/api/v1.0/mail-domains/{domain.slug}/aliases/",
         {"local_part": "intrusive", "destination": "intrusive@mail.com"},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert not models.Alias.objects.exists()
 
 

@@ -1,28 +1,45 @@
 """Permission handlers for the People mailbox manager app."""
 
+from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions
 
-from core.api import permissions as core_permissions
+from core.api.permissions import IsAuthenticated
 
 from mailbox_manager import models
 
 
-class DomainResourcePermission(core_permissions.IsAuthenticated):
+class DomainPermission(IsAuthenticated):
+    """Permission class to manage mailboxes and aliases for a mail domain"""
+
+    def has_permission(self, request, view):
+        """Check permission based on domain."""
+
+        if not super().has_permission(request, view):
+            return False
+
+        if not view.kwargs.get("domain_slug"):
+            return True
+
+        domain = get_object_or_404(
+            models.MailDomain,
+            slug=view.kwargs.get("domain_slug", ""),
+            accesses__user=request.user,
+        )
+        # domain = models.MailDomain.objects.get(slug=view.kwargs.get("domain_slug", ""))
+        abilities = domain.get_abilities(request.user)
+        if request.method.lower() == "delete":
+            return abilities.get("manage_accesses", False)
+
+        return abilities.get(request.method.lower(), False)
+
+
+class DomainResourcePermission(DomainPermission):
     """Permission class for access objects."""
 
     def has_object_permission(self, request, view, obj):
         """Check permission for a given object."""
         abilities = obj.get_abilities(request.user)
-        return abilities.get(request.method.lower(), False)
-
-
-class DomainPermission(DomainResourcePermission):
-    """Permission class to manage mailboxes and aliases for a mail domain"""
-
-    def has_permission(self, request, view):
-        """Check permission based on domain."""
-        domain = models.MailDomain.objects.get(slug=view.kwargs.get("domain_slug", ""))
-        abilities = domain.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)
 
 
@@ -40,7 +57,7 @@ class IsMailboxOwnerPermission(permissions.BasePermission):
         return obj.get_email() == request.user.email
 
 
-class IsAliasDestinationPermission(core_permissions.IsAuthenticated):
+class IsAliasDestinationPermission(IsAuthenticated):
     """Can delete an alias if the alias points to their own email address."""
 
     def has_permission(self, request, view):

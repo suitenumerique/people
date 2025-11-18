@@ -2,7 +2,6 @@
 Tests for MailDomains API endpoint in People's mailbox manager app. Focus on "fetch" action.
 """
 
-import json
 import re
 
 import pytest
@@ -82,7 +81,7 @@ def test_api_mail_domains__fetch_from_dimail__viewer():
     ],
 )
 @responses.activate
-def test_api_mail_domains__fetch_from_dimail(role):
+def test_api_mail_domains__fetch_from_dimail_admin_successful(role):
     """
     Authenticated users should be allowed to fetch a domain
     from dimail if they are an owner or admin.

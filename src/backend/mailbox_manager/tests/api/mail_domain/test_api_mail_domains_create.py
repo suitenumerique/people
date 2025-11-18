@@ -41,17 +41,14 @@ def test_api_mail_domains__create_name_unique():
     """
     Creating domain should raise an error if already existing name.
     """
-    factories.MailDomainFactory(name="existing_domain.com")
-    user = core_factories.UserFactory()
+    existing_domain = factories.MailDomainFactory()
 
     client = APIClient()
-    client.force_login(user)
+    client.force_login(core_factories.UserFactory())
 
     response = client.post(
         "/api/v1.0/mail-domains/",
-        {
-            "name": "existing_domain.com",
-        },
+        {"name": existing_domain.name},
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST

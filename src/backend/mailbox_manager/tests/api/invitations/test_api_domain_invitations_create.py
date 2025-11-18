@@ -35,7 +35,7 @@ def test_api_domain_invitations__create__anonymous():
     }
 
 
-def test_api_domain_invitations__create__authenticated_outsider():
+def test_api_domain_invitations__create__no_access_forbidden_not_found():
     """Users should not be permitted to send domain management invitations
     for a domain they don't manage."""
     user = core_factories.UserFactory()
@@ -52,7 +52,7 @@ def test_api_domain_invitations__create__authenticated_outsider():
         invitation_values,
         format="json",
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.parametrize(
@@ -86,7 +86,7 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     assert email.subject == "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
 
-def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():
+def test_api_domain_invitations__no_access_forbidden_not_found():
     """
     Domain viewers should not be able to invite new domain managers.
     """
@@ -110,7 +110,7 @@ def test_api_domain_invitations__viewers_should_not_invite_to_manage_domains():
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {
-        "detail": "You are not allowed to manage invitations for this domain."
+        "detail": "You do not have permission to perform this action."
     }
 
 

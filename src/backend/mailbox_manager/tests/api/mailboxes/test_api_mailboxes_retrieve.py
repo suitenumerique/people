@@ -22,9 +22,9 @@ def test_api_mailboxes__retrieve_anonymous_forbidden():
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_api_mailboxes__retrieve_unauthorized_failure():
+def test_api_mailboxes__retrieve_no_access_forbidden_not_found():
     """Authenticated but unauthorized users should not be able to
-    retrieve mailbox."""
+    retrieve mailbox. Response should be indistinguisable from normal 404"""
     client = APIClient()
     client.force_login(core_factories.UserFactory())
 
@@ -33,15 +33,16 @@ def test_api_mailboxes__retrieve_unauthorized_failure():
         f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/"
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    # 403 or 404 for confidentiality/security purposes ?
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    # response should be the same whether the mailbox exists or not, so that
-    # unauthorized users can't deduce mailbox existence or nonexistence
+    # even if they have a mailbox on this domain
+    mailbox = factories.MailboxFactory()
+    client.force_login(core_factories.UserFactory(email=str(mailbox)))
     response = client.get(
-        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/thismailboxdoesntexist/"
+        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/"
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_api_mailboxes__retrieve_authorized_ok():
@@ -65,17 +66,3 @@ def test_api_mailboxes__retrieve_authorized_ok():
         "secondary_email": mailbox.secondary_email,
         "status": mailbox.status,
     }
-
-
-def test_api_mailboxes__owner_not_authorized():
-    """Unauthorized mailbox owner should not be able to retrieve their mailbox."""
-    mailbox = factories.MailboxFactory()
-    user = core_factories.UserFactory(email=str(mailbox))
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.get(
-        f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/"
-    )
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -13,7 +13,7 @@ from mailbox_manager import enums, factories, models
 pytestmark = pytest.mark.django_db
 
 
-def test_api_mail_domain__accesses_delete_anonymous():
+def test_api_domain_accesses_delete__anonymous_forbidden():
     """Anonymous users should not be allowed to destroy a mail domain access."""
     access = factories.MailDomainAccessFactory()
 
@@ -25,7 +25,7 @@ def test_api_mail_domain__accesses_delete_anonymous():
     assert models.MailDomainAccess.objects.count() == 1
 
 
-def test_api_mail_domain__accesses_delete_authenticated():
+def test_api_domain_accesses_delete__unrelated_notfound():
     """
     Authenticated users should not be allowed to delete a mail domain access for a
     mail domain to which they are not related.
@@ -39,11 +39,11 @@ def test_api_mail_domain__accesses_delete_authenticated():
         f"/api/v1.0/mail-domains/{access.domain.slug}/accesses/{access.id!s}/",
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert models.MailDomainAccess.objects.count() == 1
 
 
-def test_api_mail_domain__accesses_delete_viewer():
+def test_api_domain_accesses_delete__viewer_forbidden():
     """
     Authenticated users should not be allowed to delete a mail domain access for a
     mail domain in which they are a simple viewer.
@@ -65,7 +65,7 @@ def test_api_mail_domain__accesses_delete_viewer():
     assert models.MailDomainAccess.objects.filter(user=access.user).exists()
 
 
-def test_api_mail_domain__accesses_delete_administrators():
+def test_api_domain_accesses_delete__administrators_successful():
     """
     Administrators of a mail domain should be allowed to delete accesses excepted owner accesses.
     """
@@ -89,7 +89,7 @@ def test_api_mail_domain__accesses_delete_administrators():
         assert models.MailDomainAccess.objects.count() == 1
 
 
-def test_api_mail_domain__accesses_delete_owners():
+def test_api_domain_accesses_delete__owners_successful():
     """
     An owner should be able to delete the mail domain access of another user including
     a owner access.
@@ -114,7 +114,7 @@ def test_api_mail_domain__accesses_delete_owners():
         assert models.MailDomainAccess.objects.count() == 1
 
 
-def test_api_mail_domain__accesses_delete_owners_last_owner():
+def test_api_domain_accesses_delete__last_owner_forbidden():
     """
     It should not be possible to delete the last owner access from a mail domain
     """

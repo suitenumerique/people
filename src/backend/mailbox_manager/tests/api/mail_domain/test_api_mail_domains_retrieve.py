@@ -69,7 +69,7 @@ def test_api_mail_domains__retrieve_authenticated_unrelated():
 
 
 @responses.activate
-def test_api_mail_domains__retrieve_authenticated_related():
+def test_api_mail_domains__retrieve_authenticated_related_successful():
     """
     Authenticated users should be allowed to retrieve a domain
     to which they have access.
