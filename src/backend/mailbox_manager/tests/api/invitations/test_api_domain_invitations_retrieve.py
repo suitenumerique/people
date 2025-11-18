@@ -26,7 +26,7 @@ def test_api_domain_invitations__anonymous_user_should_not_retrieve_invitations(
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_api_domain_invitations__unrelated_user_should_not_retrieve_invitations():
+def test_api_domain_invitations__no_access_forbidden_not_found():
     """
     Authenticated unrelated users should not be able to retrieve invitations.
     """
@@ -40,8 +40,8 @@ def test_api_domain_invitations__unrelated_user_should_not_retrieve_invitations(
         f"/api/v1.0/mail-domains/{invitation.domain.slug}/invitations/",
     )
 
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json()["count"] == 0
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "No MailDomain matches the given query."}
 
 
 def test_api_domain_invitations__domain_managers_should_list_invitations():

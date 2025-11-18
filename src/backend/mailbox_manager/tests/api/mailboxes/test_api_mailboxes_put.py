@@ -35,7 +35,7 @@ def test_api_mailboxes_put__anonymous_forbidden():
     assert mailbox.secondary_email == saved_secondary
 
 
-def test_api_mailboxes_put__unauthorized_forbidden():
+def test_api_mailboxes_put__no_access_forbidden_not_found():
     """Authenticated but unauthoriezd users should not be able to update mailboxes."""
     client = APIClient()
     client.force_login(core_factories.UserFactory())
@@ -49,7 +49,7 @@ def test_api_mailboxes_put__unauthorized_forbidden():
     )
 
     # permission denied at domain level
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     mailbox.refresh_from_db()
     assert mailbox.secondary_email == saved_secondary
 
@@ -68,7 +68,7 @@ def test_api_mailboxes_put__unauthorized_no_mailbox():
 
     # permission denied at domain level
     # the existence of the mailbox is not checked
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_api_mailboxes_put__viewer_forbidden():

@@ -27,7 +27,7 @@ def test_api_mail_domain__accesses_update_anonymous():
     assert access.role == enums.MailDomainRoleChoices.VIEWER
 
 
-def test_api_mail_domain__accesses_update_authenticated_unrelated():
+def test_api_mail_domain__accesses_update_no_access_forbidden_not_found():
     """
     An authenticated user should not be allowed to update a mail domain access
     for a mail_domain to which they are not related.
@@ -42,7 +42,7 @@ def test_api_mail_domain__accesses_update_authenticated_unrelated():
         {"role": enums.MailDomainRoleChoices.ADMIN},
         format="json",
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     access.refresh_from_db()
     assert access.role == enums.MailDomainRoleChoices.VIEWER
 

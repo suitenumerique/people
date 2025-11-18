@@ -28,7 +28,7 @@ def test_api_mailboxes__reset_password_anonymous_unauthorized():
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_api_mailboxes__reset_password_unrelated_forbidden():
+def test_api_mailboxes__reset_password_no_access_forbidden_not_found():
     """Authenticated users not managing the domain
     should not be able to reset its mailboxes password."""
     user = core_factories.UserFactory()
@@ -41,9 +41,9 @@ def test_api_mailboxes__reset_password_unrelated_forbidden():
     response = client.post(
         f"/api/v1.0/mail-domains/{mailbox.domain.slug}/mailboxes/{mailbox.pk}/reset_password/"
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {
-        "detail": "You do not have permission to perform this action."
+        "detail": "No MailDomain matches the given query.",
     }
 
 

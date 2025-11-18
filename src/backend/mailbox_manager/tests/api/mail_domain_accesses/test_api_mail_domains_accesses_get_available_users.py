@@ -30,9 +30,7 @@ def test_api_mail_domain__available_users_anonymous():
 
 
 def test_api_mail_domain__available_users_forbidden():
-    """Authenticated user without accesses on maildomain should not be able to see available
-    users.
-    """
+    """Users with no access should not be able to list available users."""
     authenticated_user = core_factories.UserFactory()
     client = APIClient()
     client.force_login(authenticated_user)
@@ -40,7 +38,7 @@ def test_api_mail_domain__available_users_forbidden():
 
     response = client.get(f"/api/v1.0/mail-domains/{maildomain.slug}/accesses/users/")
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.parametrize(

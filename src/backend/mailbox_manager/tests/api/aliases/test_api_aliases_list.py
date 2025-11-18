@@ -25,7 +25,7 @@ def test_api_aliases_list__anonymous():
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_api_aliases_list__no_access_forbidden():
+def test_api_aliases_list__no_access_forbidden_not_found():
     """User authenticated but not having domain permission should not list aliases."""
     factories.MailDomainAccessFactory()  # access to another domain
     domain = factories.MailDomainEnabledFactory()
@@ -36,7 +36,7 @@ def test_api_aliases_list__no_access_forbidden():
     response = client.get(
         f"/api/v1.0/mail-domains/{domain.slug}/aliases/",
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.parametrize(

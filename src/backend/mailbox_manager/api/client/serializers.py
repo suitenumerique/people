@@ -238,23 +238,10 @@ class MailDomainAccessSerializer(serializers.ModelSerializer):
                     "You must set a domain slug in kwargs to create a new domain access."
                 ) from exc
 
-            try:
-                access = authenticated_user.mail_domain_accesses.get(
-                    domain__slug=domain_slug
-                )
-            except models.MailDomainAccess.DoesNotExist as exc:
-                raise exceptions.PermissionDenied(
-                    "You are not allowed to manage accesses for this domain."
-                ) from exc
-
-            # Authenticated user must be owner or admin of current domain to set new roles
-            if access.role not in [
-                enums.MailDomainRoleChoices.OWNER,
-                enums.MailDomainRoleChoices.ADMIN,
-            ]:
-                raise exceptions.PermissionDenied(
-                    "You are not allowed to manage accesses for this domain."
-                )
+            # we're sure that an access exists. otherwise it would have failed at permissions.
+            access = authenticated_user.mail_domain_accesses.get(
+                domain__slug=domain_slug
+            )
 
             # only an owner can set an owner role to another user
             if (
@@ -312,10 +299,6 @@ class MailDomainInvitationSerializer(serializers.ModelSerializer):
             ) from exc
 
         domain = models.MailDomain.objects.get(slug=domain_slug)
-        if not domain.get_abilities(user)["manage_accesses"]:
-            raise exceptions.PermissionDenied(
-                "You are not allowed to manage invitations for this domain."
-            )
 
         attrs["domain"] = domain
         attrs["issuer"] = user
