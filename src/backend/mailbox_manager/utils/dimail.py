@@ -378,6 +378,10 @@ class DimailAPIClient:
         people_mailboxes = models.Mailbox.objects.filter(domain=domain)
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
+            if "oxadmin" in dimail_mailbox["email"]:
+                logger.warning("Not importing technical address oxadmin")
+                continue
+
             if not dimail_mailbox["email"] in [
                 str(people_mailbox) for people_mailbox in people_mailboxes
             ]:
