@@ -103,7 +103,6 @@ class MailDomain(BaseModel):
         Compute and return abilities for a given user on the domain.
         """
         role = None
-
         if user.is_authenticated:
             try:
                 role = self.accesses.filter(user=user).values("role")[0]["role"]
