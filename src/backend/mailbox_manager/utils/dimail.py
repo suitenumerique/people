@@ -377,14 +377,16 @@ class DimailAPIClient:
         dimail_mailboxes = response.json()
         known_mailboxes = models.Mailbox.objects.filter(domain=domain)
         known_aliases = [
-            known_alias.local_part 
+            known_alias.local_part
             for known_alias in models.Alias.objects.filter(domain=domain)
         ]
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
-            if dimail_mailbox["email"] not in [
-                str(known_mailboxes) for known_mailboxes in known_mailboxes 
-            ] and dimail_mailbox['email'].split('@')[0] not in known_aliases:
+            if (
+                dimail_mailbox["email"]
+                not in [str(known_mailboxes) for known_mailboxes in known_mailboxes]
+                and dimail_mailbox["email"].split("@")[0] not in known_aliases
+            ):
                 try:
                     # sometimes dimail api returns email from another domain,
                     # so we decide to exclude this kind of email

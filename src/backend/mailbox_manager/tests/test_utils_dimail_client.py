@@ -40,22 +40,22 @@ def test_dimail_synchronization__already_sync(dimail_token_ok):
     assert pre_sync_mailboxes.count() == 3
 
     dimail_client = DimailAPIClient()
-    
+
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.get(
         re.compile(rf".*/domains/{domain.name}/mailboxes/"),
         json=[
-                {
-                    "type": "mailbox",
-                    "status": "broken",
-                    "email": f"{mailbox.local_part}@{domain.name}",
-                    "givenName": mailbox.first_name,
-                    "surName": mailbox.last_name,
-                    "displayName": f"{mailbox.first_name} {mailbox.last_name}",
-                }
-                for mailbox in pre_sync_mailboxes
-            ],
+            {
+                "type": "mailbox",
+                "status": "broken",
+                "email": f"{mailbox.local_part}@{domain.name}",
+                "givenName": mailbox.first_name,
+                "surName": mailbox.last_name,
+                "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+            }
+            for mailbox in pre_sync_mailboxes
+        ],
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -75,8 +75,10 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning, dimail_toke
     domain = factories.MailDomainEnabledFactory()
     assert not models.Mailbox.objects.exists()
 
+    existing_alias = factories.AliasFactory(domain=domain)
+
     dimail_client = DimailAPIClient()
-    
+
     # Ensure successful response using "responses":
     # token response in fixtures
     mailbox_valid = {
@@ -111,15 +113,24 @@ def test_dimail_synchronization__synchronize_mailboxes(mock_warning, dimail_toke
         "surName": "Vang",
         "displayName": "Jean Vang",
     }
+    mailbox_existing_username = {
+        "type": "mailbox",
+        "status": "broken",
+        "email": f"{existing_alias.local_part}@{domain.name}",
+        "givenName": "Support",
+        "surName": "email",
+        "displayName": "Support email",
+    }
 
     responses.get(
         re.compile(rf".*/domains/{domain.name}/mailboxes/"),
         json=[
-                mailbox_valid,
-                mailbox_with_wrong_domain,
-                mailbox_with_invalid_domain,
-                mailbox_with_invalid_local_part,
-            ],
+            mailbox_valid,
+            mailbox_with_wrong_domain,
+            mailbox_with_invalid_domain,
+            mailbox_with_invalid_local_part,
+            mailbox_existing_username,
+        ],
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
