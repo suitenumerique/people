@@ -1,0 +1,32 @@
+{% extends "selftest/base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo;
+    <a href="{% url 'admin:selftest_index' %}">{% trans 'Selftest' %}</a>
+</div>
+{% endblock %}
+
+{% block selftest_content %}
+
+<table>
+    <caption>
+        {% trans 'Available Selftest Pages' %}
+    </caption>
+    <tbody>
+        {% for page in pages %}
+        <tr>
+            <th scope="row">
+                <a href="{% url 'admin:selftest_'|add:page.url_name %}"
+                    >{{ page.title }}</a
+                >
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
