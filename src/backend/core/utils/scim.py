@@ -33,7 +33,7 @@ class SCIMClient:
                     "op": "add",
                     "path": "members",
                     "value": [
-                        {"value": str(user.id), "email": user.email, "type": "User"}
+                        {"value": user.sub, "display": user.email, "type": "User"}
                     ],
                 }
             ],
@@ -53,15 +53,7 @@ class SCIMClient:
         """Remove a user from a group by its ID or email."""
         payload = {
             "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-            "Operations": [
-                {
-                    "op": "remove",
-                    "path": "members",
-                    "value": [
-                        {"value": str(user.id), "email": user.email, "type": "User"}
-                    ],
-                }
-            ],
+            "Operations": [{"op": "remove", "path": f'members[value eq "{user.sub}"]'}],
         }
         response = session.patch(
             webhook.url,
