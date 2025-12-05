@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.21.0] - 2025-12-05
+
 - ✨(aliases) import existing aliases from dimail
 - 🛂(permissions) return 404 to users with no access to domain #985 
 - ✨(aliases) can create, list and delete aliases #974
@@ -455,7 +457,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.20.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.21.0...main
+[1.21.0]: https://github.com/suitenumerique/people/releases/v1.21.0
 [1.20.0]: https://github.com/suitenumerique/people/releases/v1.20.0
 [1.19.1]: https://github.com/suitenumerique/people/releases/v1.19.1
 [1.19.0]: https://github.com/suitenumerique/people/releases/v1.19.0
