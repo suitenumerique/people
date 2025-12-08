@@ -228,6 +228,7 @@ class Base(Configuration):
     INSTALLED_APPS = [
         # People
         "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'
+        "token_exchange.apps.TokenExchangeConfig",
         "core",
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
@@ -297,6 +298,11 @@ class Base(Configuration):
             "burst": values.Value(
                 default="20/minute",
                 environ_name="BURST_THROTTLE_RATES",
+                environ_prefix=None,
+            ),
+            "token_exchange": values.Value(
+                default="20/minute",
+                environ_name="TOKEN_EXCHANGE_THROTTLE_RATES",
                 environ_prefix=None,
             ),
         },
@@ -535,10 +541,77 @@ class Base(Configuration):
         True, environ_name="OIDC_VERIFY_SSL", environ_prefix=None
     )
 
+    # Token Exchange (RFC 8693) settings
+    TOKEN_EXCHANGE_ENABLED = values.BooleanValue(
+        default=False,
+        environ_name="TOKEN_EXCHANGE_ENABLED",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_MULTI_AUDIENCES_ALLOWED = values.BooleanValue(
+        default=False,
+        environ_name="TOKEN_EXCHANGE_MULTI_AUDIENCES_ALLOWED",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_DEFAULT_EXPIRES_IN = values.IntegerValue(
+        default=3600,  # 1 hour
+        environ_name="TOKEN_EXCHANGE_DEFAULT_EXPIRES_IN",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_MAX_EXPIRES_IN = values.IntegerValue(
+        default=86400,  # 24 hours
+        environ_name="TOKEN_EXCHANGE_MAX_EXPIRES_IN",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_ALLOWED_TOKEN_TYPES = values.ListValue(
+        default=["access_token", "jwt"],
+        environ_name="TOKEN_EXCHANGE_ALLOWED_TOKEN_TYPES",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_JWT_SIGNING_KEYS = values.DictValue(
+        default={},
+        environ_name="TOKEN_EXCHANGE_JWT_SIGNING_KEYS",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_JWT_CURRENT_KID = values.Value(
+        default=None,
+        environ_name="TOKEN_EXCHANGE_JWT_CURRENT_KID",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_JWT_ALGORITHM = values.Value(
+        default="RS256",
+        environ_name="TOKEN_EXCHANGE_JWT_ALGORITHM",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_MAX_ACTIVE_TOKENS_PER_USER = values.IntegerValue(
+        default=100,
+        environ_name="TOKEN_EXCHANGE_MAX_ACTIVE_TOKENS_PER_USER",
+        environ_prefix=None,
+    )
+    TOKEN_EXCHANGE_ALLOWED_SCHEMES = values.ListValue(
+        default=["http", "https"],
+        environ_name="TOKEN_EXCHANGE_ALLOWED_SCHEMES",
+        environ_prefix=None,
+    )
+
     OIDC_TIMEOUT = values.Value(None, environ_name="OIDC_TIMEOUT", environ_prefix=None)
     OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION = values.BooleanValue(
         default=True,
         environ_name="OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION",
+        environ_prefix=None,
+    )
+
+    # required to call a resource server
+    OIDC_STORE_ACCESS_TOKEN = values.BooleanValue(
+        default=False,
+        environ_name="OIDC_STORE_ACCESS_TOKEN",
+        environ_prefix=None,
+    )
+    OIDC_STORE_REFRESH_TOKEN = values.BooleanValue(
+        default=False, environ_name="OIDC_STORE_REFRESH_TOKEN", environ_prefix=None
+    )
+    OIDC_STORE_REFRESH_TOKEN_KEY = values.Value(
+        default=None,
+        environ_name="OIDC_STORE_REFRESH_TOKEN_KEY",
         environ_prefix=None,
     )
 
@@ -904,6 +977,7 @@ class Test(Base):
     MAIL_PROVISIONING_API_CREDENTIALS = "bGFfcmVnaWU6cGFzc3dvcmQ="
 
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = "siret"
+    OIDC_RS_BACKEND_CLASS = "lasuite.oidc_resource_server.backend.ResourceServerBackend"
 
     ORGANIZATION_REGISTRATION_ID_VALIDATORS = [
         {

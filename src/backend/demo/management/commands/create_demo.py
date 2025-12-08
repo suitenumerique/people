@@ -26,6 +26,7 @@ from mailbox_manager.enums import (
     MailDomainRoleChoices,
     MailDomainStatusChoices,
 )
+from token_exchange import models as token_exchange_models
 
 fake = Faker()
 
@@ -466,6 +467,75 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         stdout.write("Creating OIDC client for People Identity Provider")
         create_oidc_people_idp_client()
         create_oidc_people_idp_client_user()
+
+    # Create token exchange base configuration
+    stdout.write("Creating token exchange base configuration")
+
+    people_service_provider, _created = (
+        token_exchange_models.ServiceProvider.objects.get_or_create(
+            name="People",  # yeah that's me!
+            audience_id="people",
+        )
+    )
+    docs_service_provider, _created = (
+        token_exchange_models.ServiceProvider.objects.get_or_create(
+            name="Docs",
+            audience_id="docs",
+        )
+    )
+
+    token_exchange_models.ServiceProviderCredentials.objects.get_or_create(
+        service_provider=people_service_provider,
+        client_id="client_id",
+        client_secret="client_secret",
+    )
+
+    people_to_people_rule, _created = (
+        token_exchange_models.TokenExchangeRule.objects.get_or_create(
+            source_service=people_service_provider,
+            target_service=people_service_provider,
+        )
+    )
+    token_exchange_models.ScopeGrant.objects.get_or_create(
+        rule=people_to_people_rule,
+        source_scope="openid",
+        granted_scope="openid",
+    )
+    token_exchange_models.ScopeGrant.objects.get_or_create(
+        rule=people_to_people_rule,
+        source_scope="openid",
+        granted_scope="docs:read",
+    )
+
+    people_to_docs_rule, _created = (
+        token_exchange_models.TokenExchangeRule.objects.get_or_create(
+            source_service=people_service_provider,
+            target_service=docs_service_provider,
+        )
+    )
+    token_exchange_models.ScopeGrant.objects.get_or_create(
+        rule=people_to_docs_rule,
+        source_scope="openid",
+        granted_scope="openid",
+    )
+
+    simple_action, _created = token_exchange_models.ActionScope.objects.get_or_create(
+        name="action:create-docs-for-groups",
+    )
+    token_exchange_models.ActionScopeGrant.objects.get_or_create(
+        action=simple_action,
+        target_service=docs_service_provider,
+        granted_scope="docs:write",
+    )
+    token_exchange_models.ActionScopeGrant.objects.get_or_create(
+        action=simple_action,
+        target_service=people_service_provider,
+        granted_scope="teams:read",
+    )
+    token_exchange_models.TokenExchangeActionPermission.objects.get_or_create(
+        rule=people_to_docs_rule,
+        action=simple_action,
+    )
 
 
 class Command(BaseCommand):

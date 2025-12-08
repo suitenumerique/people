@@ -1,7 +1,14 @@
 """Global fixtures for the backend tests."""
 
 import pytest
+from rest_framework.test import APIClient
 from urllib3.connectionpool import HTTPConnectionPool
+
+
+@pytest.fixture
+def api_client():
+    """Create API client."""
+    return APIClient()
 
 
 @pytest.fixture(autouse=True)
