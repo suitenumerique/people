@@ -3,15 +3,18 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Tag, Text } from '@/components';
+import { Box, CustomTabs, Tag, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
+import { useAliases } from '@/features/mail-domains/aliases/api/useAliases';
+import { AliasesView } from '@/features/mail-domains/aliases';
 import {
   MailDomain,
   MailDomainAccessesAction,
   ModalRequiredActionDomain,
   Role,
 } from '@/features/mail-domains/domains';
+import { useMailboxes } from '@/features/mail-domains/mailboxes/api/useMailboxes';
 import { MailBoxesView } from '@/features/mail-domains/mailboxes';
 
 type Props = {
@@ -29,6 +32,18 @@ export const MailDomainView = ({
   const { colorsTokens } = useCunninghamTheme();
   const router = useRouter();
   const [showModal, setShowModal] = React.useState(false);
+
+  const { data: mailboxesData } = useMailboxes({
+    mailDomainSlug: mailDomain.slug,
+    page: 1,
+  });
+  const { data: aliasesData } = useAliases({
+    mailDomainSlug: mailDomain.slug,
+    page: 1,
+  });
+
+  const countMailboxes = mailboxesData?.count ?? 0;
+  const countAliases = aliasesData?.count ?? 0;
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -110,15 +125,27 @@ export const MailDomainView = ({
           $padding={{ horizontal: 'md' }}
           $margin={{ top: 'md' }}
           $background="white"
-          $align="center"
-          $gap="8px"
           $radius="4px"
-          $direction="row"
           $css={`
           border: 1px solid ${colorsTokens()['greyscale-200']};
         `}
         >
-          <MailBoxesView mailDomain={mailDomain} />
+          <CustomTabs
+            tabs={[
+              {
+                id: 'mailboxes',
+                label: t('Email addresses') + ` (${countMailboxes})`,
+                iconName: 'mail',
+                content: <MailBoxesView mailDomain={mailDomain} />,
+              },
+              {
+                id: 'aliases',
+                label: t('Aliases') + ` (${countAliases})`,
+                iconName: 'forward_to_inbox',
+                content: <AliasesView mailDomain={mailDomain} />,
+              },
+            ]}
+          />
         </Box>
       </Box>
     </>
