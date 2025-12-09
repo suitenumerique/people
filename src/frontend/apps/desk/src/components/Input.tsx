@@ -19,13 +19,17 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
       >
         {label} {required && '*'}
       </label>
+      {error && (
+        <Text $size="xs" $theme="danger" $variation="600">
+          {error}
+        </Text>
+      )}
       <input
         id={label}
         aria-required={required}
         required={required}
         style={{
           padding: '12px',
-          margin: '6px 0',
           borderRadius: '4px',
           fontSize: '14px',
           border: `1px solid ${error ? colorsTokens()['danger-500'] : colorsTokens()['greyscale-400']}`,
@@ -34,11 +38,6 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
         }}
         {...props}
       />
-      {error && (
-        <Text $size="xs" $color="error-500">
-          {error}
-        </Text>
-      )}
     </Box>
   );
 };
