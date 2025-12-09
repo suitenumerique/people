@@ -3,9 +3,10 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Tag, Text } from '@/components';
+import { Box, CustomTabs, Tag, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
+import { AliasesView } from '@/features/mail-domains/aliases';
 import {
   MailDomain,
   MailDomainAccessesAction,
@@ -110,15 +111,27 @@ export const MailDomainView = ({
           $padding={{ horizontal: 'md' }}
           $margin={{ top: 'md' }}
           $background="white"
-          $align="center"
-          $gap="8px"
           $radius="4px"
-          $direction="row"
           $css={`
           border: 1px solid ${colorsTokens()['greyscale-200']};
         `}
         >
-          <MailBoxesView mailDomain={mailDomain} />
+          <CustomTabs
+            tabs={[
+              {
+                id: 'mailboxes',
+                label: t('Email addresses'),
+                iconName: 'mail',
+                content: <MailBoxesView mailDomain={mailDomain} />,
+              },
+              {
+                id: 'aliases',
+                label: t('Aliases'),
+                iconName: 'forward_to_inbox',
+                content: <AliasesView mailDomain={mailDomain} />,
+              },
+            ]}
+          />
         </Box>
       </Box>
     </>

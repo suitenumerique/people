@@ -1,63 +1,70 @@
 .customTabsContainer {
-  :global {
-    .react-aria-TabList {
-      display: flex;
+  display: flex;
+  width: 100%;
+  margin-top: 30px;
 
-      &[data-orientation='horizontal'] {
-        .react-aria-Tab {
-          border-bottom: 2px solid var(--c--theme--colors--greyscale-500);
-        }
-      }
+  :global(.react-aria-Tabs) {
+    width: 100%;
+    display: flex;
+    flex: 1;
+
+    &[data-orientation="horizontal"] {
+      flex-direction: column;
+    }
+  }
+
+  :global(.react-aria-TabList) {
+    display: flex;
+    width: 100%;
+    gap: 25px;
+  }
+
+  :global(.react-aria-Tab) {
+    display: flex;
+    padding: 0 10px 10px 10px;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    color: var(--c--theme--colors--secondary-900);
+    transition: color 200ms;
+    --border-color: transparent;
+    forced-color-adjust: none;
+
+    &[data-hovered] {
+      background-color: #fff;
+      color: var(--text-color-hover);
     }
 
-    .react-aria-Tab {
-      padding: 10px;
-      cursor: pointer;
-      outline: none;
-      position: relative;
-      color: var(--c--theme--colors--greyscale-700);
-      transition: color 200ms;
+    &[data-selected] {
+      font-weight: 500;
+      color: var(--c--theme--colors--primary-text);
+      border-bottom: 2px solid
+        var(--c--theme--colors--primary-text);
+    }
 
-      --border-color: transparent;
-
-      forced-color-adjust: none;
-
-      &[data-hovered],
-      &[data-focused] {
-        color: var(--c--theme--colors--greyscale-900);
-      }
-
+    &[data-disabled] {
+      color: var(--text-color-disabled);
       &[data-selected] {
-        border-bottom: 2px solid var(--c--theme--colors--primary-600) !important;
-        color: var(--c--theme--colors--primary-600);
-      }
-
-      &[data-disabled] {
-        color: var(--c--theme--colors--greyscale-500);
-
-        &[data-selected] {
-          --border-color: var(--c--theme--colors--greyscale-200);
-        }
-      }
-
-      &[data-focus-visible]::after {
-        content: '';
-        position: absolute;
-        inset: 4px;
-        border-radius: 4px;
-        border: 1px solid var(--c--theme--colors--primary-600);
+        --border-color: var(--text-color-disabled);
       }
     }
 
-    .react-aria-TabPanel {
-      margin-top: 4px;
-      padding: 10px;
+    &[data-focus-visible]:after {
+      content: "";
+      position: absolute;
+      inset: 4px;
       border-radius: 4px;
-      outline: none;
+      border: 2px solid var(--focus-ring-color);
+    }
+  }
 
-      &[data-focus-visible] {
-        outline: 2px solid var(--c--theme--colors--primary-600);
-      }
+  :global(.react-aria-TabPanel) {
+    margin-top: 15px;
+    border-radius: 4px;
+    outline: none;
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--focus-ring-color);
     }
   }
 }
