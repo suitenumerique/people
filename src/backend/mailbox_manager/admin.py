@@ -235,6 +235,7 @@ class MailDomainAdmin(admin.ModelAdmin):
     inlines = (UserMailDomainAccessInline,)
     actions = (
         sync_mailboxes_from_dimail,
+        sync_aliases_from_dimail,
         fetch_domain_status_from_dimail,
         fetch_domain_expected_config_from_dimail,
         send_pending_mailboxes,
@@ -308,3 +309,13 @@ class MailDomainInvitationAdmin(admin.ModelAdmin):
     def is_expired(self, obj):
         """Return the expiration date of the invitation."""
         return obj.is_expired
+
+
+@admin.register(models.Alias)
+class AliasAdmin(admin.ModelAdmin):
+    """Admin for alias model."""
+
+    list_display = ("local_part", "domain", "destination", "updated_at")
+    list_filter = ("domain",)
+    search_fields = ("local_part", "domain__name", "destination")
+    readonly_fields = ["updated_at"]
