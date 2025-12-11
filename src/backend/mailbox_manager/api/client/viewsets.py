@@ -433,9 +433,10 @@ class AliasViewSet(
     lookup_field = "pk"
     permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.AliasSerializer
-    queryset = (
-        models.Alias.objects.all().select_related("domain").order_by("-created_at")
-    )
+    queryset = models.Alias.objects.all().select_related("domain")
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["local_part"]
+    ordering = ["local_part"]
 
     def get_serializer_context(self):
         """Extra context provided to the serializer class."""
