@@ -8,11 +8,19 @@ and this project adheres to
 
 ## [Unreleased]
 
-- 🔒️(security) upgrade python version to fix vulnerability #1010
-- 🐛(dimail) allow mailboxes and aliases to have the same local part #986
-- 🐛(dimail) ignore oxadmin when importing mailboxes from dimail #986
+### Added
+- ✨(domains) alias sorting and admin
 - ✨(aliases) delete all aliases in one call #1002
+
+### Fixed
+- 🔒️(security) upgrade python version to fix vulnerability #1010
+- 🐛(dimail) ignore oxadmin when importing mailboxes from dimail #986
 - ✨(aliases) fix deleting single aliases #1002
+
+### Changed
+- 🐛(dimail) allow mailboxes and aliases to have the same local part #986
+
+### Removed
 - 🔥(plugins) remove CommuneCreation plugin
 
 ## [1.21.0] - 2025-12-05
