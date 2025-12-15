@@ -59,4 +59,7 @@ def test_api_aliases_list__authorized_ok(role):
         f"/api/v1.0/mail-domains/{access.domain.slug}/aliases/",
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["results"] == sorted(
+        response.json()["results"], key=lambda x: x["local_part"]
+    )
     assert response.json()["count"] == 5
