@@ -1,6 +1,7 @@
 """API endpoints"""
 
 from django.db.models import Q, Subquery
+from django.http import Http404
 
 from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
@@ -422,11 +423,14 @@ class AliasViewSet(
         - destination: str
         Return a newly created alias
 
-    DELETE /api/<version>/mail-domains/<domain_slug>/accesses/<alias-local-part>/
+    DELETE /api/<version>/mail-domains/<domain_slug>/aliases/<alias_pk>/
         Delete targeted alias
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/aliases/?local_part=<local_part>/
+        Delete all aliases of targeted local_part
     """
 
-    lookup_field = "local_part"
+    lookup_field = "pk"
     permission_classes = [permissions.DomainResourcePermission]
     serializer_class = serializers.AliasSerializer
     queryset = (
@@ -459,39 +463,40 @@ class AliasViewSet(
 
         return queryset
 
-    def get_permissions(self):
-        """Add a specific permission for domain viewers to delete their aliases."""
-        if self.action in ["destroy"]:
-            permission_classes = [
-                permissions.DomainResourcePermission
-                | permissions.IsAliasDestinationPermission,
-            ]
-        else:
-            return super().get_permissions()
-
-        return [permission() for permission in permission_classes]
-
-    def perform_create(self, serializer):
-        """Create new mailbox."""
-        domain_slug = self.kwargs.get("domain_slug", "")
-        if domain_slug:
-            serializer.validated_data["domain"] = models.MailDomain.objects.get(
-                slug=domain_slug
-            )
-        super().perform_create(serializer)
-
     def destroy(self, request, *args, **kwargs):
-        """Override destroy method to send a delete request to dimail
-        and return clear message if domain out of sync."""
+        """
+        Override destroy method to delete specific alias or get all the related aliases
+        and delete them all.
+        """
         instance = self.get_object()
         self.perform_destroy(instance)
 
         client = DimailAPIClient()
         dimail_response = client.delete_alias(instance)
+
         if dimail_response.status_code == status.HTTP_404_NOT_FOUND:
             return Response(
-                "Alias already deleted. Domain out of sync, please contact our support.",
+                "Domain out of sync with mailbox provider, please contact our support.",
                 status=status.HTTP_200_OK,
             )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=["DELETE"], detail=False)
+    def delete(self, request, *args, **kwargs):
+        """Delete multiple aliases."""
+        client = DimailAPIClient()
+
+        if local_part := self.request.query_params.get("local_part"):
+            queryset = self.get_queryset().filter(
+                local_part=local_part
+            )  # Manually call get_queryset to filter by domain and role
+            if not queryset:
+                raise Http404("No Alias matches the given query.")
+
+            domain_name = queryset[0].domain.name
+            queryset.delete()
+
+            client.delete_multiple_alias(local_part, domain_name)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -45,7 +45,7 @@ urlpatterns = [
                     r"^mail-domains/(?P<domain_slug>[\w-]+)/",
                     include(maildomain_related_router.urls),
                 ),
-            ]
+            ],
         ),
     ),
 ]

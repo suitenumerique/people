@@ -89,6 +89,8 @@ class MailDomain(BaseModel):
     def __str__(self):
         return self.name
 
+    objects = models.Manager()
+
     def save(self, *args, **kwargs):
         """Override save function to compute the slug."""
         self.slug = self.get_slug()
@@ -471,8 +473,12 @@ class Alias(BaseModel):
         db_table = "people_aliases"
         verbose_name = _("Alias")
         verbose_name_plural = _("Aliases")
-        unique_together = ("local_part", "destination")
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["domain", "local_part", "destination"], name="no_duplicate"
+            )
+        ]
 
     def __str__(self):
         return f"{self.local_part} to {self.destination}"
