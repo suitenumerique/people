@@ -1,6 +1,6 @@
 # People
 
-People is an application to handle users and teams, and distribute permissions accross [La Suite](https://lasuite.numerique.gouv.fr/).
+People is an application to handle users and teams, and distribute permissions across [La Suite](https://lasuite.numerique.gouv.fr/).
 
 It is built on top of [Django Rest
 Framework](https://www.django-rest-framework.org/).
