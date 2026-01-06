@@ -21,25 +21,45 @@ API_URL = "https://recherche-entreprises.api.gouv.fr/search?q={siret}"
 
 def _get_organization_name_and_metadata_from_results(data, siret):
     """Return the organization name and metadata from the results of a SIRET search."""
-    org_metadata = {}
-    for result in data["results"]:
-        for organization in result["matching_etablissements"]:
-            if organization.get("siret") == siret:
-                org_metadata["is_public_service"] = result.get("complements", {}).get(
-                    "est_service_public", False
-                )
-                org_metadata["is_commune"] = (
-                    str(result.get("nature_juridique", "")) == "7210"
-                )
+    # Find matching organization
+    match = next(
+        (
+            (res, org)
+            for res in data.get("results", [])
+            for org in res.get("matching_etablissements", [])
+            if org.get("siret") == siret
+        ),
+        None,
+    )
 
-                store_signs = organization.get("liste_enseignes") or []
-                if store_signs:
-                    return store_signs[0].title(), org_metadata
-                if name := result.get("nom_raison_sociale"):
-                    return name.title(), org_metadata
+    if not match:
+        logger.warning("No organization name found for SIRET %s", siret)
+        return None, {}
+
+    result, organization = match
+
+    # Extract metadata
+    is_commune = str(result.get("nature_juridique", "")) == "7210"
+    metadata = {
+        "is_public_service": result.get("complements", {}).get(
+            "est_service_public", False
+        ),
+        "is_commune": is_commune,
+    }
+
+    # Extract name (priority: commune name > store signs > business name)
+    name = None
+    if is_commune:
+        name = result.get("siege", {}).get("libelle_commune")
+    if not name:  # Fallback for non-communes OR if commune has no libelle_commune
+        store_signs = organization.get("liste_enseignes") or []
+        name = store_signs[0] if store_signs else result.get("nom_raison_sociale")
+
+    if name:
+        return name.title(), metadata
 
     logger.warning("No organization name found for SIRET %s", siret)
-    return None, org_metadata
+    return None, metadata
 
 
 def get_organization_name_and_metadata_from_siret(organization):

@@ -26,15 +26,6 @@ def test_hooks_loaded():
     ]
     assert organization_created_hook_names == [
         "get_organization_name_and_metadata_from_siret_hook",
-        "commune_organization_created",
-    ]
-
-    organization_access_granted_hook_names = [
-        callback.__name__
-        for callback in registry.get_callbacks("organization_access_granted")
-    ]
-    assert organization_access_granted_hook_names == [
-        "commune_organization_access_granted"
     ]
 
     # cleanup the hooks
