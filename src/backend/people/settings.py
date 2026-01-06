@@ -581,26 +581,6 @@ class Base(Configuration):
         environ_name="MAIL_CHECK_DOMAIN_INTERVAL",
         environ_prefix=None,
     )
-    DNS_PROVISIONING_TARGET_ZONE = values.Value(
-        default=None,
-        environ_name="DNS_PROVISIONING_TARGET_ZONE",
-        environ_prefix=None,
-    )
-    DNS_PROVISIONING_API_URL = values.Value(
-        default="https://api.scaleway.com",
-        environ_name="DNS_PROVISIONING_API_URL",
-        environ_prefix=None,
-    )
-    DNS_PROVISIONING_RESOURCE_ID = values.Value(
-        default=None,
-        environ_name="DNS_PROVISIONING_RESOURCE_ID",
-        environ_prefix=None,
-    )
-    DNS_PROVISIONING_API_CREDENTIALS = values.Value(
-        default=None,
-        environ_name="DNS_PROVISIONING_API_CREDENTIALS",
-        environ_prefix=None,
-    )
     MATRIX_BASE_HOME_SERVER = values.Value(
         default="https://matrix.agent.dinum.tchap.gouv.fr",
         environ_name="MATRIX_BASE_HOME_SERVER",

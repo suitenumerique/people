@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔥(plugins) remove CommuneCreation plugin
+
 ## [1.21.0] - 2025-12-05
 
 - ✨(aliases) import existing aliases from dimail
