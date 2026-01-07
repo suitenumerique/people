@@ -18,6 +18,7 @@ from django.utils.translation import get_language, gettext, override
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseInvitation, BaseModel, Organization, User
+from core.exceptions import EmailAlreadyKnownException
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,
@@ -412,6 +413,23 @@ class MailDomainInvitation(BaseInvitation):
                 fields=["email", "domain"], name="email_and_domain_unique_together"
             )
         ]
+
+    def refresh(self):
+        """Create domain access if refresh fail because user was created
+        after invitation expiration"""
+        try:
+            super().refresh()
+        except EmailAlreadyKnownException as exc:
+            user = User.objects.get(email__iexact=self.email)
+
+            MailDomainAccess.objects.create(
+                user=user,
+                domain=self.domain,
+                role=self.role,
+            )
+
+            self.delete()  # delete related invitation
+            raise exc
 
     def __str__(self):
         return f"{self.email} invited to {self.domain}"

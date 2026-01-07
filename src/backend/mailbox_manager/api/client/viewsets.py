@@ -2,6 +2,7 @@
 
 from django.db.models import Q, Subquery
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import action
@@ -427,6 +428,14 @@ class MailDomainInvitationViewset(
                 role=request.data["role"],
             )
             raise exc
+
+    @action(detail=True, methods=["post"])
+    def refresh(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+        """Enable mailbox. Send a request to dimail and change status in our DB"""
+        invitation = get_object_or_404(models.MailDomainInvitation, id=kwargs["id"])
+        invitation.refresh()
+        invitation.email_invitation()
+        return Response(serializers.MailDomainInvitationSerializer(invitation).data)
 
 
 class AliasViewSet(
