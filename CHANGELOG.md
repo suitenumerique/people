@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(invitations) refresh expired invitations
+
 ## [1.23.0] - 2026-02-12
 
 ### Added
