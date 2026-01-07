@@ -36,7 +36,7 @@ from core.plugins.registry import registry as plugin_hooks_registry
 from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
 
-from mailbox_manager.exceptions import EmailAlreadyKnownException
+from core.exceptions import EmailAlreadyKnownException
 
 logger = getLogger(__name__)
 
@@ -1001,14 +1001,21 @@ class BaseInvitation(BaseModel):
         if User.objects.filter(email__iexact=self.email).exists():
             raise EmailAlreadyKnownException
 
+    def refresh(self):
+        """A simple way to refresh invitation and move expiration date."""
+        self.clean()
+        self.updated_at = timezone.now()
+
+        
+
     @property
     def is_expired(self):
         """Calculate if invitation is still valid or has expired."""
-        if not self.created_at:
+        if not self.updated_at:
             return None
 
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-        return timezone.now() > (self.created_at + validity_duration)
+        return timezone.now() > (self.updated_at + validity_duration)
 
     def _get_mail_subject(self):
         """Get the subject of the invitation."""
