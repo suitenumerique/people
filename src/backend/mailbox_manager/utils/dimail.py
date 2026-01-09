@@ -45,7 +45,7 @@ class DimailAPIClient:
     API_CREDENTIALS = settings.MAIL_PROVISIONING_API_CREDENTIALS
     API_TIMEOUT = settings.MAIL_PROVISIONING_API_TIMEOUT
 
-    def get_headers(self):
+    def _get_headers(self):
         """
         Return Bearer token. Requires MAIL_PROVISIONING_API_CREDENTIALS setting,
         to get a token from dimail /token/ endpoint.
@@ -82,7 +82,7 @@ class DimailAPIClient:
                 "Token denied. Please check your MAIL_PROVISIONING_API_CREDENTIALS."
             )
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def create_domain(self, domain_name, request_user):
         """Send a domain creation request to dimail API."""
@@ -117,7 +117,7 @@ class DimailAPIClient:
             )
             return response
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def create_mailbox(self, mailbox, request_user=None):
         """Send a CREATE mailbox request to mail provisioning API."""
@@ -130,7 +130,7 @@ class DimailAPIClient:
             # displayName value has to be unique
             "displayName": f"{mailbox.first_name} {mailbox.last_name}",
         }
-        headers = self.get_headers()
+        headers = self._get_headers()
 
         try:
             response = session.post(
@@ -194,7 +194,7 @@ class DimailAPIClient:
                     }
                 )
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def create_user(self, user_id):
         """Send a request to dimail, to create a new user there. In dimail, user ids are subs."""
@@ -231,7 +231,7 @@ class DimailAPIClient:
             )
             return response
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def create_allow(self, user_id, domain_name):
         """Send a request to dimail for a new 'allow' between user and the domain."""
@@ -273,9 +273,9 @@ class DimailAPIClient:
             )
             return response
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
-    def raise_exception_for_unexpected_response(self, response):
+    def _raise_exception_for_unexpected_response(self, response):
         """Raise error when encountering an unexpected error in dimail."""
         try:
             error_content = json.loads(
@@ -299,7 +299,7 @@ class DimailAPIClient:
             title, template_name, recipient, mailbox_data, issuer
         )
 
-    def notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
+    def _notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
         """
         Send email to notify of password reset
         and send new password.
@@ -359,7 +359,7 @@ class DimailAPIClient:
         try:
             response = session.get(
                 f"{self.API_URL}/domains/{domain.name}/mailboxes/",
-                headers=self.get_headers(),
+                headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
             )
@@ -372,7 +372,7 @@ class DimailAPIClient:
             raise error
 
         if response.status_code != status.HTTP_200_OK:
-            return self.raise_exception_for_unexpected_response(response)
+            return self._raise_exception_for_unexpected_response(response)
 
         dimail_mailboxes = response.json()
         known_mailboxes = models.Mailbox.objects.filter(domain=domain)
@@ -420,7 +420,7 @@ class DimailAPIClient:
         response = session.patch(
             f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}",
             json={"active": "no"},
-            headers=self.get_headers(),
+            headers=self._get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -432,7 +432,7 @@ class DimailAPIClient:
                 request_user,
             )
             return response
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def enable_mailbox(self, mailbox, request_user=None):
         """Send a request to enable a mailbox to dimail API"""
@@ -444,7 +444,7 @@ class DimailAPIClient:
                 "surName": mailbox.last_name,
                 "displayName": f"{mailbox.first_name} {mailbox.last_name}",
             },
-            headers=self.get_headers(),
+            headers=self._get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
         )
@@ -456,7 +456,7 @@ class DimailAPIClient:
                 request_user,
             )
             return response
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def send_pending_mailboxes(self, domain):
         """Send requests for all pending mailboxes of a domain. Returns a list of failed mailboxes for this domain."""
@@ -505,7 +505,7 @@ class DimailAPIClient:
             raise error
         if response.status_code == status.HTTP_200_OK:
             return response.json()
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def fix_domain(self, domain):
         """Send a request to dimail to fix a domain.
@@ -522,7 +522,7 @@ class DimailAPIClient:
                 str(domain),
             )
             return response.json()
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def fetch_domain_status(self, domain):
         """Send a request to check and update status of a domain."""
@@ -647,7 +647,7 @@ class DimailAPIClient:
         try:
             response = session.post(
                 f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
-                headers=self.get_headers(),
+                headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
             )
@@ -661,7 +661,7 @@ class DimailAPIClient:
 
         if response.status_code == status.HTTP_200_OK:
             # send new password to secondary email
-            self.notify_mailbox_password_reset(
+            self._notify_mailbox_password_reset(
                 recipient=mailbox.secondary_email,
                 mailbox_data={
                     "email": response.json()["email"],
@@ -673,7 +673,7 @@ class DimailAPIClient:
                 mailbox,
             )
             return response
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def create_alias(self, alias, request_user=None):
         """Send a Create alias request to mail provisioning API."""
@@ -682,7 +682,7 @@ class DimailAPIClient:
             "user_name": alias.local_part,
             "destination": alias.destination,
         }
-        headers = self.get_headers()
+        headers = self._get_headers()
 
         try:
             response = session.post(
@@ -730,12 +730,12 @@ class DimailAPIClient:
                 }
             )
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def delete_alias(self, alias, request_user=None):
         """Send a Delete alias request to mail provisioning API."""
 
-        headers = self.get_headers()
+        headers = self._get_headers()
 
         try:
             response = session.delete(
@@ -781,7 +781,7 @@ class DimailAPIClient:
             # to match dimail's states
             return response
 
-        return self.raise_exception_for_unexpected_response(response)
+        return self._raise_exception_for_unexpected_response(response)
 
     def import_aliases(self, domain):
         """Import aliases from dimail. Useful if people fall out of sync with dimail."""
@@ -789,7 +789,7 @@ class DimailAPIClient:
         try:
             response = session.get(
                 f"{self.API_URL}/domains/{domain.name}/aliases/",
-                headers=self.get_headers(),
+                headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
             )
@@ -802,7 +802,7 @@ class DimailAPIClient:
             raise error
 
         if response.status_code != status.HTTP_200_OK:
-            return self.raise_exception_for_unexpected_response(response)
+            return self._raise_exception_for_unexpected_response(response)
 
         incoming_aliases = response.json()
         known_aliases = [
