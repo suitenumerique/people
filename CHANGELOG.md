@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(aliases) fix deleting single aliases #1002
+
 ## [1.21.0] - 2025-12-05
 
 - ✨(aliases) import existing aliases from dimail
