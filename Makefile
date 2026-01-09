@@ -108,6 +108,7 @@ bootstrap: \
 # -- Docker/compose
 build: ## build the app-dev container
 	@$(COMPOSE) build app-dev
+	@$(COMPOSE) build dimail
 .PHONY: build
 
 down: ## stop and remove containers, networks, images, and volumes
@@ -123,7 +124,7 @@ run: ## start the wsgi (production) and servers with production Docker images
 .PHONY: run
 
 run-dev: ## start the servers in development mode (watch) Docker images
-	@$(COMPOSE) up --force-recreate --detach app-dev frontend-dev celery-dev celery-beat-dev nginx maildev
+	@$(COMPOSE) up --force-recreate --detach app-dev dimail frontend-dev celery-dev celery-beat-dev nginx maildev
 .PHONY: run-dev
 
 status: ## an alias for "docker compose ps"
