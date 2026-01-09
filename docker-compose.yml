@@ -46,8 +46,6 @@ services:
       postgresql:
         condition: service_healthy
         restart: true
-      dimail:
-        condition: service_started
       maildev:
         condition: service_started
       redis:
