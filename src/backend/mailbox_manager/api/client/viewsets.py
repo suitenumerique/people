@@ -425,6 +425,9 @@ class AliasViewSet(
 
     DELETE /api/<version>/mail-domains/<domain_slug>/aliases/<alias_pk>/
         Delete targeted alias
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/aliases/?local_part=<local_part>/
+        Delete all aliases of targeted local_part
     """
 
     lookup_field = "pk"
@@ -475,5 +478,28 @@ class AliasViewSet(
                 "Domain out of sync with mailbox provider, please contact our support.",
                 status=status.HTTP_200_OK,
             )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=["DELETE"], detail=False)
+    def delete(self, request, *args, **kwargs):
+        """Bulk delete aliases. Filtering is required and accepted filter is local_part."""
+
+        if "local_part" not in self.request.query_params:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        local_part = self.request.query_params["local_part"]
+        queryset = self.get_queryset().filter(
+            local_part=local_part
+        )  # Manually call get_queryset to filter by domain and role
+        if not queryset:
+            raise Http404("No Alias matches the given query.")
+
+        # view is bounded to a domain, fetch is from the queryset to spare a dedicated DB request"
+        domain_name = queryset[0].domain.name
+        queryset.delete()
+
+        client = DimailAPIClient()
+        client.delete_multiple_alias(local_part, domain_name)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(aliases) delete all aliases in one call #1002
 - ✨(aliases) fix deleting single aliases #1002
 - 🔥(plugins) remove CommuneCreation plugin
 
