@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ✨(aliases) delete all aliases in one call #1002
 - ✨(aliases) fix deleting single aliases #1002
 
 ## [1.21.0] - 2025-12-05

@@ -778,10 +778,31 @@ class DimailAPIClient:
                 str(alias.domain),
             )
             # we don't raise error because we actually want this alias to be deleted
-            # to match dimail's states
             return response
 
         return self._raise_exception_for_unexpected_response(response)
+
+    def delete_multiple_alias(self, local_part, domain_name):
+        """Send a Delete alias request to mail provisioning API."""
+
+        try:
+            response = session.delete(
+                f"{self.API_URL}/domains/{domain_name}/aliases/{local_part}/all",
+                json={},
+                headers=self._get_headers(),
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+        # response.raise_for_status()
+
+        return response
 
     def import_aliases(self, domain):
         """Import aliases from dimail. Useful if people fall out of sync with dimail."""
