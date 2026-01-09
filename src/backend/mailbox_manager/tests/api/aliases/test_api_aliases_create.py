@@ -60,8 +60,9 @@ def test_api_aliases_create__viewer_forbidden():
     assert not models.Alias.objects.exists()
 
 
+@responses.activate
 def test_api_aliases_create__duplicate_forbidden():
-    """Cannot create alias if same local part + destination."""
+    """Cannot create alias if existing alias same domain + local part + destination."""
     access = factories.MailDomainAccessFactory(
         role="owner", domain=factories.MailDomainEnabledFactory()
     )

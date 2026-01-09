@@ -4,6 +4,7 @@ from logging import getLogger
 
 from django.contrib.auth.hashers import make_password
 from django.core import exceptions as django_exceptions
+from django.shortcuts import get_object_or_404
 
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
@@ -306,7 +307,9 @@ class MailDomainInvitationSerializer(serializers.ModelSerializer):
 
 
 class AliasSerializer(serializers.ModelSerializer):
-    """Serialize mailbox."""
+    """Serialize aliases."""
+
+    domain = MailDomainSerializer(default="")
 
     class Meta:
         model = models.Alias
@@ -314,8 +317,13 @@ class AliasSerializer(serializers.ModelSerializer):
             "id",
             "local_part",
             "destination",
+            "domain",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "domain"]
+
+    def validate_domain(self, value):  # pylint: disable=unused-argument
+        """Forcefully set domain field to url domain."""
+        return get_object_or_404(models.MailDomain, slug=self.context["domain_slug"])
 
     def create(self, validated_data):
         """
