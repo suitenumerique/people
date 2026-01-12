@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(dimail) ignore oxadmin when importing mailboxes from dimail #986
 - ✨(aliases) delete all aliases in one call #1002
 - ✨(aliases) fix deleting single aliases #1002
 - 🔥(plugins) remove CommuneCreation plugin
