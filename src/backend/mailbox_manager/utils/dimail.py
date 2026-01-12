@@ -375,43 +375,55 @@ class DimailAPIClient:
             return self._raise_exception_for_unexpected_response(response)
 
         dimail_mailboxes = response.json()
-        known_mailboxes = models.Mailbox.objects.filter(domain=domain)
-        known_aliases = [
-            known_alias.local_part
-            for known_alias in models.Alias.objects.filter(domain=domain)
-        ]
+        people_mailboxes = models.Mailbox.objects.filter(domain=domain)
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
-            if (
-                dimail_mailbox["email"]
-                not in [str(known_mailboxes) for known_mailboxes in known_mailboxes]
-                and dimail_mailbox["email"].split("@")[0] not in known_aliases
-            ):
-                try:
-                    # sometimes dimail api returns email from another domain,
-                    # so we decide to exclude this kind of email
-                    address = Address(addr_spec=dimail_mailbox["email"])
-                    if address.domain == domain.name:
-                        # creates a mailbox on our end
-                        mailbox = models.Mailbox.objects.create(
-                            first_name=dimail_mailbox["givenName"],
-                            last_name=dimail_mailbox["surName"],
-                            local_part=address.username,
-                            domain=domain,
-                            status=enums.MailboxStatusChoices.ENABLED,
-                            password=make_password(None),  # unusable password
-                        )
-                        imported_mailboxes.append(str(mailbox))
-                    else:
-                        logger.warning(
-                            "Import of email %s failed because of a wrong domain",
-                            dimail_mailbox["email"],
-                        )
-                except (HeaderParseError, NonASCIILocalPartDefect) as err:
+            try:
+                address = Address(addr_spec=dimail_mailbox["email"])
+            except (HeaderParseError, NonASCIILocalPartDefect) as error:
+                logger.warning(
+                    "Import of email %s failed with error %s",
+                    dimail_mailbox["email"],
+                    error,
+                )
+                continue
+
+            if address.username == "oxadmin":
+                logger.warning(
+                    "Not importing OX technical address: %s", dimail_mailbox["email"]
+                )
+                continue
+
+            if address.username in [
+                alias_.local_part
+                for alias_ in models.Alias.objects.filter(domain=domain)
+            ]:
+                logger.warning(
+                    "%s already used in an existing alias.",
+                    address.username,
+                )
+                continue
+
+            if str(address) not in [
+                str(people_mailbox) for people_mailbox in people_mailboxes
+            ]:
+                # sometimes dimail api returns email from another domain,
+                # so we decide to exclude this kind of email
+                if address.domain == domain.name:
+                    # creates a mailbox on our end
+                    mailbox = models.Mailbox.objects.create(
+                        first_name=dimail_mailbox["givenName"],
+                        last_name=dimail_mailbox["surName"],
+                        local_part=address.username,
+                        domain=domain,
+                        status=enums.MailboxStatusChoices.ENABLED,
+                        password=make_password(None),  # unusable password
+                    )
+                    imported_mailboxes.append(str(mailbox))
+                else:
                     logger.warning(
-                        "Import of email %s failed with error %s",
+                        "Import of email %s failed because of a wrong domain",
                         dimail_mailbox["email"],
-                        err,
                     )
         return imported_mailboxes
 
