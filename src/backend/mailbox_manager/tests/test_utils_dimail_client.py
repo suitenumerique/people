@@ -66,8 +66,8 @@ def test_dimail_synchronization__already_sync(dimail_token_ok):
 
 @responses.activate
 def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0613, R0914
-    """A mailbox existing solely on dimail should be synchronized
-    upon calling sync function on its domain"""
+    """Importing mailboxes from dimail should synchronize valid mailboxes
+    and log errors for invalid ones."""
     caplog.set_level(logging.INFO)
 
     domain = factories.MailDomainEnabledFactory()
@@ -143,7 +143,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
     imported_mailboxes = dimail_client.import_mailboxes(domain)
 
     # 4 imports failed: oxadmin, wrong domain, HeaderParseError, NonASCIILocalPartDefect
-    assert len(caplog.records) == 6
+    assert len(caplog.records) == 5
     log_messages = [record.message for record in caplog.records]
 
     expected_messages = [
@@ -152,21 +152,21 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
         f"Import of email {mailbox_with_invalid_domain['email']} failed with error Invalid Domain",
         f"Import of email {mailbox_with_invalid_local_part['email']} failed with error local-part \
 contains non-ASCII characters)",
-        f"{existing_alias.local_part} already used in an existing alias.",
     ]
     for message in expected_messages:
         assert message in log_messages
 
-    assert imported_mailboxes == [mailbox_valid["email"]]
-    mailbox = models.Mailbox.objects.get()
-    assert mailbox.local_part == "validmailbox"
-    assert mailbox.status == enums.MailboxStatusChoices.ENABLED
+    assert models.Mailbox.objects.count() == 2
+    assert imported_mailboxes == [
+        mailbox_valid["email"],
+        mailbox_existing_alias["email"],
+    ]
 
 
 @responses.activate
 def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint: disable=unused-argument
-    """Should import aliases from dimail if they don't already exist
-    and if username is not already used for mailbox"""
+    """Importing aliases from dimail should synchronize valid aliases
+    and log errors for invalid ones."""
     alias = factories.AliasFactory()
     dimail_client = DimailAPIClient()
 
@@ -178,11 +178,11 @@ def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint
         {
             "username": "contact",
             "domain": alias.domain.name,
-            "destination": alias.destination,  # same destination
+            "destination": alias.destination,  # same destination = ok
             "allow_to_send": False,
         },
         {
-            "username": alias.local_part,  # same username
+            "username": alias.local_part,  # same username = ok
             "domain": alias.domain.name,
             "destination": "maheius.endorecles@somethingelse.com",
             "allow_to_send": False,
@@ -193,7 +193,7 @@ def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint
             "destination": alias.destination,
             "allow_to_send": False,
         },
-        {  # username already used for a mailbox
+        {  # mailbox with same username = ok
             "username": existing_mailbox.local_part,
             "domain": alias.domain.name,
             "destination": existing_mailbox.secondary_email,
@@ -209,8 +209,8 @@ def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint
 
     imported_aliases = dimail_client.import_aliases(alias.domain)
 
-    assert len(imported_aliases) == 2
-    assert models.Alias.objects.count() == 3
+    assert len(imported_aliases) == 3
+    assert models.Alias.objects.count() == 4
 
 
 @pytest.mark.parametrize(

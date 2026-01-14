@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(dimail) allow mailboxes and aliases to have the same local part #986
 - 🐛(dimail) ignore oxadmin when importing mailboxes from dimail #986
 - ✨(aliases) delete all aliases in one call #1002
 - ✨(aliases) fix deleting single aliases #1002

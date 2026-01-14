@@ -79,17 +79,6 @@ class MailboxSerializer(serializers.ModelSerializer):
 
         return mailbox
 
-    def validate_local_part(self, value):
-        """Validate this local part does not match a mailbox."""
-        if models.Alias.objects.filter(
-            local_part=value, domain__slug=self.context["domain_slug"]
-        ):
-            raise exceptions.ValidationError(
-                f'Local part "{value}" already used by an alias.'
-            )
-
-        return value
-
 
 class MailboxUpdateSerializer(MailboxSerializer):
     """A more restrictive serializer when updating mailboxes"""
@@ -338,14 +327,3 @@ class AliasSerializer(serializers.ModelSerializer):
             return super().create(validated_data)
 
         return None
-
-    def validate_local_part(self, value):
-        """Validate this local part does not match a mailbox."""
-        if models.Mailbox.objects.filter(
-            local_part=value, domain__slug=self.context["domain_slug"]
-        ).exists():
-            raise exceptions.ValidationError(
-                f'Local part "{value}" already used by a mailbox.'
-            )
-
-        return value
