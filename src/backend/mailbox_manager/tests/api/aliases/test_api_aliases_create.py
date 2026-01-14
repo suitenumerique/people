@@ -81,26 +81,6 @@ def test_api_aliases_create__duplicate_forbidden():
     assert models.Alias.objects.filter(domain=access.domain).count() == 1
 
 
-def test_api_aliases_create__existing_mailbox_bad_request():
-    """Cannot create alias if local_part is already used by a mailbox."""
-    access = factories.MailDomainAccessFactory(
-        role="owner", domain=factories.MailDomainEnabledFactory()
-    )
-    mailbox = factories.MailboxFactory(domain=access.domain)
-
-    client = APIClient()
-    client.force_login(access.user)
-    response = client.post(
-        f"/api/v1.0/mail-domains/{access.domain.slug}/aliases/",
-        {"local_part": mailbox.local_part, "destination": "someone@outsidedomain.com"},
-    )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {
-        "local_part": [f'Local part "{mailbox.local_part}" already used by a mailbox.']
-    }
-    assert not models.Alias.objects.exists()
-
-
 @responses.activate
 def test_api_aliases_create__async_alias_bad_request(dimail_token_ok):
     """
@@ -151,17 +131,14 @@ def test_api_aliases_create__admins_ok(role, dimail_token_ok):
     client.force_login(access.user)
     # Prepare responses
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/aliases/"),
-        body=json.dumps(
-            {
-                "username": "contact",
-                "domain": access.domain.name,
-                "destination": "someone@outsidedomain.com",
-                "allow_to_send": True,
-            }
-        ),
+        json={
+            "username": "contact",
+            "domain": access.domain.name,
+            "destination": "someone@outsidedomain.com",
+            "allow_to_send": True,
+        },
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
@@ -174,3 +151,34 @@ def test_api_aliases_create__admins_ok(role, dimail_token_ok):
     alias = models.Alias.objects.get()
     assert alias.local_part == "contact"
     assert alias.destination == "someone@outsidedomain.com"
+
+
+@responses.activate
+def test_api_aliases_create__existing_mailbox_ok(dimail_token_ok):
+    """Can create alias even if local_part is already used by a mailbox."""
+    access = factories.MailDomainAccessFactory(
+        role="owner", domain=factories.MailDomainEnabledFactory()
+    )
+    mailbox = factories.MailboxFactory(domain=access.domain)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    responses.post(
+        re.compile(rf".*/domains/{access.domain.name}/aliases/"),
+        json={
+            "username": mailbox.local_part,
+            "domain": access.domain.name,
+            "destination": "someone@outsidedomain.com",
+            "allow_to_send": False,
+        },
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/aliases/",
+        {"local_part": mailbox.local_part, "destination": "someone@outsidedomain.com"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert models.Alias.objects.exists()

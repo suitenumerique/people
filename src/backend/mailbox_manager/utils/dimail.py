@@ -394,16 +394,6 @@ class DimailAPIClient:
                 )
                 continue
 
-            if address.username in [
-                alias_.local_part
-                for alias_ in models.Alias.objects.filter(domain=domain)
-            ]:
-                logger.warning(
-                    "%s already used in an existing alias.",
-                    address.username,
-                )
-                continue
-
             if str(address) not in [
                 str(people_mailbox) for people_mailbox in people_mailboxes
             ]:
@@ -842,18 +832,13 @@ class DimailAPIClient:
             (known_alias.local_part, known_alias.destination)
             for known_alias in models.Alias.objects.filter(domain=domain)
         ]
-        known_mailboxes = [
-            known_mailbox.local_part
-            for known_mailbox in models.Mailbox.objects.filter(domain=domain)
-        ]
+
         imported_aliases = []
         for incoming_alias in incoming_aliases:
             if (
                 incoming_alias["username"],
                 incoming_alias["destination"],
-            ) not in known_aliases and incoming_alias[
-                "username"
-            ] not in known_mailboxes:
+            ) not in known_aliases:
                 try:
                     new_alias = models.Alias.objects.create(
                         local_part=incoming_alias["username"],
