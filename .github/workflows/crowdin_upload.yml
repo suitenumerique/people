@@ -25,7 +25,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.11"
+          python-version: '3.13'
       - name: Upgrade pip and setuptools
         run: pip install --upgrade pip setuptools
       - name: Install development dependencies

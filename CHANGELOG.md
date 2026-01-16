@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔒️(security) upgrade python version to fix vulnerability #1010
 - 🐛(dimail) allow mailboxes and aliases to have the same local part #986
 - 🐛(dimail) ignore oxadmin when importing mailboxes from dimail #986
 - ✨(aliases) delete all aliases in one call #1002

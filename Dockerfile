@@ -1,10 +1,10 @@
 # Django People
 
 # ---- base image to inherit from ----
-FROM python:3.12.6-alpine3.20 AS base
+FROM python:3.13.11-alpine AS base
 
 # Upgrade pip to its latest release to speed up dependencies installation
-RUN python -m pip install --upgrade pip setuptools
+RUN python -m pip install --upgrade pip
 
 # Upgrade system packages to install security updates
 RUN apk update && \
