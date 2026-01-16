@@ -1004,7 +1004,7 @@ class BaseInvitation(BaseModel):
     @property
     def is_expired(self):
         """Calculate if invitation is still valid or has expired."""
-        if not self.created_at:
+        if not self.updated_at:
             return None
 
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
