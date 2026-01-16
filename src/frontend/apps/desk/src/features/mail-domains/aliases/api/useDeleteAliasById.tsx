@@ -49,12 +49,26 @@ export const useDeleteAliasById = (options?: UseDeleteAliasByIdOptions) => {
         queryKey: [KEY_LIST_ALIAS],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onSuccess as unknown as (
+            data: void,
+            variables: DeleteAliasByIdParams,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
       }
     },
     onError: (error, variables, context) => {
       if (options?.onError) {
-        options.onError(error, variables, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onError as unknown as (
+            error: APIError,
+            variables: DeleteAliasByIdParams,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
       }
     },
   });

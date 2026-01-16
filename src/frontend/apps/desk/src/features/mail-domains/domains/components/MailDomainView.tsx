@@ -5,17 +5,17 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, CustomTabs, Tag, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
-import { useAliases } from '@/features/mail-domains/aliases/api/useAliases';
 import { AliasesView } from '@/features/mail-domains/aliases';
+import { useAliases } from '@/features/mail-domains/aliases/api/useAliases';
+import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
 import {
   MailDomain,
   MailDomainAccessesAction,
   ModalRequiredActionDomain,
   Role,
 } from '@/features/mail-domains/domains';
-import { useMailboxes } from '@/features/mail-domains/mailboxes/api/useMailboxes';
 import { MailBoxesView } from '@/features/mail-domains/mailboxes';
+import { useMailboxes } from '@/features/mail-domains/mailboxes/api/useMailboxes';
 
 type Props = {
   mailDomain: MailDomain;

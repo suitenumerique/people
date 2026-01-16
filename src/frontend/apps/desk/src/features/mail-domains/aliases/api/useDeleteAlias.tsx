@@ -40,20 +40,39 @@ type UseDeleteAliasOptions = UseMutationOptions<
 
 export const useDeleteAlias = (options?: UseDeleteAliasOptions) => {
   const queryClient = useQueryClient();
+  const {
+    onSuccess: optionsOnSuccess,
+    onError: optionsOnError,
+    ...restOptions
+  } = options || {};
   return useMutation<void, APIError, DeleteAliasParams>({
     mutationFn: deleteAlias,
-    ...options,
+    ...restOptions,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_ALIAS],
       });
-      if (options?.onSuccess) {
-        options.onSuccess(data, variables, context);
+      if (optionsOnSuccess) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          optionsOnSuccess as unknown as (
+            data: void,
+            variables: DeleteAliasParams,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
       }
     },
     onError: (error, variables, context) => {
-      if (options?.onError) {
-        options.onError(error, variables, context);
+      if (optionsOnError) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          optionsOnError as unknown as (
+            error: APIError,
+            variables: DeleteAliasParams,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
       }
     },
   });

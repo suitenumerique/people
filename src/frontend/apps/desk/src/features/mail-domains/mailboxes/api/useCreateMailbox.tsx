@@ -46,7 +46,8 @@ export const useCreateMailbox = (options: UseCreateMailboxParams) => {
   const queryClient = useQueryClient();
   return useMutation<void, APIError, CreateMailboxParams>({
     mutationFn: createMailbox,
-    onSuccess: (data, variables, onMutateResult, context) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [
           KEY_LIST_MAILBOX,
@@ -54,12 +55,26 @@ export const useCreateMailbox = (options: UseCreateMailboxParams) => {
         ],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onSuccess as unknown as (
+            data: void,
+            variables: CreateMailboxParams,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
       }
     },
-    onError: (error, variables, onMutateResult, context) => {
+    onError: (error, variables, context) => {
       if (options?.onError) {
-        options.onError(error, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onError as unknown as (
+            error: APIError,
+            variables: CreateMailboxParams,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
       }
     },
   });
