@@ -23,7 +23,7 @@ import {
 import { CustomModal } from '@/components/modal/CustomModal';
 
 import { MailDomain } from '../../domains/types';
-import { CreateAliasParams, useCreateAlias } from '../api';
+import { useCreateAlias } from '../api';
 
 const FORM_ID = 'form-create-alias';
 
@@ -102,18 +102,14 @@ export const ModalCreateAlias = ({
 
   const { mutate: createAlias } = useCreateAlias({
     mailDomainSlug: mailDomain.slug,
-    onSuccess: () => {
-      // Géré dans onSubmitCallback
-    },
-    onError: (error) => {
-      // Géré dans onSubmitCallback
-    },
   });
 
   const onSubmitCallback = async (event: React.FormEvent) => {
     event.preventDefault();
     const isValid = await methods.trigger();
-    if (!isValid) return;
+    if (!isValid) {
+      return;
+    }
 
     if (destinations.length === 0) {
       toast(t('Please add at least one destination email'), VariantType.ERROR, {
@@ -131,7 +127,6 @@ export const ModalCreateAlias = ({
     let errorCount = 0;
     const allErrors: string[] = [];
 
-    // Créer toutes les requêtes séquentiellement pour éviter les conflits
     for (const destination of destinations) {
       try {
         await new Promise<void>((resolve, reject) => {
@@ -165,7 +160,7 @@ export const ModalCreateAlias = ({
                     ],
                     serverErrorParams: [
                       t(
-                        'An error occurred while creating the alias. Please try again.',
+                        'The domain must be enabled to create aliases. Please check the domain status.',
                       ),
                       undefined,
                     ],
@@ -180,7 +175,7 @@ export const ModalCreateAlias = ({
             },
           );
         });
-      } catch (error) {
+      } catch {
         // Erreur déjà gérée dans onError
       }
     }
@@ -223,7 +218,12 @@ export const ModalCreateAlias = ({
       content: (
         <FormProvider {...methods}>
           {!!errorCauses.length && <TextErrors causes={errorCauses} />}
-          <form id={FORM_ID} onSubmit={onSubmitCallback}>
+          <form
+            id={FORM_ID}
+            onSubmit={(e) => {
+              void onSubmitCallback(e);
+            }}
+          >
             <Box $padding={{ top: 'sm', horizontal: 'md' }} $gap="4px">
               <Text $size="md" $weight="bold">
                 {t('Alias configuration')}
@@ -248,14 +248,13 @@ export const ModalCreateAlias = ({
               <Controller
                 name="local_part"
                 control={methods.control}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <Box $align="center">
                     <Input
                       {...field}
                       label={t('Name of the alias')}
                       required
                       placeholder={t('contact')}
-                      error={fieldState.error?.message}
                     />
                   </Box>
                 )}
@@ -264,13 +263,12 @@ export const ModalCreateAlias = ({
                 style={{
                   display: 'flex',
                   position: 'absolute',
-                  top: '65px',
-                  left: '220px',
+                  top: '58px',
+                  left: '210px',
                 }}
               >
                 <Text className="mb-8" $weight="500">
-                  {' '}
-                  @{mailDomain.name}{' '}
+                  @{mailDomain.name}
                 </Text>
               </Box>
             </Box>
@@ -304,7 +302,6 @@ export const ModalCreateAlias = ({
                     >
                       {t('Add destination')}
                     </Button>
-                   
                   </Box>
                   {destinationError && (
                     <Text $theme="warning" $size="sm">
@@ -318,12 +315,15 @@ export const ModalCreateAlias = ({
                   <Box
                     $margin={{ top: 'md' }}
                     style={{
-                      border: '1px solid var(--c--contextuals--border--surface--primary)',
+                      border:
+                        '1px solid var(--c--contextuals--border--surface--primary)',
                       borderRadius: '4px',
                       overflow: 'hidden',
                     }}
                   >
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table
+                      style={{ width: '100%', borderCollapse: 'collapse' }}
+                    >
                       <thead>
                         <tr
                           style={{
@@ -367,7 +367,7 @@ export const ModalCreateAlias = ({
                             <td>
                               <Text $size="sm">{destination}</Text>
                             </td>
-                            <td style={{  textAlign: 'right' }}>
+                            <td style={{ textAlign: 'right' }}>
                               <Button
                                 type="button"
                                 color="tertiary"
@@ -396,11 +396,13 @@ export const ModalCreateAlias = ({
         <Button
           type="submit"
           form={FORM_ID}
-          disabled={!methods.formState.isValid || destinations.length === 0 || isSubmitting}
+          disabled={
+            !methods.formState.isValid ||
+            destinations.length === 0 ||
+            isSubmitting
+          }
         >
-          {isSubmitting
-            ? t('Creating...')
-            : t('Create alias')}
+          {isSubmitting ? t('Creating...') : t('Create alias')}
         </Button>
       ),
     },
@@ -434,5 +436,3 @@ export const ModalCreateAlias = ({
     </div>
   );
 };
-
-

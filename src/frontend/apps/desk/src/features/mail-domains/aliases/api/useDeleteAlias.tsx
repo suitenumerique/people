@@ -13,13 +13,12 @@ interface DeleteAliasParams {
   localPart: string;
 }
 
-// Suppression de l’alias complet (API actuelle)
 export const deleteAlias = async ({
   mailDomainSlug,
   localPart,
 }: DeleteAliasParams): Promise<void> => {
   const response = await fetchAPI(
-    `mail-domains/${mailDomainSlug}/aliases/${localPart}/`,
+    `mail-domains/${mailDomainSlug}/aliases/delete/?local_part=${encodeURIComponent(localPart)}`,
     {
       method: 'DELETE',
     },
@@ -33,7 +32,11 @@ export const deleteAlias = async ({
   }
 };
 
-type UseDeleteAliasOptions = UseMutationOptions<void, APIError, DeleteAliasParams>;
+type UseDeleteAliasOptions = UseMutationOptions<
+  void,
+  APIError,
+  DeleteAliasParams
+>;
 
 export const useDeleteAlias = (options?: UseDeleteAliasOptions) => {
   const queryClient = useQueryClient();
@@ -48,55 +51,10 @@ export const useDeleteAlias = (options?: UseDeleteAliasOptions) => {
         options.onSuccess(data, variables, context);
       }
     },
-  });
-};
-
-// Suppression d’une destination précise (à activer quand l’API l’exposera)
-interface DeleteAliasDestinationParams extends DeleteAliasParams {
-  destination: string;
-}
-
-export const deleteAliasDestination = async ({
-  mailDomainSlug,
-  localPart,
-  destination,
-}: DeleteAliasDestinationParams): Promise<void> => {
-  const response = await fetchAPI(
-    `mail-domains/${mailDomainSlug}/aliases/${localPart}/${destination}/`,
-    {
-      method: 'DELETE',
-    },
-  );
-
-  if (!response.ok) {
-    throw new APIError(
-      'Failed to delete the alias destination',
-      await errorCauses(response),
-    );
-  }
-};
-
-type UseDeleteAliasDestinationOptions = UseMutationOptions<
-  void,
-  APIError,
-  DeleteAliasDestinationParams
->;
-
-export const useDeleteAliasDestination = (
-  options?: UseDeleteAliasDestinationOptions,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation<void, APIError, DeleteAliasDestinationParams>({
-    mutationFn: deleteAliasDestination,
-    ...options,
-    onSuccess: (data, variables, context) => {
-      void queryClient.invalidateQueries({
-        queryKey: [KEY_LIST_ALIAS],
-      });
-      if (options?.onSuccess) {
-        options.onSuccess(data, variables, context);
+    onError: (error, variables, context) => {
+      if (options?.onError) {
+        options.onError(error, variables, context);
       }
     },
   });
 };
-

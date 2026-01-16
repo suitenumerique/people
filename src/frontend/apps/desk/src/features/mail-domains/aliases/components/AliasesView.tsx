@@ -1,12 +1,7 @@
-import {
-  Button,
-  Input,
-  Tooltip,
-} from '@openfun/cunningham-react';
+import { Button, Input, Tooltip } from '@openfun/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { ModalCreateAlias } from '@/features/mail-domains/aliases/components';
 import { AliasesListView } from '@/features/mail-domains/aliases/components/panel';
@@ -24,8 +19,7 @@ export function AliasesView({ mailDomain }: { mailDomain: MailDomain }) {
   const { colorsTokens } = useCunninghamTheme();
   const colors = colorsTokens();
 
-  const canCreateAlias =
-    mailDomain.status === 'enabled' || mailDomain.status === 'pending';
+  const canCreateAlias = mailDomain.status === 'enabled';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
@@ -129,11 +123,6 @@ export function AliasesView({ mailDomain }: { mailDomain: MailDomain }) {
         </div>
 
         <AliasesListView mailDomain={mailDomain} querySearch={searchValue} />
-        {!mailDomain.count_mailboxes && (
-          <Text $align="center" $size="small">
-            {t('No alias was created with this mail domain.')}
-          </Text>
-        )}
         {isCreateAliasFormVisible && mailDomain ? (
           <ModalCreateAlias
             mailDomain={mailDomain}
@@ -144,5 +133,3 @@ export function AliasesView({ mailDomain }: { mailDomain: MailDomain }) {
     </>
   );
 }
-
-

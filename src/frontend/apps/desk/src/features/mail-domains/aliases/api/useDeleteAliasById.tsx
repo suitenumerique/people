@@ -11,23 +11,17 @@ import { KEY_LIST_ALIAS } from './useAliases';
 interface DeleteAliasByIdParams {
   mailDomainSlug: string;
   aliasId: string;
-  localPart: string; // Still needed for URL construction
 }
 
 export const deleteAliasById = async ({
   mailDomainSlug,
   aliasId,
-  localPart,
 }: DeleteAliasByIdParams): Promise<void> => {
-  // Use localPart in URL but identify by id in request
+  // Use aliasId (pk) directly in URL as per API lookup_field = "pk"
   const response = await fetchAPI(
-    `mail-domains/${mailDomainSlug}/aliases/${localPart}/`,
+    `mail-domains/${mailDomainSlug}/aliases/${aliasId}/`,
     {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: aliasId }),
     },
   );
 
@@ -58,6 +52,10 @@ export const useDeleteAliasById = (options?: UseDeleteAliasByIdOptions) => {
         options.onSuccess(data, variables, context);
       }
     },
+    onError: (error, variables, context) => {
+      if (options?.onError) {
+        options.onError(error, variables, context);
+      }
+    },
   });
 };
-

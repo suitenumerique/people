@@ -5,7 +5,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { parseAPIError } from '@/api/parseAPIError';
@@ -17,14 +17,14 @@ import {
   Text,
   TextErrors,
 } from '@/components';
-import { CustomModal } from '@/components/modal/CustomModal';
 import { Modal } from '@/components/Modal';
+import { CustomModal } from '@/components/modal/CustomModal';
 
 import { MailDomain } from '../../domains/types';
-import { AliasGroup } from '../types';
 import { useCreateAlias } from '../api/useCreateAlias';
-import { useDeleteAliasById } from '../api/useDeleteAliasById';
 import { useDeleteAlias } from '../api/useDeleteAlias';
+import { useDeleteAliasById } from '../api/useDeleteAliasById';
+import { AliasGroup } from '../types';
 
 const FORM_ID = 'form-edit-alias';
 
@@ -59,7 +59,6 @@ export const ModalEditAlias = ({
     onConfirm: () => {},
   });
 
-  // Initialize destinations from aliasGroup
   useEffect(() => {
     setDestinations([...aliasGroup.destinations]);
   }, [aliasGroup]);
@@ -71,16 +70,29 @@ export const ModalEditAlias = ({
       return;
     }
 
-    // Validation email
+    // Valid email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmed)) {
       setDestinationError(t('Please enter a valid email address'));
       return;
     }
 
-    // Vérifier si déjà présent
+    // Email already in list
     if (destinations.includes(trimmed)) {
       setDestinationError(t('This email address is already in the list'));
+      return;
+    }
+
+    // Check domain enabled
+    if (mailDomain.status !== 'enabled') {
+      setDestinationError(
+        t(
+          'The domain must be enabled to add destinations. Current status: {{status}}',
+          {
+            status: mailDomain.status,
+          },
+        ),
+      );
       return;
     }
 
@@ -122,7 +134,7 @@ export const ModalEditAlias = ({
                   ],
                   serverErrorParams: [
                     t(
-                      'An error occurred while adding the destination. Please try again.',
+                      'The domain must be enabled to add destinations. Please check the domain status.',
                     ),
                     undefined,
                   ],
@@ -140,8 +152,7 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch (error) {
-      // Erreur déjà gérée dans onError
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -157,29 +168,46 @@ export const ModalEditAlias = ({
       ),
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, isOpen: false });
-        handleRemoveDestination(destination);
+        void handleRemoveDestination(destination);
       },
     });
   };
 
   const handleRemoveDestination = async (destination: string) => {
-
     setIsSubmitting(true);
+
+    const aliasId = aliasGroup.destinationIds[destination];
+    if (!aliasId) {
+      toast(
+        t('Failed to find alias ID for this destination'),
+        VariantType.ERROR,
+        {
+          duration: 4000,
+        },
+      );
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       await new Promise<void>((resolve, reject) => {
-        deleteAlias(
+        deleteAliasById(
           {
             mailDomainSlug: mailDomain.slug,
-            localPart: aliasGroup.local_part,
+            aliasId,
           },
           {
             onSuccess: () => {
-              toast(t('Alias deleted successfully'), VariantType.SUCCESS, {
-                duration: 4000,
-              });
-              setDestinations([]);
+              toast(
+                t('Destination removed successfully'),
+                VariantType.SUCCESS,
+                {
+                  duration: 4000,
+                },
+              );
+              setDestinations(destinations.filter((d) => d !== destination));
               resolve();
+              closeModal();
             },
             onError: (error) => {
               const causes =
@@ -188,16 +216,16 @@ export const ModalEditAlias = ({
                   errorParams: [],
                   serverErrorParams: [
                     t(
-                      'An error occurred while deleting the alias. Please try again.',
+                      'An error occurred while removing the destination. Please try again.',
                     ),
                     undefined,
                   ],
                 }) || [];
 
               if (causes.length > 0) {
-                setErrorCauses(causes);
+                setDestinationError(causes[0]);
               } else {
-                toast(t('Failed to delete alias'), VariantType.ERROR, {
+                toast(t('Failed to remove destination'), VariantType.ERROR, {
                   duration: 4000,
                 });
               }
@@ -206,8 +234,7 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch (error) {
-      // Erreur déjà gérée dans onError
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -222,7 +249,7 @@ export const ModalEditAlias = ({
       ),
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, isOpen: false });
-        removeAllDestinations();
+        void removeAllDestinations();
       },
     });
   };
@@ -249,6 +276,7 @@ export const ModalEditAlias = ({
               });
               setDestinations([]);
               resolve();
+              closeModal();
             },
             onError: (error) => {
               const causes =
@@ -275,8 +303,7 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch (error) {
-      // Erreur déjà gérée dans onError
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -287,7 +314,7 @@ export const ModalEditAlias = ({
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      addDestination();
+      void addDestination();
     }
   };
 
@@ -295,10 +322,8 @@ export const ModalEditAlias = ({
     mailDomainSlug: mailDomain.slug,
   });
 
-  // deleteAliasById conservé pour usage futur quand l'API acceptera l'ID/destination
   const { mutate: deleteAliasById } = useDeleteAliasById();
   const { mutate: deleteAlias } = useDeleteAlias();
-
 
   const steps = [
     {
@@ -310,7 +335,7 @@ export const ModalEditAlias = ({
             id={FORM_ID}
             onSubmit={(e) => {
               e.preventDefault();
-              addDestination();
+              void addDestination();
             }}
           >
             <Box $padding={{ top: 'sm', horizontal: 'md' }} $gap="4px">
@@ -318,9 +343,7 @@ export const ModalEditAlias = ({
                 {t('Alias configuration')}
               </Text>
               <Text $theme="greyscale" $variation="600">
-                {t(
-                  'Manage the destination email addresses for this alias.',
-                )}
+                {t('Manage the destination email addresses for this alias.')}
               </Text>
             </Box>
 
@@ -346,12 +369,12 @@ export const ModalEditAlias = ({
                 style={{
                   display: 'flex',
                   position: 'absolute',
-                  top: '65px',
-                  left: '220px',
+                  top: '58px',
+                  left: '210px',
                 }}
               >
                 <Text className="mb-8" $weight="500">
-               @{mailDomain.name}{' '}
+                  @{mailDomain.name}
                 </Text>
               </Box>
             </Box>
@@ -403,7 +426,9 @@ export const ModalEditAlias = ({
                       }
                     `}
                   >
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table
+                      style={{ width: '100%', borderCollapse: 'collapse' }}
+                    >
                       <thead>
                         <tr
                           style={{
@@ -478,7 +503,9 @@ export const ModalEditAlias = ({
               color="danger"
               onClick={handleRemoveAllDestinations}
               disabled={isSubmitting}
-              icon={<Icon iconName="delete" $theme="greyscale" $variation="000" />}
+              icon={
+                <Icon iconName="delete" $theme="greyscale" $variation="000" />
+              }
             >
               {t('Delete this alias')}
             </Button>
@@ -549,4 +576,3 @@ export const ModalEditAlias = ({
     </div>
   );
 };
-

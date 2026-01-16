@@ -43,7 +43,8 @@ export const useCreateAlias = (options: UseCreateAliasParams) => {
   const queryClient = useQueryClient();
   return useMutation<void, APIError, CreateAliasParams>({
     mutationFn: createAlias,
-    onSuccess: (data, variables, onMutateResult, context) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [
           KEY_LIST_ALIAS,
@@ -51,15 +52,13 @@ export const useCreateAlias = (options: UseCreateAliasParams) => {
         ],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, onMutateResult, context);
+        options.onSuccess(data, variables, context);
       }
     },
-    onError: (error, variables, onMutateResult, context) => {
+    onError: (error, variables, context) => {
       if (options?.onError) {
-        options.onError(error, variables, onMutateResult, context);
+        options.onError(error, variables, context);
       }
     },
   });
 };
-
-

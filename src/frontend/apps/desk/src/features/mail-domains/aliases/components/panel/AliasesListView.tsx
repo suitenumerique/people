@@ -1,16 +1,12 @@
-import { DataGrid, SortModel } from '@openfun/cunningham-react';
+import { Button, DataGrid, SortModel } from '@openfun/cunningham-react';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
 import { useAuthStore } from '@/core/auth';
+import { Alias, AliasGroup } from '@/features/mail-domains/aliases/types';
 import { MailDomain } from '@/features/mail-domains/domains';
-import { Button } from '@openfun/cunningham-react';
-import {
-  Alias,
-  AliasGroup,
-} from '@/features/mail-domains/aliases/types';
 
 import { useAliasesInfinite } from '../../api/useAliasesInfinite';
 import { ModalEditAlias } from '../ModalEditAlias';
@@ -42,7 +38,9 @@ export function AliasesListView({
 }: AliasesListViewProps) {
   const { t } = useTranslation();
   const { userData } = useAuthStore();
-  const [editingAliasGroup, setEditingAliasGroup] = useState<AliasGroup | null>(null);
+  const [editingAliasGroup, setEditingAliasGroup] = useState<AliasGroup | null>(
+    null,
+  );
 
   const [sortModel] = useState<SortModel>([]);
 
@@ -144,6 +142,12 @@ export function AliasesListView({
     <div>
       {error && <TextErrors causes={error.cause ?? []} />}
 
+      {!filteredAliases.length && (
+        <Text $align="center" $size="small" $padding={{ top: 'base' }}>
+          {t('No alias was created with this mail domain.')}
+        </Text>
+      )}
+
       {filteredAliases && filteredAliases.length ? (
         <>
           <DataGrid
@@ -165,7 +169,8 @@ export function AliasesListView({
                 enableSorting: false,
                 renderCell: ({ row }) => (
                   <Text $weight="500" $theme="greyscale">
-                    {row.count_destinations} destination{row.count_destinations > 1 ? 's' : ''}
+                    {row.count_destinations} destination
+                    {row.count_destinations > 1 ? 's' : ''}
                   </Text>
                 ),
               },
@@ -173,7 +178,8 @@ export function AliasesListView({
                 id: 'actions',
                 renderCell: ({ row }) => {
                   // Check if user can edit
-                  const isOwnerOrAdmin = mailDomain.abilities?.patch || mailDomain.abilities?.put;
+                  const isOwnerOrAdmin =
+                    mailDomain.abilities?.patch || mailDomain.abilities?.put;
                   const isAliasDestination = row.destinations.some(
                     (dest) => dest === userData?.email,
                   );
@@ -203,7 +209,7 @@ export function AliasesListView({
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>
       ) : null}
-      <div ref={loadMoreRef} style={{ height: 32 }} />
+      <div ref={loadMoreRef} />
       {editingAliasGroup && (
         <ModalEditAlias
           mailDomain={mailDomain}
@@ -214,5 +220,3 @@ export function AliasesListView({
     </div>
   );
 }
-
-

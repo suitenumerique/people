@@ -19,8 +19,6 @@ export interface AliasGroup {
   email: string;
   local_part: string;
   destinations: string[];
-  destinationIds: Record<string, string>; // Map destination -> alias ID
+  destinationIds: Record<string, string>;
   count_destinations: number;
 }
-
-

@@ -1,16 +1,14 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { APIError } from '@/api';
+import { KEY_LIST_ALIAS, getMailDomainAliases } from './useAliases';
 
-import { getMailDomainAliases, KEY_LIST_ALIAS } from './useAliases';
-
-export type MailDomainAliasesParams = {
+export type MailDomainAliasesInfiniteParams = {
   mailDomainSlug: string;
   ordering?: string;
 };
 
 export function useAliasesInfinite(
-  param: Omit<MailDomainAliasesParams, 'page'>,
+  param: MailDomainAliasesInfiniteParams,
   queryConfig = {},
 ) {
   return useInfiniteQuery({
@@ -19,7 +17,7 @@ export function useAliasesInfinite(
     queryFn: ({ pageParam }) =>
       getMailDomainAliases({
         mailDomainSlug: param.mailDomainSlug,
-        page: pageParam as number,
+        page: pageParam,
         ordering: param.ordering,
       }),
     getNextPageParam(lastPage, allPages) {
@@ -32,5 +30,3 @@ export function useAliasesInfinite(
     ...queryConfig,
   });
 }
-
-
