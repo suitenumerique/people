@@ -75,8 +75,7 @@ describe('useDeleteMailDomainAccess', () => {
       expect(onSuccess).toHaveBeenCalledWith(
         undefined,
         { slug: 'example-slug', accessId: '1-1-1-1-1' },
-        undefined,
-        { client: {}, meta: undefined, mutationKey: undefined },
+        undefined, // context
       ),
     );
     expect(fetchMock.lastUrl()).toContain(

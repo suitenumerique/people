@@ -6,44 +6,54 @@ import {
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-import { KEY_LIST_TEAM } from './useTeams';
+import { KEY_LIST_ALIAS } from './useAliases';
 
-interface RemoveTeamProps {
-  teamId: string;
+interface DeleteAliasByIdParams {
+  mailDomainSlug: string;
+  aliasId: string;
 }
 
-export const removeTeam = async ({
-  teamId,
-}: RemoveTeamProps): Promise<void> => {
-  const response = await fetchAPI(`teams/${teamId}/`, {
-    method: 'DELETE',
-  });
+export const deleteAliasById = async ({
+  mailDomainSlug,
+  aliasId,
+}: DeleteAliasByIdParams): Promise<void> => {
+  // Use aliasId (pk) directly in URL as per API lookup_field = "pk"
+  const response = await fetchAPI(
+    `mail-domains/${mailDomainSlug}/aliases/${aliasId}/`,
+    {
+      method: 'DELETE',
+    },
+  );
 
   if (!response.ok) {
     throw new APIError(
-      'Failed to delete the team',
+      'Failed to delete the alias',
       await errorCauses(response),
     );
   }
 };
 
-type UseRemoveTeamOptions = UseMutationOptions<void, APIError, RemoveTeamProps>;
+type UseDeleteAliasByIdOptions = UseMutationOptions<
+  void,
+  APIError,
+  DeleteAliasByIdParams
+>;
 
-export const useRemoveTeam = (options?: UseRemoveTeamOptions) => {
+export const useDeleteAliasById = (options?: UseDeleteAliasByIdOptions) => {
   const queryClient = useQueryClient();
-  return useMutation<void, APIError, RemoveTeamProps>({
-    mutationFn: removeTeam,
+  return useMutation<void, APIError, DeleteAliasByIdParams>({
+    mutationFn: deleteAliasById,
     ...options,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
-        queryKey: [KEY_LIST_TEAM],
+        queryKey: [KEY_LIST_ALIAS],
       });
       if (options?.onSuccess) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           options.onSuccess as unknown as (
             data: void,
-            variables: RemoveTeamProps,
+            variables: DeleteAliasByIdParams,
             context: unknown,
           ) => void
         )(data, variables, context);
@@ -55,7 +65,7 @@ export const useRemoveTeam = (options?: UseRemoveTeamOptions) => {
         (
           options.onError as unknown as (
             error: APIError,
-            variables: RemoveTeamProps,
+            variables: DeleteAliasByIdParams,
             context: unknown,
           ) => void
         )(error, variables, context);

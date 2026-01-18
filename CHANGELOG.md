@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
+- ✨(front) create, manage & delete aliases
 - ✨(domains) alias sorting and admin
 - ✨(aliases) delete all aliases in one call #1002
 

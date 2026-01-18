@@ -5,24 +5,20 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import {
-  KEY_LIST_MAIL_DOMAIN,
-  KEY_MAIL_DOMAIN,
-} from '@/features/mail-domains/domains';
 
-import { KEY_LIST_MAIL_DOMAIN_ACCESSES } from './useMailDomainAccesses';
+import { KEY_LIST_ALIAS } from './useAliases';
 
-interface DeleteMailDomainAccessProps {
-  slug: string;
-  accessId: string;
+interface DeleteAliasParams {
+  mailDomainSlug: string;
+  localPart: string;
 }
 
-export const deleteMailDomainAccess = async ({
-  slug,
-  accessId,
-}: DeleteMailDomainAccessProps): Promise<void> => {
+export const deleteAlias = async ({
+  mailDomainSlug,
+  localPart,
+}: DeleteAliasParams): Promise<void> => {
   const response = await fetchAPI(
-    `mail-domains/${slug}/accesses/${accessId}/`,
+    `mail-domains/${mailDomainSlug}/aliases/delete/?local_part=${encodeURIComponent(localPart)}`,
     {
       method: 'DELETE',
     },
@@ -30,46 +26,38 @@ export const deleteMailDomainAccess = async ({
 
   if (!response.ok) {
     throw new APIError(
-      'Failed to delete the access',
+      'Failed to delete the alias',
       await errorCauses(response),
     );
   }
 };
 
-type UseDeleteMailDomainAccessOptions = UseMutationOptions<
+type UseDeleteAliasOptions = UseMutationOptions<
   void,
   APIError,
-  DeleteMailDomainAccessProps
+  DeleteAliasParams
 >;
 
-export const useDeleteMailDomainAccess = (
-  options?: UseDeleteMailDomainAccessOptions,
-) => {
+export const useDeleteAlias = (options?: UseDeleteAliasOptions) => {
   const queryClient = useQueryClient();
   const {
     onSuccess: optionsOnSuccess,
     onError: optionsOnError,
     ...restOptions
   } = options || {};
-  return useMutation<void, APIError, DeleteMailDomainAccessProps>({
-    mutationFn: deleteMailDomainAccess,
+  return useMutation<void, APIError, DeleteAliasParams>({
+    mutationFn: deleteAlias,
     ...restOptions,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
-        queryKey: [KEY_LIST_MAIL_DOMAIN_ACCESSES],
-      });
-      void queryClient.invalidateQueries({
-        queryKey: [KEY_MAIL_DOMAIN],
-      });
-      void queryClient.invalidateQueries({
-        queryKey: [KEY_LIST_MAIL_DOMAIN],
+        queryKey: [KEY_LIST_ALIAS],
       });
       if (optionsOnSuccess) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           optionsOnSuccess as unknown as (
             data: void,
-            variables: DeleteMailDomainAccessProps,
+            variables: DeleteAliasParams,
             context: unknown,
           ) => void
         )(data, variables, context);
@@ -81,7 +69,7 @@ export const useDeleteMailDomainAccess = (
         (
           optionsOnError as unknown as (
             error: APIError,
-            variables: DeleteMailDomainAccessProps,
+            variables: DeleteAliasParams,
             context: unknown,
           ) => void
         )(error, variables, context);

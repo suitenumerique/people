@@ -27,7 +27,7 @@ export const CustomTabs = ({ tabs }: Props) => {
             const id = tab.id ?? tab.label;
             return (
               <Tab key={id} aria-label={tab.ariaLabel} id={id}>
-                <Box $direction="row" $align="center" $gap="5px">
+                <Box $direction="row" $gap="5px">
                   {tab.iconName && (
                     <span className="material-icons" aria-hidden="true">
                       {tab.iconName}
