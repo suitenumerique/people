@@ -11,3 +11,4 @@ export * from './Tag';
 export * from './Text';
 export * from './TextErrors';
 export * from './separators';
+export * from './tabs/CustomTabs';

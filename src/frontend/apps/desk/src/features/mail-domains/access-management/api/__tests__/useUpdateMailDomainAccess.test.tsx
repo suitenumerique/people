@@ -104,8 +104,7 @@ describe('useUpdateMailDomainAccess', () => {
       expect(onSuccess).toHaveBeenCalledWith(
         mockResponse, // data
         { slug: 'example-slug', accessId: '1-1-1-1-1', role: Role.VIEWER }, // variables
-        undefined, // onMutateResult
-        { client: {}, meta: undefined, mutationKey: undefined }, // context
+        undefined, // context
       ),
     );
     expect(fetchMock.lastUrl()).toContain(

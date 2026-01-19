@@ -49,7 +49,7 @@ export const useUpdateTeamAccess = (options?: UseUpdateTeamAccessOptions) => {
   return useMutation<Access, APIError, UpdateTeamAccessProps>({
     mutationFn: updateTeamAccess,
     ...options,
-    onSuccess: (data, variables, onMutateResult, context) => {
+    onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_TEAM_ACCESSES],
       });
@@ -57,12 +57,26 @@ export const useUpdateTeamAccess = (options?: UseUpdateTeamAccessOptions) => {
         queryKey: [KEY_TEAM],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onSuccess as unknown as (
+            data: Access,
+            variables: UpdateTeamAccessProps,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
       }
     },
-    onError: (error, variables, onMutateResult, context) => {
+    onError: (error, variables, context) => {
       if (options?.onError) {
-        options.onError(error, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onError as unknown as (
+            error: APIError,
+            variables: UpdateTeamAccessProps,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
       }
     },
   });

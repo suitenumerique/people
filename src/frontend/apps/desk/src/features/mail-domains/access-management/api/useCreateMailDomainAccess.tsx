@@ -44,19 +44,42 @@ export const useCreateMailDomainAccess = (
   options?: UseCreateMailDomainAccessOptions,
 ) => {
   const queryClient = useQueryClient();
+  const {
+    onSuccess: optionsOnSuccess,
+    onError: optionsOnError,
+    ...restOptions
+  } = options || {};
 
   return useMutation<Access, APIError, CreateMailDomainAccessProps>({
     mutationFn: createMailDomainAccess,
-    ...options,
-    onSuccess: (data, variables, onMutateResult, context) => {
+    ...restOptions,
+    onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_MAIL_DOMAIN_ACCESSES],
       });
       void queryClient.invalidateQueries({ queryKey: [KEY_MAIL_DOMAIN] });
-      options?.onSuccess?.(data, variables, onMutateResult, context);
+      if (optionsOnSuccess) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          optionsOnSuccess as unknown as (
+            data: Access,
+            variables: CreateMailDomainAccessProps,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
+      }
     },
-    onError: (error, variables, onMutateResult, context) => {
-      options?.onError?.(error, variables, onMutateResult, context);
+    onError: (error, variables, context) => {
+      if (optionsOnError) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          optionsOnError as unknown as (
+            error: APIError,
+            variables: CreateMailDomainAccessProps,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
+      }
     },
   });
 };
