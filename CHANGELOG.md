@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-01-19
+
 ### Added
 - ✨(front) create, manage & delete aliases
 - ✨(domains) alias sorting and admin
@@ -473,7 +475,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.21.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.22.0...main
+[1.22.0]: https://github.com/suitenumerique/people/releases/v1.22.0
 [1.21.0]: https://github.com/suitenumerique/people/releases/v1.21.0
 [1.20.0]: https://github.com/suitenumerique/people/releases/v1.20.0
 [1.19.1]: https://github.com/suitenumerique/people/releases/v1.19.1
