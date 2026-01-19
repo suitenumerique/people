@@ -41,7 +41,7 @@ export const useDeleteTeamAccess = (options?: UseDeleteTeamAccessOptions) => {
   return useMutation<void, APIError, DeleteTeamAccessProps>({
     mutationFn: deleteTeamAccess,
     ...options,
-    onSuccess: (data, variables, onMutateResult, context) => {
+    onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_TEAM_ACCESSES],
       });
@@ -52,12 +52,26 @@ export const useDeleteTeamAccess = (options?: UseDeleteTeamAccessOptions) => {
         queryKey: [KEY_LIST_TEAM],
       });
       if (options?.onSuccess) {
-        options.onSuccess(data, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onSuccess as unknown as (
+            data: void,
+            variables: DeleteTeamAccessProps,
+            context: unknown,
+          ) => void
+        )(data, variables, context);
       }
     },
-    onError: (error, variables, onMutateResult, context) => {
+    onError: (error, variables, context) => {
       if (options?.onError) {
-        options.onError(error, variables, onMutateResult, context);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        (
+          options.onError as unknown as (
+            error: APIError,
+            variables: DeleteTeamAccessProps,
+            context: unknown,
+          ) => void
+        )(error, variables, context);
       }
     },
   });

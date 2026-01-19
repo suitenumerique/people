@@ -27,7 +27,7 @@ export const ModalAddMailDomain = ({
 
   const addMailDomainValidationSchema = z.object({
     name: z.string().min(1, t('Example: saint-laurent.fr')),
-    supportEmail: z.email(t('Please enter a valid email address')),
+    supportEmail: z.string().email(t('Please enter a valid email address')),
   });
 
   const methods = useForm<{ name: string; supportEmail: string }>({

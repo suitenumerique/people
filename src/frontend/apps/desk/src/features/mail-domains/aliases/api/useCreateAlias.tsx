@@ -6,29 +6,26 @@ import {
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-import { KEY_LIST_MAILBOX } from './useMailboxes';
+import { KEY_LIST_ALIAS } from './useAliases';
 
-export interface CreateMailboxParams {
-  first_name: string;
-  last_name: string;
+export interface CreateAliasParams {
   local_part: string;
-  secondary_email: string;
+  destination: string;
   mailDomainSlug: string;
 }
 
-export const createMailbox = async ({
+export const createAlias = async ({
   mailDomainSlug,
   ...data
-}: CreateMailboxParams): Promise<void> => {
-  const response = await fetchAPI(`mail-domains/${mailDomainSlug}/mailboxes/`, {
+}: CreateAliasParams): Promise<void> => {
+  const response = await fetchAPI(`mail-domains/${mailDomainSlug}/aliases/`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
     const errorData = await errorCauses(response);
-    console.log('Error data:', errorData);
-    throw new APIError('Failed to create the mailbox', {
+    throw new APIError('Failed to create the alias', {
       status: errorData.status,
       cause: errorData.cause as string[],
       data: errorData.data,
@@ -36,42 +33,47 @@ export const createMailbox = async ({
   }
 };
 
-type UseCreateMailboxParams = { mailDomainSlug: string } & UseMutationOptions<
+type UseCreateAliasParams = { mailDomainSlug: string } & UseMutationOptions<
   void,
   APIError,
-  CreateMailboxParams
+  CreateAliasParams
 >;
 
-export const useCreateMailbox = (options: UseCreateMailboxParams) => {
+export const useCreateAlias = (options: UseCreateAliasParams) => {
   const queryClient = useQueryClient();
-  return useMutation<void, APIError, CreateMailboxParams>({
-    mutationFn: createMailbox,
-    ...options,
+  const {
+    onSuccess: optionsOnSuccess,
+    onError: optionsOnError,
+    ...restOptions
+  } = options;
+  return useMutation<void, APIError, CreateAliasParams>({
+    mutationFn: createAlias,
+    ...restOptions,
     onSuccess: (data, variables, context) => {
       void queryClient.invalidateQueries({
         queryKey: [
-          KEY_LIST_MAILBOX,
+          KEY_LIST_ALIAS,
           { mailDomainSlug: variables.mailDomainSlug },
         ],
       });
-      if (options?.onSuccess) {
+      if (optionsOnSuccess) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
-          options.onSuccess as unknown as (
+          optionsOnSuccess as unknown as (
             data: void,
-            variables: CreateMailboxParams,
+            variables: CreateAliasParams,
             context: unknown,
           ) => void
         )(data, variables, context);
       }
     },
     onError: (error, variables, context) => {
-      if (options?.onError) {
+      if (optionsOnError) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
-          options.onError as unknown as (
+          optionsOnError as unknown as (
             error: APIError,
-            variables: CreateMailboxParams,
+            variables: CreateAliasParams,
             context: unknown,
           ) => void
         )(error, variables, context);
