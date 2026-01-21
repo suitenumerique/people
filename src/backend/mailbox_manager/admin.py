@@ -75,15 +75,16 @@ def sync_aliases_from_dimail(modeladmin, request, queryset):  # pylint: disable=
             messages.success(
                 request,
                 _(
-                    "Synchronisation succeed for %(domain)s. %(imported_aliases)\
-imported aliases: %(mailboxes)s"
+                    "Synchronisation succeed for %(domain)s.\
+Imported %(count_imported)s aliases: %(aliases)s"
                 )
                 % {
                     "domain": domain.name,
-                    "number_imported": len(imported_aliases),
-                    "mailboxes": ", ".join(imported_aliases),
+                    "count_imported": len(imported_aliases),
+                    "aliases": ", ".join(imported_aliases),
                 },
             )
+
     if excluded_domains:
         messages.warning(
             request,
