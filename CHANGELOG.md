@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(admin) fix broken alias import #1021
+
 ## [1.22.0] - 2026-01-19
 
 ### Added
