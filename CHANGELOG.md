@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-01-21
+
 - 🔒️(organization) the first user is not admin #776
 - 🐛(admin) fix broken alias import #1021
 
@@ -478,7 +480,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.22.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.22.1...main
+[1.22.1]: https://github.com/suitenumerique/people/releases/v1.22.1
 [1.22.0]: https://github.com/suitenumerique/people/releases/v1.22.0
 [1.21.0]: https://github.com/suitenumerique/people/releases/v1.21.0
 [1.20.0]: https://github.com/suitenumerique/people/releases/v1.20.0
