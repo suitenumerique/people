@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-19 20:15+0000\n"
-"PO-Revision-Date: 2026-01-19 20:18\n"
+"POT-Creation-Date: 2026-01-22 10:41+0000\n"
+"PO-Revision-Date: 2026-01-22 10:50\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -45,24 +45,24 @@ msgstr "Les plugins de post-création ont été exécutés pour les organisation
 msgid "People core application"
 msgstr "Application cœur de People"
 
-#: build/lib/core/authentication/backends.py:104
-#: core/authentication/backends.py:104
+#: build/lib/core/authentication/backends.py:102
+#: core/authentication/backends.py:102
 msgid "Claims contained no recognizable user identification"
 msgstr "Les claims ne contiennent aucune identification reconnaissable pour l'organisation"
 
-#: build/lib/core/authentication/backends.py:124
-#: core/authentication/backends.py:124
+#: build/lib/core/authentication/backends.py:122
+#: core/authentication/backends.py:122
 msgid "Claims contained no recognizable organization identification"
 msgstr "Les claims ne contiennent aucune identification reconnaissable pour l'organisation"
 
-#: build/lib/core/authentication/backends.py:181
-#: build/lib/core/authentication/backends.py:183
-#: core/authentication/backends.py:181 core/authentication/backends.py:183
+#: build/lib/core/authentication/backends.py:170
+#: build/lib/core/authentication/backends.py:172
+#: core/authentication/backends.py:170 core/authentication/backends.py:172
 msgid "Invalid authorization header."
 msgstr "En-tête d'autorisation invalide."
 
-#: build/lib/core/authentication/backends.py:188
-#: core/authentication/backends.py:188
+#: build/lib/core/authentication/backends.py:177
+#: core/authentication/backends.py:177
 msgid "Invalid api key."
 msgstr "Clé API invalide."
 
@@ -376,8 +376,8 @@ msgstr "La synchronisation a échoué pour %(domain)s avec le message : %(err)s"
 msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
 msgstr "La synchronisation a réussi pour %(domain)s. Importation des boîtes mails : %(mailboxes)s"
 
-#: build/lib/mailbox_manager/admin.py:46 build/lib/mailbox_manager/admin.py:90
-#: mailbox_manager/admin.py:46 mailbox_manager/admin.py:90
+#: build/lib/mailbox_manager/admin.py:46 build/lib/mailbox_manager/admin.py:91
+#: mailbox_manager/admin.py:46 mailbox_manager/admin.py:91
 #, python-format
 msgid "Sync require enabled domains. Excluded domains: %(domains)s"
 msgstr "La synchro nécessite des domaines activés. Les domaines exclus sont : %(domains)s"
@@ -388,74 +388,74 @@ msgstr ""
 
 #: build/lib/mailbox_manager/admin.py:78 mailbox_manager/admin.py:78
 #, python-format
-msgid "Synchronisation succeed for %(domain)s. %(imported_aliases)imported aliases: %(mailboxes)s"
+msgid "Synchronisation succeed for %(domain)s.Imported %(count_imported)s aliases: %(aliases)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:95 mailbox_manager/admin.py:95
+#: build/lib/mailbox_manager/admin.py:96 mailbox_manager/admin.py:96
 msgid "Check and update status from dimail"
 msgstr "Vérifier et mettre à jour le statut à partir de dimail"
 
-#: build/lib/mailbox_manager/admin.py:112 mailbox_manager/admin.py:112
+#: build/lib/mailbox_manager/admin.py:113 mailbox_manager/admin.py:113
 #, python-format
 msgid "- %(domain)s with message: %(err)s"
 msgstr "- %(domain)s avec le message : %(err)s"
 
-#: build/lib/mailbox_manager/admin.py:125 mailbox_manager/admin.py:125
+#: build/lib/mailbox_manager/admin.py:126 mailbox_manager/admin.py:126
 msgid "Check domains done with success."
 msgstr "Vérification des domaines effectuée avec succès."
 
-#: build/lib/mailbox_manager/admin.py:126 mailbox_manager/admin.py:126
+#: build/lib/mailbox_manager/admin.py:127 mailbox_manager/admin.py:127
 #, python-format
 msgid "Domains updated: %(domains)s"
 msgstr "Domaines mis à jour : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:128 mailbox_manager/admin.py:128
+#: build/lib/mailbox_manager/admin.py:129 mailbox_manager/admin.py:129
 msgid "No domain updated."
 msgstr "Aucun domaine mis à jour."
 
-#: build/lib/mailbox_manager/admin.py:135 mailbox_manager/admin.py:135
+#: build/lib/mailbox_manager/admin.py:136 mailbox_manager/admin.py:136
 msgid "Check domain failed for:"
 msgstr "La vérification du domaine a échoué pour :"
 
-#: build/lib/mailbox_manager/admin.py:143 mailbox_manager/admin.py:143
+#: build/lib/mailbox_manager/admin.py:144 mailbox_manager/admin.py:144
 #, python-format
 msgid "Domains disabled are excluded from check: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la vérification : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:148 mailbox_manager/admin.py:148
+#: build/lib/mailbox_manager/admin.py:149 mailbox_manager/admin.py:149
 msgid "Fetch domain expected config from dimail"
 msgstr "Récupérer la configuration attendue du domaine depuis dimail"
 
-#: build/lib/mailbox_manager/admin.py:162 mailbox_manager/admin.py:162
+#: build/lib/mailbox_manager/admin.py:163 mailbox_manager/admin.py:163
 #, python-format
 msgid "Domain expected config fetched with success for %(domain)s."
 msgstr "La configuration du domaine attendue a été récupérée avec succès pour %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:168 mailbox_manager/admin.py:168
+#: build/lib/mailbox_manager/admin.py:169 mailbox_manager/admin.py:169
 #, python-format
 msgid "Failed to fetch domain expected config for %(domain)s."
 msgstr "Impossible de récupérer la configuration attendue pour %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:174 mailbox_manager/admin.py:174
+#: build/lib/mailbox_manager/admin.py:175 mailbox_manager/admin.py:175
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la récupération : %(domains)s"
 
-#: build/lib/mailbox_manager/admin.py:179 mailbox_manager/admin.py:179
+#: build/lib/mailbox_manager/admin.py:180 mailbox_manager/admin.py:180
 msgid "Send pending mailboxes to dimail"
 msgstr "Envoyer les adresses mail en attente à dimail"
 
-#: build/lib/mailbox_manager/admin.py:195 mailbox_manager/admin.py:195
+#: build/lib/mailbox_manager/admin.py:196 mailbox_manager/admin.py:196
 #, python-format
 msgid "Failed to send the following mailboxes : %(mailboxes)s."
 msgstr "Échec de l'envoi des adresses mail suivantes : %(mailboxes)s."
 
-#: build/lib/mailbox_manager/admin.py:201 mailbox_manager/admin.py:201
+#: build/lib/mailbox_manager/admin.py:202 mailbox_manager/admin.py:202
 #, python-format
 msgid "Pending mailboxes successfully sent for %(domain)s."
 msgstr "Succès de l'envoi des adresses en attente pour le domaine %(domain)s."
 
-#: build/lib/mailbox_manager/admin.py:207 mailbox_manager/admin.py:207
+#: build/lib/mailbox_manager/admin.py:208 mailbox_manager/admin.py:208
 #, python-format
 msgid "Domains disabled are excluded from : %(domains)s"
 msgstr "Les domaines désactivés ont été exclu : %(domains)s"
