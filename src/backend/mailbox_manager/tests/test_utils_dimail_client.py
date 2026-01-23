@@ -199,6 +199,12 @@ def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint
             "destination": existing_mailbox.secondary_email,
             "allow_to_send": False,
         },
+        {  # alias to devnull@devnull
+            "username": "spam",
+            "domain": alias.domain.name,
+            "destination": "devnull@devnull",
+            "allow_to_send": False,
+        },
     ]
     responses.get(
         re.compile(rf".*/domains/{alias.domain.name}/aliases/"),
@@ -209,8 +215,8 @@ def test_dimail_synchronization__synchronize_aliases(dimail_token_ok):  # pylint
 
     imported_aliases = dimail_client.import_aliases(alias.domain)
 
-    assert len(imported_aliases) == 3
-    assert models.Alias.objects.count() == 4
+    assert len(imported_aliases) == 4
+    assert models.Alias.objects.count() == 5
 
 
 @pytest.mark.parametrize(
