@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='date and time at which a record was created', verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='date and time at which a record was last updated', verbose_name='updated at')),
                 ('local_part', models.CharField(max_length=100)),
-                ('destination', models.EmailField(max_length=254, verbose_name='destination address')),
+                ('destination', models.CharField(max_length=254, validators=[django.core.validators.EmailValidator(allowlist=['localhost', 'devnull'])], verbose_name='destination address')),
                 ('domain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='aliases', to='mailbox_manager.maildomain')),
             ],
             options={

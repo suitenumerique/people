@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
+from django.core.validators import EmailValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.template.loader import render_to_string
@@ -460,7 +461,15 @@ class Alias(BaseModel):
     """Model for aliases."""
 
     local_part = models.CharField(max_length=100, blank=False)
-    destination = models.EmailField(_("destination address"), null=False, blank=False)
+    destination = models.CharField(
+        _("destination address"),
+        max_length=254,
+        null=False,
+        blank=False,
+        validators=[
+            EmailValidator(allowlist=["localhost", "devnull"]),
+        ],
+    )
     domain = models.ForeignKey(
         MailDomain,
         on_delete=models.CASCADE,
