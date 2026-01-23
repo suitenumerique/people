@@ -182,3 +182,33 @@ def test_api_aliases_create__existing_mailbox_ok(dimail_token_ok):
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert models.Alias.objects.exists()
+
+
+@responses.activate
+def test_api_aliases_create__devnull_destination_ok(dimail_token_ok):
+    """Can create alias where destination is devnull@devnull."""
+    access = factories.MailDomainAccessFactory(
+        role="owner", domain=factories.MailDomainEnabledFactory()
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    responses.post(
+        re.compile(rf".*/domains/{access.domain.name}/aliases/"),
+        json={
+            "username": "spammy-address",
+            "domain": access.domain.name,
+            "destination": "devnull@devnull",
+            "allow_to_send": False,
+        },
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/aliases/",
+        {"local_part": "spammy-address", "destination": "devnull@devnull"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert models.Alias.objects.exists()

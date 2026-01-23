@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(aliases) authorize special domain devnull in alias destinations #1029 
+
 ## [1.22.1] - 2026-01-21
 
 - 🔒️(organization) the first user is not admin #776
