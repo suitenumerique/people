@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.22.2] - 2026-01-26
+
 ### Fixed
 
 - 🐛(aliases) authorize special domain devnull in alias destinations #1029 
@@ -484,7 +486,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.22.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.22.2...main
+[1.22.2]: https://github.com/suitenumerique/people/releases/v1.22.2
 [1.22.1]: https://github.com/suitenumerique/people/releases/v1.22.1
 [1.22.0]: https://github.com/suitenumerique/people/releases/v1.22.0
 [1.21.0]: https://github.com/suitenumerique/people/releases/v1.21.0
