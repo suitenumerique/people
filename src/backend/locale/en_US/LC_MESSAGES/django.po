@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-19 20:15+0000\n"
-"PO-Revision-Date: 2026-01-19 20:18\n"
+"POT-Creation-Date: 2026-01-23 17:58+0000\n"
+"PO-Revision-Date: 2026-01-26 11:02\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -45,24 +45,24 @@ msgstr ""
 msgid "People core application"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:104
-#: core/authentication/backends.py:104
+#: build/lib/core/authentication/backends.py:102
+#: core/authentication/backends.py:102
 msgid "Claims contained no recognizable user identification"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:124
-#: core/authentication/backends.py:124
+#: build/lib/core/authentication/backends.py:122
+#: core/authentication/backends.py:122
 msgid "Claims contained no recognizable organization identification"
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:181
-#: build/lib/core/authentication/backends.py:183
-#: core/authentication/backends.py:181 core/authentication/backends.py:183
+#: build/lib/core/authentication/backends.py:170
+#: build/lib/core/authentication/backends.py:172
+#: core/authentication/backends.py:170 core/authentication/backends.py:172
 msgid "Invalid authorization header."
 msgstr ""
 
-#: build/lib/core/authentication/backends.py:188
-#: core/authentication/backends.py:188
+#: build/lib/core/authentication/backends.py:177
+#: core/authentication/backends.py:177
 msgid "Invalid api key."
 msgstr ""
 
@@ -149,8 +149,8 @@ msgstr ""
 
 #: build/lib/core/models.py:250 build/lib/core/models.py:364
 #: build/lib/core/models.py:510 build/lib/core/models.py:1121
-#: build/lib/mailbox_manager/models.py:54 core/models.py:250 core/models.py:364
-#: core/models.py:510 core/models.py:1121 mailbox_manager/models.py:54
+#: build/lib/mailbox_manager/models.py:55 core/models.py:250 core/models.py:364
+#: core/models.py:510 core/models.py:1121 mailbox_manager/models.py:55
 msgid "name"
 msgstr ""
 
@@ -376,8 +376,8 @@ msgstr ""
 msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:46 build/lib/mailbox_manager/admin.py:90
-#: mailbox_manager/admin.py:46 mailbox_manager/admin.py:90
+#: build/lib/mailbox_manager/admin.py:46 build/lib/mailbox_manager/admin.py:91
+#: mailbox_manager/admin.py:46 mailbox_manager/admin.py:91
 #, python-format
 msgid "Sync require enabled domains. Excluded domains: %(domains)s"
 msgstr ""
@@ -388,74 +388,74 @@ msgstr ""
 
 #: build/lib/mailbox_manager/admin.py:78 mailbox_manager/admin.py:78
 #, python-format
-msgid "Synchronisation succeed for %(domain)s. %(imported_aliases)imported aliases: %(mailboxes)s"
+msgid "Synchronisation succeed for %(domain)s.Imported %(count_imported)s aliases: %(aliases)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:95 mailbox_manager/admin.py:95
+#: build/lib/mailbox_manager/admin.py:96 mailbox_manager/admin.py:96
 msgid "Check and update status from dimail"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:112 mailbox_manager/admin.py:112
+#: build/lib/mailbox_manager/admin.py:113 mailbox_manager/admin.py:113
 #, python-format
 msgid "- %(domain)s with message: %(err)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:125 mailbox_manager/admin.py:125
+#: build/lib/mailbox_manager/admin.py:126 mailbox_manager/admin.py:126
 msgid "Check domains done with success."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:126 mailbox_manager/admin.py:126
+#: build/lib/mailbox_manager/admin.py:127 mailbox_manager/admin.py:127
 #, python-format
 msgid "Domains updated: %(domains)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:128 mailbox_manager/admin.py:128
+#: build/lib/mailbox_manager/admin.py:129 mailbox_manager/admin.py:129
 msgid "No domain updated."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:135 mailbox_manager/admin.py:135
+#: build/lib/mailbox_manager/admin.py:136 mailbox_manager/admin.py:136
 msgid "Check domain failed for:"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:143 mailbox_manager/admin.py:143
+#: build/lib/mailbox_manager/admin.py:144 mailbox_manager/admin.py:144
 #, python-format
 msgid "Domains disabled are excluded from check: %(domains)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:148 mailbox_manager/admin.py:148
+#: build/lib/mailbox_manager/admin.py:149 mailbox_manager/admin.py:149
 msgid "Fetch domain expected config from dimail"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:162 mailbox_manager/admin.py:162
+#: build/lib/mailbox_manager/admin.py:163 mailbox_manager/admin.py:163
 #, python-format
 msgid "Domain expected config fetched with success for %(domain)s."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:168 mailbox_manager/admin.py:168
+#: build/lib/mailbox_manager/admin.py:169 mailbox_manager/admin.py:169
 #, python-format
 msgid "Failed to fetch domain expected config for %(domain)s."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:174 mailbox_manager/admin.py:174
+#: build/lib/mailbox_manager/admin.py:175 mailbox_manager/admin.py:175
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:179 mailbox_manager/admin.py:179
+#: build/lib/mailbox_manager/admin.py:180 mailbox_manager/admin.py:180
 msgid "Send pending mailboxes to dimail"
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:195 mailbox_manager/admin.py:195
+#: build/lib/mailbox_manager/admin.py:196 mailbox_manager/admin.py:196
 #, python-format
 msgid "Failed to send the following mailboxes : %(mailboxes)s."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:201 mailbox_manager/admin.py:201
+#: build/lib/mailbox_manager/admin.py:202 mailbox_manager/admin.py:202
 #, python-format
 msgid "Pending mailboxes successfully sent for %(domain)s."
 msgstr ""
 
-#: build/lib/mailbox_manager/admin.py:207 mailbox_manager/admin.py:207
+#: build/lib/mailbox_manager/admin.py:208 mailbox_manager/admin.py:208
 #, python-format
 msgid "Domains disabled are excluded from : %(domains)s"
 msgstr ""
@@ -487,99 +487,99 @@ msgstr ""
 msgid "Action required"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:33 mailbox_manager/models.py:33
+#: build/lib/mailbox_manager/models.py:34 mailbox_manager/models.py:34
 msgid "[La Suite] Your domain is ready"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:38 mailbox_manager/models.py:38
+#: build/lib/mailbox_manager/models.py:39 mailbox_manager/models.py:39
 msgid "[La Suite] Your domain requires action"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:43 mailbox_manager/models.py:43
+#: build/lib/mailbox_manager/models.py:44 mailbox_manager/models.py:44
 msgid "[La Suite] Your domain has failed"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:69 mailbox_manager/models.py:69
+#: build/lib/mailbox_manager/models.py:70 mailbox_manager/models.py:70
 msgid "support email"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:73 mailbox_manager/models.py:73
+#: build/lib/mailbox_manager/models.py:74 mailbox_manager/models.py:74
 msgid "last check details"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:74 mailbox_manager/models.py:74
+#: build/lib/mailbox_manager/models.py:75 mailbox_manager/models.py:75
 msgid "A JSON object containing the last health check details"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:79 mailbox_manager/models.py:79
+#: build/lib/mailbox_manager/models.py:80 mailbox_manager/models.py:80
 msgid "expected config"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:80 mailbox_manager/models.py:80
+#: build/lib/mailbox_manager/models.py:81 mailbox_manager/models.py:81
 msgid "A JSON object containing the expected config"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:85 mailbox_manager/models.py:85
+#: build/lib/mailbox_manager/models.py:86 mailbox_manager/models.py:86
 msgid "Mail domain"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:86 mailbox_manager/models.py:86
+#: build/lib/mailbox_manager/models.py:87 mailbox_manager/models.py:87
 msgid "Mail domains"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:202 mailbox_manager/models.py:202
+#: build/lib/mailbox_manager/models.py:203 mailbox_manager/models.py:203
 msgid "User/mail domain relation"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:203 mailbox_manager/models.py:203
+#: build/lib/mailbox_manager/models.py:204 mailbox_manager/models.py:204
 msgid "User/mail domain relations"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:276 mailbox_manager/models.py:276
+#: build/lib/mailbox_manager/models.py:277 mailbox_manager/models.py:277
 msgid "local_part"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:290 mailbox_manager/models.py:290
+#: build/lib/mailbox_manager/models.py:291 mailbox_manager/models.py:291
 msgid "secondary email address"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:301 mailbox_manager/models.py:301
+#: build/lib/mailbox_manager/models.py:302 mailbox_manager/models.py:302
 msgid "email"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:307 mailbox_manager/models.py:307
+#: build/lib/mailbox_manager/models.py:308 mailbox_manager/models.py:308
 msgid "Mailbox"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:308 mailbox_manager/models.py:308
+#: build/lib/mailbox_manager/models.py:309 mailbox_manager/models.py:309
 msgid "Mailboxes"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:350 mailbox_manager/models.py:350
+#: build/lib/mailbox_manager/models.py:351 mailbox_manager/models.py:351
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:407 mailbox_manager/models.py:407
+#: build/lib/mailbox_manager/models.py:408 mailbox_manager/models.py:408
 msgid "Mail domain invitation"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:408 mailbox_manager/models.py:408
+#: build/lib/mailbox_manager/models.py:409 mailbox_manager/models.py:409
 msgid "Mail domain invitations"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:420 mailbox_manager/models.py:420
+#: build/lib/mailbox_manager/models.py:421 mailbox_manager/models.py:421
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:463 mailbox_manager/models.py:463
+#: build/lib/mailbox_manager/models.py:465 mailbox_manager/models.py:465
 msgid "destination address"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:474 mailbox_manager/models.py:474
+#: build/lib/mailbox_manager/models.py:483 mailbox_manager/models.py:483
 msgid "Alias"
 msgstr ""
 
-#: build/lib/mailbox_manager/models.py:475 mailbox_manager/models.py:475
+#: build/lib/mailbox_manager/models.py:484 mailbox_manager/models.py:484
 msgid "Aliases"
 msgstr ""
 
