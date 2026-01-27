@@ -26,7 +26,7 @@ class DomainPermission(IsAuthenticated):
             slug=view.kwargs.get("domain_slug", ""),
             accesses__user=request.user,
         )
-        # domain = models.MailDomain.objects.get(slug=view.kwargs.get("domain_slug", ""))
+
         abilities = domain.get_abilities(request.user)
         if request.method.lower() == "delete":
             return abilities.get("manage_accesses", False)
