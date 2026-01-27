@@ -348,6 +348,7 @@ class MailDomainInvitationViewset(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """API ViewSet for user invitations to domain management.
@@ -365,6 +366,9 @@ class MailDomainInvitationViewset(
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,
         delete and create a new one.
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/invitations/:<invitation_id>/
+        Delete targeted invitation
     """
 
     lookup_field = "id"
