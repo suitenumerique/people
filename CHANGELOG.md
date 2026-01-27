@@ -15,6 +15,7 @@ and this project adheres to
 ## Changed
 
 - 🏗️(core) migrate from pip to uv
+- ✨(front) add show invitations mails domains access #1040
 
 ## [1.22.2] - 2026-01-26
 

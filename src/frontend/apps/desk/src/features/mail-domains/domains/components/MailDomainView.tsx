@@ -43,7 +43,11 @@ export const MailDomainView = ({
   });
 
   const countMailboxes = mailboxesData?.count ?? 0;
-  const countAliases = aliasesData?.count ?? 0;
+  const countAliases =
+    aliasesData?.results.filter(
+      (alias, index, self) =>
+        index === self.findIndex((a) => a.local_part === alias.local_part),
+    ).length ?? 0;
 
   const handleShowModal = () => {
     setShowModal(true);

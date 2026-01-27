@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, SeparatedSection, Text, TextErrors } from '@/components';
+import { useCunninghamTheme } from '@/cunningham';
 
 import { MailDomain, Role } from '../../domains';
-import { useMailDomainAccesses } from '../api';
+import { useInvitationMailDomainAccesses, useMailDomainAccesses } from '../api';
 import { PAGE_SIZE } from '../conf';
 import { Access } from '../types';
 
@@ -20,6 +21,13 @@ interface AccessesListProps {
 type SortModelItem = {
   field: string;
   sort: 'asc' | 'desc' | null;
+};
+
+type MailDomainInvitation = {
+  id: string;
+  email: string;
+  role: Role;
+  can_set_role_to?: Role[];
 };
 
 const defaultOrderingMapping: Record<string, string> = {
@@ -53,12 +61,14 @@ export const AccessesList = ({
   mailDomain,
   currentRole,
 }: AccessesListProps) => {
+  const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
   const sortModel: SortModel = [];
   const [accesses, setAccesses] = useState<Access[]>([]);
+  const [invitationsAccesses, setInvitationAccesses] = useState<Access[]>([]);
   const { page, pageSize, setPagesCount } = pagination;
 
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
@@ -69,8 +79,16 @@ export const AccessesList = ({
     ordering,
   });
 
+  const {
+    data: invitationsData,
+    isLoading: invitationsIsLoading,
+    error: invitationsError,
+  } = useInvitationMailDomainAccesses({
+    slug: mailDomain.slug,
+  });
+
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && invitationsIsLoading) {
       return;
     }
 
@@ -89,8 +107,29 @@ export const AccessesList = ({
         },
       })) || [];
 
+    const invitationsAccesses =
+      (invitationsData?.results as unknown as MailDomainInvitation[])?.map(
+        (invitation: MailDomainInvitation): Access => ({
+          id: invitation.id as `${string}-${string}-${string}-${string}-${string}`,
+          role: invitation.role,
+          can_set_role_to: invitation.can_set_role_to || [],
+          user: {
+            id: invitation.id,
+            email: invitation.email || '',
+            name: invitation.email || '',
+          },
+        }),
+      ) || [];
+
     setAccesses(accesses);
-  }, [data?.results, t, isLoading]);
+    setInvitationAccesses(invitationsAccesses);
+  }, [
+    data?.results,
+    invitationsData?.results,
+    t,
+    isLoading,
+    invitationsIsLoading,
+  ]);
 
   useEffect(() => {
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
@@ -105,8 +144,48 @@ export const AccessesList = ({
   return (
     <>
       <SeparatedSection />
+      {invitationsAccesses && invitationsAccesses.length > 0 && (
+        <Box
+          $margin={{ bottom: 'xl', top: 'md' }}
+          $padding={{ horizontal: 'md' }}
+        >
+          <Text $size="small" $margin={{ bottom: 'md' }} $weight="600">
+            {t('Invitations')}
+          </Text>
+          {invitationsError && <TextErrors causes={invitationsError.cause} />}
+          {invitationsAccesses.map((access) => (
+            <Box key={access.id} $direction="row" $align="space-between">
+              <QuickSearchItemTemplate
+                key={access.id}
+                left={
+                  <Box $direction="row" className="c__share-member-item">
+                    <UserRow
+                      key={access.user.email}
+                      fullName={undefined}
+                      email={access.user.email}
+                      showEmail
+                    />
+                  </Box>
+                }
+              />
+              <Box $direction="row" $gap="20px" $align="center">
+                <Box
+                  $background={colorsTokens()['info-600']}
+                  $radius="4px"
+                  $padding={{ horizontal: 'base', vertical: '3px' }}
+                >
+                  <Text $size="small" $color={colorsTokens()['info-100']}>
+                    {t('Pending')}
+                  </Text>
+                </Box>
+                <Text>{localizedRoles[access.role]}</Text>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      )}
       <Box
-        $margin={{ bottom: 'xl', top: 'md' }}
+        $margin={{ bottom: 'md', top: 'md' }}
         $padding={{ horizontal: 'md' }}
       >
         <Text $size="small" $margin={{ bottom: 'md' }} $weight="600">
