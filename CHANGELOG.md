@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(invitations) can delete domain invitations
+
 ## [1.22.2] - 2026-01-26
 
 ### Fixed
