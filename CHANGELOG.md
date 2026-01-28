@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 
+- ✨(front) delete invitations mails domains access
+- ✨(front) add show invitations mails domains access #1040
 - ✨(invitations) can delete domain invitations
 
 ## Changed

@@ -12,6 +12,7 @@ import { PAGE_SIZE } from '../conf';
 import { Access } from '../types';
 
 import { AccessAction } from './AccessAction';
+import { InvitationAction } from './InvitationAction';
 
 interface AccessesListProps {
   mailDomain: MailDomain;
@@ -165,20 +166,23 @@ export const AccessesList = ({
                       email={access.user.email}
                       showEmail
                     />
+                    <Text
+                      $size="small"
+                      $margin={{ left: '4px' }}
+                      $color={colorsTokens()['greyscale-500']}
+                    >
+                      {t('on pending')}
+                    </Text>
                   </Box>
                 }
               />
-              <Box $direction="row" $gap="20px" $align="center">
-                <Box
-                  $background={colorsTokens()['info-600']}
-                  $radius="4px"
-                  $padding={{ horizontal: 'base', vertical: '3px' }}
-                >
-                  <Text $size="small" $color={colorsTokens()['info-100']}>
-                    {t('Pending')}
-                  </Text>
-                </Box>
+              <Box $direction="row" $align="center">
                 <Text>{localizedRoles[access.role]}</Text>
+                <InvitationAction
+                  mailDomain={mailDomain}
+                  access={access}
+                  currentRole={currentRole}
+                />
               </Box>
             </Box>
           ))}
