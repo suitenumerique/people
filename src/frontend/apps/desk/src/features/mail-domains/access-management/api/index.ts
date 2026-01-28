@@ -3,4 +3,5 @@ export * from './useInvitationMailDomainAccesses';
 export * from './useUpdateMailDomainAccess';
 export * from './useCreateMailDomainAccess';
 export * from './useDeleteMailDomainAccess';
+export * from './useDeleteMailDomainInvitation';
 export * from './useCreateInvitation';
