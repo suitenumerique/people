@@ -220,19 +220,22 @@ jobs:
         working-directory: src/backend
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
-      - name: Install development dependencies
-        run: pip install --user .[dev]
+          python-version-file: "src/backend/pyproject.toml"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install the project
+        run: uv sync --locked --all-extras
+
       - name: Check code formatting with ruff
-        run: ~/.local/bin/ruff format . --diff
+        run: uv run ruff format . --diff
       - name: Lint code with ruff
-        run: ~/.local/bin/ruff check .
+        run: uv run ruff check .
       - name: Lint code with pylint
-        run: ~/.local/bin/pylint .
+        run: uv run pylint .
 
   test-back:
     runs-on: ubuntu-latest
@@ -278,17 +281,23 @@ jobs:
           path: "src/backend/core/templates/mail"
           key: mail-templates-${{ hashFiles('src/mail/mjml') }}
           fail-on-cache-miss: true  
-      - name: Install Python
-        uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
-      - name: Install development dependencies
-        run: pip install --user .[dev]
+          python-version-file: "src/backend/pyproject.toml"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install the dependencies
+        run: uv sync --locked --all-extras
+
       - name: Install gettext (required to compile messages)
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext
+
       - name: Generate a MO file from strings extracted from the project
-        run: python manage.py compilemessages
+        run: uv run python manage.py compilemessages
+
       - name: Run tests
-        run: ~/.local/bin/pytest -n 2
+        run: uv run pytest -n 2
