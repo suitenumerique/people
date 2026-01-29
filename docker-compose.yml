@@ -42,6 +42,7 @@ services:
       - ./src/backend:/app
       - ./data/media:/data/media
       - ./data/static:/data/static
+      - /app/.venv
     depends_on:
       postgresql:
         condition: service_healthy
@@ -117,6 +118,7 @@ services:
       - ./src/backend:/app
       - ./data/media:/data/media
       - ./data/static:/data/static
+      - /app/.venv
     depends_on:
       postgresql:
         condition: service_healthy

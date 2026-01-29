@@ -17,13 +17,13 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
 ]
 description = "An application to handle contacts and teams."
 keywords = ["Django", "Contacts", "Teams", "RBAC"]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = "~=3.13.0"
 dependencies = [
     "Brotli==1.2.0",
     "PyJWT==2.10.1",

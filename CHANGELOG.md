@@ -12,6 +12,10 @@ and this project adheres to
 
 - ✨(invitations) can delete domain invitations
 
+## Changed
+
+- 🏗️(core) migrate from pip to uv
+
 ## [1.22.2] - 2026-01-26
 
 ### Fixed
