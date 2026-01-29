@@ -2,7 +2,6 @@
 Unit tests for admin actions
 """
 
-import json
 import re
 
 from django.urls import reverse
@@ -19,7 +18,6 @@ from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
     CHECK_DOMAIN_OK,
     DOMAIN_SPEC,
-    TOKEN_OK,
     response_mailbox_created,
 )
 
@@ -76,17 +74,15 @@ def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client)
     body_content_domain1["name"] = domain1.name
     body_content_domain2 = CHECK_DOMAIN_BROKEN.copy()
     body_content_domain2["name"] = domain2.name
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain1.name}/check/"),
-        body=json.dumps(body_content_domain1),
+        json=body_content_domain1,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain2.name}/check/"),
-        body=json.dumps(body_content_domain2),
+        json=body_content_domain2,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -101,7 +97,9 @@ def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client)
 
 @responses.activate
 @pytest.mark.django_db
-def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
+def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(
+    client, dimail_token_ok
+):
     """Test admin action should switch domain state to ENABLED
     when dimail's response is "ok". It should also activate any pending mailbox."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
@@ -119,22 +117,14 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
     body_content_domain1 = CHECK_DOMAIN_OK.copy()
     body_content_domain1["name"] = domain1.name
 
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain1.name}/check/"),
-        body=json.dumps(body_content_domain1),
+        json=body_content_domain1,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
-    # we need to get a token to create mailboxes
-    responses.add(
-        responses.GET,
-        re.compile(r".*/token/"),
-        body=TOKEN_OK,
-        status=status.HTTP_200_OK,
-        content_type="application/json",
-    )
-    responses.add(
+    # token call in fixtures
+    responses.post(
         responses.POST,
         re.compile(rf".*/domains/{domain1.name}/mailboxes/"),
         body=response_mailbox_created(f"truc@{domain1.name}"),
@@ -172,10 +162,9 @@ def test_fetch_domain_expected_config(client, domain_status):
         "action": "fetch_domain_expected_config_from_dimail",
         "_selected_action": [domain.id],
     }
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain.name}/spec/"),
-        body=json.dumps(DOMAIN_SPEC),
+        json=DOMAIN_SPEC,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -208,7 +197,7 @@ def test_fetch_domain_expected_config__should_not_fetch_for_disabled_domain(clie
 
 @responses.activate
 @pytest.mark.django_db
-def test_send_pending_mailboxes(client):
+def test_send_pending_mailboxes(client, dimail_token_ok):
     """Test admin action to send pending mailboxes to dimail."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
     client.force_login(admin)
@@ -223,15 +212,8 @@ def test_send_pending_mailboxes(client):
 
     url = reverse("admin:mailbox_manager_maildomain_changelist")
     for mailbox in mailboxes:
-        responses.add(
-            responses.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
-        responses.add(
-            responses.POST,
+        # token call in fixture
+        responses.post(
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
             body=response_mailbox_created(f"{mailbox.local_part}@{domain.name}"),
             status=status.HTTP_201_CREATED,
@@ -247,7 +229,7 @@ def test_send_pending_mailboxes(client):
 
 @responses.activate
 @pytest.mark.django_db
-def test_send_pending_mailboxes__listing_failed_mailboxes(client):
+def test_send_pending_mailboxes__listing_failed_mailboxes(client, dimail_token_ok):
     """Test admin action to send pending mailboxes to dimail."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
     client.force_login(admin)
@@ -261,15 +243,8 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client):
     }
 
     url = reverse("admin:mailbox_manager_maildomain_changelist")
-    responses.add(
-        responses.GET,
-        re.compile(r".*/token/"),
-        body=TOKEN_OK,
-        status=status.HTTP_200_OK,
-        content_type="application/json",
-    )
-    responses.add(
-        responses.POST,
+    # token call in fixtures
+    responses.post(
         re.compile(rf".*/domains/{domain.name}/mailboxes/"),
         body=response_mailbox_created(f"{mailbox.local_part}@{domain.name}"),
         status=status.HTTP_409_CONFLICT,

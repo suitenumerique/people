@@ -4,7 +4,6 @@ Focus on "create" action.
 """
 # pylint: disable=W0613
 
-import json
 import re
 
 import pytest
@@ -94,10 +93,9 @@ def test_api_aliases_create__async_alias_bad_request(dimail_token_ok):
     client = APIClient()
     client.force_login(access.user)
     # Mock dimail response
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(r".*/aliases/"),
-        body=json.dumps({"detail": "Alias already exists"}),
+        json={"detail": "Alias already exists"},
         status=status.HTTP_409_CONFLICT,
         content_type="application/json",
     )

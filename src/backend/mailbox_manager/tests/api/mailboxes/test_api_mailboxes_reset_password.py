@@ -113,7 +113,7 @@ Please add a valid secondary email before trying again."
     ],
 )
 @responses.activate
-def test_api_mailboxes__reset_password_admin_successful(role):
+def test_api_mailboxes__reset_password_admin_successful(role, dimail_token_ok):
     """Owner and admin users should be able to reset password on mailboxes.
     New password should be sent to secondary email."""
     mail_domain = factories.MailDomainEnabledFactory()
@@ -123,15 +123,7 @@ def test_api_mailboxes__reset_password_admin_successful(role):
     client = APIClient()
     client.force_login(access.user)
     dimail_url = settings.MAIL_PROVISIONING_API_URL
-
-    responses.add(
-        responses.GET,
-        f"{dimail_url}/token/",
-        body=dimail.TOKEN_OK,
-        status=200,
-    )
-    responses.add(
-        responses.POST,
+    responses.post(
         f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
         body=dimail.response_mailbox_created(str(mailbox)),
         status=200,
@@ -161,7 +153,7 @@ def test_api_mailboxes__reset_password_non_existing():
 
 
 @responses.activate
-def test_api_mailboxes__reset_password_connexion_failed():
+def test_api_mailboxes__reset_password_connexion_failed(dimail_token_ok):
     """
     No mail is sent when password reset failed because of connexion error.
     """
@@ -173,16 +165,8 @@ def test_api_mailboxes__reset_password_connexion_failed():
     )
     client = APIClient()
     client.force_login(access.user)
-
     dimail_url = settings.MAIL_PROVISIONING_API_URL
-    responses.add(
-        responses.GET,
-        f"{dimail_url}/token/",
-        body=dimail.TOKEN_OK,
-        status=200,
-    )
-    responses.add(
-        responses.POST,
+    responses.post(
         f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
         body=ConnectionError(),
     )

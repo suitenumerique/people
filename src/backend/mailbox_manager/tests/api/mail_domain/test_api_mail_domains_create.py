@@ -68,8 +68,7 @@ def test_api_mail_domains__create_authenticated():
 
     domain_name = "test.domain.fr"
 
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(r".*/domains/"),
         body=str(
             {
@@ -81,17 +80,15 @@ def test_api_mail_domains__create_authenticated():
     )
     body_content_domain1 = CHECK_DOMAIN_BROKEN.copy()
     body_content_domain1["name"] = domain_name
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain_name}/check/"),
-        body=json.dumps(body_content_domain1),
+        json=body_content_domain1,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain_name}/spec/"),
-        body=json.dumps(DOMAIN_SPEC),
+        json=DOMAIN_SPEC,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -155,30 +152,25 @@ def test_api_mail_domains__create_dimail_domain(caplog):
     client.force_login(user)
     domain_name = "test.fr"
 
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(r".*/domains/"),
-        body=str(
-            {
-                "name": domain_name,
-            }
-        ),
+        json={
+            "name": domain_name,
+        }
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
     body_content_domain1 = CHECK_DOMAIN_OK.copy()
     body_content_domain1["name"] = domain_name
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain_name}/check/"),
-        body=json.dumps(body_content_domain1),
+        json=body_content_domain1,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain_name}/spec/"),
-        body=json.dumps(DOMAIN_SPEC),
+        json=DOMAIN_SPEC,
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -213,8 +205,7 @@ def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
         "status_code": status.HTTP_409_CONFLICT,
         "detail": "Domain already exists",
     }
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(r".*/domains/"),
         body=str({"detail": dimail_error["detail"]}),
         status=dimail_error["status_code"],

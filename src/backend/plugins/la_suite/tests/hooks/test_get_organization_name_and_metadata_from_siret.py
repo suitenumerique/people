@@ -61,8 +61,7 @@ def test_organization_plugins_run_after_create(
     hook_settings, nature_juridique, is_commune, is_public_service
 ):
     """Test the run_after_create method of the organization plugins for nominal case."""
-    responses.add(
-        responses.GET,
+    responses.get(
         "https://recherche-entreprises.api.gouv.fr/search?q=12345678901234",
         json={
             "results": [
@@ -106,8 +105,7 @@ def test_organization_plugins_run_after_create(
 @responses.activate
 def test_organization_plugins_run_after_create_api_fail(hook_settings):
     """Test the plugin when the API call fails."""
-    responses.add(
-        responses.GET,
+    responses.get(
         "https://recherche-entreprises.api.gouv.fr/search?q=12345678901234",
         json={"error": "Internal Server Error"},
         status=500,
@@ -139,8 +137,7 @@ def test_organization_plugins_run_after_create_api_fail(hook_settings):
 )
 def test_organization_plugins_run_after_create_missing_data(hook_settings, results):
     """Test the plugin when the API call returns missing data."""
-    responses.add(
-        responses.GET,
+    responses.get(
         "https://recherche-entreprises.api.gouv.fr/search?q=12345678901234",
         json=results,
         status=200,
@@ -168,8 +165,7 @@ def test_organization_plugins_run_after_create_no_list_enseignes(
     hook_settings,
 ):
     """Test the run_after_create method of the organization plugins for nominal case."""
-    responses.add(
-        responses.GET,
+    responses.get(
         "https://recherche-entreprises.api.gouv.fr/search?q=12345678901234",
         json={
             "results": [

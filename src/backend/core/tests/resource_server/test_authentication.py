@@ -1,7 +1,6 @@
 """Tests for the authentication process of the resource server."""
 
 import base64
-import json
 
 import pytest
 import responses
@@ -84,8 +83,7 @@ def test_resource_server_authentication_class(client, settings):
     settings.OIDC_OP_JWKS_ENDPOINT = "https://oidc.example.com/jwks"
     settings.OIDC_OP_INTROSPECTION_ENDPOINT = "https://oidc.example.com/introspect"
 
-    responses.add(
-        responses.POST,
+    responses.post(
         "https://oidc.example.com/introspect",
         json={
             "iss": "https://oidc.example.com",
@@ -181,23 +179,20 @@ def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-arg
 
     # Mock the JWKS endpoint
     public_numbers = private_key.public_key().public_numbers()
-    responses.add(
-        responses.GET,
+    responses.get(
         settings.OIDC_OP_JWKS_ENDPOINT,
-        body=json.dumps(
-            {
-                "keys": [
-                    {
-                        "kty": settings.OIDC_RS_ENCRYPTION_KEY_TYPE,
-                        "alg": settings.OIDC_RS_SIGNING_ALGO,
-                        "use": "sig",
-                        "kid": "1234567890",
-                        "n": to_base64url_uint(public_numbers.n).decode("ascii"),
-                        "e": to_base64url_uint(public_numbers.e).decode("ascii"),
-                    }
-                ]
-            }
-        ),
+        json={
+            "keys": [
+                {
+                    "kty": settings.OIDC_RS_ENCRYPTION_KEY_TYPE,
+                    "alg": settings.OIDC_RS_SIGNING_ALGO,
+                    "use": "sig",
+                    "kid": "1234567890",
+                    "n": to_base64url_uint(public_numbers.n).decode("ascii"),
+                    "e": to_base64url_uint(public_numbers.e).decode("ascii"),
+                }
+            ]
+        },
     )
 
     def encrypt_jwt(json_data):
@@ -225,8 +220,7 @@ def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-arg
             ],
         )
 
-    responses.add(
-        responses.POST,
+    responses.post(
         "https://oidc.example.com/introspect",
         body=encrypt_jwt(
             {

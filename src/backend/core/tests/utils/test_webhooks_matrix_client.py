@@ -37,7 +37,7 @@ def test_matrix_webhook__search_user_unknown(caplog):
     # Mock successful responses
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_empty()["message"]),
+        json=matrix.mock_search_empty()["message"],
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -62,7 +62,7 @@ def test_matrix_webhook__search_multiple_ids(caplog):
     # Mock successful responses
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful_multiple(user)["message"]),
+        json=matrix.mock_search_successful_multiple(user)["message"],
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
@@ -92,7 +92,7 @@ def test_matrix_webhook__invite_user_to_room_forbidden(caplog):
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
@@ -123,7 +123,7 @@ def test_matrix_webhook__invite_user_to_room_already_in_room(caplog):
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
@@ -165,7 +165,7 @@ def test_matrix_webhook__invite_user_to_room_success(caplog):
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
@@ -216,7 +216,7 @@ def test_matrix_webhook__override_secret_for_tchap():
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
@@ -250,17 +250,17 @@ def test_matrix_webhook__kick_user_from_room_not_in_room(caplog):
     # Mock successful responses
     responses.post(
         re.compile(r".*/join"),
-        body=str(matrix.mock_join_room_successful),
+        json=matrix.mock_join_room_successful,
         status=status.HTTP_200_OK,
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
         re.compile(r".*/kick"),
-        body=str(matrix.mock_kick_user_not_in_room()["message"]),
+        json=matrix.mock_kick_user_not_in_room()["message"],
         status=matrix.mock_kick_user_not_in_room()["status_code"],
     )
     webhooks_synchronizer.remove_user_from_group(team=webhook.team, user=user)
@@ -296,7 +296,7 @@ def test_matrix_webhook__kick_user_from_room_success(caplog):
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(
@@ -345,7 +345,7 @@ def test_matrix_webhook__kick_user_from_room_forbidden(caplog):
     )
     responses.post(
         re.compile(r".*/search"),
-        body=json.dumps(matrix.mock_search_successful(user)["message"]),
+        json=matrix.mock_search_successful(user)["message"],
         status=matrix.mock_search_successful(user)["status_code"],
     )
     responses.post(

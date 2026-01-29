@@ -2,7 +2,6 @@
 Unit tests for mailbox manager tasks.
 """
 
-import json
 import re
 from unittest import mock
 
@@ -63,18 +62,16 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
         (domain_failed, body_content_ok3),
     ]:
         # Mock dimail API with success response
-        responses.add(
-            responses.GET,
+        responses.get(
             re.compile(rf".*/domains/{domain.name}/check/"),
-            body=json.dumps(body_content),
+            json=body_content,
             status=200,
             content_type="application/json",
         )
     # domain_enabled2 is broken with internal error, we try to fix it
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain_enabled2.name}/fix/"),
-        body=json.dumps(body_content_broken_internal),
+        json=body_content_broken_internal,
         status=200,
         content_type="application/json",
     )
@@ -170,10 +167,9 @@ def test_fetch_domains_status_error_handling(caplog):
     domain = factories.MailDomainEnabledFactory()
 
     # Mock dimail API with error response
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(rf".*/domains/{domain.name}/check/"),
-        body=json.dumps({"error": "Internal Server Error"}),
+        json={"error": "Internal Server Error"},
         status=500,
         content_type="application/json",
     )

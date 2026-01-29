@@ -122,8 +122,7 @@ def test_api_mailboxes__create_display_name_no_constraint_on_different_domains(
 
     # ensure response
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{new_mailbox_data['local_part']}@{access.domain.name}"
@@ -160,8 +159,7 @@ def test_api_mailboxes__create_roles_success(role, dimail_token_ok, mailbox_data
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_data['local_part']}@{mail_domain.name}"
@@ -210,8 +208,7 @@ def test_api_mailboxes__create_with_accent_success(role, dimail_token_ok):
 
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
@@ -285,8 +282,7 @@ def test_api_mailboxes__create_without_secondary_email(role, caplog, dimail_toke
     del mailbox_values["secondary_email"]
 
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
@@ -386,8 +382,7 @@ def test_api_mailboxes__same_local_part_on_different_domains(dimail_token_ok):
         factories.MailboxFactory.build(local_part=existing_mailbox.local_part)
     ).data
 
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_values['local_part']}@{access.domain.name}"
@@ -520,8 +515,7 @@ def test_api_mailboxes__async_dimail_unauthorized(
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(
             rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part']}"
         ),
@@ -562,8 +556,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
@@ -620,8 +613,7 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_sets_password(
     client = APIClient()
     client.force_login(access.user)
     # Ensure successful response using "responses":
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
@@ -663,8 +655,7 @@ def test_api_mailboxes__dimail_token_permission_denied(caplog, mailbox_data):
     client = APIClient()
     client.force_login(access.user)
     # Ensure successful response using "responses":
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(r".*/token/"),
         body='{"details": "Permission denied"}',
         status=status.HTTP_403_FORBIDDEN,
@@ -708,8 +699,7 @@ def test_api_mailboxes__user_unrelated_to_domain(dimail_token_ok, mailbox_data):
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body='{"details": "Permission denied"}',
         status=status.HTTP_403_FORBIDDEN,
@@ -744,15 +734,13 @@ def test_api_mailboxes__duplicate_display_name(dimail_token_ok, mailbox_data):
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body='{"detail": "Internal server error"}',
         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(
             rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}"
         ),
@@ -801,15 +789,13 @@ def test_api_mailboxes__handling_dimail_unexpected_error(
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body='{"detail": "Internal server error"}',
         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(
             rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
         ),
@@ -852,15 +838,13 @@ def test_api_mailboxes__display_name_duplicate_error(dimail_token_ok, mailbox_da
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body='{"detail": "Internal server error"}',
         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content_type="application/json",
     )
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(
             rf".*/domains/{access.domain.name}/address/{mailbox_data['local_part']}/"
         ),
@@ -911,8 +895,7 @@ def test_api_mailboxes__send_correct_logger_infos(
     client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
@@ -962,8 +945,7 @@ def test_api_mailboxes__sends_new_mailbox_notification(
     client.force_login(user)
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.add(
-        responses.POST,
+    responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
         body=response_mailbox_created(f"{mailbox_data['local_part']}@{access.domain}"),
         status=status.HTTP_201_CREATED,
