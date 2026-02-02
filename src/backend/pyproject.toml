@@ -84,6 +84,7 @@ dev = [
     "pytest==9.0.2",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.8.0",
+    "pytest-unordered==0.7.0",
     "responses==0.25.8",
     "ruff==0.15.0",
     "types-requests==2.32.4.20260107",
