@@ -10,11 +10,14 @@ and this project adheres to
 
 ### Added
 
+- ✨(front) delete invitations mails domains access
+- ✨(front) add show invitations mails domains access #1040
 - ✨(invitations) can delete domain invitations
 
 ## Changed
 
 - 🏗️(core) migrate from pip to uv
+- ✨(front) add show invitations mails domains access #1040
 
 ## [1.22.2] - 2026-01-26
 
