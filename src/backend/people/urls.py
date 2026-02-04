@@ -41,6 +41,12 @@ if settings.DEBUG:
         + debug_urls.urlpatterns
     )
 
+    # We double-check here just in case
+    if settings.ENVIRONMENT != "production":
+        urlpatterns += [
+            path("demo/", include("demo.urls"))
+        ]
+
 if settings.USE_SWAGGER or settings.DEBUG:
     urlpatterns += [
         path(

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Token exchange demo</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; max-width: 960px; }
+    form { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+    .field { display: flex; flex-direction: column; gap: 0.15rem; }
+    label { font-weight: 600; }
+    input[type="text"], input[type="password"], textarea { padding: 0.35rem; font-size: 0.95rem; }
+    small { color: #555; }
+    button { margin-top: 0.5rem; padding: 0.6rem 1.2rem; font-size: 1rem; }
+    .response { margin-top: 1.5rem; }
+    pre { background: #f4f4f4; padding: 1rem; overflow: auto; }
+    .jwt { margin-top: 1rem; }
+    .jwt h2 { margin: 0 0 0.35rem; font-size: 1rem; }
+    .jwt .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Token exchange demo</h1>
+  <p>Use this form to POST to <code>/auth/token/exchange/</code>. Basic Auth is built from the client_id and client_secret fields.</p>
+  <form id="token-exchange-form" data-target="{{ token_exchange_url }}">
+    {% csrf_token %}
+    <div class="field">{{ form.client_id.label_tag }}{{ form.client_id }}<small>{{ form.client_id.help_text }}</small></div>
+    <div class="field">{{ form.client_secret.label_tag }}{{ form.client_secret }}<small>{{ form.client_secret.help_text }}</small></div>
+    <div class="field">{{ form.grant_type.label_tag }}{{ form.grant_type }}</div>
+    <div class="field">{{ form.subject_token.label_tag }}{{ form.subject_token }}</div>
+    <div class="field">{{ form.subject_token_type.label_tag }}{{ form.subject_token_type }}</div>
+    <div class="field">{{ form.requested_token_type.label_tag }}{{ form.requested_token_type }}<small>{{ form.requested_token_type.help_text }}</small></div>
+    <div class="field">{{ form.audience.label_tag }}{{ form.audience }}<small>{{ form.audience.help_text }}</small></div>
+    <div class="field">{{ form.scope.label_tag }}{{ form.scope }}<small>{{ form.scope.help_text }}</small></div>
+    <div class="field">{{ form.actor_token.label_tag }}{{ form.actor_token }}</div>
+    <div class="field">{{ form.actor_token_type.label_tag }}{{ form.actor_token_type }}</div>
+    <div class="field">{{ form.resource.label_tag }}{{ form.resource }}</div>
+    <div class="field">{{ form.expires_in.label_tag }}{{ form.expires_in }}<small>{{ form.expires_in.help_text }}</small></div>
+    <button type="submit">Send exchange request</button>
+  </form>
+
+  <div class="response">
+    <div id="response-status"></div>
+    <pre id="exchange-response"></pre>
+  </div>
+
+  <div class="response jwt hidden" id="jwt-section">
+    <h2>Decoded JWT</h2>
+    <div id="jwt-error"></div>
+    <div class="row">
+      <div>
+        <strong>Header</strong>
+        <pre id="jwt-header"></pre>
+      </div>
+      <div>
+        <strong>Payload</strong>
+        <pre id="jwt-payload"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const form = document.getElementById("token-exchange-form");
+      const statusEl = document.getElementById("response-status");
+      const outputEl = document.getElementById("exchange-response");
+      const jwtSection = document.getElementById("jwt-section");
+      const jwtHeaderEl = document.getElementById("jwt-header");
+      const jwtPayloadEl = document.getElementById("jwt-payload");
+      const jwtErrorEl = document.getElementById("jwt-error");
+
+      const resetJwt = () => {
+        if (!jwtSection) return;
+        jwtSection.classList.add("hidden");
+        jwtHeaderEl.textContent = "";
+        jwtPayloadEl.textContent = "";
+        jwtErrorEl.textContent = "";
+      };
+
+      const base64UrlDecode = (segment) => {
+        const normalized = segment.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+        return atob(padded);
+      };
+
+      const decodeJwt = (token) => {
+        const parts = token.split(".");
+        if (parts.length < 2) {
+          return { error: "Token does not look like a JWT (missing segments)." };
+        }
+        try {
+          return {
+            header: JSON.parse(base64UrlDecode(parts[0])),
+            payload: JSON.parse(base64UrlDecode(parts[1])),
+          };
+        } catch (err) {
+          return { error: `Unable to decode JWT: ${err}` };
+        }
+      };
+
+      const renderJwtIfAny = (responseData, requestedType) => {
+        resetJwt();
+        if (!jwtSection || !responseData || typeof responseData !== "object") return;
+
+        const issuedType = (responseData.issued_token_type || "").toString().toLowerCase();
+        const requested = (requestedType || "").toString().toLowerCase();
+        const wantsJwt = issuedType === "urn:ietf:params:oauth:token-type:jwt" || requested === "urn:ietf:params:oauth:token-type:jwt";
+        const token = responseData.access_token || responseData.id_token || responseData.token;
+        if (!wantsJwt || !token) return;
+
+        const decoded = decodeJwt(token);
+        jwtSection.classList.remove("hidden");
+        if (decoded.error) {
+          jwtErrorEl.textContent = decoded.error;
+          return;
+        }
+
+        jwtHeaderEl.textContent = JSON.stringify(decoded.header, null, 2);
+        jwtPayloadEl.textContent = JSON.stringify(decoded.payload, null, 2);
+      };
+
+      const buildPayload = (formData) => {
+        const body = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+          if (!value) continue;
+          body.append(key, value);
+        }
+        return body;
+      };
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        statusEl.textContent = "Sending...";
+        outputEl.textContent = "";
+        resetJwt();
+
+        const formData = new FormData(form);
+        const clientId = formData.get("client_id") || "";
+        const clientSecret = formData.get("client_secret") || "";
+
+        formData.delete("client_id");
+        formData.delete("client_secret");
+
+        const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        if (clientId || clientSecret) {
+          headers.Authorization = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
+        }
+
+        const response = await fetch(form.dataset.target, {
+          method: "POST",
+          headers,
+          body: buildPayload(formData),
+          credentials: "include",
+        }).catch((error) => {
+          statusEl.textContent = "Network error";
+          outputEl.textContent = error;
+          throw error;
+        });
+
+        const text = await response.text();
+        statusEl.textContent = `Status: ${response.status} ${response.statusText}`;
+
+        try {
+          const parsed = JSON.parse(text);
+          outputEl.textContent = JSON.stringify(parsed, null, 2);
+          renderJwtIfAny(parsed, formData.get("requested_token_type"));
+        } catch (err) {
+          outputEl.textContent = text;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
