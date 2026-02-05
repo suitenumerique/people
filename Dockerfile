@@ -1,7 +1,7 @@
 # Django People
 
 # ---- base image to inherit from ----
-FROM python:3.13.11-alpine AS base
+FROM python:3.14.2-alpine AS base
 
 # Upgrade system packages to install security updates
 RUN apk update && \
