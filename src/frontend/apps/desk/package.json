@@ -24,7 +24,7 @@
     "i18next-browser-languagedetector": "8.2.0",
     "lodash": "4.17.23",
     "luxon": "3.7.2",
-    "next": "15.4.10",
+    "next": "15.5.10",
     "react": "*",
     "react-dom": "*",
     "react-hook-form": "7.65.0",
