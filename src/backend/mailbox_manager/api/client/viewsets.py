@@ -428,6 +428,14 @@ class MailDomainInvitationViewset(
             )
             raise exc
 
+    @action(detail=True, methods=["post"])
+    def refresh(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Enable mailbox. Send a request to dimail and change status in our DB"""
+        invitation = self.get_object_or_404()
+        invitation.is_active = True
+        invitation.save()
+        return Response(serializers.InvitationSerializer(invitation).data)
+
 
 class AliasViewSet(
     mixins.CreateModelMixin,
