@@ -181,28 +181,92 @@ def create_oidc_people_idp_client_user():
     )
 
 
-def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statements too-many-locals # noqa: PLR0912, PLR0915
-    """
-    Create a database with demo data for developers to work in a realistic environment.
-    The code is engineered to create a huge number of objects fast.
-    """
+def create_local_dev_objects(stdout):
+    """Create necessary users and domains to use front-end."""
 
     queue = BulkQueue(stdout)
 
-    with Timeit(stdout, "Creating users"):
-        for i in range(defaults.NB_OBJECTS["users"]):
-            queue.push(
-                models.User(
-                    sub=uuid4(),
-                    email=f"user{i:d}@example.com" if random.random() < 0.97 else None,
-                    name=fake.name() if random.random() < 0.97 else None,
-                    password="!",
-                    is_superuser=False,
-                    is_active=True,
-                    is_staff=False,
-                    language=random.choice(settings.LANGUAGES)[0],
-                )
+    with Timeit(stdout, "Creating local dev objects"):
+        # Many mailboxes domain
+        many_boxes_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+            name="many-boxes-domain.com",
+            status=MailDomainStatusChoices.ENABLED,
+            support_email="support@mbd.com",
+        )
+        domain_owner = models.User.objects.create(
+            sub=uuid4(),
+            email="domain_owner@example.com",
+            name="Domain Owner",
+            password="!",
+        )
+        mailbox_models.MailDomainAccess.objects.get_or_create(
+            domain=many_boxes_domain,
+            user=domain_owner,
+            role=MailDomainRoleChoices.OWNER,
+        )
+        queue.push(
+            mailbox_models.MailDomainInvitation(
+                issuer=domain_owner,
+                domain=many_boxes_domain,
+                email="people@people.world",
+                role=MailDomainRoleChoices.OWNER,
             )
+        )
+
+        for _i in range(30):
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            local_part = f"{first_name.lower()}.{last_name.lower()}"
+            mailbox_models.Mailbox.objects.create(
+                domain=many_boxes_domain,
+                first_name=first_name,
+                last_name=last_name,
+                local_part=local_part,
+                secondary_email=f"{local_part}@example.fr",
+                status=random.choice(MailboxStatusChoices.values),
+                password=make_password(None),  # unusable password
+                dn_email=f"{local_part}@{many_boxes_domain}",
+            )
+
+        queue.flush()
+
+    # OIDC configuration
+    if settings.OAUTH2_PROVIDER.get("OIDC_ENABLED", False):
+        stdout.write("Creating OIDC client for People Identity Provider")
+        create_oidc_people_idp_client()
+        create_oidc_people_idp_client_user()
+
+
+def create_e2e_objects(stdout):
+    """Create necessary objects for e2e."""
+
+    queue = BulkQueue(stdout)
+
+    with Timeit(stdout, "Creating e2e objects"):
+        e2e_team = models.Team.objects.create(name="e2e-team")
+        e2e_domain = mailbox_models.MailDomain.objects.create(
+            name="e2e-domain.com", support_email="test-e2e@example.com"
+        )
+
+        # ⚠️ Warning: this users also need to be created in the keycloak
+        # realm.json AND the OIDC setting to fallback on user email
+        # should be set to True, because we don't pilot the sub.
+        for role in models.RoleChoices.values:
+            team_user = models.User(
+                sub=uuid4(),
+                email=f"e2e.team-{role}@example.com",
+                name=f"E2E Group {role.capitalize()}",
+                password="!",
+                is_superuser=False,
+                is_active=True,
+                is_staff=False,
+                language=random.choice(settings.LANGUAGES)[0],
+            )
+            queue.push(team_user)
+            queue.push(
+                models.TeamAccess(team_id=e2e_team.id, user_id=team_user.pk, role=role)
+            )
+
         # this is a quick fix to fix e2e tests
         # tests needs some no random data
         organization, _created = models.Organization.objects.get_or_create(
@@ -248,6 +312,97 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
             )
         )
 
+        for role in models.RoleChoices.values:
+            user_with_mail = models.User(
+                sub=uuid4(),
+                email=f"e2e.mail-{role}@example.com",
+                name=f"E2E Mail {role.capitalize()}",
+                password="!",
+                is_superuser=False,
+                is_active=True,
+                is_staff=False,
+                language=random.choice(settings.LANGUAGES)[0],
+            )
+            queue.push(user_with_mail)
+            queue.push(
+                mailbox_models.MailDomainAccess(
+                    domain_id=e2e_domain.id,
+                    user_id=user_with_mail.pk,
+                    role=role,
+                )
+            )
+
+        for team_role in models.RoleChoices.values:
+            for domain_role in models.RoleChoices.values:
+                team_mail_user = models.User(
+                    sub=uuid4(),
+                    email=f"e2e.team-{team_role}-mail-{domain_role}@example.com",
+                    name=f"E2E Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
+                    password="!",
+                    is_superuser=False,
+                    is_active=True,
+                    is_staff=False,
+                    language=random.choice(settings.LANGUAGES)[0],
+                )
+                queue.push(team_mail_user)
+                queue.push(
+                    models.TeamAccess(
+                        team_id=e2e_team.id, user_id=team_mail_user.pk, role=team_role
+                    )
+                )
+                queue.push(
+                    mailbox_models.MailDomainAccess(
+                        domain_id=e2e_domain.id,
+                        user_id=team_mail_user.pk,
+                        role=domain_role,
+                    )
+                )
+
+        queue.flush()
+
+    # Enabled domain for 2E2 tests
+    enabled_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+        name="enabled-domain.com",
+        status=MailDomainStatusChoices.ENABLED,
+        support_email="support@enabled-domain.com",
+    )
+    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
+    mailbox_models.MailDomainAccess.objects.get_or_create(
+        domain=enabled_domain,
+        user=domain_owner,
+        role=MailDomainRoleChoices.OWNER,
+    )
+    mailbox_models.MailDomainInvitation.objects.create(
+        issuer=domain_owner,
+        domain=enabled_domain,
+        email="people@people.world",
+        role=MailDomainRoleChoices.ADMIN,
+    )
+
+
+def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statements too-many-locals
+    """
+    Create a database with demo data for developers to work in a realistic environment.
+    The code is engineered to create a huge number of objects fast.
+    """
+
+    queue = BulkQueue(stdout)
+
+    with Timeit(stdout, "Creating users"):
+        for i in range(defaults.NB_OBJECTS["users"]):
+            queue.push(
+                models.User(
+                    sub=uuid4(),
+                    email=f"user{i:d}@example.com" if random.random() < 0.97 else None,
+                    name=fake.name() if random.random() < 0.97 else None,
+                    password="!",
+                    is_superuser=False,
+                    is_active=True,
+                    is_staff=False,
+                    language=random.choice(settings.LANGUAGES)[0],
+                )
+            )
+
         queue.flush()
 
     with Timeit(stdout, "Creating teams"):
@@ -288,10 +443,8 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
             )
         queue.flush()
 
+    domains_ids = list(mailbox_models.MailDomain.objects.values_list("id", flat=True))
     with Timeit(stdout, "Creating accesses to domains"):
-        domains_ids = list(
-            mailbox_models.MailDomain.objects.values_list("id", flat=True)
-        )
         for domain_id in domains_ids:
             queue.push(
                 mailbox_models.MailDomainAccess(
@@ -304,11 +457,8 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         queue.flush()
 
     with Timeit(stdout, "Creating mailboxes"):
-        domains_ids = list(
-            mailbox_models.MailDomain.objects.values_list("id", flat=True)
-        )
         for domain_id in domains_ids:
-            for i in range(random.randint(1, 10)):
+            for _i in range(random.randint(1, 10)):
                 first_name = fake.first_name()
                 last_name = fake.last_name()
                 local_part = f"{first_name.lower()}.{last_name.lower()}{i}"
@@ -327,131 +477,18 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
 
         queue.flush()
 
-    with Timeit(stdout, "Creating specific users"):
-        # ⚠️ Warning: this users also need to be created in the keycloak
-        # realm.json AND the OIDC setting to fallback on user email
-        # should be set to True, because we don't pilot the sub.
-        for role in models.RoleChoices.values:
-            team_user = models.User(
-                sub=uuid4(),
-                email=f"e2e.team-{role}@example.com",
-                name=f"E2E Group {role.capitalize()}",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-            queue.push(team_user)
-            queue.push(
-                models.TeamAccess(team_id=teams_ids[0], user_id=team_user.pk, role=role)
-            )
-
-        for role in models.RoleChoices.values:
-            user_with_mail = models.User(
-                sub=uuid4(),
-                email=f"e2e.mail-{role}@example.com",
-                name=f"E2E Mail {role.capitalize()}",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-            queue.push(user_with_mail)
-            queue.push(
-                mailbox_models.MailDomainAccess(
-                    domain_id=domains_ids[0],
-                    user_id=user_with_mail.pk,
-                    role=role,
-                )
-            )
-
-        for team_role in models.RoleChoices.values:
-            for domain_role in models.RoleChoices.values:
-                team_mail_user = models.User(
-                    sub=uuid4(),
-                    email=f"e2e.team-{team_role}-mail-{domain_role}@example.com",
-                    name=f"E2E Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
-                    password="!",
-                    is_superuser=False,
-                    is_active=True,
-                    is_staff=False,
-                    language=random.choice(settings.LANGUAGES)[0],
-                )
-                queue.push(team_mail_user)
+    with Timeit(stdout, "Creating aliases"):
+        for domain_id in domains_ids:
+            for _i in range(random.randint(1, 10)):
                 queue.push(
-                    models.TeamAccess(
-                        team_id=teams_ids[0], user_id=team_mail_user.pk, role=team_role
-                    )
-                )
-                queue.push(
-                    mailbox_models.MailDomainAccess(
-                        domain_id=domains_ids[0],
-                        user_id=team_mail_user.pk,
-                        role=domain_role,
+                    mailbox_models.Alias(
+                        local_part=fake.word(),
+                        destination=fake.email(),
+                        domain_id=domain_id,
                     )
                 )
 
         queue.flush()
-
-    # Enabled domain for 2E2 tests
-    enabled_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
-        name="enabled-domain.com",
-        status=MailDomainStatusChoices.ENABLED,
-        support_email="support@enabled-domain.com",
-    )
-    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
-    mailbox_models.MailDomainAccess.objects.get_or_create(
-        domain=enabled_domain,
-        user=domain_owner,
-        role=MailDomainRoleChoices.OWNER,
-    )
-    mailbox_models.MailDomainInvitation.objects.create(
-        issuer=domain_owner,
-        domain=enabled_domain,
-        email="people@people.world",
-        role=MailDomainRoleChoices.ADMIN,
-    )
-
-    # Many mailboxes domain
-    many_boxes_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
-        name="many-boxes-domain.com",
-        status=MailDomainStatusChoices.ENABLED,
-        support_email="support@mbd.com",
-    )
-    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
-    mailbox_models.MailDomainAccess.objects.get_or_create(
-        domain=many_boxes_domain,
-        user=domain_owner,
-        role=MailDomainRoleChoices.OWNER,
-    )
-    mailbox_models.MailDomainInvitation.objects.create(
-        issuer=domain_owner,
-        domain=many_boxes_domain,
-        email="people@people.world",
-        role=MailDomainRoleChoices.OWNER,
-    )
-    for _i in range(30):
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        local_part = f"{first_name.lower()}.{last_name.lower()}"
-        mailbox_models.Mailbox.objects.create(
-            domain=many_boxes_domain,
-            first_name=first_name,
-            last_name=last_name,
-            local_part=local_part,
-            secondary_email=f"{local_part}@example.fr",
-            status=random.choice(MailboxStatusChoices.values),
-            password=make_password(None),  # unusable password
-            dn_email=f"{local_part}@{many_boxes_domain}",
-        )
-
-    # OIDC configuration
-    if settings.OAUTH2_PROVIDER.get("OIDC_ENABLED", False):
-        stdout.write("Creating OIDC client for People Identity Provider")
-        create_oidc_people_idp_client()
-        create_oidc_people_idp_client_user()
 
 
 class Command(BaseCommand):
@@ -479,4 +516,6 @@ class Command(BaseCommand):
                 )
             )
 
+        create_local_dev_objects(self.stdout)
+        create_e2e_objects(self.stdout)
         create_demo(self.stdout)
