@@ -55,6 +55,14 @@ def test_commands_create_demo(settings):
         == TEST_NB_OBJECTS["domains"] + 3 + 9 + 2
     )
 
+    # we randomly create between 10 and 100 mailboxes in existing domains
+    assert mailbox_models.Mailbox.objects.count() >= 10
+    assert mailbox_models.Mailbox.objects.count() <= 100
+
+    # we randomly create between 10 and 100 aliases in existing domains
+    assert mailbox_models.Alias.objects.count() >= 10
+    assert mailbox_models.Alias.objects.count() <= 100
+
 
 def test_commands_createsuperuser():
     """
