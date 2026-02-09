@@ -45,10 +45,17 @@ export const AccessAction = ({
     };
   }, [isDropOpen]);
 
-  if (
-    currentRole === Role.VIEWER ||
-    (access.role === Role.OWNER && currentRole === Role.ADMIN)
-  ) {
+  if (currentRole === Role.VIEWER) {
+    return null;
+  }
+
+  const canUpdateRole =
+    (mailDomain.abilities.put || mailDomain.abilities.patch) &&
+    access.can_set_role_to &&
+    access.can_set_role_to.length > 0;
+  const canDelete = mailDomain.abilities.delete;
+
+  if (!canUpdateRole && !canDelete) {
     return null;
   }
 
@@ -94,7 +101,7 @@ export const AccessAction = ({
               }
             }}
           >
-            {(mailDomain.abilities.put || mailDomain.abilities.patch) && (
+            {canUpdateRole && (
               <Button
                 aria-label={t(
                   'Open the modal to update the role of this access',
@@ -115,7 +122,7 @@ export const AccessAction = ({
                 <Text $theme="primary">{t('Update role')}</Text>
               </Button>
             )}
-            {mailDomain.abilities.delete && (
+            {canDelete && (
               <Button
                 aria-label={t('Open the modal to delete this access')}
                 onClick={() => {
@@ -138,16 +145,15 @@ export const AccessAction = ({
         )}
       </div>
 
-      {isModalRoleOpen &&
-        (mailDomain.abilities.put || mailDomain.abilities.patch) && (
-          <ModalRole
-            access={access}
-            currentRole={currentRole}
-            onClose={() => setIsModalRoleOpen(false)}
-            slug={mailDomain.slug}
-          />
-        )}
-      {isModalDeleteOpen && mailDomain.abilities.delete && (
+      {isModalRoleOpen && canUpdateRole && (
+        <ModalRole
+          access={access}
+          currentRole={currentRole}
+          onClose={() => setIsModalRoleOpen(false)}
+          slug={mailDomain.slug}
+        />
+      )}
+      {isModalDeleteOpen && canDelete && (
         <ModalDelete
           access={access}
           currentRole={currentRole}
