@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(demo) add aliases to demo #1050
 - ✨(front) add icon to button to configure a domain
 - ✨(invitations) allow delete invitations mails domains access by an admin
 - ✨(front) delete invitations mails domains access
