@@ -621,6 +621,7 @@ class StatView(views.APIView):
                 status=enums.MailDomainStatusChoices.ENABLED
             ).count(),
             "mailboxes": domains_models.Mailbox.objects.count(),
+            "aliases": domains_models.Alias.objects.count(),
         }
         return response.Response(context)
 
