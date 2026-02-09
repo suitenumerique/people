@@ -20,6 +20,8 @@ TEST_NB_OBJECTS = {
     "teams": 100,
     "max_users_per_team": 5,
     "domains": 10,
+    "mailboxes_per_domain": 2,
+    "aliases_per_domain": 2,
 }
 
 
@@ -33,8 +35,8 @@ def test_commands_create_demo(settings):
     call_command("create_demo")
 
     # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
-    # 3 user with team rights
-    # 3 user with domain rights
+    # 3 users with team rights
+    # 3 users with domain rights
     # 3 x 3 user with both rights
     assert models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3 + 3 + 3 + 9
 
@@ -54,6 +56,16 @@ def test_commands_create_demo(settings):
         mailbox_models.MailDomainAccess.objects.count()
         == TEST_NB_OBJECTS["domains"] + 3 + 9 + 2
     )
+
+    # TEST_NB_OBJECTS["domains"]*TEST_NB_OBJECTS["mailboxes_per_domain"] = 20
+    # + 30 in the many-object-domain
+    # + 1 mailbox for user-e2e@example.com
+    # = 51
+    assert mailbox_models.Mailbox.objects.count() == 51
+
+    # TEST_NB_OBJECTS["domains"]*TEST_NB_OBJECTS["mailboxes_per_alias"] = 20
+    # + 30 in the many-object-domain
+    assert mailbox_models.Alias.objects.count() == 50
 
 
 def test_commands_createsuperuser():

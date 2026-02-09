@@ -5,4 +5,6 @@ NB_OBJECTS = {
     "teams": 100,
     "max_users_per_team": 100,
     "domains": 10,
+    "mailboxes_per_domain": 2,
+    "aliases_per_domain": 2,
 }
