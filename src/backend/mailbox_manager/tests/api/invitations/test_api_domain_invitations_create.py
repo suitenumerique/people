@@ -158,3 +158,40 @@ def test_api_domain_invitations__inviting_known_email_should_create_access():
 
     assert not models.MailDomainInvitation.objects.exists()
     assert models.MailDomainAccess.objects.filter(user=existing_user).exists()
+
+
+def test_api_domain_invitations__inviting_known_email_case_insensitive():
+    """Email matching should be case-insensitive when creating access for existing users."""
+    # Create a user with lowercase email
+    existing_user = core_factories.UserFactory(email="john.doe@example.com")
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+
+    client = APIClient()
+    client.force_login(access.user)
+
+    # Try to invite with same email different case - should create access for existing user
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
+        {
+            "email": "John.Doe@Example.COM",
+            "role": "owner",
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        response.json()["detail"]
+        == "Email already known. Invitation not sent but access created instead."
+    )
+
+    # No invitation should be created
+    assert not models.MailDomainInvitation.objects.exists()
+
+    # Access should be created for the existing user (not a new user)
+    assert models.MailDomainAccess.objects.filter(user=existing_user).exists()
+    assert models.MailDomainAccess.objects.filter(
+        user=existing_user, domain=access.domain
+    ).exists()
+
+    # Ensure only one user exists (no duplicate user created)
+    assert models.User.objects.filter(email__iexact="john.doe@example.com").count() == 1

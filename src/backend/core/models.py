@@ -998,7 +998,7 @@ class BaseInvitation(BaseModel):
         super().clean()
 
         # Check if a user already exists for the provided email
-        if User.objects.filter(email=self.email).exists():
+        if User.objects.filter(email__iexact=self.email).exists():
             raise EmailAlreadyKnownException
 
     @property

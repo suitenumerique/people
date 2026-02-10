@@ -22,6 +22,7 @@ and this project adheres to
 
 ### Changed
 
+- 🚸(email) we should ignore case when looking for existing emails #1056
 - 🏗️(core) migrate from pip to uv
 - ✨(front) add show invitations mails domains access #1040
 
