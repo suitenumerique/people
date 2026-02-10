@@ -17,6 +17,8 @@ from freezegun import freeze_time
 
 from core import factories, models
 
+from mailbox_manager.exceptions import EmailAlreadyKnownException
+
 pytestmark = pytest.mark.django_db
 
 
@@ -46,6 +48,17 @@ def test_models_invitations_team_required():
     """The "team" field is required."""
     with pytest.raises(exceptions.ValidationError, match="This field cannot be null"):
         factories.InvitationFactory(team=None)
+
+
+def test_models_invitations_email_case_insensitive_duplicate_check():
+    """The email validation should be case-insensitive when checking for existing users."""
+    # Create a user with a lowercase email
+    factories.UserFactory(email="john.doe@example.com")
+
+    # Try to create an invitation with different case
+    # This should raise the same exception as if the email was exactly the same
+    with pytest.raises(EmailAlreadyKnownException):
+        factories.InvitationFactory(email="John.Doe@Example.COM")
 
 
 def test_models_invitations_team_should_be_team_instance():

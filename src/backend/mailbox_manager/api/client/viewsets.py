@@ -419,7 +419,7 @@ class MailDomainInvitationViewset(
         try:
             return super().create(request, *args, **kwargs)
         except EmailAlreadyKnownException as exc:
-            user = models.User.objects.get(email=email)
+            user = models.User.objects.get(email__iexact=email)
 
             models.MailDomainAccess.objects.create(
                 user=user,
