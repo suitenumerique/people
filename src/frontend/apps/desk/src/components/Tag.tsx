@@ -1,7 +1,7 @@
 import { Tooltip } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@/components';
+import { Box, Icon } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 interface TagContentProps {
@@ -9,9 +9,10 @@ interface TagContentProps {
   showTooltip?: boolean;
   tooltipType?: 'domain' | 'mail';
   placement?: 'top' | 'bottom';
+  showIcon?: boolean;
 }
 
-const TagContent = ({ status }: TagContentProps) => {
+const TagContent = ({ status, showIcon }: TagContentProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
 
@@ -33,17 +34,35 @@ const TagContent = ({ status }: TagContentProps) => {
 
   return (
     <Box
+      $display="flex"
+      $direction="row"
+      $gap="4px"
       $background={backgroundColor[status]}
       $color={textColor[status]}
       $radius="4px"
       $css={`
         padding: 4px 8px;
         font-weight: 600;
-        cursor: default;
         text-transform: capitalize;
       `}
     >
       {t(status).replace('_', ' ')}
+      {showIcon &&
+        (status === 'enabled' ? (
+          <Icon
+            $size="small"
+            $weight="bold"
+            iconName="check"
+            $color="inherit"
+          />
+        ) : (
+          <Icon
+            $size="small"
+            $weight="bold"
+            iconName="arrow_forward"
+            $color="inherit"
+          />
+        ))}
     </Box>
   );
 };
@@ -80,10 +99,10 @@ export const Tag = ({ ...props }: TagContentProps) => {
   return props.showTooltip ? (
     <Tooltip content={tooltipContent} placement={props.placement || 'top'}>
       <Box>
-        <TagContent status={props.status} />
+        <TagContent status={props.status} showIcon={props.showIcon} />
       </Box>
     </Tooltip>
   ) : (
-    <TagContent status={props.status} />
+    <TagContent status={props.status} showIcon={props.showIcon} />
   );
 };
