@@ -1,43 +1,65 @@
-import { Button, DataGrid } from '@openfun/cunningham-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { Button, DataGrid, SortModel } from '@openfun/cunningham-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Tag, Text } from '@/components';
-import {
-  MailDomain,
-  useMailDomains,
-  useMailDomainsStore,
-} from '@/features/mail-domains/domains';
+import { MailDomain, useMailDomains } from '@/features/mail-domains/domains';
+import { sortData } from '@/utils/sortData';
 
 interface MailDomainsListViewProps {
   querySearch: string;
 }
 
+type ViewMailDomain = {
+  id: MailDomain['id'];
+  name: string;
+  count_mailboxes?: number;
+  status: MailDomain['status'];
+  slug: string;
+  mailDomain: MailDomain;
+};
+
 export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
   const { t } = useTranslation();
 
-  const { ordering } = useMailDomainsStore();
+  const [sortModel, setSortModel] = useState<SortModel>([
+    {
+      field: 'name',
+      sort: 'desc',
+    },
+  ]);
+
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useMailDomains({ ordering });
-  const mailDomains = useMemo(() => {
-    return data?.pages.reduce((acc, page) => {
-      return acc.concat(page.results);
-    }, [] as MailDomain[]);
-  }, [data?.pages]);
+    useMailDomains({});
+
+  const mailDomains: ViewMailDomain[] = useMemo(() => {
+    if (!data?.pages?.length) {
+      return [];
+    }
+    return data.pages.flatMap((page) =>
+      page.results.map((mailDomain: MailDomain) => ({
+        id: mailDomain.id,
+        name: mailDomain.name,
+        count_mailboxes: mailDomain.count_mailboxes,
+        status: mailDomain.status,
+        slug: mailDomain.slug,
+        mailDomain: mailDomain,
+      })),
+    );
+  }, [data]);
 
   const filteredMailDomains = useMemo(() => {
-    if (!querySearch) {
-      return mailDomains;
+    let result = mailDomains;
+
+    if (querySearch) {
+      const lowerCaseSearch = querySearch.toLowerCase();
+      result = result.filter((domain) =>
+        domain.name.toLowerCase().includes(lowerCaseSearch),
+      );
     }
-    const lowerCaseSearch = querySearch.toLowerCase();
-    return (
-      (mailDomains &&
-        mailDomains.filter((domain) =>
-          domain.name.toLowerCase().includes(lowerCaseSearch),
-        )) ||
-      []
-    );
-  }, [querySearch, mailDomains]);
+
+    return sortData(result, sortModel);
+  }, [querySearch, mailDomains, sortModel]);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -74,17 +96,15 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
             {
               field: 'name',
               headerName: `${t('Domain')} (${filteredMailDomains.length})`,
-              enableSorting: true,
             },
             {
               field: 'count_mailboxes',
               headerName: `${t('Number of mailboxes')}`,
-              enableSorting: true,
             },
             {
               id: 'status',
+              field: 'status',
               headerName: `${t('Status')}`,
-              enableSorting: true,
               renderCell({ row }) {
                 return (
                   <Box $direction="row" $align="center">
@@ -120,6 +140,8 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
             },
           ]}
           isLoading={isLoading}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
         />
       ) : null}
       <div ref={loadMoreRef} style={{ height: 32 }} />
