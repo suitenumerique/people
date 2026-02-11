@@ -43,7 +43,12 @@ export function MailBoxesListView({
   const { t } = useTranslation();
   const { userData } = useAuthStore();
 
-  const [sortModel] = useState<SortModel>([]);
+  const [sortModel, setSortModel] = useState<SortModel>([
+    {
+      field: 'local_part',
+      sort: 'desc',
+    },
+  ]);
 
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
   const {
@@ -77,7 +82,7 @@ export function MailBoxesListView({
         return {
           id: mailbox.id,
           email,
-          name: `${mailbox.first_name} ${mailbox.last_name}`,
+          name: `${mailbox.last_name} ${mailbox.first_name}`,
           first_name: mailbox.first_name,
           last_name: mailbox.last_name,
           local_part: mailbox.local_part,
@@ -136,7 +141,7 @@ export function MailBoxesListView({
             rows={filteredMailboxes}
             columns={[
               {
-                field: 'email',
+                field: 'local_part',
                 headerName: `${t('Address')} • ${filteredMailboxes.length}`,
                 renderCell: ({ row }) => (
                   <Text
@@ -148,9 +153,8 @@ export function MailBoxesListView({
                 ),
               },
               {
-                field: 'name',
+                field: 'last_name',
                 headerName: t('User'),
-                enableSorting: true,
                 renderCell: ({ row }) => (
                   <Text
                     $weight="500"
@@ -162,9 +166,9 @@ export function MailBoxesListView({
                 ),
               },
               {
+                field: 'status',
                 id: 'status',
                 headerName: t('Status'),
-                enableSorting: true,
                 renderCell({ row }) {
                   return (
                     <Box $direction="row" $align="center">
@@ -185,6 +189,8 @@ export function MailBoxesListView({
               },
             ]}
             isLoading={isLoading}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
           />
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>
