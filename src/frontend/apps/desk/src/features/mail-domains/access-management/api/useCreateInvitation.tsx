@@ -1,10 +1,16 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
+import {
+  KEY_LIST_MAIL_DOMAIN,
+  KEY_MAIL_DOMAIN,
+  MailDomain,
+  Role,
+} from '@/features/mail-domains/domains';
 import { Invitation, OptionType } from '@/features/teams/member-add/types';
 
-import { MailDomain, Role } from '../../domains';
+import { KEY_LIST_INVITATION_DOMAIN_ACCESSES } from './useInvitationMailDomainAccesses';
 
 interface CreateInvitationParams {
   email: User['email'];
@@ -42,7 +48,20 @@ export const createInvitation = async ({
 };
 
 export function useCreateInvitation() {
+  const queryClient = useQueryClient();
+
   return useMutation<Invitation, APIError, CreateInvitationParams>({
     mutationFn: createInvitation,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_INVITATION_DOMAIN_ACCESSES],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_MAIL_DOMAIN],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_MAIL_DOMAIN],
+      });
+    },
   });
 }
