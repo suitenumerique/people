@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(datagrid) add sort to mailboxes list + mail domain list
 - ✨(invitations) allow delete invitations mails domains access by an admin
 - ✨(front) delete invitations mails domains access
 - ✨(front) add show invitations mails domains access #1040
