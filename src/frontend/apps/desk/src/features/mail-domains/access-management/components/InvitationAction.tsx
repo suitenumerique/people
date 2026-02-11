@@ -53,7 +53,13 @@ export const InvitationAction = ({
     };
   }, [isDropOpen]);
 
-  if (currentRole === Role.VIEWER || !mailDomain.abilities.delete) {
+  if (currentRole === Role.VIEWER) {
+    return null;
+  }
+
+  const canDelete = currentRole === Role.OWNER || currentRole === Role.ADMIN;
+
+  if (!canDelete) {
     return null;
   }
 
@@ -99,26 +105,28 @@ export const InvitationAction = ({
             }
           }}
         >
-          <Button
-            aria-label={t('Delete this invitation')}
-            onClick={() => {
-              deleteMailDomainInvitation({
-                slug: mailDomain.slug,
-                invitationId: access.id,
-              });
-              setIsDropOpen(false);
-            }}
-            color="primary-text"
-            size="small"
-            fullWidth
-            icon={
-              <span className="material-icons" aria-hidden="true">
-                delete
-              </span>
-            }
-          >
-            <Text $theme="primary">{t('Delete invitation')}</Text>
-          </Button>
+          {canDelete && (
+            <Button
+              aria-label={t('Delete this invitation')}
+              onClick={() => {
+                deleteMailDomainInvitation({
+                  slug: mailDomain.slug,
+                  invitationId: access.id,
+                });
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              size="small"
+              fullWidth
+              icon={
+                <span className="material-icons" aria-hidden="true">
+                  delete
+                </span>
+              }
+            >
+              <Text $theme="primary">{t('Delete invitation')}</Text>
+            </Button>
+          )}
         </div>
       )}
     </div>
