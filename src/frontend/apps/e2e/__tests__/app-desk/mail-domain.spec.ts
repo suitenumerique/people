@@ -278,6 +278,137 @@ test.describe('Mail domain', () => {
             .getByText('Enabled'),
         ).toBeVisible();
       });
+
+      test('admin can delete invitation', async ({ page, browserName }) => {
+        // Intercept API calls to include enabled-domain.com in the list
+        await page.route('**/api/v1.0/mail-domains/\?*', async (route) => {
+          await route.fulfill({
+            json: {
+              count: 1,
+              next: null,
+              previous: null,
+              results: [
+                {
+                  name: 'enabled-domain.com',
+                  id: '456ac6ca-0402-4615-8005-69bc1efde43i',
+                  created_at: currentDateIso,
+                  updated_at: currentDateIso,
+                  slug: 'enabled-domaincom',
+                  status: 'enabled',
+                  abilities: {
+                    get: true,
+                    patch: true,
+                    put: true,
+                    post: true,
+                    delete: true,
+                    manage_accesses: true,
+                  },
+                },
+              ],
+            },
+          });
+        });
+
+        await page.route(
+          '**/api/v1.0/mail-domains/enabled-domaincom/',
+          async (route) => {
+            await route.fulfill({
+              json: {
+                name: 'enabled-domain.com',
+                id: '456ac6ca-0402-4615-8005-69bc1efde43i',
+                created_at: currentDateIso,
+                updated_at: currentDateIso,
+                slug: 'enabled-domaincom',
+                status: 'enabled',
+                abilities: {
+                  get: true,
+                  patch: true,
+                  put: true,
+                  post: true,
+                  delete: true,
+                  manage_accesses: true,
+                },
+              },
+            });
+          },
+        );
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-administrator');
+
+        await clickOnMailDomainsNavButton(page);
+
+        await expect(page).toHaveURL(/mail-domains\//);
+        await expect(
+          page.getByText('enabled-domain.com', { exact: true }),
+        ).toBeVisible();
+        await page
+          .getByLabel(`enabled-domain.com listboxDomains button`)
+          .click();
+        await expect(page).toHaveURL(/mail-domains\/enabled-domaincom\//);
+        await expect(
+          page.getByRole('heading', { name: 'enabled-domain.com' }),
+        ).toBeVisible();
+
+        await page.route(
+          '**/api/v1.0/mail-domains/enabled-domaincom/invitations/',
+          async (route) => {
+            await route.fulfill({
+              json: {
+                count: 1,
+                next: null,
+                previous: null,
+                results: [
+                  {
+                    id: '123e4567-e89b-12d3-a456-426614174000',
+                    email: 'people@people.world',
+                    role: 'administrator',
+                    created_at: currentDateIso,
+                    can_set_role_to: [],
+                  },
+                ],
+              },
+            });
+          },
+        );
+
+        let deleteInvitationCalled = false;
+        await page.route(
+          '**/api/v1.0/mail-domains/enabled-domaincom/invitations/123e4567-e89b-12d3-a456-426614174000/',
+          async (route) => {
+            if (route.request().method() === 'DELETE') {
+              deleteInvitationCalled = true;
+              await route.fulfill({
+                status: 204,
+                json: {},
+              });
+            } else {
+              await route.continue();
+            }
+          },
+        );
+
+        await page.getByText('Access management').click();
+        await expect(page.getByText('Invitations')).toBeVisible();
+        await expect(page.getByText('people@people.world')).toBeVisible();
+
+        await expect(
+          page.getByLabel('Open the invitation options modal'),
+        ).toBeVisible();
+        await page.getByLabel('Open the invitation options modal').click();
+
+        await page.getByText('Delete invitation').click();
+
+        // Verify invitation is deleted (API call was made)
+        await expect(() => {
+          expect(deleteInvitationCalled).toBe(true);
+        }).toPass();
+
+        // Verify success toast appears
+        await expect(
+          page.getByText('The invitation has been deleted'),
+        ).toBeVisible();
+      });
     });
 
     test.describe('mail domain creation is pending', () => {
@@ -608,6 +739,104 @@ test.describe('Mail domain', () => {
           mailDomainsFixtures[0],
           [mailboxesFixtures.domainFr.page1, mailboxesFixtures.domainFr.page2],
         );
+      });
+
+      test('viewer cannot delete invitation', async ({ page, browserName }) => {
+        // Intercept API calls to include enabled-domain.com in the list
+        await page.route('**/api/v1.0/mail-domains/\?*', async (route) => {
+          await route.fulfill({
+            json: {
+              count: 1,
+              next: null,
+              previous: null,
+              results: [
+                {
+                  name: 'enabled-domain.com',
+                  id: '456ac6ca-0402-4615-8005-69bc1efde43i',
+                  created_at: currentDateIso,
+                  updated_at: currentDateIso,
+                  slug: 'enabled-domaincom',
+                  status: 'enabled',
+                  abilities: {
+                    get: true,
+                    patch: false,
+                    put: false,
+                    post: false,
+                    delete: false,
+                    manage_accesses: false,
+                  },
+                },
+              ],
+            },
+          });
+        });
+
+        await page.route(
+          '**/api/v1.0/mail-domains/enabled-domaincom/',
+          async (route) => {
+            await route.fulfill({
+              json: {
+                name: 'enabled-domain.com',
+                id: '456ac6ca-0402-4615-8005-69bc1efde43i',
+                created_at: currentDateIso,
+                updated_at: currentDateIso,
+                slug: 'enabled-domaincom',
+                status: 'enabled',
+                abilities: {
+                  get: true,
+                  patch: false,
+                  put: false,
+                  post: false,
+                  delete: false,
+                  manage_accesses: false,
+                },
+              },
+            });
+          },
+        );
+
+        // Intercept invitations API call BEFORE navigation
+        await page.route(
+          '**/api/v1.0/mail-domains/enabled-domaincom/invitations/',
+          async (route) => {
+            await route.fulfill({
+              json: {
+                count: 1,
+                next: null,
+                previous: null,
+                results: [
+                  {
+                    id: '123e4567-e89b-12d3-a456-426614174000',
+                    email: 'people@people.world',
+                    role: 'administrator',
+                    created_at: currentDateIso,
+                    can_set_role_to: [],
+                  },
+                ],
+              },
+            });
+          },
+        );
+
+        await page.goto('/');
+        await keyCloakSignIn(page, browserName, 'mail-member');
+
+        await clickOnMailDomainsNavButton(page);
+
+        await expect(page).toHaveURL(/mail-domains\//);
+        await expect(
+          page.getByText('enabled-domain.com', { exact: true }),
+        ).toBeVisible();
+        await page
+          .getByLabel(`enabled-domain.com listboxDomains button`)
+          .click();
+        await expect(page).toHaveURL(/mail-domains\/enabled-domaincom\//);
+        await expect(
+          page.getByRole('heading', { name: 'enabled-domain.com' }),
+        ).toBeVisible();
+
+        // Verify that "Access management" button is not visible for a viewer
+        await expect(page.getByText('Access management')).toBeHidden();
       });
     });
 

@@ -96,18 +96,32 @@ export const ModalDomainAccessesManagement = ({
       switchActions(selectedMembers),
     );
 
+    let hasInvitation = false;
+    let hasError = false;
+
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
         case 'rejected':
           onError((settledPromise.reason as APIErrorMember).data);
+          hasError = true;
           break;
 
         case 'fulfilled':
-          onSuccess(settledPromise.value);
+          const option = settledPromise.value;
+          onSuccess(option);
+          if (!isOptionNewMember(option)) {
+            hasInvitation = true;
+          }
           break;
       }
-      onClose();
     });
+
+    if (hasInvitation && !hasError) {
+      setSelectedMembers([]);
+      setRole(Role.VIEWER);
+    } else if (!hasInvitation) {
+      onClose();
+    }
   };
 
   return (
