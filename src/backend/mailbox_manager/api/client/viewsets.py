@@ -10,11 +10,11 @@ from rest_framework.response import Response
 
 from core import models as core_models
 from core.api.client.serializers import UserSerializer
+from core.exceptions import EmailAlreadyKnownException
 
 from mailbox_manager import enums, models
 from mailbox_manager.api import permissions
 from mailbox_manager.api.client import serializers
-from mailbox_manager.exceptions import EmailAlreadyKnownException
 from mailbox_manager.utils.dimail import DimailAPIClient
 
 

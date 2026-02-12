@@ -17,8 +17,8 @@ from django.utils.text import slugify
 from django.utils.translation import get_language, gettext, override
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseInvitation, BaseModel, Organization, User
 from core.exceptions import EmailAlreadyKnownException
+from core.models import BaseInvitation, BaseModel, Organization, User
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,

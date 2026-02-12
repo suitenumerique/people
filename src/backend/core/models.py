@@ -32,11 +32,10 @@ from timezone_field import TimeZoneField
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 
 from core.enums import WebhookProtocolChoices, WebhookStatusChoices
+from core.exceptions import EmailAlreadyKnownException
 from core.plugins.registry import registry as plugin_hooks_registry
 from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
-
-from core.exceptions import EmailAlreadyKnownException
 
 logger = getLogger(__name__)
 
@@ -1005,8 +1004,6 @@ class BaseInvitation(BaseModel):
         """A simple way to refresh invitation and move expiration date."""
         self.clean()
         self.updated_at = timezone.now()
-
-        
 
     @property
     def is_expired(self):
