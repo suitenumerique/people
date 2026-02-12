@@ -16,8 +16,7 @@ from faker import Faker
 from freezegun import freeze_time
 
 from core import factories, models
-
-from mailbox_manager.exceptions import EmailAlreadyKnownException
+from core.exceptions import EmailAlreadyKnownException
 
 pytestmark = pytest.mark.django_db
 
