@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🧑‍💻(admin) export domain contact info #1061
+
 ## [1.23.1] - 2026-02-16
 
 - ✨(invitations) refresh expired invitations
