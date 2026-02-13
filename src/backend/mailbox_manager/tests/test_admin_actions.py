@@ -284,3 +284,27 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client):
     )
     mailbox.refresh_from_db()
     assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+
+@pytest.mark.django_db
+def test_export_domains_contact_list(client):
+    """Test admin action to export."""
+
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+
+    domain = factories.MailDomainFactory(status=enums.MailDomainStatusChoices.ENABLED)
+
+    data = {
+        "action": "export_domains_contact_list",
+        "_selected_action": [domain.id],
+    }
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+    response = client.post(url, data, follow=True)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    import pdb
+
+    pdb.set_trace()
+    assert 1 == 2
