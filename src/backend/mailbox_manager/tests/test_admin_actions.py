@@ -14,6 +14,7 @@ from rest_framework import status
 from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
+from mailbox_manager.admin import DomainResource
 
 from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
@@ -267,3 +268,53 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client, dimail_token_o
     )
     mailbox.refresh_from_db()
     assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+
+@pytest.mark.django_db
+def test_export_domains_infos(client, django_assert_num_queries):
+    """Test admin action to export."""
+
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+
+    domains = [
+        factories.MailDomainEnabledFactory(
+            users=[(core_factories.UserFactory(), "owner")]
+        ),
+        factories.MailDomainEnabledFactory(
+            users=[
+                (core_factories.UserFactory(), "owner"),
+                (core_factories.UserFactory(), "administrator"),
+            ]
+        ),
+        factories.MailDomainEnabledFactory(
+            users=[
+                (core_factories.UserFactory(), "owner"),
+                (core_factories.UserFactory(), "viewer"),
+            ]
+        ),
+    ]
+
+    resource = DomainResource()
+
+    with django_assert_num_queries(4):
+        export = resource.export()
+    assert sorted(json.loads(export.export("json")), key=lambda x: x["name"]) == sorted(
+        [
+            {
+                "name": str(domain.name),
+                "slug": str(domain.slug),
+                "status": str(domain.status),
+                "support_email": domain.support_email,
+                "owners": [
+                    access.user.email for access in domain.accesses.filter(role="owner")
+                ],
+                "admins": [
+                    access.user.email
+                    for access in domain.accesses.filter(role="administrator")
+                ],
+            }
+            for domain in domains
+        ],
+        key=lambda x: x["name"],
+    )

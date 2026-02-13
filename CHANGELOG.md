@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 🧑‍💻(admin) export domain contact info #1061
+
 ## [1.24.0] - 2026-03-24
 
 ### Fixed
