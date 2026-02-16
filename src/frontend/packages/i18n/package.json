@@ -1,6 +1,6 @@
 {
   "name": "packages-i18n",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "private": true,
   "scripts": {
     "extract-translation": "yarn extract-translation:desk",
