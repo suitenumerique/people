@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 14:05+0000\n"
-"PO-Revision-Date: 2026-02-12 14:01\n"
+"POT-Creation-Date: 2026-02-13 11:10+0000\n"
+"PO-Revision-Date: 2026-02-16 14:19\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -73,273 +73,277 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: core/models.py:78
+#: core/exceptions.py:16
+msgid "Email already known. Invitation not sent but access created instead."
+msgstr ""
+
+#: core/models.py:77
 msgid "Member"
 msgstr ""
 
-#: core/models.py:79 core/models.py:91 mailbox_manager/enums.py:14
+#: core/models.py:78 core/models.py:90 mailbox_manager/enums.py:14
 msgid "Administrator"
 msgstr ""
 
-#: core/models.py:80 mailbox_manager/enums.py:15
+#: core/models.py:79 mailbox_manager/enums.py:15
 msgid "Owner"
 msgstr ""
 
-#: core/models.py:103
+#: core/models.py:102
 msgid "id"
 msgstr ""
 
-#: core/models.py:104
+#: core/models.py:103
 msgid "primary key for the record as UUID"
 msgstr ""
 
-#: core/models.py:110
+#: core/models.py:109
 msgid "created at"
 msgstr ""
 
-#: core/models.py:111
+#: core/models.py:110
 msgid "date and time at which a record was created"
 msgstr ""
 
-#: core/models.py:116
+#: core/models.py:115
 msgid "updated at"
 msgstr ""
 
-#: core/models.py:117
+#: core/models.py:116
 msgid "date and time at which a record was last updated"
 msgstr ""
 
-#: core/models.py:156
+#: core/models.py:155
 msgid "full name"
 msgstr ""
 
-#: core/models.py:157
+#: core/models.py:156
 msgid "short name"
 msgstr ""
 
-#: core/models.py:160
+#: core/models.py:159
 msgid "notes"
 msgstr ""
 
-#: core/models.py:162
+#: core/models.py:161
 msgid "contact information"
 msgstr ""
 
-#: core/models.py:163
+#: core/models.py:162
 msgid "A JSON object containing the contact information"
 msgstr ""
 
-#: core/models.py:177
+#: core/models.py:176
 msgid "contact"
 msgstr ""
 
-#: core/models.py:178
+#: core/models.py:177
 msgid "contacts"
 msgstr ""
 
-#: core/models.py:252 core/models.py:366 core/models.py:512 core/models.py:1121
-#: mailbox_manager/models.py:55
+#: core/models.py:251 core/models.py:365 core/models.py:511 core/models.py:1125
+#: mailbox_manager/models.py:56
 msgid "name"
 msgstr ""
 
-#: core/models.py:254
+#: core/models.py:253
 msgid "audience id"
 msgstr ""
 
-#: core/models.py:259
+#: core/models.py:258
 msgid "service provider"
 msgstr ""
 
-#: core/models.py:260
+#: core/models.py:259
 msgid "service providers"
 msgstr ""
 
-#: core/models.py:374
+#: core/models.py:373
 msgid "registration ID list"
 msgstr ""
 
-#: core/models.py:381
+#: core/models.py:380
 msgid "domain list"
 msgstr ""
 
-#: core/models.py:388
+#: core/models.py:387
 msgid "metadata"
 msgstr ""
 
-#: core/models.py:389
+#: core/models.py:388
 msgid "A JSON object containing the organization metadata"
 msgstr ""
 
-#: core/models.py:399 core/models.py:537
+#: core/models.py:398 core/models.py:536
 msgid "active"
 msgstr ""
 
-#: core/models.py:405
+#: core/models.py:404
 msgid "organization"
 msgstr ""
 
-#: core/models.py:406
+#: core/models.py:405
 msgid "organizations"
 msgstr ""
 
-#: core/models.py:413
+#: core/models.py:412
 msgid "An organization must have at least a registration ID or a domain."
 msgstr ""
 
-#: core/models.py:497
+#: core/models.py:496
 msgid "Enter a valid sub. This value may contain only letters, numbers, and @/./+/-/_ characters."
 msgstr ""
 
-#: core/models.py:503
+#: core/models.py:502
 msgid "sub"
 msgstr ""
 
-#: core/models.py:505
+#: core/models.py:504
 msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
 msgstr ""
 
-#: core/models.py:511 core/models.py:975
+#: core/models.py:510 core/models.py:974
 msgid "email address"
 msgstr ""
 
-#: core/models.py:517
+#: core/models.py:516
 msgid "language"
 msgstr ""
 
-#: core/models.py:518
+#: core/models.py:517
 msgid "The language in which the user wants to see the interface."
 msgstr ""
 
-#: core/models.py:524
+#: core/models.py:523
 msgid "The timezone in which the user wants to see times."
 msgstr ""
 
-#: core/models.py:527
+#: core/models.py:526
 msgid "device"
 msgstr ""
 
-#: core/models.py:529
+#: core/models.py:528
 msgid "Whether the user is a device or a real user."
 msgstr ""
 
-#: core/models.py:532
+#: core/models.py:531
 msgid "staff status"
 msgstr ""
 
-#: core/models.py:534
+#: core/models.py:533
 msgid "Whether the user can log into this admin site."
 msgstr ""
 
-#: core/models.py:540
+#: core/models.py:539
 msgid "Whether this user should be treated as active. Unselect this instead of deleting accounts."
 msgstr ""
 
-#: core/models.py:559
+#: core/models.py:558
 msgid "user"
 msgstr ""
 
-#: core/models.py:560
+#: core/models.py:559
 msgid "users"
 msgstr ""
 
-#: core/models.py:698
+#: core/models.py:697
 msgid "Organization/user relation"
 msgstr ""
 
-#: core/models.py:699
+#: core/models.py:698
 msgid "Organization/user relations"
 msgstr ""
 
-#: core/models.py:704
+#: core/models.py:703
 msgid "This user is already in this organization."
 msgstr ""
 
-#: core/models.py:763
+#: core/models.py:762
 msgid "external_id"
 msgstr ""
 
-#: core/models.py:764
+#: core/models.py:763
 msgid "Team external UUID for synchronization with external systems"
 msgstr ""
 
-#: core/models.py:789
+#: core/models.py:788
 msgid "is visible for all SP"
 msgstr ""
 
-#: core/models.py:791
+#: core/models.py:790
 msgid "Whether this team is visible to all service providers."
 msgstr ""
 
-#: core/models.py:799
+#: core/models.py:798
 msgid "Team"
 msgstr ""
 
-#: core/models.py:800
+#: core/models.py:799
 msgid "Teams"
 msgstr ""
 
-#: core/models.py:851
+#: core/models.py:850
 msgid "Team/user relation"
 msgstr ""
 
-#: core/models.py:852
+#: core/models.py:851
 msgid "Team/user relations"
 msgstr ""
 
-#: core/models.py:857
+#: core/models.py:856
 msgid "This user is already in this team."
 msgstr ""
 
-#: core/models.py:943
+#: core/models.py:942
 msgid "url"
 msgstr ""
 
-#: core/models.py:944
+#: core/models.py:943
 msgid "secret"
 msgstr ""
 
-#: core/models.py:958
+#: core/models.py:957
 msgid "Team webhook"
 msgstr ""
 
-#: core/models.py:959
+#: core/models.py:958
 msgid "Team webhooks"
 msgstr ""
 
-#: core/models.py:1015
+#: core/models.py:1019
 msgid "Invitation to join La Régie!"
 msgstr ""
 
-#: core/models.py:1061
+#: core/models.py:1065
 msgid "Team invitation"
 msgstr ""
 
-#: core/models.py:1062
+#: core/models.py:1066
 msgid "Team invitations"
 msgstr ""
 
-#: core/models.py:1075
+#: core/models.py:1079
 #, python-format
 msgid "[La Suite] You have been invited to become a %(role)s of a group"
 msgstr ""
 
-#: core/models.py:1123
+#: core/models.py:1127
 msgid "api key"
 msgstr ""
 
-#: core/models.py:1128
+#: core/models.py:1132
 msgid "allowed scopes"
 msgstr ""
 
-#: core/models.py:1129
+#: core/models.py:1133
 msgid "Allowed scopes for this service"
 msgstr ""
 
-#: core/models.py:1134
+#: core/models.py:1138
 msgid "Account service"
 msgstr ""
 
-#: core/models.py:1135
+#: core/models.py:1139
 msgid "Account services"
 msgstr ""
 
@@ -755,103 +759,99 @@ msgstr ""
 msgid "Action required"
 msgstr ""
 
-#: mailbox_manager/exceptions.py:16
-msgid "Email already known. Invitation not sent but access created instead."
-msgstr ""
-
-#: mailbox_manager/models.py:34
+#: mailbox_manager/models.py:35
 msgid "[La Suite] Your domain is ready"
 msgstr ""
 
-#: mailbox_manager/models.py:39
+#: mailbox_manager/models.py:40
 msgid "[La Suite] Your domain requires action"
 msgstr ""
 
-#: mailbox_manager/models.py:44
+#: mailbox_manager/models.py:45
 msgid "[La Suite] Your domain has failed"
 msgstr ""
 
-#: mailbox_manager/models.py:70
+#: mailbox_manager/models.py:71
 msgid "support email"
 msgstr ""
 
-#: mailbox_manager/models.py:74
+#: mailbox_manager/models.py:75
 msgid "last check details"
 msgstr ""
 
-#: mailbox_manager/models.py:75
+#: mailbox_manager/models.py:76
 msgid "A JSON object containing the last health check details"
 msgstr ""
 
-#: mailbox_manager/models.py:80
+#: mailbox_manager/models.py:81
 msgid "expected config"
 msgstr ""
 
-#: mailbox_manager/models.py:81
+#: mailbox_manager/models.py:82
 msgid "A JSON object containing the expected config"
 msgstr ""
 
-#: mailbox_manager/models.py:86
+#: mailbox_manager/models.py:87
 msgid "Mail domain"
 msgstr ""
 
-#: mailbox_manager/models.py:87
+#: mailbox_manager/models.py:88
 msgid "Mail domains"
 msgstr ""
 
-#: mailbox_manager/models.py:203
+#: mailbox_manager/models.py:204
 msgid "User/mail domain relation"
 msgstr ""
 
-#: mailbox_manager/models.py:204
+#: mailbox_manager/models.py:205
 msgid "User/mail domain relations"
 msgstr ""
 
-#: mailbox_manager/models.py:277
+#: mailbox_manager/models.py:278
 msgid "local_part"
 msgstr ""
 
-#: mailbox_manager/models.py:291
+#: mailbox_manager/models.py:292
 msgid "secondary email address"
 msgstr ""
 
-#: mailbox_manager/models.py:302
+#: mailbox_manager/models.py:303
 msgid "email"
 msgstr ""
 
-#: mailbox_manager/models.py:308
+#: mailbox_manager/models.py:309
 msgid "Mailbox"
 msgstr ""
 
-#: mailbox_manager/models.py:309
+#: mailbox_manager/models.py:310
 msgid "Mailboxes"
 msgstr ""
 
-#: mailbox_manager/models.py:351
+#: mailbox_manager/models.py:352
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
 
-#: mailbox_manager/models.py:408
+#: mailbox_manager/models.py:409
 msgid "Mail domain invitation"
 msgstr ""
 
-#: mailbox_manager/models.py:409
+#: mailbox_manager/models.py:410
 msgid "Mail domain invitations"
 msgstr ""
 
-#: mailbox_manager/models.py:421
+#: mailbox_manager/models.py:439
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: mailbox_manager/models.py:465
+#: mailbox_manager/models.py:483
 msgid "destination address"
 msgstr ""
 
-#: mailbox_manager/models.py:483
+#: mailbox_manager/models.py:501
 msgid "Alias"
 msgstr ""
 
-#: mailbox_manager/models.py:484
+#: mailbox_manager/models.py:502
 msgid "Aliases"
 msgstr ""
 
