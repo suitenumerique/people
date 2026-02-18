@@ -9,7 +9,7 @@ plugins_urlpatterns = []
 for app in settings.INSTALLED_PLUGINS:
     try:
         plugins_urlpatterns.append(path("", include(f"{app}.urls")))
-    except (ImportError, AttributeError):
+    except ImportError, AttributeError:
         # Skip if app doesn't have urls.py
         continue
 

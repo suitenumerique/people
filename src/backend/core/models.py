@@ -814,7 +814,7 @@ class Team(MP_Node, BaseModel):
             except AttributeError:
                 try:
                     role = self.accesses.filter(user=user).values("role")[0]["role"]
-                except (TeamAccess.DoesNotExist, IndexError):
+                except TeamAccess.DoesNotExist, IndexError:
                     role = None
 
             is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
@@ -901,7 +901,7 @@ class TeamAccess(BaseModel):
                     role = self._meta.model.objects.filter(
                         team=self.team_id, user=user
                     ).values("role")[0]["role"]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             is_team_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
@@ -1100,7 +1100,7 @@ class Invitation(BaseInvitation):
                     role = self.team.accesses.filter(user=user).values("role")[0][
                         "role"
                     ]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
