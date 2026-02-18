@@ -111,7 +111,7 @@ class MailDomain(BaseModel):
         if user.is_authenticated:
             try:
                 role = self.accesses.filter(user=user).values("role")[0]["role"]
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 role = None
 
         is_owner_or_admin = role in [
@@ -224,7 +224,7 @@ class MailDomainAccess(BaseModel):
                 authenticated_user_role = user.mail_domain_accesses.get(
                     domain=self.domain
                 ).role
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 return []
 
         # only an owner can set an owner role
@@ -252,7 +252,7 @@ class MailDomainAccess(BaseModel):
         if user.is_authenticated:
             try:
                 role = user.mail_domain_accesses.filter(domain=self.domain).get().role
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 role = None
 
         is_owner_or_admin = role in [
@@ -459,7 +459,7 @@ class MailDomainInvitation(BaseInvitation):
                     role = self.domain.accesses.filter(user=user).values("role")[0][
                         "role"
                     ]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             can_delete = role in [
@@ -515,7 +515,7 @@ class Alias(BaseModel):
         edit aliases, but also viewer if the alias points to their email."""
         try:
             role = user.mail_domain_accesses.get(domain=self.domain).role
-        except (MailDomainAccess.DoesNotExist, IndexError):
+        except MailDomainAccess.DoesNotExist, IndexError:
             role = None
 
         is_owner_or_admin = role in [
