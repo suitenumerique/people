@@ -9,17 +9,15 @@ import responses
 from rest_framework import status
 
 from mailbox_manager import factories
-from mailbox_manager.tests.fixtures.dimail import TOKEN_OK
 
 
 ## DIMAIL RESPONSES
 @pytest.fixture(name="dimail_token_ok")
 def fixture_dimail_token_ok():
     """Mock dimail response when /token/ endpoit is given valid credentials."""
-    responses.add(
-        responses.GET,
+    responses.get(
         re.compile(r".*/token/"),
-        body=TOKEN_OK,
+        json={"access_token": "token", "token_type": "bearer"},
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
