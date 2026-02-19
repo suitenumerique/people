@@ -19,7 +19,6 @@ from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
     CHECK_DOMAIN_OK,
     DOMAIN_SPEC,
-    TOKEN_OK,
     response_mailbox_created,
 )
 
@@ -101,7 +100,9 @@ def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client)
 
 @responses.activate
 @pytest.mark.django_db
-def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
+def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(
+    client, dimail_token_ok
+):  # pylint: disable=W0613
     """Test admin action should switch domain state to ENABLED
     when dimail's response is "ok". It should also activate any pending mailbox."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
@@ -127,13 +128,7 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(client):
         content_type="application/json",
     )
     # we need to get a token to create mailboxes
-    responses.add(
-        responses.GET,
-        re.compile(r".*/token/"),
-        body=TOKEN_OK,
-        status=status.HTTP_200_OK,
-        content_type="application/json",
-    )
+    # token response in fixtures
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{domain1.name}/mailboxes/"),
@@ -208,7 +203,7 @@ def test_fetch_domain_expected_config__should_not_fetch_for_disabled_domain(clie
 
 @responses.activate
 @pytest.mark.django_db
-def test_send_pending_mailboxes(client):
+def test_send_pending_mailboxes(client, dimail_token_ok):  # pylint: disable=W0613
     """Test admin action to send pending mailboxes to dimail."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
     client.force_login(admin)
@@ -223,13 +218,7 @@ def test_send_pending_mailboxes(client):
 
     url = reverse("admin:mailbox_manager_maildomain_changelist")
     for mailbox in mailboxes:
-        responses.add(
-            responses.GET,
-            re.compile(r".*/token/"),
-            body=TOKEN_OK,
-            status=status.HTTP_200_OK,
-            content_type="application/json",
-        )
+        # token response in fixtures
         responses.add(
             responses.POST,
             re.compile(rf".*/domains/{domain.name}/mailboxes/"),
@@ -247,7 +236,7 @@ def test_send_pending_mailboxes(client):
 
 @responses.activate
 @pytest.mark.django_db
-def test_send_pending_mailboxes__listing_failed_mailboxes(client):
+def test_send_pending_mailboxes__listing_failed_mailboxes(client, dimail_token_ok):  # pylint: disable=W0613
     """Test admin action to send pending mailboxes to dimail."""
     admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
     client.force_login(admin)
@@ -261,13 +250,7 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client):
     }
 
     url = reverse("admin:mailbox_manager_maildomain_changelist")
-    responses.add(
-        responses.GET,
-        re.compile(r".*/token/"),
-        body=TOKEN_OK,
-        status=status.HTTP_200_OK,
-        content_type="application/json",
-    )
+    # token response in fixtures
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{domain.name}/mailboxes/"),
