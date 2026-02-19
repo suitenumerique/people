@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+- ✨(mailboxes) enforce lowercase on mailboxes
 - 🐛(i18n) fix missing translations for status tag labels
 
 ## [1.23.1] - 2026-02-16

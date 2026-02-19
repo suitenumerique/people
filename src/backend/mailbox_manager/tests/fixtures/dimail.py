@@ -301,4 +301,4 @@ def response_allows_created(user_name, domain_name):
 ## MAILBOXES
 def response_mailbox_created(email_address):
     """mimic dimail response upon successful mailbox creation."""
-    return json.dumps({"email": email_address, "password": "password"})
+    return json.dumps({"email": email_address.lower(), "password": "password"})
