@@ -287,10 +287,6 @@ DOMAIN_SPEC = [
 ]
 
 
-## TOKEN
-TOKEN_OK = json.dumps({"access_token": "token", "token_type": "bearer"})
-
-
 ## ALLOWS
 def response_allows_created(user_name, domain_name):
     """mimic dimail response upon successful allows creation.
