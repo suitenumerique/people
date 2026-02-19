@@ -351,6 +351,8 @@ Last name and Domain already exists.",
             raise exceptions.ValidationError(
                 _("You can't create or update a mailbox for a disabled domain.")
             )
+
+        self.local_part = self.local_part.lower()
         return super().save(*args, **kwargs)
 
     @property
