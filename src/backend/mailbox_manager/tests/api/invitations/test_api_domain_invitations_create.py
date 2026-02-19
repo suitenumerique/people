@@ -124,7 +124,7 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
         {
             "email": existing_invitation.email,
-            "role": "owner",
+            "role": "viewer",
         },
         format="json",
     )
@@ -132,7 +132,9 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert response.json()["__all__"] == [
         "Mail domain invitation with this Email address and Domain already exists."
     ]
-    assert models.MailDomainInvitation.objects.count() == 1  # and specifically, not 2
+    access = models.MailDomainInvitation.objects.all()
+    assert access.count() == 1  # and specifically, not 2
+    assert access[0].role == existing_invitation.role
 
 
 def test_api_domain_invitations__inviting_known_email_should_create_access():
@@ -157,7 +159,9 @@ def test_api_domain_invitations__inviting_known_email_should_create_access():
     )
 
     assert not models.MailDomainInvitation.objects.exists()
-    assert models.MailDomainAccess.objects.filter(user=existing_user).exists()
+    access = models.MailDomainAccess.objects.filter(user=existing_user)
+    assert access.exists()
+    assert access[0].role == "owner"
 
 
 def test_api_domain_invitations__inviting_known_email_case_insensitive():
