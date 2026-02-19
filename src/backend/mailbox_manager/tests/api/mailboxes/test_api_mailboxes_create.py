@@ -58,7 +58,7 @@ def test_api_mailboxes__create_no_access_forbidden_not_found(mailbox_data):
     assert not models.Mailbox.objects.exists()
 
 
-def test_api_mailboxes__create_viewer_failure(mailbox_data):
+def test_api_mailboxes__create_viewer_forbidden(mailbox_data):
     """Users with viewer role should not be able to create mailbox on the mail domain."""
     mail_domain = factories.MailDomainEnabledFactory()
     access = factories.MailDomainAccessFactory(
@@ -89,7 +89,7 @@ def test_api_mailboxes__create_display_name_must_be_unique():
 
     new_mailbox_data = {
         "local_part": "something_else",
-        "first_name": existing_mailbox.first_name.upper(),  # ensure case-insensitivity
+        "first_name": existing_mailbox.first_name.upper(),  # checks case-insensitivity
         "last_name": existing_mailbox.last_name.lower(),
     }
     response = client.post(
@@ -237,6 +237,35 @@ def test_api_mailboxes__create_with_accent_success(role, dimail_token_ok):
         "secondary_email": str(mailbox.secondary_email),
         "status": enums.MailboxStatusChoices.ENABLED,
     }
+
+
+@responses.activate
+def test_api_mailboxes__create_lowercase(dimail_token_ok, mailbox_data):
+    """Should lowercase emails on creation."""
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
+    mailbox_data["local_part"] = "WeiRdCaSe"
+
+    # ensure response
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["local_part"] == mailbox_data["local_part"].lower()
 
 
 def test_api_mailboxes__create_administrator_missing_fields():

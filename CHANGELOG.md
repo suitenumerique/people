@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- ✨(mailboxes) enforce lowercase on mailboxes
+
 ## [1.23.1] - 2026-02-16
 
 - ✨(invitations) refresh expired invitations
