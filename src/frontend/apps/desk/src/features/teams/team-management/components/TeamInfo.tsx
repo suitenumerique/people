@@ -46,7 +46,7 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
           <IconGroup
             aria-hidden="true"
             width={44}
-            color={colorsTokens()['primary-text']}
+            color={colorsTokens()['brand-600']}
             style={{
               flexShrink: 0,
               alignSelf: 'start',
@@ -70,7 +70,7 @@ export const TeamInfo = ({ team, currentRole }: TeamInfoProps) => {
           $direction="row"
           $justify="start"
           $css={`
-            border-top: 1px solid ${colorsTokens()['greyscale-200']};
+            border-top: 1px solid ${colorsTokens()['gray-200']};
           `}
         >
           <Text $size="s" as="p">

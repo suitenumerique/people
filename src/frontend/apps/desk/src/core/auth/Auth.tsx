@@ -1,4 +1,4 @@
-import { Loader } from '@openfun/cunningham-react';
+import { Loader } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter } from 'next/router';
 import { PropsWithChildren, useEffect } from 'react';
 

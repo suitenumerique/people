@@ -1,7 +1,7 @@
 import {
   Modal as CunninghamModal,
   ModalProps,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect } from 'react';
 
 import { HorizontalSeparator } from '@/components';
@@ -33,6 +33,8 @@ export const CustomModal: React.FC<
       <HorizontalSeparator $withPadding={true}></HorizontalSeparator>
       <div>
         {children}
+        <HorizontalSeparator $withPadding={true}></HorizontalSeparator>
+
         {/* modal content */}
         {/*<div className={style.content}>{children}</div>*/}
 

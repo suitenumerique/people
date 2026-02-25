@@ -1,11 +1,10 @@
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import {
   Button,
-  Loader,
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +15,7 @@ import {
   Box,
   HorizontalSeparator,
   Icon,
-  Input,
+  LocalInput,
   Text,
   TextErrors,
 } from '@/components';
@@ -40,7 +39,7 @@ export const ModalCreateAlias = ({
   const [step] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [destinations, setDestinations] = useState<string[]>([]);
-  const [newDestination, setNewDestination] = useState('');
+  const [newDestination, setNewDestination] = useState<string>('');
   const [destinationError, setDestinationError] = useState<string | null>(null);
 
   type AliasFormData = {
@@ -63,7 +62,7 @@ export const ModalCreateAlias = ({
   });
 
   const addDestination = () => {
-    const trimmed = newDestination.trim();
+    const trimmed = newDestination?.toString().trim();
     if (!trimmed) {
       setDestinationError(t('Please enter an email address'));
       return;
@@ -89,15 +88,6 @@ export const ModalCreateAlias = ({
 
   const removeDestination = (index: number) => {
     setDestinations(destinations.filter((_, i) => i !== index));
-  };
-
-  const handleDestinationKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      addDestination();
-    }
   };
 
   const { mutate: createAlias } = useCreateAlias({
@@ -228,83 +218,112 @@ export const ModalCreateAlias = ({
               <Text $size="md" $weight="bold">
                 {t('Alias configuration')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t(
                   'An alias allows you to redirect emails to one or more addresses.',
                 )}
               </Text>
             </Box>
 
-            <Box
-              $padding="md"
-              style={{
-                position: 'relative',
-                alignItems: 'end',
-                gap: '20px',
-                flexDirection: 'row',
-                alignContent: 'flex-end',
-              }}
-            >
+            <Box $padding="md">
               <Controller
                 name="local_part"
                 control={methods.control}
-                render={({ field }) => (
-                  <Box $align="center">
-                    <Input
-                      {...field}
-                      label={t('Name of the alias')}
-                      required
-                      placeholder={t('contact')}
-                    />
-                  </Box>
+                render={({ field, fieldState }) => (
+                  <LocalInput
+                    {...field}
+                    id="alias_local_part"
+                    label={t('Name of the alias')}
+                    right={
+                      <span
+                        style={{
+                          padding: '12px 12px 12px 0',
+                          fontSize: 14,
+                          color: 'var(--c--theme--colors--gray-550)',
+                          fontWeight: 500,
+                        }}
+                      >
+                        @{mailDomain.name}
+                      </span>
+                    }
+                    required
+                    error={fieldState.error?.message}
+                  />
                 )}
               />
-              <Box
-                style={{
-                  display: 'flex',
-                  position: 'absolute',
-                  top: '58px',
-                  left: '210px',
-                }}
-              >
-                <Text className="mb-8" $weight="500">
-                  @{mailDomain.name}
-                </Text>
-              </Box>
             </Box>
 
             <HorizontalSeparator $withPadding={true} />
 
             <Box $padding={{ horizontal: 'md' }}>
               <Box $margin={{ top: 'base', bottom: 'base' }} $gap="12px">
-                <Text $size="sm" $weight="500">
-                  {t('Destination email addresses')}
-                </Text>
-
                 <Box $gap="4px">
-                  <Box $direction="row" $gap="8px" $align="end">
-                    <Box style={{ flex: 1 }}>
-                      <Input
-                        value={newDestination}
+                  <Box $direction="column" $gap="8px">
+                    <Box $margin={{ bottom: 'xxs' }}>
+                      <label
+                        htmlFor="newDestination"
+                        style={{
+                          fontWeight: 500,
+                          color:
+                            'var(--c--contextuals--text--semantic--neutral--primary)',
+                        }}
+                      >
+                        {t('Add destination email')}
+                      </label>
+                    </Box>
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        flexDirection: 'row',
+                        flexWrap: 'nowrap',
+                        border: `1px solid var(--c--contextuals--border--semantic--neutral--tertiary)`,
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        paddingRight: '4px',
+                      }}
+                    >
+                      <input
+                        id="newDestination"
+                        aria-required="true"
+                        required
                         onChange={(e) => {
                           setNewDestination(e.target.value);
                           setDestinationError(null);
                         }}
-                        onKeyPress={handleDestinationKeyPress}
-                        label={t('Add destination email')}
-                        placeholder=""
+                        onKeyUp={(e) => {
+                          if (e.key === 'Enter') {
+                            addDestination();
+                          }
+                        }}
+                        style={{
+                          flex: '1 1 0',
+                          minWidth: 0,
+                          padding: '12px',
+                          border: 'none',
+                          borderRadius: 0,
+                          fontSize: 14,
+                          background: 'transparent',
+                          color:
+                            'var(--c--contextuals--text--semantic--neutral--tertiary)',
+                          outline: 'none',
+                        }}
                       />
-                    </Box>
-                    <Button
-                      type="button"
-                      onClick={addDestination}
-                      disabled={!newDestination.trim()}
-                    >
-                      {t('Add destination')}
-                    </Button>
+                      <Button
+                        type="button"
+                        size="small"
+                        onClick={addDestination}
+                        disabled={!newDestination.trim()}
+                        tabIndex={-1}
+                        icon={<Icon iconName="add" $color="currentColor" />}
+                      >
+                        {t('Add destination')}
+                      </Button>
+                    </div>
                   </Box>
                   {destinationError && (
-                    <Text $theme="warning" $size="sm">
+                    <Text $theme="error" $variation="secondary" $size="sm">
                       {destinationError}
                     </Text>
                   )}
@@ -334,6 +353,7 @@ export const ModalCreateAlias = ({
                         >
                           <th
                             style={{
+                              paddingLeft: '12px',
                               textAlign: 'left',
                               fontWeight: 500,
                               fontSize: '14px',
@@ -343,8 +363,9 @@ export const ModalCreateAlias = ({
                           </th>
                           <th
                             style={{
-                              paddingBottom: '12px',
+                              paddingRight: '12px',
                               textAlign: 'right',
+                              fontWeight: 500,
                               width: '80px',
                             }}
                           >
@@ -357,7 +378,6 @@ export const ModalCreateAlias = ({
                           <tr
                             key={index}
                             style={{
-                              paddingBottom: '12px',
                               borderBottom:
                                 index < destinations.length - 1
                                   ? '1px solid var(--c--contextuals--border--surface--primary)'
@@ -365,12 +385,16 @@ export const ModalCreateAlias = ({
                             }}
                           >
                             <td>
-                              <Text $size="sm">{destination}</Text>
+                              <Text $size="sm" $padding={{ left: '12px' }}>
+                                {destination}
+                              </Text>
                             </td>
-                            <td style={{ textAlign: 'right' }}>
+                            <td style={{ textAlign: 'right', padding: '12px' }}>
                               <Button
                                 type="button"
-                                color="tertiary"
+                                size="small"
+                                color="neutral"
+                                variant="tertiary"
                                 onClick={() => removeDestination(index)}
                                 aria-label={t('Remove destination')}
                                 icon={<Icon iconName="delete" />}
@@ -388,7 +412,7 @@ export const ModalCreateAlias = ({
         </FormProvider>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Cancel')}
         </Button>
       ),
@@ -424,14 +448,6 @@ export const ModalCreateAlias = ({
         closeOnClickOutside
       >
         {steps[step].content}
-        {isSubmitting && (
-          <Box $align="center" $padding="md">
-            <Loader />
-            <Text $theme="greyscale" $variation="600" $margin={{ top: 'sm' }}>
-              {t('Creating alias...')}
-            </Text>
-          </Box>
-        )}
       </CustomModal>
     </div>
   );

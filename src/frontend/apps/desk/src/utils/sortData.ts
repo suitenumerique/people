@@ -1,4 +1,4 @@
-import { SortModel } from '@openfun/cunningham-react';
+import { SortModel } from '@gouvfr-lasuite/cunningham-react';
 
 export function sortData<T extends object>(
   data: T[],

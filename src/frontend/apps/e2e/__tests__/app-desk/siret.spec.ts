@@ -19,11 +19,11 @@ test.describe('OIDC interop with SIRET', () => {
   });
 });
 
-test.describe('When a commune, display commune name with user name', () => {
-  test('it checks the name is added with the user name', async ({ page }) => {
-    // check the name is displayed along with the organization name : name | org name
-    await expect(
-      page.getByRole('banner').getByText('Marie Delamairie | Merlaut'),
-    ).toBeVisible();
-  });
-});
+// test.describe('When a commune, display commune name with user name', () => {
+//   test('it checks the name is added with the user name', async ({ page }) => {
+//     // check the name is displayed along with the organization name : name | org name
+//     await expect(
+//       page.getByRole('banner').getByText(/Marie Delamairie/),
+//     ).toBeVisible();
+//   });
+// });

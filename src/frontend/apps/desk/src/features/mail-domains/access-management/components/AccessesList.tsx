@@ -1,5 +1,5 @@
+import { SortModel, usePagination } from '@gouvfr-lasuite/cunningham-react';
 import { QuickSearchItemTemplate, UserRow } from '@gouvfr-lasuite/ui-kit';
-import { SortModel, usePagination } from '@openfun/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -136,18 +136,12 @@ export const AccessesList = ({
     setPagesCount(data?.count ? Math.ceil(data.count / pageSize) : 0);
   }, [data?.count, pageSize, setPagesCount]);
 
-  const localizedRoles = {
-    [Role.ADMIN]: t('Administrator'),
-    [Role.VIEWER]: t('Viewer'),
-    [Role.OWNER]: t('Owner'),
-  };
-
   return (
     <>
       <SeparatedSection />
       {invitationsAccesses && invitationsAccesses.length > 0 && (
         <Box
-          $margin={{ bottom: 'xl', top: 'md' }}
+          $margin={{ bottom: 'md', top: 'md' }}
           $padding={{ horizontal: 'md' }}
         >
           <Text $size="small" $margin={{ bottom: 'md' }} $weight="600">
@@ -159,7 +153,11 @@ export const AccessesList = ({
               <QuickSearchItemTemplate
                 key={access.id}
                 left={
-                  <Box $direction="row" className="c__share-member-item">
+                  <Box
+                    $direction="row"
+                    $margin={{ bottom: '10px' }}
+                    className="c__share-member-item"
+                  >
                     <UserRow
                       key={access.user.email}
                       fullName={undefined}
@@ -169,7 +167,7 @@ export const AccessesList = ({
                     <Text
                       $size="small"
                       $margin={{ left: '4px' }}
-                      $color={colorsTokens()['greyscale-500']}
+                      $color={colorsTokens()['gray-500']}
                     >
                       {t('on pending')}
                     </Text>
@@ -177,7 +175,6 @@ export const AccessesList = ({
                 }
               />
               <Box $direction="row" $align="center">
-                <Text>{localizedRoles[access.role]}</Text>
                 <InvitationAction
                   mailDomain={mailDomain}
                   access={access}
@@ -204,7 +201,11 @@ export const AccessesList = ({
             <QuickSearchItemTemplate
               key={access.id}
               left={
-                <Box $direction="row" className="c__share-member-item">
+                <Box
+                  $direction="row"
+                  $margin={{ bottom: '10px' }}
+                  className="c__share-member-item"
+                >
                   <UserRow
                     key={access.user.email}
                     fullName={access.user.name}
@@ -215,7 +216,6 @@ export const AccessesList = ({
               }
             />
             <Box $direction="row" $align="center">
-              <Text>{localizedRoles[access.role]}</Text>
               <AccessAction
                 mailDomain={mailDomain}
                 access={access}

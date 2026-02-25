@@ -128,7 +128,9 @@ test.describe('Mail domains', () => {
         .click();
       await expect(page).toHaveURL(/mail-domains\//);
       await expect(page.getByText('Domains of the organization')).toBeVisible();
-      await expect(page.getByText('Manage')).toHaveCount(4);
+      await expect(page.getByLabel(/listboxDomains button$/)).toHaveCount(
+        mailDomainsFixtures.length,
+      );
 
       await Promise.all(
         mailDomainsFixtures.map(async ({ name }) => {

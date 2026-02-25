@@ -12,7 +12,7 @@ test.describe('Menu', () => {
     {
       name: 'Teams',
       expectedUrl: '/teams/',
-      expectedText: 'Teams',
+      expectedText: 'Groups',
     },
     {
       name: 'Mail Domains',
@@ -26,7 +26,8 @@ test.describe('Menu', () => {
     }) => {
       const menu = page.locator('menu').first();
 
-      const buttonMenu = menu.getByLabel(`${name} button`);
+      const label = name === 'Teams' ? 'Groups button' : `${name} button`;
+      const buttonMenu = menu.getByLabel(label);
       await expect(buttonMenu).toBeVisible();
     });
 
@@ -35,7 +36,8 @@ test.describe('Menu', () => {
     }) => {
       const menu = page.locator('menu').first();
 
-      const buttonMenu = menu.getByLabel(`${name} button`);
+      const label = name === 'Teams' ? 'Groups button' : `${name} button`;
+      const buttonMenu = menu.getByLabel(label);
       await buttonMenu.click();
 
       await expect(page.getByText(expectedText).first()).toBeVisible();
@@ -76,7 +78,7 @@ test.describe('Menu', () => {
 
     const menu = page.locator('menu').first();
 
-    const buttonMenu = menu.getByLabel(`Teams button`);
+    const buttonMenu = menu.getByLabel('Groups button');
     await buttonMenu.click();
     await expect(
       page.getByText('Click on team to view details').first(),
@@ -116,9 +118,9 @@ test.describe('Menu', () => {
 
     const menu = page.locator('menu').first();
 
-    const buttonMenu = menu.getByLabel(`Teams button`);
+    const buttonMenu = menu.getByLabel('Groups button');
     await buttonMenu.click();
-    await expect(page.getByText('Create a new team').first()).toBeVisible();
+    await expect(page.getByText('New group').first()).toBeVisible();
 
     const buttonMenuMailDomain = menu.getByLabel(`Mail Domains`);
     await buttonMenuMailDomain.click();
