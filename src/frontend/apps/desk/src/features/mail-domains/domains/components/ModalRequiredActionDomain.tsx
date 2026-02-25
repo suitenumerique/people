@@ -47,18 +47,27 @@ export const ModalRequiredActionDomain = ({
 
   const steps = [
     {
-      title: t('Required actions on domain'),
+      title:
+        mailDomain.status !== 'enabled'
+          ? t('Required actions on domain')
+          : t('Domain configuration'),
       content: (
         <Text>
-          <p>
-            {t(
-              'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
-            )}
-          </p>
-          <h3>{t('Actions required detail')}</h3>
-          <pre>
-            {mailDomain.action_required_details &&
-              Object.entries(mailDomain.action_required_details).map(
+          {mailDomain.status !== 'enabled' ? (
+            <>
+              <p>
+                {t(
+                  'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
+                )}
+              </p>
+              <h3>{t('Actions required detail')}</h3>
+            </>
+          ) : (
+            <p>{t('The domain is currently enabled.')}</p>
+          )}
+          {mailDomain.action_required_details && (
+            <pre>
+              {Object.entries(mailDomain.action_required_details).map(
                 ([check, value], index) => (
                   <ul key={`action-required-list-${index}`}>
                     <li key={`action-required-${index}`}>
@@ -67,10 +76,15 @@ export const ModalRequiredActionDomain = ({
                   </ul>
                 ),
               )}
-          </pre>
+            </pre>
+          )}
           {mailDomain.expected_config && (
             <Box $margin={{ bottom: 'medium' }}>
-              <h3>{t('DNS Configuration Required:')}</h3>
+              <h3>
+                {mailDomain.status === 'action_required'
+                  ? t('DNS Configuration Required:')
+                  : t('DNS Configuration:')}
+              </h3>
               <pre>
                 <div
                   style={{

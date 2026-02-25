@@ -17,6 +17,7 @@ from django.utils.text import slugify
 from django.utils.translation import get_language, gettext, override
 from django.utils.translation import gettext_lazy as _
 
+from core.exceptions import EmailAlreadyKnownException
 from core.models import BaseInvitation, BaseModel, Organization, User
 
 from mailbox_manager.enums import (
@@ -110,7 +111,7 @@ class MailDomain(BaseModel):
         if user.is_authenticated:
             try:
                 role = self.accesses.filter(user=user).values("role")[0]["role"]
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 role = None
 
         is_owner_or_admin = role in [
@@ -223,7 +224,7 @@ class MailDomainAccess(BaseModel):
                 authenticated_user_role = user.mail_domain_accesses.get(
                     domain=self.domain
                 ).role
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 return []
 
         # only an owner can set an owner role
@@ -251,7 +252,7 @@ class MailDomainAccess(BaseModel):
         if user.is_authenticated:
             try:
                 role = user.mail_domain_accesses.filter(domain=self.domain).get().role
-            except (MailDomainAccess.DoesNotExist, IndexError):
+            except MailDomainAccess.DoesNotExist, IndexError:
                 role = None
 
         is_owner_or_admin = role in [
@@ -413,6 +414,23 @@ class MailDomainInvitation(BaseInvitation):
             )
         ]
 
+    def refresh(self):
+        """Create domain access if refresh fail because user was created
+        after invitation expiration"""
+        try:
+            super().refresh()
+        except EmailAlreadyKnownException as exc:
+            user = User.objects.get(email__iexact=self.email)
+
+            MailDomainAccess.objects.create(
+                user=user,
+                domain=self.domain,
+                role=self.role,
+            )
+
+            self.delete()  # delete related invitation
+            raise exc
+
     def __str__(self):
         return f"{self.email} invited to {self.domain}"
 
@@ -441,7 +459,7 @@ class MailDomainInvitation(BaseInvitation):
                     role = self.domain.accesses.filter(user=user).values("role")[0][
                         "role"
                     ]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             can_delete = role in [
@@ -497,7 +515,7 @@ class Alias(BaseModel):
         edit aliases, but also viewer if the alias points to their email."""
         try:
             role = user.mail_domain_accesses.get(domain=self.domain).role
-        except (MailDomainAccess.DoesNotExist, IndexError):
+        except MailDomainAccess.DoesNotExist, IndexError:
             role = None
 
         is_owner_or_admin = role in [

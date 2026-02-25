@@ -288,14 +288,12 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
             )
         queue.flush()
 
+    domains = mailbox_models.MailDomain.objects.all()
     with Timeit(stdout, "Creating accesses to domains"):
-        domains_ids = list(
-            mailbox_models.MailDomain.objects.values_list("id", flat=True)
-        )
-        for domain_id in domains_ids:
+        for domain in domains:
             queue.push(
                 mailbox_models.MailDomainAccess(
-                    domain_id=domain_id,
+                    domain=domain,
                     user_id=random.choice(users_ids),
                     role=models.RoleChoices.OWNER,
                 )
@@ -304,11 +302,8 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         queue.flush()
 
     with Timeit(stdout, "Creating mailboxes"):
-        domains_ids = list(
-            mailbox_models.MailDomain.objects.values_list("id", flat=True)
-        )
-        for domain_id in domains_ids:
-            for i in range(random.randint(1, 10)):
+        for domain in domains:
+            for i in range(defaults.NB_OBJECTS["mailboxes_per_domain"]):
                 first_name = fake.first_name()
                 last_name = fake.last_name()
                 local_part = f"{first_name.lower()}.{last_name.lower()}{i}"
@@ -318,10 +313,23 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
                         first_name=first_name,
                         last_name=last_name,
                         local_part=local_part,
-                        domain_id=domain_id,
+                        domain=domain,
                         secondary_email=f"{local_part}@example.fr",
                         status=random.choice(MailboxStatusChoices.values),
                         dn_email=local_part,
+                    )
+                )
+
+        queue.flush()
+
+    with Timeit(stdout, "Creating aliases"):
+        for domain in domains:
+            for _i in range(defaults.NB_OBJECTS["aliases_per_domain"]):
+                queue.push(
+                    mailbox_models.Alias(
+                        local_part=fake.word(),
+                        destination=fake.email(),
+                        domain=domain,
                     )
                 )
 
@@ -361,7 +369,7 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
             queue.push(user_with_mail)
             queue.push(
                 mailbox_models.MailDomainAccess(
-                    domain_id=domains_ids[0],
+                    domain=domains[0],
                     user_id=user_with_mail.pk,
                     role=role,
                 )
@@ -387,7 +395,7 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
                 )
                 queue.push(
                     mailbox_models.MailDomainAccess(
-                        domain_id=domains_ids[0],
+                        domain=domains[0],
                         user_id=team_mail_user.pk,
                         role=domain_role,
                     )
@@ -414,21 +422,20 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         role=MailDomainRoleChoices.ADMIN,
     )
 
-    # Many mailboxes domain
-    many_boxes_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
-        name="many-boxes-domain.com",
+    # Many objects domain
+    many_objects_domain, _created = mailbox_models.MailDomain.objects.get_or_create(
+        name="many-objects-domain.com",
         status=MailDomainStatusChoices.ENABLED,
         support_email="support@mbd.com",
     )
-    domain_owner = models.User.objects.get(email="e2e.mail-owner@example.com")
     mailbox_models.MailDomainAccess.objects.get_or_create(
-        domain=many_boxes_domain,
+        domain=many_objects_domain,
         user=domain_owner,
         role=MailDomainRoleChoices.OWNER,
     )
     mailbox_models.MailDomainInvitation.objects.create(
         issuer=domain_owner,
-        domain=many_boxes_domain,
+        domain=many_objects_domain,
         email="people@people.world",
         role=MailDomainRoleChoices.OWNER,
     )
@@ -436,15 +443,22 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         first_name = fake.first_name()
         last_name = fake.last_name()
         local_part = f"{first_name.lower()}.{last_name.lower()}"
+
         mailbox_models.Mailbox.objects.create(
-            domain=many_boxes_domain,
+            domain=many_objects_domain,
             first_name=first_name,
             last_name=last_name,
             local_part=local_part,
             secondary_email=f"{local_part}@example.fr",
             status=random.choice(MailboxStatusChoices.values),
             password=make_password(None),  # unusable password
-            dn_email=f"{local_part}@{many_boxes_domain}",
+            dn_email=f"{local_part}@{many_objects_domain}",
+        )
+
+        mailbox_models.Alias.objects.create(
+            local_part=fake.word(),
+            destination=fake.email(),
+            domain=many_objects_domain,
         )
 
     # OIDC configuration

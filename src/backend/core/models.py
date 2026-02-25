@@ -32,11 +32,10 @@ from timezone_field import TimeZoneField
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 
 from core.enums import WebhookProtocolChoices, WebhookStatusChoices
+from core.exceptions import EmailAlreadyKnownException
 from core.plugins.registry import registry as plugin_hooks_registry
 from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
-
-from mailbox_manager.exceptions import EmailAlreadyKnownException
 
 logger = getLogger(__name__)
 
@@ -815,7 +814,7 @@ class Team(MP_Node, BaseModel):
             except AttributeError:
                 try:
                     role = self.accesses.filter(user=user).values("role")[0]["role"]
-                except (TeamAccess.DoesNotExist, IndexError):
+                except TeamAccess.DoesNotExist, IndexError:
                     role = None
 
             is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
@@ -902,7 +901,7 @@ class TeamAccess(BaseModel):
                     role = self._meta.model.objects.filter(
                         team=self.team_id, user=user
                     ).values("role")[0]["role"]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             is_team_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
@@ -998,17 +997,22 @@ class BaseInvitation(BaseModel):
         super().clean()
 
         # Check if a user already exists for the provided email
-        if User.objects.filter(email=self.email).exists():
+        if User.objects.filter(email__iexact=self.email).exists():
             raise EmailAlreadyKnownException
+
+    def refresh(self):
+        """A simple way to refresh invitation and move expiration date."""
+        self.clean()
+        self.updated_at = timezone.now()
 
     @property
     def is_expired(self):
         """Calculate if invitation is still valid or has expired."""
-        if not self.created_at:
+        if not self.updated_at:
             return None
 
         validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-        return timezone.now() > (self.created_at + validity_duration)
+        return timezone.now() > (self.updated_at + validity_duration)
 
     def _get_mail_subject(self):
         """Get the subject of the invitation."""
@@ -1096,7 +1100,7 @@ class Invitation(BaseInvitation):
                     role = self.team.accesses.filter(user=user).values("role")[0][
                         "role"
                     ]
-                except (self._meta.model.DoesNotExist, IndexError):
+                except self._meta.model.DoesNotExist, IndexError:
                     role = None
 
             can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
