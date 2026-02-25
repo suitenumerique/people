@@ -1,4 +1,4 @@
-import { VariantType } from '@openfun/cunningham-react';
+import { VariantType } from '@gouvfr-lasuite/cunningham-react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
@@ -50,8 +50,8 @@ const mockMailDomain: MailDomain = {
 };
 
 const toast = jest.fn();
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: () => ({
     toast,
   }),

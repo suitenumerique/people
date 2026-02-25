@@ -1,4 +1,4 @@
-import { VariantType, useToastProvider } from '@openfun/cunningham-react';
+import { VariantType, useToastProvider } from '@gouvfr-lasuite/cunningham-react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
@@ -11,8 +11,8 @@ import { useWhoAmI } from '../../hooks/useWhoAmI';
 import { Access } from '../../types';
 import { ModalRole } from '../ModalRole';
 
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: jest.fn(),
 }));
 jest.mock('../../hooks/useWhoAmI');

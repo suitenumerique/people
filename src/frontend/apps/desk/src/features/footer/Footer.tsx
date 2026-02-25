@@ -13,7 +13,7 @@ const BlueStripe = styled.div`
   position: absolute;
   height: 2px;
   width: 100%;
-  background: var(--c--theme--colors--primary-600);
+  background: var(--c--theme--colors--brand-600);
   top: 0;
 `;
 
@@ -82,7 +82,7 @@ export const Footer = () => {
                   gap:0.2rem;
                   transition: box-shadow 0.3s;
                   &:hover {
-                    box-shadow: 0px 2px 0 0 var(--c--theme--colors--greyscale-text);
+                    box-shadow: 0px 2px 0 0 var(--c--theme--colors--gray-text);
                   }
                 `}
               >
@@ -98,7 +98,7 @@ export const Footer = () => {
           $padding={{ top: 'tiny' }}
           $css="
             flex-wrap: wrap;
-            border-top: 1px solid var(--c--theme--colors--greyscale-200);
+            border-top: 1px solid var(--c--theme--colors--gray-200);
             column-gap: 1rem;
             row-gap: .5rem;
           "

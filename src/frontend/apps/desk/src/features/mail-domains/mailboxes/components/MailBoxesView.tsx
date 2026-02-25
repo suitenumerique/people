@@ -4,7 +4,7 @@ import {
   Input,
   Tooltip,
   VariantType,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +43,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
 
   return (
     <>
-      <div aria-label="Mail Domains panel" className="container">
+      <div aria-label="Mail Domains panel">
         <h3 style={{ fontWeight: 700, fontSize: '18px', marginBottom: 'base' }}>
           {t('Email addresses')}
         </h3>
@@ -98,7 +98,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
           <div
             className="hidden md:flex"
             style={{
-              background: colors['greyscale-200'],
+              background: colors['gray-200'],
               height: '32px',
               width: '1px',
             }}

@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,7 +51,8 @@ export const ModalRole = ({
       isOpen={true}
       leftActions={
         <Button
-          color="secondary"
+          color="neutral"
+          variant="secondary"
           fullWidth
           onClick={() => onClose()}
           disabled={isPending}
@@ -64,7 +65,7 @@ export const ModalRole = ({
       hideCloseButton
       rightActions={
         <Button
-          color="primary"
+          color="brand"
           fullWidth
           onClick={() => {
             updateMailDomainAccess({

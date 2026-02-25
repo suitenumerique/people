@@ -1,4 +1,4 @@
-import { DataGrid, SortModel } from '@openfun/cunningham-react';
+import { DataGrid, SortModel } from '@gouvfr-lasuite/cunningham-react';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -141,7 +141,7 @@ export function MailBoxesListView({
                 renderCell: ({ row }) => (
                   <Text
                     $weight={row.isCurrentUser ? '600' : '400'}
-                    $theme={row.isCurrentUser ? 'primary' : 'greyscale'}
+                    $theme={row.isCurrentUser ? 'primary' : 'gray'}
                   >
                     {row.email}
                   </Text>
@@ -154,7 +154,7 @@ export function MailBoxesListView({
                 renderCell: ({ row }) => (
                   <Text
                     $weight="500"
-                    $theme="greyscale"
+                    $theme="gray"
                     $css="text-transform: capitalize;"
                   >
                     {row.name}

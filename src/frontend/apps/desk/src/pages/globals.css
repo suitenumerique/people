@@ -8,7 +8,13 @@
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
   font-family: Marianne, sans-serif;
+  background-color: var(--c--contextuals--background--surface--tertiary);
+}
+
+.c__app {
+  height: 100vh !important;
 }
 
 * {
@@ -73,7 +79,22 @@ main ::-webkit-scrollbar-thumb:hover {
 .container {
   position: relative;
   width: 100%;
-  max-width: 960px;
-  margin: 20px auto;
+  max-width: 1200px;
+  margin: 12px auto;
   padding: 0 10px;
 }
+
+.c__button--with-icon--right {
+  padding: 0.7rem !important;
+}
+
+.regie__panel__container {
+  background-color: var(--c--contextuals--background--surface--primary);
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--c--contextuals--border--surface--primary); 
+}
+

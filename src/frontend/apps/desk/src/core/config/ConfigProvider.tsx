@@ -1,4 +1,4 @@
-import { Loader } from '@openfun/cunningham-react';
+import { Loader } from '@gouvfr-lasuite/cunningham-react';
 import { PropsWithChildren, useEffect } from 'react';
 
 import { Box } from '@/components';

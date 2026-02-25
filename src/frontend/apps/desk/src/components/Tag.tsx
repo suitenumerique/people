@@ -1,4 +1,4 @@
-import { Tooltip } from '@openfun/cunningham-react';
+import { Tooltip } from '@gouvfr-lasuite/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@/components';
@@ -18,17 +18,17 @@ const TagContent = ({ status }: TagContentProps) => {
   const textColor = {
     pending: colorsTokens()['info-600'],
     enabled: colorsTokens()['success-600'],
-    disabled: colorsTokens()['greyscale-600'],
+    disabled: colorsTokens()['gray-600'],
     action_required: colorsTokens()['warning-600'],
-    failed: colorsTokens()['danger-600'],
+    failed: colorsTokens()['error-600'],
   };
 
   const backgroundColor = {
     pending: colorsTokens()['info-100'],
     enabled: colorsTokens()['success-100'],
-    disabled: colorsTokens()['greyscale-100'],
+    disabled: colorsTokens()['gray-100'],
     action_required: colorsTokens()['warning-100'],
-    failed: colorsTokens()['danger-100'],
+    failed: colorsTokens()['error-100'],
   };
 
   return (

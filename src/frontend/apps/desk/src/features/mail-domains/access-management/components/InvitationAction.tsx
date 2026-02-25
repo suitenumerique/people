@@ -2,7 +2,7 @@ import {
   Button,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -115,7 +115,8 @@ export const InvitationAction = ({
                 });
                 setIsDropOpen(false);
               }}
-              color="primary-text"
+              color="brand"
+              variant="tertiary"
               size="small"
               fullWidth
               icon={

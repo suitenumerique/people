@@ -1,7 +1,7 @@
 import {
   Modal as CunninghamModal,
   ModalProps,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect } from 'react';
 
 import { HorizontalSeparator } from '@/components';

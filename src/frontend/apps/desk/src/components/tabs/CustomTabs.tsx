@@ -1,53 +1,52 @@
-import * as React from 'react';
-import { ReactNode } from 'react';
-import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
-
-import { Box } from '@/components';
-
+import { Tabs, TabList, Tab, TabPanel } from "react-aria-components";
+import { TabData } from "./types";
+import clsx from "clsx";
 import style from './custom-tabs.module.scss';
 
-type TabsOption = {
-  ariaLabel?: string;
-  label: string;
-  iconName?: string;
-  id?: string;
-  content: ReactNode;
+export type TabsProps = {
+  theme?: "brand" | "neutral";
+  orientation?: "horizontal" | "vertical";
+  tabs: TabData[];
+  defaultSelectedTab?: string;
+  fullWidth?: boolean;
 };
 
-type Props = {
-  tabs: TabsOption[];
-};
+export const CustomTabs = ({
+  orientation = "horizontal",
+  theme = 'brand',
+  tabs,
+  defaultSelectedTab,
+  fullWidth = false,
+}: TabsProps) => {
+  if (tabs.length === 0) {
+    return null;
+  }
 
-export const CustomTabs = ({ tabs }: Props) => {
   return (
-    <div className={style.customTabsContainer}>
-      <Tabs>
-        <TabList>
-          {tabs.map((tab) => {
-            const id = tab.id ?? tab.label;
-            return (
-              <Tab key={id} aria-label={tab.ariaLabel} id={id}>
-                <Box $direction="row" $gap="5px">
-                  {tab.iconName && (
-                    <span className="material-icons" aria-hidden="true">
-                      {tab.iconName}
-                    </span>
-                  )}
-                  {tab.label}
-                </Box>
-              </Tab>
-            );
-          })}
+    <div
+      className={clsx(style.root, {
+        [style.fullWidth]: fullWidth,
+        [style.neutral]: theme === 'neutral',
+        [style.orientationVertical]: orientation === 'vertical',
+      })}
+    >
+      <Tabs defaultSelectedKey={defaultSelectedTab}>
+        <TabList aria-label="menu">
+          {tabs.map((tab) => (
+            <Tab key={tab.id} id={tab.id}>
+              {tab.icon && <span aria-hidden="true" className="material-icons">{tab.icon}</span>}
+              <span>
+                <span className="react-aria-Tab__title">{tab.label}</span>
+               { tab.subtext && orientation === 'vertical' && <span className="react-aria-Tab__subtext">{tab.subtext}</span> }
+              </span>
+            </Tab>
+          ))}
         </TabList>
-
-        {tabs.map((tab) => {
-          const id = tab.id ?? tab.label;
-          return (
-            <TabPanel key={id} id={id}>
-              {tab.content}
-            </TabPanel>
-          );
-        })}
+        {tabs.map((tab) => (
+          <TabPanel key={tab.id} id={tab.id}>
+            {tab.content}
+          </TabPanel>
+        ))}
       </Tabs>
     </div>
   );

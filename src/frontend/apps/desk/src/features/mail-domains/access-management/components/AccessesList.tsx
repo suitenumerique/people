@@ -1,5 +1,5 @@
 import { QuickSearchItemTemplate, UserRow } from '@gouvfr-lasuite/ui-kit';
-import { SortModel, usePagination } from '@openfun/cunningham-react';
+import { SortModel, usePagination } from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -169,7 +169,7 @@ export const AccessesList = ({
                     <Text
                       $size="small"
                       $margin={{ left: '4px' }}
-                      $color={colorsTokens()['greyscale-500']}
+                      $color={colorsTokens()['gray-500']}
                     >
                       {t('on pending')}
                     </Text>

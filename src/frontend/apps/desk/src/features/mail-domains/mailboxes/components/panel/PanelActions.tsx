@@ -5,7 +5,7 @@ import {
   VariantType,
   useModal,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -97,7 +97,8 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
                 handleUpdateMailboxStatus();
               }
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 {isEnabled ? 'lock' : 'lock_open'}
@@ -118,7 +119,8 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
                 handleUpdateMailboxStatus();
               }
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             disabled={!isEnabled}
             icon={
               <span className="material-icons" aria-hidden="true">
@@ -126,7 +128,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
               </span>
             }
           >
-            <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
+            <Text $theme={isEnabled ? 'primary' : 'gray'}>
               {t('Configure mailbox')}
             </Text>
           </Button>
@@ -136,7 +138,8 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
               setIsDropOpen(false);
               handleResetMailboxPassword();
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             disabled={!isEnabled}
             icon={
               <span className="material-icons" aria-hidden="true">
@@ -144,7 +147,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
               </span>
             }
           >
-            <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
+            <Text $theme={isEnabled ? 'primary' : 'gray'}>
               {t('Reset password')}
             </Text>
           </Button>
@@ -163,13 +166,17 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
         title={<Text $size="h3">{t('Disable mailbox')}</Text>}
         size={ModalSize.MEDIUM}
         leftActions={
-          <Button color="secondary" onClick={disableModal.close}>
+          <Button
+            color="neutral"
+            variant="secondary"
+            onClick={disableModal.close}
+          >
             {t('Cancel')}
           </Button>
         }
         rightActions={
           <Box $direction="row" $justify="flex-end" $gap="0.5rem">
-            <Button color="danger" onClick={handleUpdateMailboxStatus}>
+            <Button color="error" onClick={handleUpdateMailboxStatus}>
               {t('Disable')}
             </Button>
           </Box>

@@ -1,9 +1,9 @@
-import { Button, DataGrid } from '@openfun/cunningham-react';
+import { Button, DataGrid } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Text } from '@/components';
+import { Icon, Text } from '@/components';
 import { TeamsOrdering, useTeams } from '@/features/teams/team-management';
 
 interface TeamsListViewProps {
@@ -48,11 +48,16 @@ export function TeamsListView({ querySearch }: TeamsListViewProps) {
               id: 'actions',
               renderCell: ({ row }) => (
                 <Button
-                  color="tertiary"
+                  size="small"
+                  theme="brand"
+                  variant="secondary"
+                  iconPosition="right"
+                  icon={<span className="material-icons">arrow_forward</span>}
                   onClick={() => router.push(`/teams/${row.id}`)}
                   aria-label={t('View team details')}
                 >
-                  <span className="material-icons">chevron_right</span>
+                  {t('Open')}
+                  
                 </Button>
               ),
             },

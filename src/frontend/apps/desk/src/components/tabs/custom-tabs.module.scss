@@ -1,69 +1,135 @@
-.customTabsContainer {
+.root {
   display: flex;
-  width: 100%;
-  margin-top: 30px;
+
+  &.fullWidth {
+    :global(.react-aria-Tabs) {
+      width: 100%;
+    }
+
+    :global(.react-aria-Tab) {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+  }
 
   :global(.react-aria-Tabs) {
-    width: 100%;
     display: flex;
-    flex: 1;
 
-    &[data-orientation='horizontal'] {
+    &[data-orientation="horizontal"] {
       flex-direction: column;
     }
   }
 
   :global(.react-aria-TabList) {
     display: flex;
-    width: 100%;
-    gap: 25px;
   }
 
   :global(.react-aria-Tab) {
-    display: flex;
-    padding: 0 10px 10px 10px;
+    padding: 10px;
     cursor: pointer;
+    font-weight: 500;
+    max-width: 300px;
+    color: var(--c--contextuals--content--semantic--brand--tertiary);
     outline: none;
     position: relative;
-    color: var(--c--theme--colors--secondary-900);
     transition: color 200ms;
-    --border-color: transparent;
     forced-color-adjust: none;
+    display: flex;
+    align-items: center;
+    gap: var(--c--globals--spacings--sm);
+    border-bottom: 1px solid var(--c--contextuals--border--surface--primary);
 
     &[data-hovered] {
-      background-color: #fff;
-      color: var(--text-color-hover);
+      background-color: var(
+        --c--contextuals--background--semantic--overlay--primary
+      );
     }
 
     &[data-selected] {
-      font-weight: 500;
-      color: var(--c--theme--colors--primary-text);
-      border-bottom: 2px solid var(--c--theme--colors--primary-text);
+      padding-bottom: 9px;
+      border-bottom: 2px solid
+        var(--c--contextuals--content--semantic--brand--tertiary);
     }
 
     &[data-disabled] {
-      color: var(--text-color-disabled);
+      color: var(--c--theme--colors--gray-400);
       &[data-selected] {
-        --border-color: var(--text-color-disabled);
+        --border-color: var(--c--theme--colors--gray-400);
       }
     }
 
     &[data-focus-visible]:after {
-      content: '';
+      content: "";
       position: absolute;
       inset: 4px;
       border-radius: 4px;
-      border: 2px solid var(--focus-ring-color);
+      border: 2px solid var(--c--theme--colors--brand-600);
     }
   }
 
   :global(.react-aria-TabPanel) {
-    margin-top: 15px;
+    margin-top: 4px;
+    padding: 10px;
     border-radius: 4px;
     outline: none;
 
     &[data-focus-visible] {
-      outline: 2px solid var(--focus-ring-color);
+      outline: 2px solid var(--c--theme--colors--brand-600);
     }
   }
+
+  &.neutral {
+    :global(.react-aria-Tab) {
+      color: var(--c--contextuals--content--semantic--neutral--tertiary);
+      &[data-selected] {
+        border-color: var(--c--contextuals--content--semantic--neutral--tertiary);
+      }
+    }
+  }
+
+  &.orientationVertical {
+    :global(.react-aria-Tabs) {
+      width: 100%;
+    }
+    :global(.react-aria-TabList) {
+      width: 100%;
+      flex-direction: column;
+      gap: 10px;
+    }
+    :global(.react-aria-Tab) {
+      color: var(--c--contextuals--content--semantic--neutral--primary);
+      border-radius: 4px;
+      border: none !important;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      font-size: var(--c--globals--font--sizes--sm);
+      line-height: var(--c--globals--font--sizes--md);
+
+      &[data-hovered] {
+        background-color: var(
+          --c--contextuals--background--semantic--overlay--primary
+        );
+      }
+
+      :global(.react-aria-Tab__subtext) {
+        display: block;
+        font-weight: 400;
+        line-height: var(--c--globals--font--sizes--md);
+        font-size: var(--c--globals--font--sizes--xs);
+        color: var(--c--contextuals--content--semantic--neutral--secondary);
+      }
+
+      &[data-selected] {
+        font-weight: 700;
+        padding-bottom: 10px;
+        background-color: var(
+          --c--contextuals--background--semantic--overlay--primary
+        );
+        border: none;
+      }
+    }
+
+  }
+
 }

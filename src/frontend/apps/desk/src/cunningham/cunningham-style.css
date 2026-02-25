@@ -1,6 +1,6 @@
-@import url('@openfun/cunningham-react/icons');
-@import url('@openfun/cunningham-react/style');
-@import url('@openfun/cunningham-react/fonts');
+@import url('@gouvfr-lasuite/cunningham-react/icons');
+@import url('@gouvfr-lasuite/cunningham-react/style');
+@import url('@gouvfr-lasuite/cunningham-react/fonts');
 @import url('./cunningham-tokens.css');
 @import url('./cunningham-custom-tokens.css');
 @import url('../assets/fonts/Marianne/Marianne-font.css');
@@ -24,16 +24,16 @@
 }
 
 .labelled-box label {
-  color: var(--c--theme--colors--greyscale-500);
+  color: var(--c--contextuals--content--semantic--neutral--primary);
   top: 1px;
 }
 
 .labelled-box--disabled label {
-  color: var(--c--components--forms-labelledbox--label-color--small-disabled);
+  color: var(--c--contextuals--content--semantic--neutral--tertiary);
 }
 
 .labelled-box label.placeholder {
-  top: 12px;
+  top: 11px;
 }
 
 .c__field :not(.c__textarea__wrapper, div) .labelled-box label.placeholder {
@@ -51,8 +51,8 @@
   transition: all var(--c--theme--transitions--duration)
     var(--c--theme--transitions--ease-out);
   gap: 0.5rem;
-  color: var(--c--theme--colors--greyscale-600);
-  background-color: var(--c--theme--colors--greyscale-050);
+  color: var(--c--theme--colors--gray-600);
+  background-color: var(--c--theme--colors--gray-050);
 }
 
 @media screen and (width <= 768px) {
@@ -93,7 +93,7 @@
 }
 
 .c__input__wrapper--disabled .c__input {
-  color: var(--c--components--forms-input--value-color--disabled);
+  color: var(--c--contextuals--content--semantic--neutral--tertiary);
 }
 
 .c__input__wrapper--error .c__input {
@@ -239,17 +239,17 @@ input:-webkit-autofill:focus {
 
 .c__datagrid__table__container > table tbody tr {
   border: none;
-  border-top: 1px var(--c--theme--colors--greyscale-100) solid;
-  border-bottom: 1px var(--c--theme--colors--greyscale-100) solid;
+  border-top: 1px solid var(--c--contextuals--border--surface--primary);
+  border-bottom: 1px solid var(--c--contextuals--border--surface--primary);
 }
 
 .c__datagrid__table__container > table tbody tr:hover {
-  background-color: var(--c--theme--colors--greyscale-050);
+  background-color: var(--c--contextuals--background--surface--secondary);
 }
 
 .c__datagrid__table__container > table tbody {
   background-color: var(--c--components--datagrid--body--background-color);
-  color: var(--c--theme--colors--greyscale-900);
+  color: var(--c--theme--colors--gray-900);
 }
 
 .c__datagrid__table__container > table {
@@ -286,7 +286,7 @@ input:-webkit-autofill:focus {
   background-color: var(
     --c--components--datagrid--pagination--background-color-active
   );
-  color: var(--c--theme--colors--greyscale-800);
+  color: var(--c--theme--colors--gray-800);
 }
 
 .c__pagination__list .c__button--tertiary-text:disabled {
@@ -345,7 +345,7 @@ input:-webkit-autofill:focus {
 }
 
 .c__checkbox.c__checkbox--disabled .c__field__text {
-  color: var(--c--theme--colors--greyscale-600);
+  color: var(--c--theme--colors--gray-600);
 }
 
 .c__switch.c__checkbox--disabled .c__switch__rail {
@@ -353,7 +353,7 @@ input:-webkit-autofill:focus {
 }
 
 .c__checkbox.c__checkbox--disabled .c__checkbox__label {
-  color: var(--c--theme--colors--greyscale-400);
+  color: var(--c--theme--colors--gray-400);
 }
 
 .c__radio input::before {
@@ -577,7 +577,7 @@ input:-webkit-autofill:focus {
 .c__modal__close button .material-icons {
   padding: 0;
   font-size: 24px;
-  color: var(--c--theme--colors--greyscale-600);
+  color: var(--c--theme--colors--gray-600);
 }
 
 .c__modal__close .c__button {
@@ -589,7 +589,7 @@ input:-webkit-autofill:focus {
 }
 
 .c__modal__content {
-  color: var(--c--theme--colors--greyscale-600) !important;
+  color: var(--c--theme--colors--gray-600) !important;
 }
 
 .c__modal__title {

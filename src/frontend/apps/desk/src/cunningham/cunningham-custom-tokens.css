@@ -23,7 +23,7 @@
   * Select
   **/
   --c--components--forms-select--value-color--disabled: var(
-    --c--theme--colors--greyscale-400
+    --c--theme--colors--gray-400
   );
 
   /**

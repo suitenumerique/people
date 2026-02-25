@@ -5,7 +5,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -228,7 +228,7 @@ export const ModalCreateAlias = ({
               <Text $size="md" $weight="bold">
                 {t('Alias configuration')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t(
                   'An alias allows you to redirect emails to one or more addresses.',
                 )}
@@ -370,7 +370,8 @@ export const ModalCreateAlias = ({
                             <td style={{ textAlign: 'right' }}>
                               <Button
                                 type="button"
-                                color="tertiary"
+                                color="neutral"
+                                variant="tertiary"
                                 onClick={() => removeDestination(index)}
                                 aria-label={t('Remove destination')}
                                 icon={<Icon iconName="delete" />}
@@ -388,7 +389,7 @@ export const ModalCreateAlias = ({
         </FormProvider>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Cancel')}
         </Button>
       ),
@@ -427,7 +428,7 @@ export const ModalCreateAlias = ({
         {isSubmitting && (
           <Box $align="center" $padding="md">
             <Loader />
-            <Text $theme="greyscale" $variation="600" $margin={{ top: 'sm' }}>
+            <Text $theme="gray" $variation="600" $margin={{ top: 'sm' }}>
               {t('Creating alias...')}
             </Text>
           </Box>

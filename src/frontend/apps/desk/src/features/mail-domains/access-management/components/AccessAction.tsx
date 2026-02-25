@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -110,7 +110,8 @@ export const AccessAction = ({
                   setIsModalRoleOpen(true);
                   setIsDropOpen(false);
                 }}
-                color="primary-text"
+                color="brand"
+                variant="tertiary"
                 size="small"
                 fullWidth
                 icon={
@@ -129,7 +130,8 @@ export const AccessAction = ({
                   setIsModalDeleteOpen(true);
                   setIsDropOpen(false);
                 }}
-                color="primary-text"
+                color="brand"
+                variant="tertiary"
                 size="small"
                 fullWidth
                 icon={

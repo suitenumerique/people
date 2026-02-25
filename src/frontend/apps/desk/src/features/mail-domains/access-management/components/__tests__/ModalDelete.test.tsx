@@ -1,4 +1,4 @@
-import { VariantType, useToastProvider } from '@openfun/cunningham-react';
+import { VariantType, useToastProvider } from '@gouvfr-lasuite/cunningham-react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
@@ -15,8 +15,8 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: jest.fn(),
 }));
 

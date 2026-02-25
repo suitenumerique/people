@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { t } from 'i18next';
 import { useRouter } from 'next/navigation';
 
@@ -66,14 +66,19 @@ export const ModalDelete = ({
       closeOnClickOutside
       hideCloseButton
       leftActions={
-        <Button color="secondary" fullWidth onClick={() => onClose()}>
+        <Button
+          color="neutral"
+          variant="secondary"
+          fullWidth
+          onClick={() => onClose()}
+        >
           {t('Cancel')}
         </Button>
       }
       onClose={onClose}
       rightActions={
         <Button
-          color="primary"
+          color="brand"
           fullWidth
           onClick={() => {
             removeMailDomainAccess({
@@ -131,7 +136,7 @@ export const ModalDelete = ({
           $padding="big"
           $direction="row"
           $gap="0.5rem"
-          $background={colorsTokens()['primary-150']}
+          $background={colorsTokens()['brand-150']}
           $theme="primary"
         >
           <IconUser width={20} height={20} aria-hidden="true" />

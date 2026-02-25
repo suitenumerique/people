@@ -4,7 +4,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -132,7 +132,7 @@ export const ModalRequiredActionDomain = ({
         </Button>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Close')}
         </Button>
       ),

@@ -4,7 +4,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -342,7 +342,7 @@ export const ModalEditAlias = ({
               <Text $size="md" $weight="bold">
                 {t('Alias configuration')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t('Manage the destination email addresses for this alias.')}
               </Text>
             </Box>
@@ -472,7 +472,8 @@ export const ModalEditAlias = ({
                             <td style={{ textAlign: 'right' }}>
                               <Button
                                 type="button"
-                                color="tertiary"
+                                color="neutral"
+                                variant="tertiary"
                                 onClick={() => removeDestination(destination)}
                                 aria-label={t('Remove destination')}
                                 icon={<Icon iconName="delete" />}
@@ -491,7 +492,7 @@ export const ModalEditAlias = ({
         </>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Close')}
         </Button>
       ),
@@ -500,12 +501,10 @@ export const ModalEditAlias = ({
           {destinations.length > 0 && (
             <Button
               type="button"
-              color="danger"
+              color="error"
               onClick={handleRemoveAllDestinations}
               disabled={isSubmitting}
-              icon={
-                <Icon iconName="delete" $theme="greyscale" $variation="000" />
-              }
+              icon={<Icon iconName="delete" $theme="gray" $variation="000" />}
             >
               {t('Delete this alias')}
             </Button>
@@ -534,7 +533,7 @@ export const ModalEditAlias = ({
         {isSubmitting && (
           <Box $align="center" $padding="md">
             <Loader />
-            <Text $theme="greyscale" $variation="600" $margin={{ top: 'sm' }}>
+            <Text $theme="gray" $variation="600" $margin={{ top: 'sm' }}>
               {t('Updating alias...')}
             </Text>
           </Box>
@@ -548,7 +547,8 @@ export const ModalEditAlias = ({
         hideCloseButton
         leftActions={
           <Button
-            color="secondary"
+            color="neutral"
+            variant="secondary"
             fullWidth
             onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
           >
@@ -557,7 +557,7 @@ export const ModalEditAlias = ({
         }
         rightActions={
           <Button
-            color="danger"
+            color="error"
             fullWidth
             onClick={confirmModal.onConfirm}
             disabled={isSubmitting}

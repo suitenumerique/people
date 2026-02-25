@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -114,7 +114,7 @@ export const ModalDomainAccessesManagement = ({
     <Modal
       isOpen
       leftActions={
-        <Button color="secondary" fullWidth onClick={onClose}>
+        <Button color="neutral" variant="secondary" fullWidth onClick={onClose}>
           {t('Cancel')}
         </Button>
       }
@@ -123,7 +123,7 @@ export const ModalDomainAccessesManagement = ({
       hideCloseButton
       rightActions={
         <Button
-          color="primary"
+          color="brand"
           fullWidth
           disabled={!selectedMembers.length}
           onClick={() => void handleValidate()}

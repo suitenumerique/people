@@ -1,6 +1,8 @@
 {
   "en": {
     "translation": {
+      "Configure domain": "Configure domain",
+      "Open domain options menu": "Open domain options menu",
       "copy done": "Copy done",
       "{{count}} member_many": "{{count}} members",
       "{{count}} member_one": "{{count}} member",
@@ -47,6 +49,7 @@
       "Close the modal": "Fermer la modale",
       "Close the teams panel": "Fermer le panneau des groupes",
       "Compliance status": "État de conformité",
+      "Configure domain": "Configurer le domaine",
       "Configure mailbox": "Configurer la boîte mail",
       "Configure the new user.": "Configurer le nouvel utilisateur.",
       "Confirm deletion": "Confirmer la suppression",
@@ -163,6 +166,7 @@
       "OK": "OK",
       "Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.": "Une fois le domaine ajouté, un administrateur devra le valider. En attendant, vous pouvez quand même commencer à ajouter des adresses e-mail.",
       "Open a modal to enable or disable mailbox": "Ouvre une modale pour activer ou désactiver la boîte mail",
+      "Open domain options menu": "Ouvrir le menu des options du domaine",
       "Open the access options modal": "Ouvrir la fenêtre modale des options d'accès",
       "Open the header menu": "Ouvrir le menu d'en-tête",
       "Open the mail domains panel": "Ouvrir le panneau des domaines de messagerie",

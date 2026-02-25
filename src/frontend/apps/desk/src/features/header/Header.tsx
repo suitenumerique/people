@@ -1,14 +1,13 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 import { default as IconRegie } from '@/assets/logo-regie.svg?url';
 import { Icon, StyledLink, Text } from '@/components/';
-import { ButtonLogin } from '@/core/auth';
 import { UserInfo } from '@/core/auth/UserInfo';
 import { useCunninghamTheme } from '@/cunningham';
-import { LanguagePicker } from '@/features/language';
 import { useLeftPanelStore } from '@/features/left-panel';
+import { TogglePanelButton } from '@/features/left-panel/components/TogglePanelButton';
 
 import { LaGaufre } from './LaGaufre';
 export const HEADER_HEIGHT = '52px';
@@ -23,10 +22,10 @@ export const Header = () => {
 
   return (
     <header
+    className="container"
       style={{
         display: 'flex',
-        position: 'fixed',
-        top: 0,
+        top: '0px',
         left: 0,
         right: 0,
         zIndex: 1000,
@@ -35,9 +34,6 @@ export const Header = () => {
         justifyContent: 'space-between',
         height: 'var(--header-height)',
         minHeight: 'var(--header-height)',
-        padding: `0 ${spacings['base']}`,
-        backgroundColor: colors['greyscale-000'],
-        borderBottom: `1px solid ${colors['greyscale-200']}`,
       }}
     >
       <Button
@@ -45,7 +41,8 @@ export const Header = () => {
         size="medium"
         onClick={() => togglePanel()}
         aria-label={t('Open the header menu')}
-        color="tertiary-text"
+        color="neutral"
+        variant="tertiary"
         icon={
           <Icon
             $variation="800"
@@ -54,63 +51,57 @@ export const Header = () => {
           />
         }
       />
-      <StyledLink href="/">
-        <div
+      <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: spacings['3xs'],
+            borderRadius: '8px',
+            backgroundColor: 'var(--c--contextuals--background--surface--primary)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid var(--c--contextuals--border--surface--primary)',
+            padding: '4px',
+            flexDirection: 'row',
+            boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.05)',
           }}
         >
-          <Image priority src={IconRegie} alt={t('La régie Logo')} width={25} />
+          <TogglePanelButton />
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacings['xs'],
+              overflow: 'hidden',
+              maxWidth: isPanelOpen ? 0 : 120,
+              opacity: isPanelOpen ? 0 : 1,
+              transition: 'max-width 0.3s ease, opacity 0.2s ease 0.3s',
             }}
           >
-            <Text
-              as="h2"
-              style={{ color: '#000091', zIndex: 1, fontSize: '1.30rem' }}
-            >
-              {t('La Régie')}
-            </Text>
-            <Text
-              style={{
-                padding: '1px 8px',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                color: colors['primary-500'],
-                borderRadius: '12px',
-                backgroundColor: colors['primary-200'],
-              }}
-            >
-              BETA
-            </Text>
+            <StyledLink href="/">
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Image priority src={IconRegie} alt="Régie Logo" height={34} />
+              </div>
+            </StyledLink>
           </div>
-        </div>
-      </StyledLink>
-      <div className="md:hidden">
+      </div>
+{/*      <div className="md:hidden">
         <div
           style={{ display: 'flex', flexDirection: 'row', gap: spacings['sm'] }}
         >
           <LaGaufre />
         </div>
-      </div>
-      <div className="hidden md:block">
+      </div>*/}
+      <div className="">
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: spacings['sm'],
+            borderRadius: '8px',
+            backgroundColor: 'var(--c--contextuals--background--surface--primary)',
+            border: '1px solid var(--c--contextuals--border--surface--primary)',
+            padding: '4px',
+            gap: '4px',
             flexDirection: 'row',
+            boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.05)',
           }}
         >
           <UserInfo />
-          <ButtonLogin />
-          <LanguagePicker />
           <LaGaufre />
         </div>
       </div>

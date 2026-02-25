@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -21,7 +21,7 @@ const Page: NextPageWithLayout = () => {
     <Box $align="center" $margin="auto" $height="70vh" $gap="2rem">
       <Icon404 role="img" aria-label={t('Image 404 page not found')} />
 
-      <Text $size="h2" $weight="700" $theme="greyscale" $variation="900">
+      <Text $size="h2" $weight="700" $theme="gray" $variation="900">
         {t('Ouch!')}
       </Text>
 

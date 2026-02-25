@@ -1,41 +1,20 @@
+import clsx from 'clsx';
 import { css } from 'styled-components';
 
 import { Text, TextType } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
 
 type IconProps = TextType & {
   iconName: string;
 };
-export const Icon = ({ iconName, ...textProps }: IconProps) => {
-  return (
-    <Text $isMaterialIcon {...textProps}>
-      {iconName}
-    </Text>
-  );
-};
-
-interface IconBGProps extends TextType {
-  iconName: string;
-}
-
-export const IconBG = ({ iconName, ...textProps }: IconBGProps) => {
-  const { colorsTokens } = useCunninghamTheme();
-
+export const Icon = ({
+  iconName,
+  ...textProps
+}: IconProps) => {
   return (
     <Text
-      $isMaterialIcon
-      $size="36px"
-      $theme="primary"
-      $variation="600"
-      $background={colorsTokens()['primary-050']}
-      $css={`
-        border: 1px solid ${colorsTokens()['primary-200']}; 
-        user-select: none;
-      `}
-      $radius="12px"
-      $padding="4px"
-      $margin="auto"
       {...textProps}
+      aria-hidden="true"
+      className={clsx('material-icons', textProps.className)}
     >
       {iconName}
     </Text>
@@ -48,16 +27,15 @@ type IconOptionsProps = TextType & {
 
 export const IconOptions = ({ isHorizontal, ...props }: IconOptionsProps) => {
   return (
-    <Text
+    <Icon
       {...props}
-      $isMaterialIcon
-      $theme="primary"
+      aria-hidden="true"
+      iconName={isHorizontal ? 'more_horiz' : 'more_vert'}
       $css={css`
+        color: var(--c--contextuals--content--semantic--brand--tertiary);
         user-select: none;
         ${props.$css}
       `}
-    >
-      {isHorizontal ? 'more_horiz' : 'more_vert'}
-    </Text>
+    />
   );
 };

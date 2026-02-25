@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
@@ -140,7 +140,8 @@ export const ModalAddMembers = ({
       isOpen
       leftActions={
         <Button
-          color="secondary"
+          color="neutral"
+          variant="secondary"
           fullWidth
           onClick={onClose}
           disabled={isPending}
@@ -153,7 +154,7 @@ export const ModalAddMembers = ({
       hideCloseButton
       rightActions={
         <Button
-          color="primary"
+          color="brand"
           fullWidth
           disabled={!selectedMembers.length || isPending}
           onClick={() => void handleValidate()}
@@ -166,7 +167,7 @@ export const ModalAddMembers = ({
         <Box $align="center" $gap="1rem">
           <IconAddMember
             width={48}
-            color={colorsTokens()['primary-text']}
+            color={colorsTokens()['brand-600']}
             aria-hidden="true"
           />
           <Text $size="h3" $margin="none">

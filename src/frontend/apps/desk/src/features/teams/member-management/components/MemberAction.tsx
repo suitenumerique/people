@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,7 +47,8 @@ export const MemberAction = ({
               setIsModalRoleOpen(true);
               setIsDropOpen(false);
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 edit
@@ -62,7 +63,8 @@ export const MemberAction = ({
               setIsModalDeleteOpen(true);
               setIsDropOpen(false);
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 delete

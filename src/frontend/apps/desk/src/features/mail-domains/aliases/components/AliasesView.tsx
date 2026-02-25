@@ -1,4 +1,4 @@
-import { Button, Input, Tooltip } from '@openfun/cunningham-react';
+import { Button, Input, Tooltip } from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,7 @@ export function AliasesView({ mailDomain }: { mailDomain: MailDomain }) {
 
   return (
     <>
-      <div aria-label="Aliases panel" className="container">
+      <div aria-label="Aliases panel">
         <h3 style={{ fontWeight: 700, fontSize: '18px', marginBottom: 'base' }}>
           {t('Aliases')}
         </h3>
@@ -83,7 +83,7 @@ export function AliasesView({ mailDomain }: { mailDomain: MailDomain }) {
           <div
             className="hidden md:flex"
             style={{
-              background: colors['greyscale-200'],
+              background: colors['gray-200'],
               height: '32px',
               width: '1px',
             }}

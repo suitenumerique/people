@@ -1,16 +1,16 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, CustomTabs, Tag, Text } from '@/components';
+import { Box, CustomTabs, Icon, Tag, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { AliasesView } from '@/features/mail-domains/aliases';
 import { useAliases } from '@/features/mail-domains/aliases/api/useAliases';
-import MailDomainsLogo from '@/features/mail-domains/assets/mail-domains-logo.svg';
 import {
   MailDomain,
   MailDomainAccessesAction,
+  MailDomainLogoCircle,
   ModalRequiredActionDomain,
   Role,
 } from '@/features/mail-domains/domains';
@@ -64,27 +64,24 @@ export const MailDomainView = ({
           $padding={{ horizontal: 'md' }}
           $background="white"
           $justify="space-between"
-          $gap="8px"
-          $align="center"
-          $radius="4px"
-          $direction="row"
-          $css={`
-          border: 1px solid ${colorsTokens()['greyscale-200']};
-        `}
+          className="regie__panel__container"
         >
-          <Box $direction="row" $align="center" $gap="8px">
+          <Box $direction="row"  $justify="space-between" $align="center">
+            <Box $direction="row" $align="center" $gap="8px">
             <Button
               onClick={() => router.push('/mail-domains/')}
               icon={<span className="material-icons">arrow_back</span>}
               iconPosition="left"
-              color="secondary"
+              theme="tertiary"
+              variant="bordered"
               style={{
                 fontWeight: '500',
+                marginRight: '12px',
               }}
             >
               {t('Domains')}
             </Button>
-            <MailDomainsLogo aria-hidden="true" />
+            <MailDomainLogoCircle size={24} />
             <Text as="h5" $size="h5" $weight="bold" $theme="primary">
               {mailDomain.name}
             </Text>
@@ -108,33 +105,18 @@ export const MailDomainView = ({
                 ></Tag>
               </button>
             )}
-          </Box>
-          <Box $align="center">
+            </Box>
+
             <MailDomainAccessesAction
               mailDomain={mailDomain}
               currentRole={currentRole}
+              onConfigureDomain={handleShowModal}
             />
+
           </Box>
-        </Box>
-
-        {showModal && (
-          <ModalRequiredActionDomain
-            mailDomain={mailDomain}
-            onMailDomainUpdate={onMailDomainUpdate ?? (() => {})}
-            closeModal={closeModal}
-          />
-        )}
-
-        <Box
-          $padding={{ horizontal: 'md' }}
-          $margin={{ top: 'md' }}
-          $background="white"
-          $radius="4px"
-          $css={`
-          border: 1px solid ${colorsTokens()['greyscale-200']};
-        `}
-        >
           <CustomTabs
+            fullWidth={true}
+            theme="neutral"
             tabs={[
               {
                 id: 'mailboxes',
@@ -150,7 +132,16 @@ export const MailDomainView = ({
               },
             ]}
           />
+
         </Box>
+
+        {showModal && (
+          <ModalRequiredActionDomain
+            mailDomain={mailDomain}
+            onMailDomainUpdate={onMailDomainUpdate ?? (() => {})}
+            closeModal={closeModal}
+          />
+        )}
       </Box>
     </>
   );

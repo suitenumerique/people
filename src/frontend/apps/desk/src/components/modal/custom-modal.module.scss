@@ -23,7 +23,7 @@
   border: none;
   font-size: 34px;
   cursor: pointer;
-  color: var(--c--theme--colors--greyscale-700);
+  color: var(--c--theme--colors--gray-700);
 }
 
 .content {
@@ -42,7 +42,7 @@
   padding: 0 var(--c--theme--spacings--md);
   padding-top: 0;
   align-items: center;
-  border-top: 1px solid var(--c--theme--colors--greyscale-200);
+  border-top: 1px solid var(--c--theme--colors--gray-200);
 }
 
 .progressBar {
@@ -63,9 +63,9 @@
   width: auto;
   flex-grow: 1;
   border-radius: 4px;
-  background-color: var(--c--theme--colors--primary-200);
+  background-color: var(--c--theme--colors--brand-200);
   &.active {
-    background-color: var(--c--theme--colors--primary-800);
+    background-color: var(--c--theme--colors--brand-800);
   }
 }
 

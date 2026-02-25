@@ -15,7 +15,7 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
     <Box $display="flex" $gap="4px">
       <label
         htmlFor={label}
-        style={{ fontWeight: 500, color: colorsTokens()['greyscale-900'] }}
+        style={{ fontWeight: 500, color: colorsTokens()['gray-900'] }}
       >
         {label} {required && '*'}
       </label>
@@ -32,9 +32,9 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
           padding: '12px',
           borderRadius: '4px',
           fontSize: '14px',
-          border: `1px solid ${error ? colorsTokens()['danger-500'] : colorsTokens()['greyscale-400']}`,
-          background: colorsTokens()['greyscale-050'],
-          color: colorsTokens()['greyscale-900'],
+          border: `1px solid ${error ? colorsTokens()['error-500'] : colorsTokens()['gray-400']}`,
+          background: colorsTokens()['gray-050'],
+          color: colorsTokens()['gray-900'],
         }}
         {...props}
       />

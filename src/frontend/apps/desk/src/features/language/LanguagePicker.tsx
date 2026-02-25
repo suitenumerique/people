@@ -1,10 +1,10 @@
-import { Select } from '@openfun/cunningham-react';
+import { Select } from '@gouvfr-lasuite/cunningham-react';
 import { Settings } from 'luxon';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { Box, Text } from '@/components/';
+import { Box, Icon, Text } from '@/components/';
 import { LANGUAGES_ALLOWED } from '@/i18n/conf';
 
 const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
@@ -48,16 +48,14 @@ export const LanguagePicker = () => {
           $gap="0.7rem"
           $align="center"
         >
-          <Text
-            $isMaterialIcon
+          <Icon
+            iconName="translate"
             $size="1rem"
-            $theme="primary"
+            $theme="brand"
             $weight="bold"
             $variation="800"
-          >
-            translate
-          </Text>
-          <Text $theme="primary" $weight="500" $variation="800">
+          />
+          <Text $theme="brand" $weight="500" $variation="800">
             {LANGUAGES_ALLOWED[lang]}
           </Text>
         </Box>

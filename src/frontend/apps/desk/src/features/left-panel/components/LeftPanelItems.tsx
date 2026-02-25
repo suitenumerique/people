@@ -1,20 +1,16 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { Icon, Text } from '@/components';
 import { SeparatedSection } from '@/components/separators';
 import { useAuthStore } from '@/core/auth';
-import { useCunninghamTheme } from '@/cunningham';
 import { useLeftPanelStore } from '@/features/left-panel';
 
 export const LeftPanelItems = () => {
   const { t } = useTranslation();
   const { closePanel } = useLeftPanelStore();
-  const { colorsTokens } = useCunninghamTheme();
   const { userData } = useAuthStore();
-
-  const colors = colorsTokens();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -22,7 +18,7 @@ export const LeftPanelItems = () => {
   const defaultQueries = [
     {
       icon: 'group',
-      label: t('Teams'),
+      label: t('Groups'),
       targetQuery: '/teams',
       abilities: userData?.abilities?.teams.can_view,
     },
@@ -36,7 +32,9 @@ export const LeftPanelItems = () => {
 
   const onSelectQuery = (query: string) => {
     router.push(query);
-    closePanel();
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width: 768px)').matches) {
+      closePanel();
+    }
   };
 
   return (
@@ -57,34 +55,21 @@ export const LeftPanelItems = () => {
           pathname.startsWith(`${query.targetQuery}/`);
 
         return (
-          <SeparatedSection
-            key={query.label}
-            showSeparator={defaultQueries.length - 1 > index}
-          >
             <Button
+              color="neutral"
+              variant="tertiary"
+              style={{backgroundColor: isActive ? 'var(--c--contextuals--background--semantic--overlay--primary)' : '', fontWeight: isActive ? 'bold' : '500', marginBottom: '4px'}}
+              key={query.label}
               data-testid={`${query.label} button`}
               aria-label={`${query.label} button`}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => onSelectQuery(query.targetQuery)}
-              style={{
-                gap: 'var(--c--theme--spacings--xs)',
-                margin: '10px 0',
-                cursor: 'pointer',
-                border: 'none',
-                backgroundColor: isActive
-                  ? colors['greyscale-100']
-                  : colors['greyscale-000'],
-                fontWeight: isActive ? 700 : undefined,
-              }}
+              icon={<Icon width="16" height="16" $theme="neutral" iconName={query.icon} />}
             >
-              <Icon
-                $variation={isActive ? '1000' : '700'}
-                iconName={query.icon}
-              />
-              <Text $variation={isActive ? '1000' : '700'} $size="sm">
+              <Text $size="sm">
                 {query.label}
               </Text>
             </Button>
-          </SeparatedSection>
         );
       })}
     </div>

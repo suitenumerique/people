@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 
@@ -29,14 +29,16 @@ export const LeftPanelHeader = ({ children }: PropsWithChildren) => {
             <Button
               onClick={goToHome}
               size="medium"
-              color="tertiary-text"
+              color="neutral"
+              variant="tertiary"
               icon={<Icon $variation="800" $theme="primary" iconName="house" />}
             />
             {/*              {auth.authenticated && (
                 <Button
                   onClick={searchModal.open}
                   size="medium"
-                  color="tertiary-text"
+                  color="neutral"
+              variant="tertiary"
                   icon={
                     <Icon $variation="800" $theme="primary" iconName="search" />
                   }

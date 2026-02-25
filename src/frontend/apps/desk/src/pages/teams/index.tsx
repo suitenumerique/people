@@ -1,9 +1,9 @@
-import { Button, Input, Tooltip } from '@openfun/cunningham-react';
+import { Button, Input, Tooltip } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { Box, Icon, SeparatedSection, Text } from '@/components';
 import { useAuthStore } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
 import { TeamsListView } from '@/features/teams/team-management/components/TeamsListView';
@@ -34,22 +34,70 @@ const Page: NextPageWithLayout = () => {
         $background="white"
         $radius="4px"
         $direction="column"
-        $css={`
-          height: 100%;
-          width: 100%;
-          padding: 16px;
-          overflow-x: hidden;
-          overflow-y: auto;
-          border: 1px solid ${colorsTokens()['greyscale-200']};
-        `}
+        className="regie__panel__container"
       >
-        <Text
-          as="h2"
-          $css="font-weight: 700; font-size: 1.5rem; margin-bottom: 20px;"
-        >
-          {t('Teams')}
-        </Text>
+        <Box
+            $css="padding: 16px 24px;"
+          >
+          <Box
+            $direction="row"
+            $justify="space-between"
+            $align="center"
+          >
+          <Text
+            $direction="row"
+            $align="center"
+            $gap="8px"
+            as="h2"
+            $css="font-weight: 700; font-size: 1.5rem; margin: 0px;"
+          >
+            <Icon width="24" height="24" $theme="neutral" $variation="secondary" iconName="group" />
+            {t('Groups')}
+          </Text>
 
+            <Box>
+              {can_create ? (
+                <Button
+                  theme="brand"
+                  icon={<span className="material-icons">add</span>}
+                  variant="tertiary"
+                  data-testid="button-new-team"
+                  onClick={() => void router.push('/teams/create')}
+                >
+                  {t('New group')}
+                </Button>
+              ) : (
+                <Tooltip content="You don't have the correct access right">
+                  <div>
+                    <Button
+                      theme="brand"
+                      icon={<span className="material-icons">add</span>}
+                      variant="tertiary"
+                      data-testid="button-new-team"
+                      onClick={() => void router.push('/teams/create')}
+                      disabled={!can_create}
+                    >
+                      {t('New group')}
+                    </Button>
+                  </div>
+                </Tooltip>
+              )}
+            </Box>
+          </Box>
+
+          <Text
+            as="p"
+            $width="80%"
+            $css="font-weight: 400; font-size: 0.85rem;"
+            $theme="neutral"
+            $variation="secondary"
+          >
+            {t('Create groups to bring people together. Groups can be invited to any LaSuite app just like a single person, making it easier to collaborate and share with multiple people at once.')}
+          </Text>
+        </Box>
+
+        <SeparatedSection />
+        <Box $css="padding: 24px;">
         <Box
           className="sm:block md:flex"
           $direction="row"
@@ -89,34 +137,11 @@ const Page: NextPageWithLayout = () => {
           <Box
             className="hidden md:flex"
             $css={`
-              background: ${colors['greyscale-200']};
+              background-color: var(--c--contextuals--background--surface--primary);
               height: 32px;
               width: 1px;
             `}
-          ></Box>
-
-          <Box>
-            {can_create ? (
-              <Button
-                data-testid="button-new-team"
-                onClick={() => void router.push('/teams/create')}
-              >
-                {t('Create a new team')}
-              </Button>
-            ) : (
-              <Tooltip content="You don't have the correct access right">
-                <div>
-                  <Button
-                    data-testid="button-new-team"
-                    onClick={() => void router.push('/teams/create')}
-                    disabled={!can_create}
-                  >
-                    {t('Create a new team')}
-                  </Button>
-                </div>
-              </Tooltip>
-            )}
-          </Box>
+          ></Box> 
         </Box>
 
         {!can_create && (
@@ -126,6 +151,7 @@ const Page: NextPageWithLayout = () => {
         )}
 
         <TeamsListView querySearch={searchValue} />
+      </Box>
       </Box>
     </Box>
   );

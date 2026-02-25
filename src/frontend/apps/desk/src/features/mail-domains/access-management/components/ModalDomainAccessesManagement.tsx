@@ -3,13 +3,13 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
-import { Modal } from '@/components/Modal';
+import { CustomModal } from '@/components/modal/CustomModal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
 import { useCreateInvitation } from '@/features/mail-domains/access-management/api';
 import {
@@ -125,10 +125,10 @@ export const ModalDomainAccessesManagement = ({
   };
 
   return (
-    <Modal
+    <CustomModal
       isOpen
       leftActions={
-        <Button color="secondary" fullWidth onClick={onClose}>
+        <Button color="neutral" variant="secondary" fullWidth onClick={onClose}>
           {t('Cancel')}
         </Button>
       }
@@ -169,7 +169,7 @@ export const ModalDomainAccessesManagement = ({
             />
             <Box $align="end">
               <Button
-                color="primary"
+                color="brand"
                 size="medium"
                 disabled={!selectedMembers.length}
                 onClick={() => void handleValidate()}
@@ -181,6 +181,6 @@ export const ModalDomainAccessesManagement = ({
         )}
       </Box>
       <AccessesList mailDomain={mailDomain} currentRole={currentRole} />
-    </Modal>
+    </CustomModal>
   );
 };

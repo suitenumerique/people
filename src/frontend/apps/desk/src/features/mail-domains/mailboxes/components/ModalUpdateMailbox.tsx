@@ -5,7 +5,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -137,7 +137,7 @@ export const ModalUpdateMailbox = ({
               <Text $size="md" $weight="bold">
                 {t('Personal informations')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t('Update the user information.')}
               </Text>
             </Box>
@@ -205,7 +205,7 @@ export const ModalUpdateMailbox = ({
         </FormProvider>
       ),
       leftAction: (
-        <Button color="secondary" onClick={onClose}>
+        <Button color="neutral" variant="secondary" onClick={onClose}>
           {t('Cancel')}
         </Button>
       ),

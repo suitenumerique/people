@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from '@openfun/cunningham-react';
+import { Radio, RadioGroup } from '@gouvfr-lasuite/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
 import { Role } from '@/features/mail-domains/domains/types';
