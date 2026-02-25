@@ -1,4 +1,4 @@
-import { Loader } from '@openfun/cunningham-react';
+import { Loader } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';

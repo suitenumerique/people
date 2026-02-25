@@ -26,8 +26,8 @@ const mockMailDomain: MailDomain = {
 };
 
 const toast = jest.fn();
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: () => ({
     toast,
   }),
@@ -161,45 +161,6 @@ describe('ModalCreateMailbox', () => {
       }),
     );
   });
-
-  // This test doesn't work
-  // it('shows error message when mailbox prefix is already used', async () => {
-  //   fetchMock.postOnce(apiUrl, {
-  //     status: 400,
-  //     body: {
-  //       local_part: 'Mailbox with this Local_part and Domain already exists.',
-  //     },
-  //   });
-
-  //   renderModalCreateMailbox();
-
-  //   const {
-  //     inputFirstName,
-  //     inputLastName,
-  //     inputLocalPart,
-  //     inputEmailAddress,
-  //     buttonSubmit,
-  //   } = getFormElements();
-
-  //   await userEvent.type(inputFirstName, 'John');
-  //   await userEvent.type(inputLastName, 'Doe');
-  //   await userEvent.type(inputLocalPart, 'johndoe');
-  //   await userEvent.type(inputEmailAddress, 'john.doe@mail.com');
-
-  //   await userEvent.click(buttonSubmit);
-
-  //   await waitFor(() => {
-  //     const error = screen.queryByText((_, element) => {
-  //       const text = element?.textContent ?? '';
-  //       return (
-  //         text.includes('Mailbox with this Local_part and Domain already exists.') ||
-  //         text.includes('This email prefix is already used.') ||
-  //         text.includes('Ce préfixe d’adresse est déjà utilisé.')
-  //       );
-  //     });
-  //     expect(error).toBeInTheDocument();
-  //   });
-  // });
 
   it('closes the modal when cancel button is clicked', async () => {
     renderModalCreateMailbox();

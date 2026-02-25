@@ -29,73 +29,81 @@ describe('ChooseRole', () => {
     jest.clearAllMocks();
   });
 
-  it('renders available roles correctly when we are Administrator', () => {
+  it('renders available roles correctly when we are Administrator', async () => {
+    const user = userEvent.setup();
     renderChooseRole();
-    expect(screen.getByLabelText('Viewer')).toBeInTheDocument();
-    expect(screen.getByLabelText('Administrator')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Administrator' }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Administrator' }));
+    expect(
+      screen.getByRole('menuitem', { name: 'Viewer' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Administrator' }),
+    ).toBeInTheDocument();
   });
 
-  it('renders available roles correctly when we are owner', () => {
+  it('renders available roles correctly when we are owner', async () => {
+    const user = userEvent.setup();
     renderChooseRole({
       currentRole: Role.OWNER,
       roleAccess: Role.OWNER,
     });
-    expect(screen.getByLabelText('Viewer')).toBeInTheDocument();
-    expect(screen.getByLabelText('Administrator')).toBeInTheDocument();
-    expect(screen.getByLabelText('Owner')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Owner' }));
+    expect(
+      screen.getByRole('menuitem', { name: 'Viewer' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Administrator' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Owner' })).toBeInTheDocument();
   });
 
   it('sets default role checked correctly', () => {
     renderChooseRole({ currentRole: Role.ADMIN });
-
-    const adminRadio: HTMLInputElement = screen.getByLabelText('Administrator');
-    const viewerRadio: HTMLInputElement = screen.getByLabelText('Viewer');
-
-    expect(adminRadio).toBeChecked();
-    expect(viewerRadio).not.toBeChecked();
+    const trigger = screen.getByRole('button', { name: 'Administrator' });
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveTextContent('Administrator');
   });
 
   it('calls setRole when a new role is selected', async () => {
     const user = userEvent.setup();
-
     renderChooseRole();
-
-    await user.click(screen.getByLabelText('Viewer'));
+    await user.click(screen.getByRole('button', { name: 'Administrator' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Viewer' }));
 
     await waitFor(() => {
       expect(mockSetRole).toHaveBeenCalledWith(Role.VIEWER);
     });
   });
 
-  it('disables radio buttons when disabled prop is true', () => {
+  it('disables trigger button when disabled prop is true', () => {
     renderChooseRole({ disabled: true });
-
-    const viewerRadio: HTMLInputElement = screen.getByLabelText('Viewer');
-    const adminRadio: HTMLInputElement = screen.getByLabelText('Administrator');
-
-    expect(viewerRadio).toBeDisabled();
-    expect(adminRadio).toBeDisabled();
+    const trigger = screen.getByRole('button', { name: 'Administrator' });
+    expect(trigger).toBeDisabled();
   });
 
-  it('disables owner radio button if current role is not owner', () => {
+  it('disables owner menu option when current role is not owner', async () => {
+    const user = userEvent.setup();
     renderChooseRole({
       availableRoles: [Role.VIEWER, Role.ADMIN, Role.OWNER],
       currentRole: Role.ADMIN,
     });
-
-    const ownerRadio = screen.getByLabelText('Owner');
-
-    expect(ownerRadio).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Administrator' }));
+    const ownerOption = screen.getByRole('menuitem', { name: 'Owner' });
+    expect(ownerOption).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('removes duplicates from availableRoles', () => {
+  it('removes duplicates from availableRoles', async () => {
+    const user = userEvent.setup();
     renderChooseRole({
       availableRoles: [Role.VIEWER, Role.ADMIN, Role.VIEWER],
       currentRole: Role.ADMIN,
     });
-
-    const radios = screen.getAllByRole('radio');
-    expect(radios.length).toBe(2); // Only two unique roles should be rendered
+    await user.click(screen.getByRole('button', { name: 'Administrator' }));
+    const menuItems = screen.getAllByRole('menuitem');
+    expect(menuItems).toHaveLength(2);
   });
 
   it('renders and checks owner role correctly when currentRole is owner', () => {
@@ -104,30 +112,19 @@ describe('ChooseRole', () => {
       roleAccess: Role.OWNER,
       availableRoles: [Role.OWNER, Role.VIEWER, Role.ADMIN],
     });
-
-    const ownerRadio: HTMLInputElement = screen.getByLabelText('Owner');
-
-    expect(ownerRadio).toBeInTheDocument();
-    expect(ownerRadio).toBeChecked();
+    const trigger = screen.getByRole('button', { name: 'Owner' });
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveTextContent('Owner');
   });
 
-  it('renders no roles if availableRoles is empty', () => {
+  it('renders only current role when availableRoles is empty', async () => {
+    const user = userEvent.setup();
     renderChooseRole({
       availableRoles: [],
       currentRole: Role.ADMIN,
     });
-
-    const radios = screen.queryAllByRole('radio');
-    expect(radios.length).toBe(1); // Only the current role should be rendered
-  });
-
-  it.failing('sets aria-checked attribute correctly for selected roles', () => {
-    renderChooseRole({ currentRole: Role.ADMIN });
-
-    const adminRadio = screen.getByLabelText('Administrator');
-    const viewerRadio = screen.getByLabelText('Viewer');
-
-    expect(adminRadio).toHaveAttribute('aria-checked', 'true');
-    expect(viewerRadio).toHaveAttribute('aria-checked', 'false');
+    await user.click(screen.getByRole('button', { name: 'Administrator' }));
+    const menuItems = screen.getAllByRole('menuitem');
+    expect(menuItems).toHaveLength(1);
   });
 });

@@ -22,7 +22,7 @@ const Page: NextPageWithLayout = () => {
     <Box $margin={{ top: '50px' }}>
       <Box
         as="h1"
-        $background={colorsTokens()['primary-100']}
+        $background={colorsTokens()['brand-100']}
         $margin="none"
         $padding="large"
       >

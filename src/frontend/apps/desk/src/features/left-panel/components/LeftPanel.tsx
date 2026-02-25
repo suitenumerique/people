@@ -1,16 +1,15 @@
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
+import { default as IconRegie } from '@/assets/logo-regie.svg?url';
+import { StyledLink } from '@/components/';
 import { SeparatedSection } from '@/components/separators';
-import { ButtonLogin } from '@/core';
-import { UserInfo } from '@/core/auth/UserInfo';
-import { LanguagePicker } from '@/features/language';
 
 import { useLeftPanelStore } from '../stores';
 
 import { LeftPanelContent } from './LeftPanelContent';
-import { LeftPanelHeader } from './LeftPanelHeader';
 import { LeftPanelItems } from './LeftPanelItems';
 
 const MobileLeftPanelStyle = createGlobalStyle`
@@ -21,11 +20,15 @@ const MobileLeftPanelStyle = createGlobalStyle`
 
 const LeftPanelStyle = createGlobalStyle`
   .LeftPanel {
-    height: calc(100vh - var(--header-height));
+    position: sticky;
+    top: 0;
+    padding: 12px;
+    height: 100vh;
     width: 300px;
     min-width: 300px;
     overflow: hidden;
-    border-right: 1px solid var(--c--theme--colors--greyscale-200']};
+    background-color: var(--c--contextuals--background--surface--tertiary);
+    border-right: 1px solid var(--c--contextuals--border--surface--primary);
   }
 `;
 
@@ -34,29 +37,63 @@ export const LeftPanel = () => {
 
   const pathname = usePathname();
 
-  const toggle = useCallback(() => {
+  const closePanel = useCallback(() => {
     togglePanel(false);
   }, [togglePanel]);
 
   useEffect(() => {
-    toggle();
-  }, [pathname, toggle]);
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(min-width: 768px)').matches
+    ) {
+      togglePanel(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      !window.matchMedia('(min-width: 768px)').matches
+    ) {
+      closePanel();
+    }
+  }, [pathname, closePanel]);
 
   return (
     <>
-      <div className="hidden md:block">
+      <div
+        className="hidden md:block"
+        style={{
+          width: isPanelOpen ? undefined : 0,
+          minWidth: isPanelOpen ? undefined : 0,
+          overflow: 'hidden',
+          transition: 'min-width 0.2s ease, width 0.2s ease',
+        }}
+      >
         <LeftPanelStyle />
-        <div className="LeftPanel">
+        <div className="LeftPanel" style={{ minWidth: isPanelOpen ? 300 : 0 }}>
           <div
             style={{
               flex: '0 0 auto',
             }}
           ></div>
+          <StyledLink href="/">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              <Image priority src={IconRegie} alt="Régie" height={40} />
+            </div>
+          </StyledLink>
           <menu
             style={{
               margin: '0',
               gap: 'var(--c--theme--spacings--xs)',
-              padding: '0 10px',
+              padding: '0',
             }}
           >
             <LeftPanelItems />
@@ -71,11 +108,18 @@ export const LeftPanel = () => {
           style={{
             zIndex: '999',
             width: '100vw',
-            height: 'calc(100dvh - var(--header-height))',
-            borderRight: '1px solid var(--c--theme--colors--greyscale-200)',
+            height: '100vh',
             position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '12px',
+            backgroundColor:
+              'var(--c--contextuals--background--surface--tertiary)',
             transform: `translateX(${isPanelOpen ? '0' : '-100dvw'})`,
-            backgroundColor: 'var(--c--theme--colors--greyscale-000)',
+            transition: 'transform 0.2s ease-out',
+            overflowY: 'auto',
           }}
           className="md:hidden"
         >
@@ -83,13 +127,17 @@ export const LeftPanel = () => {
             data-testid="left-panel-mobile"
             style={{
               width: '100%',
-              padding: '0 10px',
-              justifyContent: 'center',
+              marginTop: '60px',
+              justifyContent: 'flex-start',
               gap: 'var(--c--theme--spacings--base)',
             }}
             className="md:hidden"
           >
-            <LeftPanelHeader />
+            <StyledLink href="/">
+              <div>
+                <Image priority src={IconRegie} alt="Régie" height={40} />
+              </div>
+            </StyledLink>
             <LeftPanelItems />
             <SeparatedSection showSeparator={false}>
               <div
@@ -99,11 +147,7 @@ export const LeftPanel = () => {
                   flexDirection: 'column',
                   gap: 'var(--c--theme--spacings--sm)',
                 }}
-              >
-                <UserInfo />
-                <ButtonLogin />
-                <LanguagePicker />
-              </div>
+              ></div>
             </SeparatedSection>
           </div>
         </div>

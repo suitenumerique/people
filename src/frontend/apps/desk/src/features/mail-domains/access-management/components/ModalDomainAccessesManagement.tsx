@@ -3,13 +3,13 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
 import { Box, Text } from '@/components';
-import { Modal } from '@/components/Modal';
+import { CustomModal } from '@/components/modal/CustomModal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
 import { useCreateInvitation } from '@/features/mail-domains/access-management/api';
 import {
@@ -125,10 +125,10 @@ export const ModalDomainAccessesManagement = ({
   };
 
   return (
-    <Modal
+    <CustomModal
       isOpen
       leftActions={
-        <Button color="secondary" fullWidth onClick={onClose}>
+        <Button color="neutral" variant="secondary" fullWidth onClick={onClose}>
           {t('Cancel')}
         </Button>
       }
@@ -157,30 +157,38 @@ export const ModalDomainAccessesManagement = ({
         />
         {selectedMembers.length > 0 && (
           <Box $margin={{ top: 'small' }}>
-            <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
-              {t('Choose a role')}
-            </Text>
-            <ChooseRole
-              roleAccess={currentRole}
-              disabled={false}
-              availableRoles={[Role.VIEWER, Role.ADMIN, Role.OWNER]}
-              currentRole={currentRole}
-              setRole={setRole}
-            />
+            <Box $direction="row" $align="baseline" $gap="4px">
+              <Text
+                as="span"
+                $size="small"
+                $weight="bold"
+                $textAlign="left"
+                $margin={{ bottom: 'tiny' }}
+              >
+                {t('Choose a role:')}
+              </Text>
+              <ChooseRole
+                roleAccess={role}
+                disabled={false}
+                availableRoles={[Role.VIEWER, Role.ADMIN, Role.OWNER]}
+                currentRole={currentRole}
+                setRole={setRole}
+              />
+            </Box>
             <Box $align="end">
               <Button
-                color="primary"
+                color="brand"
                 size="medium"
                 disabled={!selectedMembers.length}
                 onClick={() => void handleValidate()}
               >
-                {t('OK')}
+                {t('Send invitation')}
               </Button>
             </Box>
           </Box>
         )}
       </Box>
       <AccessesList mailDomain={mailDomain} currentRole={currentRole} />
-    </Modal>
+    </CustomModal>
   );
 };

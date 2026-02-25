@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,8 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
               setIsModalUpdateOpen(true);
               setIsDropOpen(false);
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 edit
@@ -52,7 +53,8 @@ export const TeamActions = ({ currentRole, team }: TeamActionsProps) => {
                 setIsModalRemoveOpen(true);
                 setIsDropOpen(false);
               }}
-              color="primary-text"
+              color="brand"
+              variant="tertiary"
               icon={
                 <span className="material-icons" aria-hidden="true">
                   delete

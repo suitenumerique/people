@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +36,8 @@ export const MemberAction = ({
   return (
     <>
       <DropButton
-        button={<IconOptions aria-label={t('Open the member options modal')} />}
+        ariaLabel={t('Open the member options modal')}
+        button={<IconOptions />}
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}
       >
@@ -47,7 +48,8 @@ export const MemberAction = ({
               setIsModalRoleOpen(true);
               setIsDropOpen(false);
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 edit
@@ -62,7 +64,8 @@ export const MemberAction = ({
               setIsModalDeleteOpen(true);
               setIsDropOpen(false);
             }}
-            color="primary-text"
+            color="brand"
+            variant="tertiary"
             icon={
               <span className="material-icons" aria-hidden="true">
                 delete
