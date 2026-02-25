@@ -7,6 +7,7 @@ import { Box, Text, TextErrors } from '@/components';
 import { useAuthStore } from '@/core/auth';
 import { Alias, AliasGroup } from '@/features/mail-domains/aliases/types';
 import { MailDomain } from '@/features/mail-domains/domains';
+import { sortData } from '@/utils/sortData';
 
 import { useAliasesInfinite } from '../../api/useAliasesInfinite';
 import { ModalEditAlias } from '../ModalEditAlias';
@@ -23,15 +24,6 @@ interface AliasesListViewProps {
   querySearch: string;
 }
 
-type SortModelItem = {
-  field: string;
-  sort: 'asc' | 'desc' | null;
-};
-
-function formatSortModel(sortModel: SortModelItem) {
-  return sortModel.sort === 'desc' ? `-${sortModel.field}` : sortModel.field;
-}
-
 export function AliasesListView({
   mailDomain,
   querySearch,
@@ -42,9 +34,13 @@ export function AliasesListView({
     null,
   );
 
-  const [sortModel] = useState<SortModel>([]);
+  const [sortModel, setSortModel] = useState<SortModel>([
+    {
+      field: 'local_part',
+      sort: 'desc',
+    },
+  ]);
 
-  const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
   const {
     data,
     isLoading,
@@ -54,7 +50,6 @@ export function AliasesListView({
     isFetchingNextPage,
   } = useAliasesInfinite({
     mailDomainSlug: mailDomain.slug,
-    ordering,
   }) as {
     data: InfiniteData<MailDomainAliasesResponse, number> | undefined;
     isLoading: boolean;
@@ -90,7 +85,7 @@ export function AliasesListView({
             local_part: alias.local_part,
             destinations: [alias.destination],
             destinationIds,
-            count_destinations: 1,
+            count_destinations: [alias.destination].length,
           });
         }
       });
@@ -100,18 +95,21 @@ export function AliasesListView({
   }, [data, mailDomain]);
 
   const filteredAliases = useMemo(() => {
-    if (!querySearch) {
-      return aliasGroups;
+    let result = aliasGroups;
+
+    if (querySearch) {
+      const lowerCaseSearch = querySearch.toLowerCase();
+      result = result.filter(
+        (alias) =>
+          alias.email.toLowerCase().includes(lowerCaseSearch) ||
+          alias.destinations.some((dest) =>
+            dest.toLowerCase().includes(lowerCaseSearch),
+          ),
+      );
     }
-    const lowerCaseSearch = querySearch.toLowerCase();
-    return aliasGroups.filter(
-      (alias) =>
-        alias.email.toLowerCase().includes(lowerCaseSearch) ||
-        alias.destinations.some((dest) =>
-          dest.toLowerCase().includes(lowerCaseSearch),
-        ),
-    );
-  }, [querySearch, aliasGroups]);
+
+    return sortData(result, sortModel);
+  }, [querySearch, aliasGroups, sortModel]);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -155,7 +153,7 @@ export function AliasesListView({
             rows={filteredAliases}
             columns={[
               {
-                field: 'email',
+                field: 'local_part',
                 headerName: `${t('Alias')} • ${filteredAliases.length}`,
                 renderCell: ({ row }) => (
                   <Text $weight="400" $theme="greyscale">
@@ -164,9 +162,8 @@ export function AliasesListView({
                 ),
               },
               {
-                field: 'destinations',
+                field: 'count_destinations',
                 headerName: t('Destinations'),
-                enableSorting: false,
                 renderCell: ({ row }) => (
                   <Text $weight="500" $theme="greyscale">
                     {row.count_destinations} destination
@@ -205,6 +202,8 @@ export function AliasesListView({
               },
             ]}
             isLoading={isLoading}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
           />
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>

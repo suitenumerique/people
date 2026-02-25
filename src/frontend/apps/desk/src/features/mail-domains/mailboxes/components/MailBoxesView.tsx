@@ -294,11 +294,8 @@ const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
           message: (
             <Text $display="inline">
               {t(
-                'The domain name encounters an error. Please contact our support team to solve the problem: ',
+                'The domain name encounters an error. Please contact our support team to solve the problem. ',
               )}
-              <a href="mailto:suiteterritoriale@anct.gouv.fr">
-                suiteterritoriale@anct.gouv.fr
-              </a>
             </Text>
           ),
         };
