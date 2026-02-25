@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- ✨(uiV2) use Lasuite UI kit, new layout
+
 ## [1.23.1] - 2026-02-16
 
 - ✨(invitations) refresh expired invitations

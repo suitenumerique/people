@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 
 import { Box, Text } from '@/components';
 import { InputUserEmail, InputUserPassword } from '@/features/login';
@@ -82,7 +82,7 @@ export const LoginForm = ({
               )}
 
               <Box $padding="tiny">
-                <Button color="primary" type="submit" fullWidth>
+                <Button color="brand" type="submit" fullWidth>
                   {labelSignIn}
                 </Button>
               </Box>

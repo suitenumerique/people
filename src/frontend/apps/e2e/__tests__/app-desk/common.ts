@@ -42,22 +42,19 @@ export const createTeam = async (
   browserName: string,
   length: number,
 ) => {
+  await page.goto('/teams');
   const panel = page.getByLabel('Teams panel').first();
-  const buttonCreateHomepage = page.getByRole('button', {
-    name: 'Create a new team',
+  const buttonAddTeam = page.getByRole('button', {
+    name: /New group/,
   });
-  const buttonCreate = page.getByRole('button', { name: 'Create the team' });
+  const buttonCreate = page.getByRole('button', {
+    name: /Create the team/,
+  });
 
   const randomTeams = randomName(teamName, browserName, length);
 
   for (let i = 0; i < randomTeams.length; i++) {
-    if (i == 0) {
-      // for the first team, we need to click on the button in the homepage
-      await buttonCreateHomepage.click();
-    } else {
-      // for the other teams, we need to click on the button in the panel of the detail view
-      await panel.getByRole('button', { name: 'Add a team' }).click();
-    }
+    await buttonAddTeam.click();
     await page.getByText('Team name').fill(randomTeams[i]);
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();

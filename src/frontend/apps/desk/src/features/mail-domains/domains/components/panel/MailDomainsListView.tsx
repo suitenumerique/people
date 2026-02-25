@@ -1,4 +1,4 @@
-import { Button, DataGrid } from '@openfun/cunningham-react';
+import { Button, DataGrid } from '@gouvfr-lasuite/cunningham-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,8 @@ import {
   useMailDomains,
   useMailDomainsStore,
 } from '@/features/mail-domains/domains';
+
+import { MailDomainLogoCircle } from '../MailDomainLogoCircle';
 
 interface MailDomainsListViewProps {
   querySearch: string;
@@ -75,6 +77,14 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
               field: 'name',
               headerName: `${t('Domain')} (${filteredMailDomains.length})`,
               enableSorting: true,
+              renderCell({ row }) {
+                return (
+                  <Box $direction="row" $gap="8px" $align="center">
+                    <MailDomainLogoCircle size={24} />
+                    <Text>{row.name}</Text>
+                  </Box>
+                );
+              },
             },
             {
               field: 'count_mailboxes',
@@ -106,11 +116,13 @@ export function MailDomainsListView({ querySearch }: MailDomainsListViewProps) {
                     href={`/mail-domains/${row.slug}`}
                   >
                     <Button
-                      style={{
-                        fontWeight: '500',
-                        fontSize: '16px',
-                      }}
-                      color="tertiary"
+                      size="small"
+                      color="brand"
+                      variant="secondary"
+                      iconPosition="right"
+                      icon={
+                        <span className="material-icons">arrow_forward</span>
+                      }
                     >
                       {t('Manage')}
                     </Button>

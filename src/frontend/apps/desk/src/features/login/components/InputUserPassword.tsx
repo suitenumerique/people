@@ -1,4 +1,4 @@
-import { Input } from '@openfun/cunningham-react';
+import { Input } from '@gouvfr-lasuite/cunningham-react';
 
 interface InputUserEmailProps {
   label: string;

@@ -388,7 +388,10 @@ test.describe('Mail domain', () => {
           },
         );
 
-        await page.getByText('Access management').click();
+        await page.getByLabel('Open domain options menu').click();
+        await page
+          .getByRole('menuitem', { name: 'Access management' })
+          .click();
         await expect(page.getByText('Invitations')).toBeVisible();
         await expect(page.getByText('people@people.world')).toBeVisible();
 

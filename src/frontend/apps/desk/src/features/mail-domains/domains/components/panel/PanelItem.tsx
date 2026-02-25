@@ -37,20 +37,20 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
   };
 
   const activeStyle = `
-    border-right: 4px solid ${colorsTokens()['primary-600']};
-    background: ${colorsTokens()['primary-400']};
+    border-right: 4px solid ${colorsTokens()['brand-600']};
+    background: ${colorsTokens()['brand-400']};
      span {
-      color: ${colorsTokens()['primary-text']};
+      color: ${colorsTokens()['brand-600']};
     }
   `;
 
   const hoverStyle = `
     &:hover{
-      border-right: 4px solid ${colorsTokens()['primary-400']};
-      background: ${colorsTokens()['primary-300']};
+      border-right: 4px solid ${colorsTokens()['brand-400']};
+      background: ${colorsTokens()['brand-300']};
 
        span {
-        color: ${colorsTokens()['primary-text']};
+        color: ${colorsTokens()['brand-600']};
       }
     }
   `;
@@ -82,19 +82,19 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
           <Box $direction="row" $gap="0.5rem" $justify="left" $align="center">
             <IconMailDomains
               aria-hidden="true"
-              color={colorsTokens()['primary-500']}
+              color={colorsTokens()['brand-500']}
               className="p-t"
               width="52"
               style={{
                 borderRadius: '10px',
                 flexShrink: 0,
                 background: '#fff',
-                border: `1px solid ${colorsTokens()['primary-300']}`,
+                border: `1px solid ${colorsTokens()['brand-300']}`,
               }}
             />
             <Text
               $weight="bold"
-              $color={colorsTokens()['greyscale-600']}
+              $color={colorsTokens()['gray-600']}
               $css={`
               display: inline-block;
               width: 10rem;
@@ -105,7 +105,7 @@ export const PanelMailDomains = ({ mailDomain }: MailDomainProps) => {
               {mailDomain.name}
             </Text>
           </Box>
-          <Text $size="s" $theme="greyscale">
+          <Text $size="s" $theme="gray">
             {statusText}
           </Text>
         </Box>

@@ -5,11 +5,11 @@ import {
   VariantType,
   useModal,
   useToastProvider,
-} from '@openfun/cunningham-react';
-import { useState } from 'react';
+} from '@gouvfr-lasuite/cunningham-react';
+import { DropdownMenu, useDropdownMenu } from '@gouvfr-lasuite/ui-kit';
 import { useTranslation } from 'react-i18next';
 
-import { Box, DropButton, IconOptions, Text } from '@/components';
+import { Box, Icon, IconOptions } from '@/components';
 import { MailDomain } from '@/features/mail-domains/domains';
 import {
   ModalUpdateMailbox,
@@ -21,6 +21,12 @@ import {
   useUpdateMailboxStatus,
 } from '../../api/useUpdateMailboxStatus';
 
+type DropdownMenuWithDisabled = React.ComponentType<
+  React.ComponentProps<typeof DropdownMenu> & { isDisabled?: boolean }
+>;
+
+const DropdownMenuAny = DropdownMenu as DropdownMenuWithDisabled;
+
 interface PanelActionsProps {
   mailbox: ViewMailbox;
   mailDomain: MailDomain;
@@ -28,7 +34,7 @@ interface PanelActionsProps {
 
 export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   const { t } = useTranslation();
-  const [isDropOpen, setIsDropOpen] = useState(false);
+  const { isOpen, setIsOpen } = useDropdownMenu();
   const isEnabled = mailbox.status === 'enabled';
   const disableModal = useModal();
   const updateModal = useModal();
@@ -74,82 +80,87 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
     return null;
   }
 
+  const isDisabledDropdown = false;
+
   return (
     <>
-      <DropButton
-        button={
-          <IconOptions
-            isHorizontal={true}
-            aria-label={t('Open the access options modal')}
-          />
-        }
-        onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
-        isOpen={isDropOpen}
-      >
-        <Box>
-          <Button
-            aria-label={t('Open a modal to enable or disable mailbox')}
-            onClick={() => {
-              setIsDropOpen(false);
+      <DropdownMenuAny
+        options={[
+          {
+            label: isEnabled ? t('Disable mailbox') : t('Enable mailbox'),
+            icon: (
+              <Icon
+                iconName={isEnabled ? 'lock' : 'lock_open'}
+                $size="sm"
+                aria-hidden="true"
+              />
+            ),
+            callback: () => {
+              setIsOpen(false);
               if (isEnabled) {
                 disableModal.open();
               } else {
                 handleUpdateMailboxStatus();
               }
-            }}
-            color="primary-text"
-            icon={
-              <span className="material-icons" aria-hidden="true">
-                {isEnabled ? 'lock' : 'lock_open'}
-              </span>
-            }
-          >
-            <Text $theme="primary">
-              {isEnabled ? t('Disable mailbox') : t('Enable mailbox')}
-            </Text>
-          </Button>
-          <Button
-            aria-label={t('Open the modal to update mailbox attributes')}
-            onClick={() => {
-              setIsDropOpen(false);
+            },
+          },
+          {
+            label: t('Configure mailbox'),
+            icon: (
+              <Icon
+                iconName={isEnabled ? 'settings' : 'block'}
+                $size="sm"
+                aria-hidden="true"
+              />
+            ),
+            callback: () => {
+              setIsOpen(false);
               if (isEnabled) {
                 updateModal.open();
               } else {
                 handleUpdateMailboxStatus();
               }
-            }}
-            color="primary-text"
-            disabled={!isEnabled}
-            icon={
-              <span className="material-icons" aria-hidden="true">
-                {isEnabled ? 'settings' : 'block'}
-              </span>
-            }
-          >
-            <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
-              {t('Configure mailbox')}
-            </Text>
-          </Button>
-          <Button
-            aria-label={t('Reset password for this mailbox')}
-            onClick={() => {
-              setIsDropOpen(false);
+            },
+          },
+          {
+            label: t('Reset password'),
+            icon: (
+              <Icon
+                iconName={isEnabled ? 'lock_reset' : 'block'}
+                $size="sm"
+                aria-hidden="true"
+              />
+            ),
+            callback: () => {
+              setIsOpen(false);
+              if (!isEnabled) {
+                return;
+              }
               handleResetMailboxPassword();
-            }}
-            color="primary-text"
-            disabled={!isEnabled}
-            icon={
-              <span className="material-icons" aria-hidden="true">
-                {isEnabled ? 'lock_reset' : ' block'}
-              </span>
-            }
-          >
-            <Text $theme={isEnabled ? 'primary' : 'greyscale'}>
-              {t('Reset password')}
-            </Text>
-          </Button>
-        </Box>
-      </DropButton>
+            },
+          },
+        ]}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        isDisabled={isDisabledDropdown}
+      >
+        <button
+          type="button"
+          aria-label={t('Open the access options modal')}
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <IconOptions isHorizontal={true} />
+        </button>
+      </DropdownMenuAny>
       <ModalUpdateMailbox
         isOpen={updateModal.isOpen}
         onClose={updateModal.close}
@@ -160,31 +171,31 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
         isOpen={disableModal.isOpen}
         onClose={disableModal.close}
         hideCloseButton={true}
-        title={<Text $size="h3">{t('Disable mailbox')}</Text>}
+        closeOnClickOutside={true}
+        title={t('Disable mailbox')}
         size={ModalSize.MEDIUM}
         leftActions={
-          <Button color="secondary" onClick={disableModal.close}>
+          <Button
+            color="neutral"
+            variant="secondary"
+            onClick={disableModal.close}
+          >
             {t('Cancel')}
           </Button>
         }
         rightActions={
           <Box $direction="row" $justify="flex-end" $gap="0.5rem">
-            <Button color="danger" onClick={handleUpdateMailboxStatus}>
+            <Button color="error" onClick={handleUpdateMailboxStatus}>
               {t('Disable')}
             </Button>
           </Box>
         }
       >
-        <Box
-          $padding="md"
-          aria-label={t('Content modal to delete the mailbox')}
-        >
-          <Text>
-            {t(
-              'Are you sure you want to disable this mailbox? This action results in the deletion of the calendar, address book, etc.',
-            )}
-          </Text>
-        </Box>
+        <div className="c__modal__content__margin">
+          {t(
+            'Are you sure you want to disable this mailbox? This action results in the deletion of the calendar, address book, etc.',
+          )}
+        </div>
       </Modal>
     </>
   );
