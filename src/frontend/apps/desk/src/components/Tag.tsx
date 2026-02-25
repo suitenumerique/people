@@ -16,6 +16,14 @@ const TagContent = ({ status, showIcon }: TagContentProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
 
+  const translations: Record<TagContentProps['status'], string> = {
+    pending: t('pending'),
+    enabled: t('enabled'),
+    disabled: t('disabled'),
+    action_required: t('action required'),
+    failed: t('failed'),
+  };
+
   const textColor = {
     pending: colorsTokens()['info-600'],
     enabled: colorsTokens()['success-600'],
@@ -46,7 +54,7 @@ const TagContent = ({ status, showIcon }: TagContentProps) => {
         text-transform: capitalize;
       `}
     >
-      {t(status).replace('_', ' ')}
+      {translations[status]}
       {showIcon &&
         (status === 'enabled' ? (
           <Icon
