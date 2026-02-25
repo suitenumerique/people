@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(i18n) fix missing translations for status tag labels
+
 ## [1.23.1] - 2026-02-16
 
 - ✨(invitations) refresh expired invitations
