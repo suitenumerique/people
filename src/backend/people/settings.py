@@ -173,9 +173,6 @@ class Base(Configuration):
             "BACKEND": "django.template.backends.django.DjangoTemplates",
             "DIRS": [
                 os.path.join(BASE_DIR, "templates"),
-                os.path.join(
-                    BASE_DIR, "admin", "templates"
-                ),  # enforce load before Django's admin
             ],
             "OPTIONS": {
                 "context_processors": [
@@ -227,7 +224,6 @@ class Base(Configuration):
 
     INSTALLED_APPS = [
         # People
-        "admin.apps.PeopleAdminConfig",  # replaces 'django.contrib.admin'
         "core",
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
@@ -246,6 +242,7 @@ class Base(Configuration):
         "parler",
         "rest_framework",
         "treebeard",
+        "lasuite.admin",  # must be before django.contrib.admin
         # Django
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -254,6 +251,7 @@ class Base(Configuration):
         "django.contrib.sites",
         "django.contrib.messages",
         "django.contrib.staticfiles",
+        "django.contrib.admin",
         # OIDC third party
         "mozilla_django_oidc",
     ]
