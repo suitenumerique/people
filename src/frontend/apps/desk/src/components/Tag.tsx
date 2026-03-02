@@ -16,7 +16,7 @@ const TagContent = ({ status, showIcon }: TagContentProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
 
-  const translations: Record<TagContentProps['status'], string> = {
+  const translations = {
     pending: t('pending'),
     enabled: t('enabled'),
     disabled: t('disabled'),
