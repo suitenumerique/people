@@ -29,7 +29,7 @@ const Page: NextPageWithLayout = () => {
     }
 
     // Fallback to the default route according to global config
-    router.push(config?.FEATURES.TEAMS_DISPLAY ? '/mail-domains/' : '/teams/');
+    router.push('/mail-domains/');
   }, [config?.FEATURES.TEAMS_DISPLAY, userData, router]);
 
   return null;
