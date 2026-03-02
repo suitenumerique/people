@@ -47,7 +47,7 @@ describe('Page', () => {
 
     render(<Page />, { wrapper: AppWrapper });
 
-    expect(mockedPush).toHaveBeenCalledWith('/teams/');
+    expect(mockedPush).toHaveBeenCalledWith('/mail-domains/');
   });
 
   it('checks Page rendering without team feature', () => {
