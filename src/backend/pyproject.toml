@@ -53,7 +53,7 @@ dependencies = [
     "flower==2.0.1",
     "gunicorn==25.0.3",
     "jaraco.context>=6.1.0",
-    "joserfc==1.6.1",
+    "joserfc==1.6.3",
     "jsonschema==4.26.0",
     "mozilla-django-oidc==5.0.2",
     "nested-multipart-parser==1.6.0",
