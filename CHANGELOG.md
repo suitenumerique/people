@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- 👷(docker) add arm64 platform support for image builds
+
 ## [1.23.1] - 2026-02-16
 
 - ✨(invitations) refresh expired invitations
