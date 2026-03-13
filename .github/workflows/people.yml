@@ -22,7 +22,7 @@ jobs:
     if: github.event_name == 'pull_request' # Makes sense only for pull requests
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: show
@@ -49,7 +49,7 @@ jobs:
       github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Check that the CHANGELOG has been modified in the current branch
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Check CHANGELOG max line length
         run: |
           max_line_length=$(cat CHANGELOG.md | grep -Ev "^\[.*\]: https://github.com" | wc -L)
@@ -73,10 +73,10 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Restore the frontend cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: front-node_modules
         with:
           path: 'src/frontend/**/node_modules'
@@ -86,7 +86,7 @@ jobs:
         run: cd src/frontend/ && yarn ci:build
 
       - name: Cache build frontend
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: src/frontend/apps/desk/out/
           key: build-front-${{ github.run_id }}
@@ -96,10 +96,10 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Restore the frontend cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: front-node_modules
         with:
           path: 'src/frontend/**/node_modules'
@@ -113,10 +113,10 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Restore the frontend cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: front-node_modules
         with:
           path: 'src/frontend/**/node_modules'
@@ -136,7 +136,7 @@ jobs:
         shardTotal: [4]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set services env variables
         run: |
@@ -144,7 +144,7 @@ jobs:
           cat env.d/development/common.e2e.dist >> env.d/development/common
 
       - name: Restore the mail templates
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: mail-templates
         with:
           path: "src/backend/core/templates/mail"
@@ -152,14 +152,14 @@ jobs:
           fail-on-cache-miss: true  
 
       - name: Restore the frontend cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: front-node_modules
         with:
           path: 'src/frontend/**/node_modules'
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
       - name: Restore the build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-build
         with:
           path: src/frontend/apps/desk/out/
@@ -269,13 +269,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Create writable /data
         run: |
           sudo mkdir -p /data/media && \
           sudo mkdir -p /data/static
       - name: Restore the mail templates
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: mail-templates
         with:
           path: "src/backend/core/templates/mail"
