@@ -8,7 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- ✨(uiV2) use Lasuite UI kit, new layout
+
 ### Fixed
+
 - ✨(mailboxes) enforce lowercase on mailboxes
 - 🐛(i18n) fix missing translations for status tag labels
 

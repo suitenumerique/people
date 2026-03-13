@@ -1,11 +1,11 @@
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import {
   Button,
   Loader,
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,99 @@ import {
   TextErrors,
 } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
+import { useCunninghamTheme } from '@/cunningham';
 
 import { MailDomain } from '../../domains/types';
 import { CreateMailboxParams, useCreateMailbox } from '../api';
 
 const FORM_ID = 'form-create-mailbox';
+
+type LocalPartInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  label: string;
+  domain: string;
+  error?: string;
+  required?: boolean;
+};
+
+const LocalPartInput = ({
+  label,
+  domain,
+  error,
+  required,
+  ...inputProps
+}: LocalPartInputProps) => {
+  const { colorsTokens } = useCunninghamTheme();
+  const borderColor = error
+    ? colorsTokens()['error-500']
+    : 'var(--c--contextuals--border--semantic--neutral--tertiary)';
+
+  return (
+    <Box>
+      <Box $margin={{ bottom: 'sm' }}>
+        <label
+          htmlFor="local_part"
+          style={{ fontWeight: 500, color: colorsTokens()['gray-900'] }}
+        >
+          {label} {required && '*'}
+        </label>
+      </Box>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'nowrap',
+          alignItems: 'stretch',
+          border: `1px solid ${borderColor}`,
+          borderRadius: 4,
+          overflow: 'hidden',
+          background: colorsTokens()['gray-000'],
+        }}
+      >
+        <input
+          id="local_part"
+          aria-required={required}
+          required={required}
+          style={{
+            flex: '1 1 0',
+            minWidth: 0,
+            padding: '12px',
+            border: 'none',
+            borderRadius: 0,
+            fontSize: 14,
+            background: 'transparent',
+            color: colorsTokens()['gray-550'],
+            outline: 'none',
+          }}
+          {...inputProps}
+        />
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            padding: '12px 12px 12px 0',
+            fontSize: 14,
+            color: colorsTokens()['gray-550'],
+            fontWeight: 500,
+            background: 'transparent',
+          }}
+        >
+          @{domain}
+        </span>
+      </div>
+      {error && (
+        <Text
+          $size="xs"
+          $theme="error"
+          $variation="secondary"
+          $margin={{ top: '2xs' }}
+        >
+          {error}
+        </Text>
+      )}
+    </Box>
+  );
+};
 
 export const ModalCreateMailbox = ({
   mailDomain,
@@ -119,7 +207,7 @@ export const ModalCreateMailbox = ({
               <Text $size="md" $weight="bold">
                 {t('Personal informations')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t('Configure the new user.')}
               </Text>
             </Box>
@@ -139,7 +227,7 @@ export const ModalCreateMailbox = ({
                   )}
                 />
               </Box>
-              <Box $margin={{ top: 'base' }}>
+              <Box>
                 <Controller
                   name="last_name"
                   control={methods.control}
@@ -154,7 +242,7 @@ export const ModalCreateMailbox = ({
                   )}
                 />
               </Box>
-              <Box $margin={{ top: 'base' }}>
+              <Box>
                 <Controller
                   name="secondary_email"
                   control={methods.control}
@@ -168,7 +256,7 @@ export const ModalCreateMailbox = ({
                     />
                   )}
                 />
-                <Text $theme="greyscale" $variation="600">
+                <Text $theme="neutral" $variation="tertiary">
                   {t(
                     'The person will receive an email at this address to set up their account.',
                   )}
@@ -183,50 +271,26 @@ export const ModalCreateMailbox = ({
                 {t('New address')}
               </Text>
             </Box>
-            <Box
-              $padding="md"
-              style={{
-                position: 'relative',
-                alignItems: 'end',
-                gap: '20px',
-                flexDirection: 'row',
-                alignContent: 'flex-end',
-              }}
-            >
+            <Box $padding="md">
               <Controller
                 name="local_part"
                 control={methods.control}
                 render={({ field, fieldState }) => (
-                  <Box $align="center">
-                    <Input
-                      {...field}
-                      label={t('Name of the new address')}
-                      required
-                      placeholder={t('firstname.lastname')}
-                      error={fieldState.error?.message}
-                    />
-                  </Box>
+                  <LocalPartInput
+                    label={t('Name of the new address')}
+                    domain={mailDomain.name}
+                    error={fieldState.error?.message}
+                    required
+                    {...field}
+                  />
                 )}
               />
-              <Box
-                style={{
-                  display: 'flex',
-                  position: 'absolute',
-                  top: '65px',
-                  left: '220px',
-                }}
-              >
-                <Text className="mb-8" $weight="500">
-                  {' '}
-                  @{mailDomain.name}{' '}
-                </Text>
-              </Box>
             </Box>
           </form>
         </FormProvider>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Cancel')}
         </Button>
       ),

@@ -7,30 +7,40 @@ test.describe('Language', () => {
   test.beforeEach(async ({ page, browserName }) => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName);
+    await page.goto('/teams');
   });
 
   test('checks the language picker', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Teams' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Groups' })).toBeVisible();
 
-    const header = page.locator('header').first();
-    await header.getByRole('combobox').getByText('EN').click();
-    await header.getByRole('option', { name: 'FR' }).click();
-    await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
+    // LanguagePicker is inside UserMenu: open the user menu first
+    await page
+      .locator('header')
+      .getByRole('button')
+      .filter({ hasNot: page.getByLabel(/Open the menu|Close the menu/) })
+      .click();
+    await page.getByRole('combobox').getByText('EN').click();
+    await page.getByRole('option', { name: 'FR' }).click();
+    await expect(page.getByRole('combobox').getByText('FR')).toBeVisible();
 
-    await expect(page.getByRole('heading', { name: 'Équipes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Groupes' })).toBeVisible();
   });
 
   test('checks lang attribute of html tag updates when user changes language', async ({
     page,
   }) => {
-    const header = page.locator('header').first();
-
-    await header.getByRole('combobox').getByText('EN').click();
+    // LanguagePicker is inside UserMenu: open the user menu first
+    await page
+      .locator('header')
+      .getByRole('button')
+      .filter({ hasNot: page.getByLabel(/Open the menu|Close the menu/) })
+      .click();
+    await page.getByRole('combobox').getByText('EN').click();
     const html = page.locator('html');
 
     await expect(html).toHaveAttribute('lang', 'en');
 
-    await header.getByRole('option', { name: 'FR' }).click();
+    await page.getByRole('option', { name: 'FR' }).click();
 
     await expect(html).toHaveAttribute('lang', 'fr');
   });

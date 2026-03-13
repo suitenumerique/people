@@ -11,8 +11,8 @@ import { ModalRole } from '../components/ModalRole';
 import { Access } from '../types';
 
 const toast = jest.fn();
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: () => ({
     toast,
   }),
