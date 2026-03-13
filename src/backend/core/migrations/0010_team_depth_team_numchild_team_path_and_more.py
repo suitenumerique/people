@@ -11,7 +11,7 @@ def update_team_paths(apps, schema_editor):
     steplen = 5
 
     # Initialize NumConv with the specified custom alphabet
-    converter = NumConv(len(alphabet), alphabet)
+    converter = NumConv(alphabet)
 
     nodes = Team.objects.all().order_by("created_at")
     for i, node in enumerate(nodes, 1):
