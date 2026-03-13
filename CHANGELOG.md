@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+- 🧑‍💻(admin) export domain contact info #1061
+
 ### Fixed
 - ✨(mailboxes) enforce lowercase on mailboxes
 - 🐛(i18n) fix missing translations for status tag labels
