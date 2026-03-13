@@ -108,7 +108,7 @@ def test_api_domain_invitations__no_access_forbidden_not_found():
 
 def test_api_domain_invitations__should_not_create_duplicate_invitations():
     """An email should not be invited multiple times to the same domain."""
-    existing_invitation = factories.MailDomainInvitationFactory()
+    existing_invitation = factories.MailDomainInvitationFactory(role=enums.MailDomainRoleChoices.ADMIN) 
     domain = existing_invitation.domain
 
     # Grant privileged role on the domain to the user
@@ -132,9 +132,8 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
     assert response.json()["__all__"] == [
         "Mail domain invitation with this Email address and Domain already exists."
     ]
-    access = models.MailDomainInvitation.objects.all()
-    assert access.count() == 1  # and specifically, not 2
-    assert access[0].role == existing_invitation.role
+    access = models.MailDomainInvitation.objects.get()
+    assert access.role == existing_invitation.role
 
 
 def test_api_domain_invitations__inviting_known_email_should_create_access():
