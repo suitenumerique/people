@@ -17,7 +17,7 @@ export enum EnumMailDomainsOrdering {
 }
 
 export type MailDomainsParams = {
-  ordering: EnumMailDomainsOrdering;
+  ordering?: string | EnumMailDomainsOrdering;
 };
 
 type MailDomainsAPIParams = MailDomainsParams & {

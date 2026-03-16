@@ -43,7 +43,12 @@ export function MailBoxesListView({
   const { t } = useTranslation();
   const { userData } = useAuthStore();
 
-  const [sortModel] = useState<SortModel>([]);
+  const [sortModel, setSortModel] = useState<SortModel>([
+    {
+      field: 'local_part',
+      sort: 'desc',
+    },
+  ]);
 
   const ordering = sortModel.length ? formatSortModel(sortModel[0]) : undefined;
   const {
@@ -69,6 +74,10 @@ export function MailBoxesListView({
     if (!mailDomain || !data?.pages?.length) {
       return [];
     }
+
+    const capitalize = (value: string) =>
+      value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+
     return data.pages.flatMap((page) =>
       page.results.map((mailbox: MailDomainMailbox) => {
         const email = `${mailbox.local_part}@${mailDomain.name}`;
@@ -77,7 +86,9 @@ export function MailBoxesListView({
         return {
           id: mailbox.id,
           email,
-          name: `${mailbox.first_name} ${mailbox.last_name}`,
+          name: `${capitalize(mailbox.last_name)} ${capitalize(
+            mailbox.first_name,
+          )}`,
           first_name: mailbox.first_name,
           last_name: mailbox.last_name,
           local_part: mailbox.local_part,
@@ -136,7 +147,7 @@ export function MailBoxesListView({
             rows={filteredMailboxes}
             columns={[
               {
-                field: 'email',
+                field: 'local_part',
                 headerName: `${t('Address')} • ${filteredMailboxes.length}`,
                 renderCell: ({ row }) => (
                   <Text
@@ -148,23 +159,18 @@ export function MailBoxesListView({
                 ),
               },
               {
-                field: 'name',
+                field: 'last_name',
                 headerName: t('User'),
-                enableSorting: true,
                 renderCell: ({ row }) => (
-                  <Text
-                    $weight="500"
-                    $theme="greyscale"
-                    $css="text-transform: capitalize;"
-                  >
+                  <Text $weight="500" $theme="greyscale">
                     {row.name}
                   </Text>
                 ),
               },
               {
+                field: 'status',
                 id: 'status',
                 headerName: t('Status'),
-                enableSorting: true,
                 renderCell({ row }) {
                   return (
                     <Box $direction="row" $align="center">
@@ -185,6 +191,8 @@ export function MailBoxesListView({
               },
             ]}
             isLoading={isLoading}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
           />
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>

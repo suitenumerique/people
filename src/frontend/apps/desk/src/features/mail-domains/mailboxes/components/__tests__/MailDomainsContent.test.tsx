@@ -75,9 +75,11 @@ describe('MailBoxesView', () => {
   });
 
   it('renders with no mailboxes and displays empty placeholder', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       count: 0,
       results: [],
+      next: null,
+      previous: null,
     });
 
     render(<MailBoxesView mailDomain={mockMailDomain} />, {
@@ -90,25 +92,34 @@ describe('MailBoxesView', () => {
   });
 
   it('renders mailboxes and displays them correctly', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       count: 2,
       results: mockMailboxes,
+      next: null,
+      previous: null,
     });
 
-    render(<MailBoxesView mailDomain={mockMailDomain} />, {
+    const mailDomainWithCount = {
+      ...mockMailDomain,
+      count_mailboxes: 2,
+    };
+
+    render(<MailBoxesView mailDomain={mailDomainWithCount} />, {
       wrapper: AppWrapper,
     });
 
     await waitFor(() => {
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Doe John')).toBeInTheDocument();
     });
     expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
   });
 
   it('opens the create mailbox modal when button is clicked by granted user', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       count: 0,
       results: [],
+      next: null,
+      previous: null,
     });
 
     render(<MailBoxesView mailDomain={mockMailDomain} />, {
@@ -123,9 +134,11 @@ describe('MailBoxesView', () => {
   });
 
   it('displays the correct alert based on mail domain status', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       count: 0,
       results: [],
+      next: null,
+      previous: null,
     });
 
     const statuses = [
@@ -154,7 +167,7 @@ describe('MailBoxesView', () => {
   });
 
   it('handles API errors and displays the error message', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       status: 500,
       body: {
         cause: 'An unexpected error occurred.',
@@ -171,9 +184,11 @@ describe('MailBoxesView', () => {
   });
 
   it('hides buttons to ungranted users', async () => {
-    fetchMock.get('end:/mail-domains/example-com/mailboxes/?page=1', {
+    fetchMock.get(/mail-domains\/example-com\/mailboxes\/\?page=1/, {
       count: 0,
       results: [],
+      next: null,
+      previous: null,
     });
 
     render(<MailBoxesView mailDomain={mockMailDomainAsViewer} />, {
