@@ -67,7 +67,11 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
       {
         onSuccess: () =>
           toast(t('Successfully reset password.'), VariantType.SUCCESS),
-        onError: () => toast(t('Failed to reset password'), VariantType.ERROR),
+        onError: (error) =>
+          toast(
+            t(error.cause?.[0] || 'Failed to reset password'),
+            VariantType.ERROR,
+          ),
       },
     );
   };

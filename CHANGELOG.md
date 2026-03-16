@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 
 - 🐛(dimail) fix no import for functional mailboxes
+- 🚸(mailboxes) improve error message when no secondary email
 
 ## [1.24.0] - 2026-03-24
 

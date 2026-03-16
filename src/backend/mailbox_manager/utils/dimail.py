@@ -652,7 +652,7 @@ class DimailAPIClient:
         """Send a request to reset mailbox password."""
         if not mailbox.secondary_email or mailbox.secondary_email == str(mailbox):
             raise exceptions.ValidationError(
-                "Password reset requires a secondary email address. Please add a valid secondary email before trying again."
+                _("Please add a secondary email before resetting the password.")
             )
 
         try:
