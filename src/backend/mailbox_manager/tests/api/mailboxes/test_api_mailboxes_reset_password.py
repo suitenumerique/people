@@ -75,8 +75,7 @@ def test_api_mailboxes__reset_password_no_secondary_email():
     client = APIClient()
     client.force_login(access.user)
 
-    error = "Password reset requires a secondary email address. \
-Please add a valid secondary email before trying again."
+    error = "Please add a secondary email before resetting the password."
 
     # Mailbox with no secondary email
     mailbox = factories.MailboxEnabledFactory(domain=mail_domain, secondary_email=None)
