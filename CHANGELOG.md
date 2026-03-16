@@ -22,6 +22,7 @@ and this project adheres to
 
 - ✨(demo) add aliases to demo #1050
 - ✨(front) add icon to button to configure a domain
+- ✨(datagrid) add sort to mailboxes list + mail domain list
 - ✨(invitations) allow delete invitations mails domains access by an admin
 - ✨(front) delete invitations mails domains access
 - ✨(front) add show invitations mails domains access #1040
