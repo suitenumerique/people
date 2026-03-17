@@ -9,8 +9,10 @@ and this project adheres to
 ## [Unreleased]
 
 ### Fixed
+
 - ✨(mailboxes) enforce lowercase on mailboxes
 - 🐛(i18n) fix missing translations for status tag labels
+- 🚚(route) prioritize mail domains as default landing page
 
 ### Changed
 - 🍱(static) update logo in invitation email template #1085
