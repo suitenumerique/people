@@ -107,7 +107,7 @@ bootstrap: \
 
 # -- Docker/compose
 build: ## build the app-dev container
-	@$(COMPOSE) build app-dev
+	@$(COMPOSE) build app-dev frontend-dev
 	@$(COMPOSE) build dimail
 .PHONY: build
 
@@ -241,21 +241,21 @@ resetdb: ## flush database and create a superuser "admin"
 .PHONY: resetdb
 
 env.d/development/common:
-	cp -n env.d/development/common.dist env.d/development/common
+	cp --update=none env.d/development/common.dist env.d/development/common
 
 env.d/development/france:
-	cp -n env.d/development/france.dist env.d/development/france
+	cp --update=none env.d/development/france.dist env.d/development/france
 
 env.d/development/postgresql:
-	cp -n env.d/development/postgresql.dist env.d/development/postgresql
+	cp --update=none env.d/development/postgresql.dist env.d/development/postgresql
 
 env.d/development/kc_postgresql:
-	cp -n env.d/development/kc_postgresql.dist env.d/development/kc_postgresql
+	cp --update=none env.d/development/kc_postgresql.dist env.d/development/kc_postgresql
 
 # -- Internationalization
 
 env.d/development/crowdin:
-	cp -n env.d/development/crowdin.dist env.d/development/crowdin
+	cp --update=none env.d/development/crowdin.dist env.d/development/crowdin
 
 crowdin-download: ## Download translated message from Crowdin
 	@$(COMPOSE_RUN_CROWDIN) download -c crowdin/config.yml
