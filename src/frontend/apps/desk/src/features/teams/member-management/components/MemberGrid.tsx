@@ -4,7 +4,7 @@ import {
   Input,
   SortModel,
   usePagination,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -195,7 +195,7 @@ export const MemberGrid = ({ team, currentRole }: MemberGridProps) => {
                       aria-label={t('Member icon')}
                       width={20}
                       height={20}
-                      color={colorsTokens()['primary-600']}
+                      color={colorsTokens()['brand-600']}
                     />
                   </Box>
                 );

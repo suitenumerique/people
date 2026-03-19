@@ -29,7 +29,7 @@ export const Panel = () => {
       $minWidth="14rem"
       $css={`
         position: relative;
-        border-right: 1px solid ${colorsTokens()['primary-300']};
+        border-right: 1px solid ${colorsTokens()['brand-300']};
         transition: ${transition};
       `}
       $height="inherit"
@@ -40,7 +40,7 @@ export const Panel = () => {
         aria-label={
           isOpen ? t('Close the teams panel') : t('Open the teams panel')
         }
-        $color={colorsTokens()['primary-600']}
+        $color={colorsTokens()['brand-600']}
         $css={`
           position: absolute;
           right: -1.2rem;
@@ -65,7 +65,7 @@ export const Panel = () => {
           $align="center"
           $justify="space-between"
           $css={`
-            border-bottom: 1px solid ${colorsTokens()['primary-300']};
+            border-bottom: 1px solid ${colorsTokens()['brand-300']};
           `}
         >
           <Text $weight="bold" $size="1.25rem">

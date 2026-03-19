@@ -40,18 +40,14 @@ export const PanelActions = () => {
         }
         onClick={changeOrdering}
         $radius="100%"
-        $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
-        $color={colorsTokens()['primary-600']}
+        $background={isSortAsc ? colorsTokens()['brand-200'] : 'transparent'}
+        $color={colorsTokens()['brand-600']}
       >
         <IconSort width={30} height={30} aria-hidden="true" />
       </BoxButton>
 
       <StyledLink href="/mail-domains/add/">
-        <Text
-          $margin="auto"
-          aria-label={t('Add a mail domain')}
-          $theme="primary"
-        >
+        <Text $margin="auto" aria-label={t('Add a mail domain')} $theme="brand">
           <IconAdd width={27} height={27} aria-hidden="true" />
         </Text>
       </StyledLink>

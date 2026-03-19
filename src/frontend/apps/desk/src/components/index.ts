@@ -5,6 +5,7 @@ export * from './Effect';
 export * from './DropButton';
 export * from './Icon';
 export * from './Input';
+export * from './LocalInput';
 export * from './Link';
 export * from './LogoGouv';
 export * from './Tag';

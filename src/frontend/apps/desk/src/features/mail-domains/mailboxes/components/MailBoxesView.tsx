@@ -4,7 +4,7 @@ import {
   Input,
   Tooltip,
   VariantType,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +43,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
 
   return (
     <>
-      <div aria-label="Mail Domains panel" className="container">
+      <div aria-label="Mail Domains panel">
         <h3 style={{ fontWeight: 700, fontSize: '18px', marginBottom: 'base' }}>
           {t('Email addresses')}
         </h3>
@@ -98,7 +98,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
           <div
             className="hidden md:flex"
             style={{
-              background: colors['greyscale-200'],
+              background: colors['gray-200'],
               height: '32px',
               width: '1px',
             }}
@@ -138,11 +138,6 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
         </div>
 
         <MailBoxesListView mailDomain={mailDomain} querySearch={searchValue} />
-        {!mailDomain.count_mailboxes && (
-          <Text $align="center" $size="small">
-            {t('No mail box was created with this mail domain.')}
-          </Text>
-        )}
         {isCreateMailboxFormVisible && mailDomain ? (
           <ModalCreateMailbox
             mailDomain={mailDomain}
@@ -152,129 +147,7 @@ export function MailBoxesView({ mailDomain }: { mailDomain: MailDomain }) {
       </div>
     </>
   );
-
-  // return isLoading ? (
-  //   <Box $align="center" $justify="center" $height="100%">
-  //     <Loader />
-  //   </Box>
-  // ) : (
-  //   <>
-  //     {isCreateMailboxFormVisible && mailDomain ? (
-  //       <ModalCreateMailbox
-  //         mailDomain={mailDomain}
-  //         closeModal={() => setIsCreateMailboxFormVisible(false)}
-  //       />
-  //     ) : null}
-
-  //     <TopBanner
-  //       mailDomain={mailDomain}
-  //       showMailBoxCreationForm={setIsCreateMailboxFormVisible}
-  //     />
-
-  //     <Card
-  //       $overflow="auto"
-  //       aria-label="Mailboxes list card"
-  //       $css={`
-
-  //         & table td:last-child {
-  //           text-align: right;
-  //         }
-  //     `}
-  //     >
-  //       {error && <TextErrors causes={error.cause} />}
-
-  //       <DataGrid
-  //         aria-label="listbox"
-  //         columns={[
-  //           {
-  //             field: 'name',
-  //             headerName: t('Names'),
-  //             renderCell: ({ row }) => (
-  //               <Text
-  //                 $weight="bold"
-  //                 $theme="primary"
-  //                 $css="text-transform: capitalize;"
-  //               >
-  //                 {row.name}
-  //               </Text>
-  //             ),
-  //           },
-  //           {
-  //             field: 'email',
-  //             headerName: t('Emails'),
-  //           },
-  //           {
-  //             field: 'status',
-  //             headerName: t('Status'),
-  //           },
-  //           {
-  //             id: 'column-actions',
-  //             renderCell: ({ row }) => (
-  //               <MailDomainsActions
-  //                 mailbox={row.mailbox}
-  //                 mailDomain={mailDomain}
-  //               />
-  //             ),
-  //           },
-  //         ]}
-  //         rows={viewMailboxes}
-  //         isLoading={isLoading}
-  //         onSortModelChange={setSortModel}
-  //         sortModel={sortModel}
-  //         pagination={{
-  //           ...pagination,
-  //           displayGoto: false,
-  //         }}
-  //         hideEmptyPlaceholderImage={true}
-  //         emptyPlaceholderLabel={t(
-  //           'No mail box was created with this mail domain.',
-  //         )}
-  //       />
-  //     </Card>
-  //   </>
-  // );
 }
-
-// const TopBanner = ({
-//   mailDomain,
-//   showMailBoxCreationForm,
-// }: {
-//   mailDomain: MailDomain;
-//   showMailBoxCreationForm: (value: boolean) => void;
-// }) => {
-//   const { t } = useTranslation();
-//   const canCreateMailbox =
-//     mailDomain.status === 'enabled' || mailDomain.status === 'pending';
-
-//   const [isCreateMailboxFormVisible, setIsCreateMailboxFormVisible] =
-//     useState(false);
-
-//   return (
-//     <Box $direction="column" $gap="1rem">
-//       <AlertStatus status={mailDomain.status} />
-//       <Box
-//         $direction="row"
-//         $justify="flex-end"
-//         $margin={{ bottom: 'small' }}
-//         $align="center"
-//       >
-//         <Box $display="flex" $direction="row">
-//           {mailDomain?.abilities.post && (
-//             <Button
-//               aria-label={t('Create a mailbox in {{name}} domain', {
-//                 name: mailDomain?.name,
-//               })}
-//               disabled={!canCreateMailbox}
-//               onClick={() => setIsCreateMailboxFormVisible(true)}
-//             >
-//               {t('Create a mailbox')}
-//             </Button>
-//           )}
-//         </Box>
-//       </Box>
-//     </Box>
-//   );
-// };
 
 const AlertStatus = ({ status }: { status: MailDomain['status'] }) => {
   const { t } = useTranslation();

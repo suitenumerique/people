@@ -44,8 +44,8 @@ export const PanelActions = () => {
         }
         onClick={changeOrdering}
         $radius="100%"
-        $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
-        $color={colorsTokens()['primary-600']}
+        $background={isSortAsc ? colorsTokens()['brand-200'] : 'transparent'}
+        $color={colorsTokens()['brand-600']}
       >
         <IconSort width={30} height={30} aria-hidden="true" />
       </BoxButton>
@@ -53,7 +53,7 @@ export const PanelActions = () => {
         <BoxButton
           $margin={{ all: 'auto' }}
           aria-label={t('Add a team')}
-          $color={colorsTokens()['primary-600']}
+          $color={colorsTokens()['brand-600']}
           onClick={() => void navigate.push('/teams/create')}
         >
           <IconAdd width={27} height={27} aria-hidden="true" />

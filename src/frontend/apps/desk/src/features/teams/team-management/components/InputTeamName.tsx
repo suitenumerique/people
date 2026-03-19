@@ -1,4 +1,4 @@
-import { Input, Loader } from '@openfun/cunningham-react';
+import { Input, Loader } from '@gouvfr-lasuite/cunningham-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

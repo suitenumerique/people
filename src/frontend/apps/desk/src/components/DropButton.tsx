@@ -40,6 +40,8 @@ interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  /** Accessible name for the trigger button (recommended for screen readers). */
+  ariaLabel?: string;
 }
 
 export const DropButton = ({
@@ -47,6 +49,7 @@ export const DropButton = ({
   isOpen = false,
   onOpenChange,
   children,
+  ariaLabel,
 }: PropsWithChildren<DropButtonProps>) => {
   const [opacity, setOpacity] = useState(false);
   const [isLocalOpen, setIsLocalOpen] = useState(isOpen);
@@ -75,7 +78,7 @@ export const DropButton = ({
     <>
       <GlobalStyle />
       <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
-        <StyledButton>{button}</StyledButton>
+        <StyledButton aria-label={ariaLabel}>{button}</StyledButton>
         <StyledPopover
           style={{ opacity: opacity ? 1 : 0 }}
           isOpen={isLocalOpen}

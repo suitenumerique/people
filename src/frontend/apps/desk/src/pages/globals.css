@@ -1,14 +1,22 @@
+/* stylelint-disable rule-empty-line-before, at-rule-empty-line-before, declaration-block-no-redundant-longhand-properties */
 @import url('@gouvfr-lasuite/ui-kit/style');
+@import url('@fontsource/material-icons');
 @import url('../cunningham/cunningham-style.css');
 
 :root {
-  --header-height: 52px;
+  --header-height: 72px;
 }
 
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
   font-family: Marianne, sans-serif;
+  background-color: var(--c--contextuals--background--surface--tertiary);
+}
+
+.c__app {
+  height: 100vh !important;
 }
 
 * {
@@ -73,7 +81,29 @@ main ::-webkit-scrollbar-thumb:hover {
 .container {
   position: relative;
   width: 100%;
-  max-width: 960px;
-  margin: 20px auto;
+  max-width: 1200px;
+  margin: 12px auto;
   padding: 0 10px;
+}
+
+.user-menu__button {
+  padding: inherit;
+}
+
+.c__button--with-icon--right {
+  padding: 0.7rem !important;
+}
+
+.c__select-language-picker {
+  text-transform: uppercase;
+}
+
+.regie__panel__container {
+  background-color: var(--c--contextuals--background--surface--primary);
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--c--contextuals--border--surface--primary);
 }

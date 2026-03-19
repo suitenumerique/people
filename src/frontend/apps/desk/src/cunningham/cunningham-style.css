@@ -1,6 +1,6 @@
-@import url('@openfun/cunningham-react/icons');
-@import url('@openfun/cunningham-react/style');
-@import url('@openfun/cunningham-react/fonts');
+@import url('@gouvfr-lasuite/cunningham-react/icons');
+@import url('@gouvfr-lasuite/cunningham-react/style');
+@import url('@gouvfr-lasuite/cunningham-react/fonts');
 @import url('./cunningham-tokens.css');
 @import url('./cunningham-custom-tokens.css');
 @import url('../assets/fonts/Marianne/Marianne-font.css');
@@ -9,7 +9,7 @@
 .c__field,
 .c__select,
 .c__datagrid {
-  font-family: var(--c--theme--font--families--base);
+  font-family: var(--c--globals--font--families--base);
 }
 
 .c__field {
@@ -24,16 +24,16 @@
 }
 
 .labelled-box label {
-  color: var(--c--theme--colors--greyscale-500);
+  color: var(--c--contextuals--content--semantic--neutral--primary);
   top: 1px;
 }
 
 .labelled-box--disabled label {
-  color: var(--c--components--forms-labelledbox--label-color--small-disabled);
+  color: var(--c--contextuals--content--semantic--neutral--tertiary);
 }
 
 .labelled-box label.placeholder {
-  top: 12px;
+  top: 11px;
 }
 
 .c__field :not(.c__textarea__wrapper, div) .labelled-box label.placeholder {
@@ -48,11 +48,10 @@
 .c__input__wrapper,
 .c__textarea__wrapper {
   width: 100%;
-  transition: all var(--c--theme--transitions--duration)
-    var(--c--theme--transitions--ease-out);
+  transition: all var(--c--globals--transitions--duration)
+    var(--c--globals--transitions--ease-out);
   gap: 0.5rem;
-  color: var(--c--theme--colors--greyscale-600);
-  background-color: var(--c--theme--colors--greyscale-050);
+  color: var(--c--globals--colors--gray-600);
 }
 
 @media screen and (width <= 768px) {
@@ -93,7 +92,7 @@
 }
 
 .c__input__wrapper--disabled .c__input {
-  color: var(--c--components--forms-input--value-color--disabled);
+  color: var(--c--contextuals--content--semantic--neutral--tertiary);
 }
 
 .c__input__wrapper--error .c__input {
@@ -148,8 +147,8 @@ input:-webkit-autofill:focus {
 }
 
 .c__select__wrapper {
-  transition: all var(--c--theme--transitions--duration)
-    var(--c--theme--transitions--ease-out);
+  transition: all var(--c--globals--transitions--duration)
+    var(--c--globals--transitions--ease-out);
   min-height: var(--c--components--forms-select--height);
   height: auto;
 }
@@ -174,8 +173,8 @@ input:-webkit-autofill:focus {
 }
 
 .c__select__menu__item {
-  transition: all var(--c--theme--transitions--duration)
-    var(--c--theme--transitions--ease-out);
+  transition: all var(--c--globals--transitions--duration)
+    var(--c--globals--transitions--ease-out);
 }
 
 .c__select--disabled .c__select__wrapper label,
@@ -239,17 +238,17 @@ input:-webkit-autofill:focus {
 
 .c__datagrid__table__container > table tbody tr {
   border: none;
-  border-top: 1px var(--c--theme--colors--greyscale-100) solid;
-  border-bottom: 1px var(--c--theme--colors--greyscale-100) solid;
+  border-top: 1px solid var(--c--contextuals--border--surface--primary);
+  border-bottom: 1px solid var(--c--contextuals--border--surface--primary);
 }
 
 .c__datagrid__table__container > table tbody tr:hover {
-  background-color: var(--c--theme--colors--greyscale-050);
+  background-color: var(--c--contextuals--background--surface--secondary);
 }
 
 .c__datagrid__table__container > table tbody {
   background-color: var(--c--components--datagrid--body--background-color);
-  color: var(--c--theme--colors--greyscale-900);
+  color: var(--c--globals--colors--gray-900);
 }
 
 .c__datagrid__table__container > table {
@@ -286,7 +285,7 @@ input:-webkit-autofill:focus {
   background-color: var(
     --c--components--datagrid--pagination--background-color-active
   );
-  color: var(--c--theme--colors--greyscale-800);
+  color: var(--c--globals--colors--gray-800);
 }
 
 .c__pagination__list .c__button--tertiary-text:disabled {
@@ -309,22 +308,22 @@ input:-webkit-autofill:focus {
 }
 
 .c__date-picker__wrapper {
-  transition: all var(--c--theme--transitions--duration)
-    var(--c--theme--transitions--ease-out);
+  transition: all var(--c--globals--transitions--duration)
+    var(--c--globals--transitions--ease-out);
 }
 
 .c__date-picker:not(.c__date-picker--disabled):hover .c__date-picker__wrapper {
-  box-shadow: var(--c--theme--colors--primary-500) 0 0 0 2px;
+  box-shadow: var(--c--globals--colors--primary-500) 0 0 0 2px;
 }
 
 .c__date-picker.c__date-picker--invalid:not(.c__date-picker--disabled):hover
   .c__date-picker__wrapper {
-  box-shadow: var(--c--theme--colors--danger-300) 0 0 0 2px;
+  box-shadow: var(--c--globals--colors--danger-300) 0 0 0 2px;
 }
 
 .c__date-picker__wrapper button[aria-label='Clear date'],
 .c__date-picker.c__date-picker--invalid .c__date-picker__wrapper * {
-  color: var(--c--theme--colors--danger-300);
+  color: var(--c--globals--colors--danger-300);
 }
 
 /**
@@ -345,7 +344,7 @@ input:-webkit-autofill:focus {
 }
 
 .c__checkbox.c__checkbox--disabled .c__field__text {
-  color: var(--c--theme--colors--greyscale-600);
+  color: var(--c--globals--colors--gray-600);
 }
 
 .c__switch.c__checkbox--disabled .c__switch__rail {
@@ -353,11 +352,11 @@ input:-webkit-autofill:focus {
 }
 
 .c__checkbox.c__checkbox--disabled .c__checkbox__label {
-  color: var(--c--theme--colors--greyscale-400);
+  color: var(--c--globals--colors--gray-400);
 }
 
 .c__radio input::before {
-  box-shadow: inset 1em 1em var(--c--theme--colors--primary-600);
+  box-shadow: inset 1em 1em var(--c--globals--colors--primary-600);
 }
 
 /**
@@ -551,8 +550,8 @@ input:-webkit-autofill:focus {
 }
 
 .c__button--with-icon--right {
-  padding: 0.7rem var(--c--theme--spacings--t) 0.7rem
-    var(--c--theme--spacings--s);
+  padding: 0.7rem var(--c--globals--spacings--t) 0.7rem
+    var(--c--globals--spacings--s);
 }
 
 /**
@@ -567,37 +566,28 @@ input:-webkit-autofill:focus {
   box-shadow: none;
 }
 
-.c__modal__close button {
-  padding: 0;
-  font-size: 88px;
-  width: 28px !important;
-  height: 28px;
-}
-
-.c__modal__close button .material-icons {
-  padding: 0;
-  font-size: 24px;
-  color: var(--c--theme--colors--greyscale-600);
-}
-
-.c__modal__close .c__button {
-  padding: 0 !important;
-}
-
 .c__modal--full .c__modal__content {
   overflow-y: auto;
 }
 
 .c__modal__content {
-  color: var(--c--theme--colors--greyscale-600) !important;
+  font-size: var(--c--globals--font--sizes--sm);
+  color: var(
+    --c--contextuals--content--semantic--neutral--secondary
+  ) !important;
+}
+
+.c__modal__content__margin {
+  padding: var(--c--globals--spacings--md);
+  padding-bottom: 0;
 }
 
 .c__modal__title {
-  padding: var(--c--theme--spacings--md);
+  padding: var(--c--globals--spacings--md);
   padding-bottom: 0;
   margin-bottom: 0;
   text-align: left;
-  font-size: 1.125rem;
+  font-size: var(--c--globals--font--sizes--lg) !important;
 }
 
 @media screen and (width <= 420px) {
@@ -614,7 +604,7 @@ input:-webkit-autofill:focus {
 .c__modal__footer {
   margin-top: 0;
   background-color: transparent !important;
-  padding: var(--c--theme--spacings--md);
+  padding: var(--c--globals--spacings--md);
 }
 
 @media screen and (width <= 576px) {
@@ -638,8 +628,8 @@ input:-webkit-autofill:focus {
   }
 
   .c__modal__title {
-    font-size: var(--c--theme--font--sizes--xs);
-    padding: var(--c--theme--spacings--base);
+    font-size: var(--c--globals--font--sizes--xs);
+    padding: var(--c--globals--spacings--base);
     margin-bottom: 0;
   }
 }

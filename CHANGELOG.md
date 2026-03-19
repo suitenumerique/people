@@ -15,7 +15,9 @@ and this project adheres to
 - 🚚(route) prioritize mail domains as default landing page
 
 ### Changed
+
 - 🍱(static) update logo in invitation email template #1085
+- ✨(uiV2) use Lasuite UI kit, new layout
 
 ## [1.23.1] - 2026-02-16
 

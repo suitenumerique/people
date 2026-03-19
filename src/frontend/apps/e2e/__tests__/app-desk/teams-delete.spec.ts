@@ -18,9 +18,9 @@ test.describe('Teams Delete', () => {
     await page.getByRole('button', { name: `Delete the team` }).click();
     await page.getByRole('button', { name: `Confirm deletion` }).click();
     await expect(page.getByText(`The team has been removed.`)).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: `Create a new team` }),
-    ).toBeVisible();
+
+    // after deletion, user is back on teams page with the \"New group\" button
+    await expect(page.getByTestId('button-new-team')).toBeVisible();
   });
 
   test('it cannot delete the team when we are admin', async ({

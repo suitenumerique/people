@@ -1,5 +1,5 @@
+import { Button, Loader, ModalSize } from '@gouvfr-lasuite/cunningham-react';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { Button, Loader, ModalSize } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -118,7 +118,7 @@ export const ModalAddMailDomain = ({
         </Button>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Close')}
         </Button>
       ),
@@ -156,7 +156,7 @@ export const ModalAddMailDomain = ({
                   />
                 )}
               />
-              <Box $margin={{ vertical: '10px' }}>
+              <Box>
                 <Controller
                   control={methods.control}
                   name="supportEmail"
@@ -174,7 +174,7 @@ export const ModalAddMailDomain = ({
               </Box>
             </form>
           </FormProvider>
-          <Text $theme="greyscale" $variation="600">
+          <Text $theme="neutral" $variation="tertiary">
             {t(
               'Once the domain is added, an administrator will need to validate it. In the meantime, you can still start adding email addresses.',
             )}
@@ -182,7 +182,7 @@ export const ModalAddMailDomain = ({
         </>
       ),
       leftAction: (
-        <Button color="secondary" onClick={() => setStep(0)}>
+        <Button color="neutral" variant="secondary" onClick={() => setStep(0)}>
           {t('Cancel')}
         </Button>
       ),

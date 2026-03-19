@@ -35,20 +35,20 @@ export const TeamItem = ({ team }: TeamProps) => {
   };
 
   const activeStyle = `
-    border-right: 4px solid ${colorsTokens()['primary-600']};
-    background: ${colorsTokens()['primary-400']};
+    border-right: 4px solid ${colorsTokens()['brand-600']};
+    background: ${colorsTokens()['brand-400']};
     span{
-      color: ${colorsTokens()['primary-text']};
+      color: ${colorsTokens()['brand-600']};
     }
   `;
 
   const hoverStyle = `
     &:hover{
-      border-right: 4px solid ${colorsTokens()['primary-400']};
-      background: ${colorsTokens()['primary-300']};
+      border-right: 4px solid ${colorsTokens()['brand-400']};
+      background: ${colorsTokens()['brand-300']};
       
       span{
-        color: ${colorsTokens()['primary-text']};
+        color: ${colorsTokens()['brand-600']};
       }
     }
   `;
@@ -68,27 +68,27 @@ export const TeamItem = ({ team }: TeamProps) => {
           {hasMembers ? (
             <IconGroup
               aria-label={t(`Team icon`)}
-              color={colorsTokens()['primary-500']}
+              color={colorsTokens()['brand-500']}
               {...commonProps}
               style={{
                 ...commonProps.style,
-                border: `1px solid ${colorsTokens()['primary-300']}`,
+                border: `1px solid ${colorsTokens()['brand-300']}`,
               }}
             />
           ) : (
             <IconNone
               aria-label={t(`Empty team icon`)}
-              color={colorsTokens()['greyscale-500']}
+              color={colorsTokens()['gray-500']}
               {...commonProps}
               style={{
                 ...commonProps.style,
-                border: `1px solid ${colorsTokens()['greyscale-300']}`,
+                border: `1px solid ${colorsTokens()['gray-300']}`,
               }}
             />
           )}
           <Text
             $weight="bold"
-            $color={!hasMembers ? colorsTokens()['greyscale-600'] : undefined}
+            $color={!hasMembers ? colorsTokens()['gray-600'] : undefined}
             $css={`
               min-width: 14rem;
             `}

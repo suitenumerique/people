@@ -4,7 +4,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,7 @@ import {
   Box,
   HorizontalSeparator,
   Icon,
-  Input,
+  LocalInput,
   Text,
   TextErrors,
 } from '@/components';
@@ -309,15 +309,6 @@ export const ModalEditAlias = ({
     }
   };
 
-  const handleDestinationKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      void addDestination();
-    }
-  };
-
   const { mutate: createAlias } = useCreateAlias({
     mailDomainSlug: mailDomain.slug,
   });
@@ -342,41 +333,32 @@ export const ModalEditAlias = ({
               <Text $size="md" $weight="bold">
                 {t('Alias configuration')}
               </Text>
-              <Text $theme="greyscale" $variation="600">
+              <Text $theme="gray" $variation="600">
                 {t('Manage the destination email addresses for this alias.')}
               </Text>
             </Box>
 
-            <Box
-              $padding="md"
-              style={{
-                position: 'relative',
-                alignItems: 'end',
-                gap: '20px',
-                flexDirection: 'row',
-                alignContent: 'flex-end',
-              }}
-            >
-              <Box>
-                <Input
-                  value={aliasGroup.local_part}
-                  label={t('Name of the alias')}
-                  disabled
-                  readOnly
-                />
-              </Box>
-              <Box
-                style={{
-                  display: 'flex',
-                  position: 'absolute',
-                  top: '58px',
-                  left: '210px',
-                }}
-              >
-                <Text className="mb-8" $weight="500">
-                  @{mailDomain.name}
-                </Text>
-              </Box>
+            <Box $padding="md">
+              <LocalInput
+                id="edit-alias-local-part"
+                label={t('Name of the alias')}
+                value={aliasGroup.local_part}
+                right={
+                  <span
+                    style={{
+                      padding: '12px 12px 12px 0',
+                      fontSize: 14,
+                      color: 'var(--c--theme--colors--gray-550)',
+                      fontWeight: 500,
+                    }}
+                  >
+                    @{mailDomain.name}
+                  </span>
+                }
+                required={false}
+                readOnly
+                disabled
+              />
             </Box>
 
             <HorizontalSeparator $withPadding={true} />
@@ -388,43 +370,81 @@ export const ModalEditAlias = ({
                 </Text>
 
                 <Box $gap="4px">
-                  <Box $direction="row" $gap="8px" $align="end">
-                    <Box style={{ flex: 1 }}>
-                      <Input
+                  <Box $direction="column" $gap="8px">
+                    <Box $margin={{ bottom: 'xxs' }}>
+                      <Text $size="sm" $weight="500">
+                        {t('Add destination email')}
+                      </Text>
+                    </Box>
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        flexDirection: 'row',
+                        flexWrap: 'nowrap',
+                        border:
+                          '1px solid var(--c--contextuals--border--semantic--neutral--tertiary)',
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        paddingRight: '4px',
+                      }}
+                    >
+                      <input
+                        id="edit-new-destination"
                         value={newDestination}
                         onChange={(e) => {
                           setNewDestination(e.target.value);
                           setDestinationError(undefined);
                         }}
-                        onKeyPress={handleDestinationKeyPress}
-                        error={destinationError}
-                        label={t('Add destination email')}
+                        onKeyUp={(e) => {
+                          if (e.key === 'Enter') {
+                            void addDestination();
+                          }
+                        }}
+                        style={{
+                          flex: '1 1 0',
+                          minWidth: 0,
+                          padding: '12px',
+                          border: 'none',
+                          borderRadius: 0,
+                          fontSize: 14,
+                          background: 'transparent',
+                          color:
+                            'var(--c--contextuals--text--semantic--neutral--primary)',
+                          outline: 'none',
+                        }}
                         placeholder={t('john.appleseed@example.fr')}
                       />
-                    </Box>
-                    <Button
-                      type="submit"
-                      form={FORM_ID}
-                      disabled={!newDestination.trim() || isSubmitting}
-                    >
-                      {isSubmitting ? t('Adding...') : t('Add')}
-                    </Button>
+                      <Button
+                        type="submit"
+                        size="small"
+                        form={FORM_ID}
+                        disabled={!newDestination.trim() || isSubmitting}
+                        tabIndex={-1}
+                        icon={<Icon iconName="add" $color="currentColor" />}
+                      >
+                        {isSubmitting ? t('Adding...') : t('Add destination')}
+                      </Button>
+                    </div>
                   </Box>
+                  {destinationError && (
+                    <Text $theme="error" $variation="secondary" $size="sm">
+                      {destinationError}
+                    </Text>
+                  )}
                 </Box>
 
                 {/* Tableau des destinations */}
                 {destinations.length > 0 && (
                   <Box
                     $margin={{ top: 'md' }}
-                    $css={`
-                      table tbody tr {
-                        transition: background-color 0.2s ease;
-                        cursor: pointer;
-                      }
-                      table tbody tr:hover {
-                        background-color: rgba(0, 0, 0, 0.04);
-                      }
-                    `}
+                    style={{
+                      border:
+                        '1px solid var(--c--contextuals--border--surface--primary)',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                    }}
                   >
                     <table
                       style={{ width: '100%', borderCollapse: 'collapse' }}
@@ -439,6 +459,7 @@ export const ModalEditAlias = ({
                         >
                           <th
                             style={{
+                              paddingLeft: '12px',
                               textAlign: 'left',
                               fontWeight: 500,
                               fontSize: '14px',
@@ -448,8 +469,9 @@ export const ModalEditAlias = ({
                           </th>
                           <th
                             style={{
-                              paddingBottom: '12px',
+                              paddingRight: '12px',
                               textAlign: 'right',
+                              fontWeight: 500,
                               width: '80px',
                             }}
                           >
@@ -462,17 +484,23 @@ export const ModalEditAlias = ({
                           <tr
                             key={index}
                             style={{
-                              paddingBottom: '12px',
-                              marginBottom: '12px',
+                              borderBottom:
+                                index < destinations.length - 1
+                                  ? '1px solid var(--c--contextuals--border--surface--primary)'
+                                  : 'none',
                             }}
                           >
-                            <td style={{ paddingLeft: '12px' }}>
-                              <Text $size="sm">{destination}</Text>
+                            <td>
+                              <Text $size="sm" $padding={{ left: '12px' }}>
+                                {destination}
+                              </Text>
                             </td>
-                            <td style={{ textAlign: 'right' }}>
+                            <td style={{ textAlign: 'right', padding: '12px' }}>
                               <Button
                                 type="button"
-                                color="tertiary"
+                                size="small"
+                                color="neutral"
+                                variant="tertiary"
                                 onClick={() => removeDestination(destination)}
                                 aria-label={t('Remove destination')}
                                 icon={<Icon iconName="delete" />}
@@ -491,7 +519,7 @@ export const ModalEditAlias = ({
         </>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Close')}
         </Button>
       ),
@@ -500,12 +528,10 @@ export const ModalEditAlias = ({
           {destinations.length > 0 && (
             <Button
               type="button"
-              color="danger"
+              color="error"
               onClick={handleRemoveAllDestinations}
               disabled={isSubmitting}
-              icon={
-                <Icon iconName="delete" $theme="greyscale" $variation="000" />
-              }
+              icon={<Icon iconName="delete" $theme="gray" $variation="000" />}
             >
               {t('Delete this alias')}
             </Button>
@@ -534,7 +560,7 @@ export const ModalEditAlias = ({
         {isSubmitting && (
           <Box $align="center" $padding="md">
             <Loader />
-            <Text $theme="greyscale" $variation="600" $margin={{ top: 'sm' }}>
+            <Text $theme="gray" $variation="600" $margin={{ top: 'sm' }}>
               {t('Updating alias...')}
             </Text>
           </Box>
@@ -548,7 +574,8 @@ export const ModalEditAlias = ({
         hideCloseButton
         leftActions={
           <Button
-            color="secondary"
+            color="neutral"
+            variant="secondary"
             fullWidth
             onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
           >
@@ -557,7 +584,7 @@ export const ModalEditAlias = ({
         }
         rightActions={
           <Button
-            color="danger"
+            color="error"
             fullWidth
             onClick={confirmModal.onConfirm}
             disabled={isSubmitting}

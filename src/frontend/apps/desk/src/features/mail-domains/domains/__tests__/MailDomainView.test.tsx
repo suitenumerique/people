@@ -1,4 +1,4 @@
-import { VariantType } from '@openfun/cunningham-react';
+import { VariantType } from '@gouvfr-lasuite/cunningham-react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
@@ -50,8 +50,8 @@ const mockMailDomain: MailDomain = {
 };
 
 const toast = jest.fn();
-jest.mock('@openfun/cunningham-react', () => ({
-  ...jest.requireActual('@openfun/cunningham-react'),
+jest.mock('@gouvfr-lasuite/cunningham-react', () => ({
+  ...jest.requireActual('@gouvfr-lasuite/cunningham-react'),
   useToastProvider: () => ({
     toast,
   }),
@@ -80,8 +80,10 @@ describe('<MailDomainView />', () => {
         wrapper: AppWrapper,
       },
     );
-    // Check if action required button is displayed
-    const actionButton = screen.getByTestId('actions_required');
+    // Check if action required button is displayed (desktop + mobile variants)
+    const actionButtons = screen.getAllByTestId('actions_required');
+    expect(actionButtons.length).toBeGreaterThan(0);
+    const actionButton = actionButtons[0];
     expect(actionButton).toBeInTheDocument();
 
     // Click the button and verify modal content
@@ -117,9 +119,10 @@ describe('<MailDomainView />', () => {
       { wrapper: AppWrapper },
     );
 
-    // Check if action required button is displayed
-    const actionButton = screen.getByTestId('actions_required');
-    expect(actionButton).toBeInTheDocument();
+    // Check if action required button is displayed (desktop + mobile variants)
+    const actionButtons = screen.getAllByTestId('actions_required');
+    expect(actionButtons.length).toBeGreaterThan(0);
+    const actionButton = actionButtons[0];
 
     // Click the button and verify modal content
     fireEvent.click(actionButton);

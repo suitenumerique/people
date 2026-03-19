@@ -13,7 +13,7 @@ export function TeamLayout({ children }: PropsWithChildren) {
       <Box $height="inherit" $direction="row">
         <Panel />
         <Box
-          $background={colorsTokens()['greyscale-050']}
+          $background={colorsTokens()['gray-050']}
           $width="100%"
           $height="inherit"
         >

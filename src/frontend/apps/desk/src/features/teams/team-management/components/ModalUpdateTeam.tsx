@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { t } from 'i18next';
 import { useState } from 'react';
 
@@ -49,7 +49,8 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
       leftActions={
         <Button
           aria-label={t('Close the modal')}
-          color="secondary"
+          color="neutral"
+          variant="secondary"
           fullWidth
           onClick={() => onClose()}
         >
@@ -60,7 +61,7 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
       rightActions={
         <Button
           aria-label={t('Validate the modification')}
-          color="primary"
+          color="brand"
           fullWidth
           onClick={() =>
             updateTeam({
@@ -77,7 +78,7 @@ export const ModalUpdateTeam = ({ onClose, team }: ModalUpdateTeamProps) => {
         <Box $align="center" $gap="1rem">
           <IconEdit
             width={48}
-            color={colorsTokens()['primary-text']}
+            color={colorsTokens()['brand-600']}
             aria-hidden="true"
           />
           <Text $size="h3" $margin="none">

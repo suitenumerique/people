@@ -1,4 +1,4 @@
-import { DataGrid, SortModel } from '@openfun/cunningham-react';
+import { DataGrid, SortModel } from '@gouvfr-lasuite/cunningham-react';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -140,6 +140,14 @@ export function MailBoxesListView({
     <div>
       {error && <TextErrors causes={error.cause ?? []} />}
 
+      {!filteredMailboxes.length && (
+        <Box $align="center" $margin={{ top: 'base', bottom: 'base' }}>
+          <Text $size="small">
+            {t('No mail box was created with this mail domain.')}
+          </Text>
+        </Box>
+      )}
+
       {filteredMailboxes && filteredMailboxes.length ? (
         <>
           <DataGrid
@@ -152,7 +160,7 @@ export function MailBoxesListView({
                 renderCell: ({ row }) => (
                   <Text
                     $weight={row.isCurrentUser ? '600' : '400'}
-                    $theme={row.isCurrentUser ? 'primary' : 'greyscale'}
+                    $theme={row.isCurrentUser ? 'primary' : 'gray'}
                   >
                     {row.email}
                   </Text>
@@ -162,7 +170,11 @@ export function MailBoxesListView({
                 field: 'last_name',
                 headerName: t('User'),
                 renderCell: ({ row }) => (
-                  <Text $weight="500" $theme="greyscale">
+                  <Text
+                    $weight="500"
+                    $theme="gray"
+                    $css="text-transform: capitalize;"
+                  >
                     {row.name}
                   </Text>
                 ),
@@ -194,10 +206,11 @@ export function MailBoxesListView({
             sortModel={sortModel}
             onSortModelChange={setSortModel}
           />
+
           {isFetchingNextPage && <div>{t('Loading more...')}</div>}
         </>
       ) : null}
-      <div ref={loadMoreRef} style={{ height: 32 }} />
+      <div ref={loadMoreRef} style={{ height: 0 }} />
     </div>
   );
 }

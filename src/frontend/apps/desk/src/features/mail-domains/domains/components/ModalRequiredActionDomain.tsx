@@ -4,11 +4,11 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { Box, Icon, Text } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
 import { MailDomain } from '@/features/mail-domains/domains';
 
@@ -43,40 +43,55 @@ export const ModalRequiredActionDomain = ({
     toast(t('copy done'), VariantType.SUCCESS);
   };
 
+  const isActionRequired = mailDomain.status === 'action_required';
+  const isEnabled = mailDomain.status === 'enabled';
+
+  const title = isActionRequired
+    ? t('Required actions on domain')
+    : t('Domain configuration');
+
   const step = 0;
 
   const steps = [
     {
-      title:
-        mailDomain.status !== 'enabled'
-          ? t('Required actions on domain')
-          : t('Domain configuration'),
+      title,
       content: (
         <Text>
-          {mailDomain.status !== 'enabled' ? (
-            <>
-              <p>
-                {t(
-                  'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
-                )}
-              </p>
-              <h3>{t('Actions required detail')}</h3>
-            </>
-          ) : (
-            <p>{t('The domain is currently enabled.')}</p>
-          )}
-          {mailDomain.action_required_details && (
-            <pre>
-              {Object.entries(mailDomain.action_required_details).map(
-                ([check, value], index) => (
-                  <ul key={`action-required-list-${index}`}>
-                    <li key={`action-required-${index}`}>
-                      <b>{check}</b>: {value}
-                    </li>
-                  </ul>
-                ),
+          <span>
+            {isActionRequired &&
+              t(
+                'The domain is currently in action required status. Please take the necessary actions to resolve those following issues.',
               )}
-            </pre>
+            {isEnabled &&
+              t(
+                'The domain is currently enabled and its configuration looks correct. You can run a new check to make sure everything is still properly configured.',
+              )}
+            {!isActionRequired &&
+              !isEnabled &&
+              t(
+                'The domain status can be checked again to update its configuration details.',
+              )}
+          </span>
+          {mailDomain.action_required_details && (
+            <>
+              {isActionRequired && (
+                <>
+                  <h3>{t('Actions required detail')}</h3>
+
+                  <pre>
+                    {Object.entries(mailDomain.action_required_details).map(
+                      ([check, value], index) => (
+                        <ul key={`action-required-list-${index}`}>
+                          <li key={`action-required-${index}`}>
+                            <b>{check}</b>: {value}
+                          </li>
+                        </ul>
+                      ),
+                    )}
+                  </pre>
+                </>
+              )}
+            </>
           )}
           {mailDomain.expected_config && (
             <Box $margin={{ bottom: 'medium' }}>
@@ -138,15 +153,18 @@ export const ModalRequiredActionDomain = ({
         <Loader />
       ) : (
         <Button
+          color="brand"
+          variant="primary"
           onClick={() => {
             void fetchMailDomain(mailDomain.slug);
           }}
+          icon={<Icon iconName="refresh" $theme="gray" $variation="000" />}
         >
           {t('Re-run check')}
         </Button>
       ),
       leftAction: (
-        <Button color="secondary" onClick={closeModal}>
+        <Button color="neutral" variant="secondary" onClick={closeModal}>
           {t('Close')}
         </Button>
       ),

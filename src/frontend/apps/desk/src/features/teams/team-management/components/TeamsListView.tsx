@@ -1,9 +1,9 @@
-import { Button, DataGrid } from '@openfun/cunningham-react';
+import { Button, DataGrid } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Text } from '@/components';
+import { Box, Text } from '@/components';
 import { TeamsOrdering, useTeams } from '@/features/teams/team-management';
 
 interface TeamsListViewProps {
@@ -48,11 +48,15 @@ export function TeamsListView({ querySearch }: TeamsListViewProps) {
               id: 'actions',
               renderCell: ({ row }) => (
                 <Button
-                  color="tertiary"
+                  size="small"
+                  color="brand"
+                  variant="secondary"
+                  iconPosition="right"
+                  icon={<span className="material-icons">arrow_forward</span>}
                   onClick={() => router.push(`/teams/${row.id}`)}
                   aria-label={t('View team details')}
                 >
-                  <span className="material-icons">chevron_right</span>
+                  {t('Open')}
                 </Button>
               ),
             },
@@ -61,9 +65,9 @@ export function TeamsListView({ querySearch }: TeamsListViewProps) {
         />
       ) : null}
       {(!filteredTeams || !filteredTeams.length) && (
-        <Text $align="center" $size="small">
-          {t('No teams exist.')}
-        </Text>
+        <Box $align="center" $margin={{ all: 'auto' }}>
+          <Text $size="small">{t('No teams exist.')}</Text>
+        </Box>
       )}
     </div>
   );

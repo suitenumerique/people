@@ -1,4 +1,4 @@
-import { Button, DataGrid, SortModel } from '@openfun/cunningham-react';
+import { Button, DataGrid, SortModel } from '@gouvfr-lasuite/cunningham-react';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -141,9 +141,11 @@ export function AliasesListView({
       {error && <TextErrors causes={error.cause ?? []} />}
 
       {!filteredAliases.length && (
-        <Text $align="center" $size="small" $padding={{ top: 'base' }}>
-          {t('No alias was created with this mail domain.')}
-        </Text>
+        <Box $align="center" $margin={{ top: 'base', bottom: 'base' }}>
+          <Text $size="small">
+            {t('No alias was created with this mail domain.')}
+          </Text>
+        </Box>
       )}
 
       {filteredAliases && filteredAliases.length ? (
@@ -156,7 +158,7 @@ export function AliasesListView({
                 field: 'local_part',
                 headerName: `${t('Alias')} • ${filteredAliases.length}`,
                 renderCell: ({ row }) => (
-                  <Text $weight="400" $theme="greyscale">
+                  <Text $weight="400" $theme="gray">
                     {row.email}
                   </Text>
                 ),
@@ -165,7 +167,7 @@ export function AliasesListView({
                 field: 'count_destinations',
                 headerName: t('Destinations'),
                 renderCell: ({ row }) => (
-                  <Text $weight="500" $theme="greyscale">
+                  <Text $weight="500" $theme="gray">
                     {row.count_destinations} destination
                     {row.count_destinations > 1 ? 's' : ''}
                   </Text>
@@ -186,7 +188,8 @@ export function AliasesListView({
                     <Box $direction="row" $gap="sm" $align="center">
                       {canEdit && (
                         <Button
-                          color="tertiary"
+                          color="brand"
+                          variant="secondary"
                           onClick={() => setEditingAliasGroup(row)}
                           style={{
                             fontWeight: '500',

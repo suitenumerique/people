@@ -3,7 +3,7 @@ import {
   ModalSize,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
+} from '@gouvfr-lasuite/cunningham-react';
 import { t } from 'i18next';
 import { useRouter } from 'next/navigation';
 
@@ -47,7 +47,8 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
       leftActions={
         <Button
           aria-label={t('Close the modal')}
-          color="secondary"
+          color="neutral"
+          variant="secondary"
           fullWidth
           onClick={() => onClose()}
         >
@@ -58,7 +59,7 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
       rightActions={
         <Button
           aria-label={t('Confirm deletion')}
-          color="primary"
+          color="brand"
           fullWidth
           onClick={() =>
             removeTeam({
@@ -74,7 +75,7 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
         <Box $align="center" $gap="1rem">
           <IconRemove
             width={48}
-            color={colorsTokens()['primary-text']}
+            color={colorsTokens()['brand-600']}
             aria-hidden="true"
           />
           <Text $size="h3" $margin="none">
@@ -102,7 +103,7 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
           $padding="small"
           $direction="row"
           $gap="0.5rem"
-          $background={colorsTokens()['primary-150']}
+          $background={colorsTokens()['brand-150']}
           $theme="primary"
           $align="center"
           $radius="2px"
@@ -110,12 +111,12 @@ export const ModalRemoveTeam = ({ onClose, team }: ModalRemoveTeamProps) => {
           <IconGroup
             className="p-t"
             aria-hidden="true"
-            color={colorsTokens()['primary-500']}
+            color={colorsTokens()['brand-500']}
             width={58}
             style={{
               borderRadius: '8px',
               backgroundColor: '#ffffff',
-              border: `1px solid ${colorsTokens()['primary-300']}`,
+              border: `1px solid ${colorsTokens()['brand-300']}`,
             }}
           />
           <Text $theme="primary" $weight="bold" $size="l">
