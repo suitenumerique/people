@@ -12,7 +12,7 @@ export const Card = ({ children, ...props }: PropsWithChildren<BoxType>) => {
       $background="white"
       $radius="4px"
       $css={`
-        border: 1px solid ${colorsTokens()['greyscale-050']};
+        border: 1px solid ${colorsTokens()['gray-050']};
       `}
       {...props}
     >

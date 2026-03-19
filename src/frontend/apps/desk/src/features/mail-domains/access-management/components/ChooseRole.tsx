@@ -1,6 +1,8 @@
-import { Radio, RadioGroup } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
+import { DropdownMenu, useDropdownMenu } from '@gouvfr-lasuite/ui-kit';
 import { useTranslation } from 'react-i18next';
 
+import { Icon } from '@/components';
 import { Role } from '@/features/mail-domains/domains/types';
 
 const ORDERED_ROLES = [Role.VIEWER, Role.ADMIN, Role.OWNER];
@@ -25,34 +27,66 @@ export const ChooseRole = ({
     new Set([roleAccess, ...availableRoles]),
   );
 
-  const translations = {
+  const translations: Record<Role, string> = {
     [Role.VIEWER]: t('Viewer'),
     [Role.ADMIN]: t('Administrator'),
     [Role.OWNER]: t('Owner'),
   };
 
-  return (
-    <RadioGroup>
-      {ORDERED_ROLES.filter((role) => rolesToDisplay.includes(role)).map(
-        (role) => {
-          let disableRadio = disabled;
-          if (role === Role.OWNER) {
-            disableRadio = disableRadio || currentRole !== Role.OWNER;
-          }
+  const { isOpen, setIsOpen } = useDropdownMenu();
 
-          return (
-            <Radio
-              key={role}
-              label={translations[role]}
-              value={role}
-              name="role"
-              onChange={(evt) => setRole(evt.target.value as Role)}
-              defaultChecked={roleAccess === role}
-              disabled={disableRadio}
-            />
-          );
+  const orderedRolesToDisplay = ORDERED_ROLES.filter((role) =>
+    rolesToDisplay.includes(role),
+  );
+
+  const selectedRole = orderedRolesToDisplay.includes(roleAccess)
+    ? roleAccess
+    : orderedRolesToDisplay[0];
+
+  const menuOptions =
+    orderedRolesToDisplay.map((role) => {
+      const isOwnerDisabled = role === Role.OWNER && currentRole !== Role.OWNER;
+      const isOptionDisabled = disabled || isOwnerDisabled;
+
+      return {
+        label: translations[role],
+        callback: () => {
+          if (isOptionDisabled) {
+            return;
+          }
+          setIsOpen(false);
+          setRole(role);
         },
-      )}
-    </RadioGroup>
+        isDisabled: isOptionDisabled,
+      };
+    }) ?? [];
+
+  const selectedLabel = selectedRole ? translations[selectedRole] : '';
+
+  return (
+    <DropdownMenu
+      options={menuOptions}
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+    >
+      <Button
+        variant="tertiary"
+        color="brand"
+        size="small"
+        disabled={disabled || orderedRolesToDisplay.length === 0}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        icon={<Icon iconName="expand_more" $size="sm" $color="brand" />}
+        iconPosition="right"
+        onClick={() => {
+          if (disabled || orderedRolesToDisplay.length === 0) {
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
+      >
+        {selectedLabel}
+      </Button>
+    </DropdownMenu>
   );
 };

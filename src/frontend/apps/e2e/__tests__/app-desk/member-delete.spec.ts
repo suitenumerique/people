@@ -53,9 +53,8 @@ test.describe('Members Delete', () => {
     await expect(
       page.getByText(`The member has been removed from the team`),
     ).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: `Create a new team` }),
-    ).toBeVisible();
+
+    await expect(page).toHaveURL(/\/teams\/?$/);
   });
 
   test('it cannot delete owner member', async ({ page, browserName }) => {

@@ -1,4 +1,4 @@
-import { CunninghamProvider } from '@openfun/cunningham-react';
+import { CunninghamProvider } from '@gouvfr-lasuite/ui-kit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -27,13 +27,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const { theme } = useCunninghamTheme();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools />
-      <CunninghamProvider theme={theme}>
+    <CunninghamProvider theme={theme}>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
         <ConfigProvider>
           <Auth>{children}</Auth>
         </ConfigProvider>
-      </CunninghamProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </CunninghamProvider>
   );
 }

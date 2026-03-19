@@ -2,11 +2,12 @@ import {
   Button,
   VariantType,
   useToastProvider,
-} from '@openfun/cunningham-react';
-import React, { useEffect, useRef, useState } from 'react';
+} from '@gouvfr-lasuite/cunningham-react';
+import { DropdownMenu, useDropdownMenu } from '@gouvfr-lasuite/ui-kit';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconOptions, Text } from '@/components';
+import { Box, Icon } from '@/components';
 
 import { MailDomain, Role } from '../../domains/types';
 import { useDeleteMailDomainInvitation } from '../api';
@@ -24,9 +25,8 @@ export const InvitationAction = ({
   mailDomain,
 }: InvitationActionProps) => {
   const { t } = useTranslation();
+  const { isOpen, setIsOpen } = useDropdownMenu();
   const { toast } = useToastProvider();
-  const [isDropOpen, setIsDropOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mutate: deleteMailDomainInvitation } = useDeleteMailDomainInvitation({
     onSuccess: () => {
@@ -36,99 +36,63 @@ export const InvitationAction = ({
     },
   });
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsDropOpen(false);
-      }
-    };
-    if (isDropOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isDropOpen]);
-
   if (currentRole === Role.VIEWER) {
     return null;
   }
 
   const canDelete = currentRole === Role.OWNER || currentRole === Role.ADMIN;
 
+  const localizedRoles = {
+    [Role.ADMIN]: t('Administrator'),
+    [Role.VIEWER]: t('Viewer'),
+    [Role.OWNER]: t('Owner'),
+  };
+
+  const roleLabel = localizedRoles[access.role];
+
+  const menuOptions = canDelete
+    ? [
+        {
+          label: t('Delete invitation'),
+          callback: () => {
+            setIsOpen(false);
+            deleteMailDomainInvitation({
+              slug: mailDomain.slug,
+              invitationId: access.id,
+            });
+          },
+          variant: 'danger' as const,
+        },
+      ]
+    : [];
+
   if (!canDelete) {
-    return null;
+    return (
+      <Button variant="tertiary" color="neutral" size="small" disabled>
+        {roleLabel}
+      </Button>
+    );
   }
 
   return (
-    <div
-      style={{ position: 'relative', display: 'inline-block' }}
-      ref={dropdownRef}
-    >
-      <button
-        onClick={() => setIsDropOpen((prev) => !prev)}
-        aria-label={t('Open the invitation options modal')}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 4,
-        }}
-        type="button"
+    <Box $display="inline-flex">
+      <DropdownMenu
+        options={menuOptions}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
       >
-        <IconOptions />
-      </button>
-
-      {isDropOpen && (
-        <div
-          role="menu"
-          tabIndex={0}
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            zIndex: 1000,
-            background: 'white',
-            border: '1px solid #ccc',
-            borderRadius: 4,
-            padding: '0.5rem',
-            minWidth: '210px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          }}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape' || e.key === 'Enter') {
-              setIsDropOpen(false);
-            }
-          }}
+        <Button
+          variant="tertiary"
+          color="brand"
+          size="small"
+          onClick={() => setIsOpen(!isOpen)}
+          icon={<Icon iconName="expand_more" $size="sm" $color="brand" />}
+          iconPosition="right"
+          aria-label={t('Open the invitation options modal')}
         >
-          {canDelete && (
-            <Button
-              aria-label={t('Delete this invitation')}
-              onClick={() => {
-                deleteMailDomainInvitation({
-                  slug: mailDomain.slug,
-                  invitationId: access.id,
-                });
-                setIsDropOpen(false);
-              }}
-              color="primary-text"
-              size="small"
-              fullWidth
-              icon={
-                <span className="material-icons" aria-hidden="true">
-                  delete
-                </span>
-              }
-            >
-              <Text $theme="primary">{t('Delete invitation')}</Text>
-            </Button>
-          )}
-        </div>
-      )}
-    </div>
+          {roleLabel}
+        </Button>
+      </DropdownMenu>
+    </Box>
   );
 };

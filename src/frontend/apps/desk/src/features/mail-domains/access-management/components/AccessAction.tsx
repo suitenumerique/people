@@ -1,14 +1,19 @@
-import { Button } from '@openfun/cunningham-react';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  VariantType,
+  useToastProvider,
+} from '@gouvfr-lasuite/cunningham-react';
+import { DropdownMenu, useDropdownMenu } from '@gouvfr-lasuite/ui-kit';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconOptions, Text } from '@/components';
+import { Box, Icon, IconOptions } from '@/components';
+import { useUpdateMailDomainAccess } from '@/features/mail-domains/access-management';
 
 import { MailDomain, Role } from '../../domains/types';
 import { Access } from '../types';
 
 import { ModalDelete } from './ModalDelete';
-import { ModalRole } from './ModalRole';
 
 interface AccessActionProps {
   access: Access;
@@ -22,28 +27,17 @@ export const AccessAction = ({
   mailDomain,
 }: AccessActionProps) => {
   const { t } = useTranslation();
-  const [isModalRoleOpen, setIsModalRoleOpen] = useState(false);
+  const { isOpen, setIsOpen } = useDropdownMenu();
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-  const [isDropOpen, setIsDropOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToastProvider();
 
-  // Ferme le menu si clic en dehors
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsDropOpen(false);
-      }
-    };
-    if (isDropOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isDropOpen]);
+  const { mutate: updateMailDomainAccess } = useUpdateMailDomainAccess({
+    onSuccess: () => {
+      toast(t('The role has been updated'), VariantType.SUCCESS, {
+        duration: 4000,
+      });
+    },
+  });
 
   if (currentRole === Role.VIEWER) {
     return null;
@@ -55,104 +49,115 @@ export const AccessAction = ({
     access.can_set_role_to.length > 0;
   const canDelete = mailDomain.abilities.delete;
 
+  const localizedRoles = {
+    [Role.ADMIN]: t('Administrator'),
+    [Role.VIEWER]: t('Viewer'),
+    [Role.OWNER]: t('Owner'),
+  };
+
+  const menuOptions = [
+    ...(canUpdateRole
+      ? (access.can_set_role_to ?? []).map((role) => ({
+          label: localizedRoles[role],
+          callback: () => {
+            setIsOpen(false);
+            updateMailDomainAccess({
+              slug: mailDomain.slug,
+              accessId: access.id,
+              role,
+            });
+          },
+        }))
+      : []),
+    ...(canDelete
+      ? [
+          ...(canUpdateRole ? [{ type: 'separator' as const }] : []),
+          {
+            label: t('Remove from domain'),
+            callback: () => {
+              setIsOpen(false);
+              setIsModalDeleteOpen(true);
+            },
+            variant: 'danger' as const,
+          },
+        ]
+      : []),
+  ];
+
+  const roleLabel = localizedRoles[access.role];
+
   if (!canUpdateRole && !canDelete) {
-    return null;
+    return (
+      <Button variant="tertiary" color="neutral" size="small" disabled>
+        {roleLabel}
+      </Button>
+    );
+  }
+
+  if (canUpdateRole) {
+    return (
+      <>
+        <Box $display="inline-flex">
+          <DropdownMenu
+            options={menuOptions}
+            isOpen={isOpen}
+            onOpenChange={setIsOpen}
+          >
+            <Button
+              variant="tertiary"
+              color="brand"
+              size="small"
+              onClick={() => setIsOpen(!isOpen)}
+              icon={<Icon iconName="expand_more" $size="sm" $color="brand" />}
+              iconPosition="right"
+            >
+              {roleLabel}
+            </Button>
+          </DropdownMenu>
+        </Box>
+
+        {isModalDeleteOpen && canDelete && (
+          <ModalDelete
+            access={access}
+            currentRole={currentRole}
+            onClose={() => setIsModalDeleteOpen(false)}
+            mailDomain={mailDomain}
+          />
+        )}
+      </>
+    );
   }
 
   return (
     <>
-      <div
-        style={{ position: 'relative', display: 'inline-block' }}
-        ref={dropdownRef}
-      >
-        <button
-          onClick={() => setIsDropOpen((prev) => !prev)}
-          aria-label={t('Open the access options modal')}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
-          }}
+      <Box $display="inline-flex" $direction="row" $align="center" $gap="xs">
+        <Button variant="tertiary" color="neutral" size="small" disabled>
+          {roleLabel}
+        </Button>
+        <DropdownMenu
+          options={menuOptions}
+          isOpen={isOpen}
+          onOpenChange={setIsOpen}
         >
-          <IconOptions />
-        </button>
-
-        {isDropOpen && (
-          <div
-            role="menu"
-            tabIndex={0}
+          <button
+            type="button"
+            aria-label={t('Open the access options modal')}
+            onClick={() => setIsOpen(!isOpen)}
             style={{
-              position: 'absolute',
-              top: '100%',
-              right: 0,
-              zIndex: 1000,
-              background: 'white',
-              border: '1px solid #ccc',
-              borderRadius: 4,
-              padding: '0.5rem',
-              minWidth: '210px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape' || e.key === 'Enter') {
-                setIsDropOpen(false);
-              }
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {canUpdateRole && (
-              <Button
-                aria-label={t(
-                  'Open the modal to update the role of this access',
-                )}
-                onClick={() => {
-                  setIsModalRoleOpen(true);
-                  setIsDropOpen(false);
-                }}
-                color="primary-text"
-                size="small"
-                fullWidth
-                icon={
-                  <span className="material-icons" aria-hidden="true">
-                    edit
-                  </span>
-                }
-              >
-                <Text $theme="primary">{t('Update role')}</Text>
-              </Button>
-            )}
-            {canDelete && (
-              <Button
-                aria-label={t('Open the modal to delete this access')}
-                onClick={() => {
-                  setIsModalDeleteOpen(true);
-                  setIsDropOpen(false);
-                }}
-                color="primary-text"
-                size="small"
-                fullWidth
-                icon={
-                  <span className="material-icons" aria-hidden="true">
-                    delete
-                  </span>
-                }
-              >
-                <Text $theme="primary">{t('Remove from domain')}</Text>
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+            <IconOptions />
+          </button>
+        </DropdownMenu>
+      </Box>
 
-      {isModalRoleOpen && canUpdateRole && (
-        <ModalRole
-          access={access}
-          currentRole={currentRole}
-          onClose={() => setIsModalRoleOpen(false)}
-          slug={mailDomain.slug}
-        />
-      )}
       {isModalDeleteOpen && canDelete && (
         <ModalDelete
           access={access}

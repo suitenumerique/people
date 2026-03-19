@@ -9,11 +9,8 @@ test.beforeEach(async ({ page, browserName }) => {
 
 test.describe('Teams Create', () => {
   test('checks all the create team elements are visible', async ({ page }) => {
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new team',
-    });
+    const buttonCreateHomepage = page.getByTestId('button-new-team');
     await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
 
     const card = page.getByLabel('Create new team card').first();
 
@@ -40,11 +37,8 @@ test.describe('Teams Create', () => {
   });
 
   test('checks the cancel button interaction', async ({ page }) => {
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new team',
-    });
+    const buttonCreateHomepage = page.getByTestId('button-new-team');
     await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
 
     const card = page.getByLabel('Create new team card').first();
 
@@ -61,9 +55,7 @@ test.describe('Teams Create', () => {
     page,
     browserName,
   }) => {
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new team',
-    });
+    const buttonCreateHomepage = page.getByTestId('button-new-team');
     await buttonCreateHomepage.click();
 
     const teamName = `My routing team ${browserName}-${Math.floor(Math.random() * 1000)}`;

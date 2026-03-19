@@ -12,32 +12,34 @@ export const Input = ({ label, error, required, ...props }: InputProps) => {
   const { colorsTokens } = useCunninghamTheme();
 
   return (
-    <Box $display="flex" $gap="4px">
-      <label
-        htmlFor={label}
-        style={{ fontWeight: 500, color: colorsTokens()['greyscale-900'] }}
-      >
-        {label} {required && '*'}
-      </label>
+    <Box>
+      <Box $display="flex" $gap="8px" $margin={{ bottom: 'sm' }}>
+        <label
+          htmlFor={label}
+          style={{ fontWeight: 500, color: colorsTokens()['gray-900'] }}
+        >
+          {label} {required && '*'}
+        </label>
+        <input
+          id={label}
+          aria-required={required}
+          required={required}
+          style={{
+            padding: '12px',
+            borderRadius: '4px',
+            fontSize: '14px',
+            border: `1px solid ${error ? colorsTokens()['error-500'] : 'var(--c--contextuals--border--semantic--neutral--tertiary)'}`,
+            background: colorsTokens()['gray-000'],
+            color: colorsTokens()['gray-550'],
+          }}
+          {...props}
+        />
+      </Box>
       {error && (
-        <Text $size="xs" $theme="danger" $variation="600">
+        <Text $size="xs" $theme="error" $variation="secondary">
           {error}
         </Text>
       )}
-      <input
-        id={label}
-        aria-required={required}
-        required={required}
-        style={{
-          padding: '12px',
-          borderRadius: '4px',
-          fontSize: '14px',
-          border: `1px solid ${error ? colorsTokens()['danger-500'] : colorsTokens()['greyscale-400']}`,
-          background: colorsTokens()['greyscale-050'],
-          color: colorsTokens()['greyscale-900'],
-        }}
-        {...props}
-      />
     </Box>
   );
 };

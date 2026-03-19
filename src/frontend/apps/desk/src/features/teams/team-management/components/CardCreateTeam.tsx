@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button } from '@gouvfr-lasuite/cunningham-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ export const CardCreateTeam = () => {
           <IconGroup
             aria-hidden="true"
             width={44}
-            color={colorsTokens()['primary-text']}
+            color={colorsTokens()['brand-600']}
           />
           <Text as="h3" $textAlign="center">
             {t('Create a new group')}
@@ -56,7 +56,11 @@ export const CardCreateTeam = () => {
         />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
-        <Button color="secondary" onClick={() => router.push('/')}>
+        <Button
+          color="neutral"
+          variant="secondary"
+          onClick={() => router.push('/')}
+        >
           {t('Cancel')}
         </Button>
 

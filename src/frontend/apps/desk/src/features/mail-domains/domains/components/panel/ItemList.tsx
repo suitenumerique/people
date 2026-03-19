@@ -1,4 +1,4 @@
-import { Loader } from '@openfun/cunningham-react';
+import { Loader } from '@gouvfr-lasuite/cunningham-react';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
