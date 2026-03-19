@@ -78,7 +78,7 @@ export const ModalRequiredActionDomain = ({
                 <>
                   <h3>{t('Actions required detail')}</h3>
 
-                  <pre>
+                  <div>
                     {Object.entries(mailDomain.action_required_details).map(
                       ([check, value], index) => (
                         <ul key={`action-required-list-${index}`}>
@@ -88,7 +88,7 @@ export const ModalRequiredActionDomain = ({
                         </ul>
                       ),
                     )}
-                  </pre>
+                  </div>
                 </>
               )}
             </>
@@ -100,7 +100,7 @@ export const ModalRequiredActionDomain = ({
                   ? t('DNS Configuration Required:')
                   : t('DNS Configuration:')}
               </h3>
-              <pre>
+              <div>
                 <div
                   style={{
                     whiteSpace: 'pre-wrap',
@@ -120,14 +120,22 @@ export const ModalRequiredActionDomain = ({
                           </>
                         )}
                         <b>{item.type.toUpperCase()}</b> {t('with value:')}{' '}
-                        <span style={{ backgroundColor: '#d4e5f5' }}>
+                        <span
+                          style={{
+                            backgroundColor: '#000',
+                            color: '#fff',
+                            padding: '10px',
+                            display: 'block',
+                            borderRadius: '5px',
+                            fontFamily: 'monospace',
+                          }}
+                        >
                           {item.value}
                         </span>
                         <button
                           style={{
                             padding: '2px 5px',
-                            marginLeft: '10px',
-                            backgroundColor: '#cccccc',
+                            backgroundColor: '#999',
                             border: 'none',
                             color: 'white',
                             cursor: 'pointer',
@@ -144,7 +152,7 @@ export const ModalRequiredActionDomain = ({
                     ))}
                   </ul>
                 </div>
-              </pre>
+              </div>
             </Box>
           )}
         </Text>
