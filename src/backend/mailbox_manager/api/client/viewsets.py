@@ -52,11 +52,7 @@ class MailDomainViewSet(
     ordering_fields = ["created_at", "name"]
     ordering = ["-created_at"]
     lookup_field = "slug"
-    queryset = models.MailDomain.objects.all()
-
-    def get_queryset(self):
-        """Restrict results to the current user's domain."""
-        return self.queryset.filter(accesses__user=self.request.user)
+    queryset = models.MailDomain.objects.all().prefetch_related("accesses")
 
     def perform_create(self, serializer):
         """Set the current user as owner of the newly created mail domain."""

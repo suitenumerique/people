@@ -9,6 +9,7 @@ from django.urls import reverse
 
 import pytest
 import responses
+from freezegun import freeze_time
 from rest_framework import status
 
 from core import factories as core_factories
@@ -267,3 +268,42 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client, dimail_token_o
     )
     mailbox.refresh_from_db()
     assert mailbox.status == enums.MailboxStatusChoices.PENDING
+
+
+@pytest.mark.django_db
+def test_export_domains_infos(client, django_assert_num_queries):
+    """Test admin action to export."""
+
+    admin = core_factories.UserFactory(is_staff=True, is_superuser=True)
+    client.force_login(admin)
+
+    domains = factories.MailDomainFactory.create_batch(
+        8, status=enums.MailDomainStatusChoices.ENABLED
+    )
+    # owner1 = factories.MailDomainAccessFactory(domain=domain1, role="owner")
+    # admin1 = factories.MailDomainAccessFactory(domain=domain1, role="administrator")
+    # owner2 = factories.MailDomainAccessFactory(domain=domain1, role="owner")
+    # sorted_mails = sorted([owner.user.email, admin.user.email])
+
+    data = {
+        "action": "export_domains_contact_list",
+        "_selected_action": [domain.id for domain in domains],
+    }
+    url = reverse("admin:mailbox_manager_maildomain_changelist")
+    with freeze_time("2025-12-16"):
+        with django_assert_num_queries(5):
+            response = client.post(url, data, follow=True)
+
+    domains_lines = response.content.decode("utf-8").split("\r\n")
+    assert (
+        response.headers["Content-Disposition"]
+        == f'attachment; filename="people_domains_infos-2025-12-16.csv"'
+    )
+    import pdb
+
+    pdb.set_trace()
+    assert domains_lines == [
+        "name,status,support_email,admins",
+        f'{domain.name},{domain.status},{domain.support_email},"{", ".join(sorted_mails)}"',
+        "",
+    ]
