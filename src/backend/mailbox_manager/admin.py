@@ -1,6 +1,7 @@
 """Admin classes and registrations for People's mailbox manager app."""
 
 import csv
+from datetime import date
 
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
@@ -47,6 +48,21 @@ class MailDomainAdmin(admin.ModelAdmin):
         "export_domains_contact_list",
     )
     autocomplete_fields = ["organization"]
+
+    def get_queryset(self, request):
+        """Restrict results to the current user's domain and prefetch accesses."""
+        queryset = super(MailDomainAdmin, self).get_queryset(request)
+
+        queryset = queryset.prefetch_related("accesses")
+        # return models.MailDomain.objects.prefetch_related(
+        #     Prefetch(
+        #         "accesses",
+        #         queryset=MailDomainAccess.objects.select_related("domain").filter(
+        #             user=self.request.user
+        #         ),
+        #     )
+        # )
+        return queryset
 
     @admin.action(description=_("Import emails from dimail"))
     def sync_mailboxes_from_dimail(self, request, queryset):  # pylint: disable=unused-argument
@@ -256,27 +272,31 @@ class MailDomainAdmin(admin.ModelAdmin):
         response = HttpResponse(
             content_type="text/csv",
             headers={
-                "Content-Disposition": 'attachment; filename="people_domains_infos.csv"'
+                "Content-Disposition": f'attachment; filename="people_domains_infos-{date.today()}.csv"'
             },
         )
         writer = csv.writer(response)
-        writer.writerow(["name", "status", "support_email", "admins"])
-        for domain in queryset:
+        writer.writerow(["name", "status", "support_email", "admins_emails"])
+        import pdb
+
+        pdb.set_trace()
+
+        [
             writer.writerow(
                 [
                     domain.name,
                     domain.status,
                     domain.support_email,
-                    str(
-                        sorted(
-                            [
-                                access.user.email
-                                for access in domain.accesses.exclude(role="viewer")
-                            ]
-                        )
-                    )[1:-1].replace("'", ""),
+                    ", ".join(
+                        [
+                            access.user.email if access.role != "viewer" else None
+                            for access in domain.accesses.all()
+                        ]
+                    ),
                 ]
             )
+            for domain in queryset
+        ]
         return response
 
 
