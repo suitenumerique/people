@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Changed
 
+- 💄(config) update ui configuration domain modale
 - 🍱(static) update logo in invitation email template #1085
 - ✨(uiV2) use Lasuite UI kit, new layout
 
