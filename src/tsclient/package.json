@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/suitenumerique/people#readme",
   "devDependencies": {
-    "openapi-typescript-codegen": "0.29.0"
+    "openapi-typescript-codegen": "0.30.0"
   }
 }
