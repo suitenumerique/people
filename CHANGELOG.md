@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-03-24
+
 ### Fixed
 
 - ✨(mailboxes) enforce lowercase on mailboxes
@@ -524,7 +526,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.23.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.24.0...main
+[1.24.0]: https://github.com/suitenumerique/people/releases/v1.24.0
 [1.23.1]: https://github.com/suitenumerique/people/releases/v1.23.1
 [1.23.0]: https://github.com/suitenumerique/people/releases/v1.23.0
 [1.22.2]: https://github.com/suitenumerique/people/releases/v1.22.2
