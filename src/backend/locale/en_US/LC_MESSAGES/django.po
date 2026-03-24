@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 11:10+0000\n"
-"PO-Revision-Date: 2026-02-16 14:19\n"
+"POT-Creation-Date: 2026-03-13 15:21+0000\n"
+"PO-Revision-Date: 2026-03-24 08:54\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -831,27 +831,27 @@ msgstr ""
 msgid "You can't create or update a mailbox for a disabled domain."
 msgstr ""
 
-#: mailbox_manager/models.py:409
+#: mailbox_manager/models.py:411
 msgid "Mail domain invitation"
 msgstr ""
 
-#: mailbox_manager/models.py:410
+#: mailbox_manager/models.py:412
 msgid "Mail domain invitations"
 msgstr ""
 
-#: mailbox_manager/models.py:439
+#: mailbox_manager/models.py:441
 msgid "[La Suite] You have been invited to join La Régie"
 msgstr ""
 
-#: mailbox_manager/models.py:483
+#: mailbox_manager/models.py:485
 msgid "destination address"
 msgstr ""
 
-#: mailbox_manager/models.py:501
+#: mailbox_manager/models.py:503
 msgid "Alias"
 msgstr ""
 
-#: mailbox_manager/models.py:502
+#: mailbox_manager/models.py:504
 msgid "Aliases"
 msgstr ""
 
