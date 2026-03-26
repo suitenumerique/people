@@ -59,7 +59,7 @@ dependencies = [
     "nested-multipart-parser==1.6.0",
     "psycopg[binary]==3.3.3",
     "redis<=7.2.1",
-    "requests==2.32.5",
+    "requests==2.33.0",
     "sentry-sdk[django]==2.54.0",
     "whitenoise==6.12.0",
 ]
