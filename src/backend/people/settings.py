@@ -243,6 +243,7 @@ class Base(Configuration):
         "rest_framework",
         "treebeard",
         "lasuite.admin",  # must be before django.contrib.admin
+        "import_export",
         # Django
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -319,6 +320,7 @@ class Base(Configuration):
     # Django Admin
     ADMIN_HEADER_BACKGROUND = values.Value(None)
     ADMIN_HEADER_COLOR = values.Value(None)
+    IMPORT_EXPORT_USE_TRANSACTIONS = True
 
     # Mail
     EMAIL_BACKEND = values.Value("django.core.mail.backends.smtp.EmailBackend")
