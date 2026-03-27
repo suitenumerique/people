@@ -10,17 +10,17 @@ export interface DisableMailboxParams {
   isEnabled: boolean;
 }
 
-export interface ResetPasswordParams {
+export interface LoginLinkParams {
   mailDomainSlug: string;
   mailboxId: string;
 }
 
-export const resetPassword = async ({
+export const loginLink = async ({
   mailDomainSlug,
   mailboxId,
-}: ResetPasswordParams): Promise<void> => {
+}: LoginLinkParams): Promise<void> => {
   const response = await fetchAPI(
-    `mail-domains/${mailDomainSlug}/mailboxes/${mailboxId}/reset_password/`,
+    `mail-domains/${mailDomainSlug}/mailboxes/${mailboxId}/login_link/`,
     {
       method: 'POST',
     },
@@ -28,16 +28,16 @@ export const resetPassword = async ({
 
   if (!response.ok) {
     throw new APIError(
-      'Failed to reset mailbox password',
+      'Failed to send login link.',
       await errorCauses(response),
     );
   }
 };
 
-export const useResetPassword = () => {
+export const useLoginLink = () => {
   const queryClient = useQueryClient();
-  return useMutation<void, APIError, ResetPasswordParams>({
-    mutationFn: resetPassword,
+  return useMutation<void, APIError, LoginLinkParams>({
+    mutationFn: loginLink,
     onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [

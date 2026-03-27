@@ -17,6 +17,10 @@ and this project adheres to
 - 🐛(dimail) fix no import for functional mailboxes
 - 🚸(mailboxes) improve error message when no secondary email
 
+### Changed
+
+- ✨(mailboxes) send login links instead of passwords
+
 ## [1.24.0] - 2026-03-24
 
 ### Fixed

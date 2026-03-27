@@ -261,6 +261,9 @@ class MailBoxViewSet(
     POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/reset/
         Send a request to mail-provider to reset password.
 
+    POST /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/login_link/
+        Get one-time login link from mail provider and send it to secondary mailbox
+
     PUT /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
         Send a request to update mailbox. Cannot modify domain or local_part.
 
@@ -343,6 +346,14 @@ class MailBoxViewSet(
         mailbox = self.get_object()
         dimail = DimailAPIClient()
         dimail.reset_password(mailbox)
+        return Response(serializers.MailboxSerializer(mailbox).data)
+
+    @action(detail=True, methods=["post"])
+    def login_link(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Request dimail for a connexion code and email it to mailbox's secondary email."""
+        mailbox = self.get_object()
+        dimail = DimailAPIClient()
+        dimail.send_login_link(mailbox)
         return Response(serializers.MailboxSerializer(mailbox).data)
 
 
