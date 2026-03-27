@@ -40,7 +40,7 @@ and this project adheres to
 
 ### Fixed
 
-- 🐛(domains) fix attemps to send invitations to existing users #953
+- 🐛(domains) fix attempts to send invitations to existing users #953
 
 ### Changed
 
