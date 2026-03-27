@@ -290,24 +290,51 @@ class DimailAPIClient:
 
     def notify_mailbox_creation(self, recipient, mailbox_data, issuer=None):
         """
-        Send email to confirm mailbox creation
-        and send new mailbox information.
+        Send email to confirm mailbox creation, provide mailbox information
+        and connexion url.
         """
+
         title = _("Your new mailbox information")
         template_name = "new_mailbox"
+
+        if settings.SEND_MAILBOX_PASSWORD and "password" in mailbox_data:
+            template_name = "new_mailbox_password"
+
         self._send_mailbox_related_email(
             title, template_name, recipient, mailbox_data, issuer
         )
 
     def _notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
         """
-        Send email to notify of password reset
-        and send new password.
+        Send email to notify of password reset and send new password.
         """
         title = _("Your password has been updated")
         template_name = "reset_password"
         self._send_mailbox_related_email(
             title, template_name, recipient, mailbox_data, issuer
+        )
+
+    def send_login_link(self, mailbox, issuer=None):
+        """
+        Send magic link to secondary email.
+        """
+        title = _("Here is your login link")
+        template_name = "send_login_link"
+        recipient = mailbox.secondary_email
+
+        login_link = f"{self.API_URL}/code/{self.get_login_code(mailbox)}"
+        self._send_mailbox_related_email(
+            title,
+            template_name,
+            recipient,
+            {
+                "email": str(mailbox),
+                "link": login_link,
+            },
+            issuer,
+        )
+        logger.info(
+            "[DIMAIL] Login link for mailbox %s sent to %s.", mailbox, recipient
         )
 
     # pylint: disable=too-many-arguments
@@ -318,7 +345,6 @@ class DimailAPIClient:
         """
         Send email with new mailbox or password reset information.
         """
-
         context = {
             "title": title,
             "site": Site.objects.get_current(),
@@ -350,6 +376,32 @@ class DimailAPIClient:
                 mailbox_data["email"],
                 recipient,
             )
+
+    def get_login_code(self, mailbox):
+        """Get a login code from dimail."""
+        if not mailbox.secondary_email or mailbox.secondary_email == str(mailbox):
+            raise exceptions.ValidationError(
+                "Logging in with a link requires a secondary email address. Please add a valid secondary email before trying again."
+            )
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/code/",
+                json={"expires_in": 3600, "maxuse": 1},
+                headers=self._get_headers(),
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.exception(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        response.raise_for_status()
+        return response.json()["code"]
 
     def import_mailboxes(self, domain):
         """Import mailboxes from dimail - open xchange in our database.
@@ -671,6 +723,7 @@ class DimailAPIClient:
             raise error
 
         if response.status_code == status.HTTP_200_OK:
+            mailbox.password = response.json()["password"]
             # send new password to secondary email
             self._notify_mailbox_password_reset(
                 recipient=mailbox.secondary_email,
