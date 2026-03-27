@@ -288,32 +288,31 @@ class DimailAPIClient:
             f"[DIMAIL] unexpected error: {response.status_code} {error_content}"
         )
 
-    def notify_mailbox_creation(self, recipient, mailbox_data, issuer=None):
+    def notify_mailbox_creation(self, recipient, new_email, issuer=None):
         """
-        Send email to confirm mailbox creation
-        and send new mailbox information.
+        Send email to confirm mailbox creation, provide mailbox information
+        and connexion url.
         """
         title = _("Your new mailbox information")
         template_name = "new_mailbox"
         self._send_mailbox_related_email(
-            title, template_name, recipient, mailbox_data, issuer
+            title, template_name, recipient, new_email, issuer
         )
 
-    def _notify_mailbox_password_reset(self, recipient, mailbox_data, issuer=None):
+    def _notify_mailbox_password_reset(self, recipient, new_email, issuer=None):
         """
-        Send email to notify of password reset
-        and send new password.
+        Send email to notify of password reset and connexion url.
         """
         title = _("Your password has been updated")
-        template_name = "reset_password"
+        template_name = "get_code"
         self._send_mailbox_related_email(
-            title, template_name, recipient, mailbox_data, issuer
+            title, template_name, recipient, new_email, issuer
         )
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
     def _send_mailbox_related_email(
-        self, title, template_name, recipient, mailbox_data, issuer=None
+        self, title, template_name, recipient, new_email, issuer=None
     ):
         """
         Send email with new mailbox or password reset information.
@@ -323,7 +322,8 @@ class DimailAPIClient:
             "title": title,
             "site": Site.objects.get_current(),
             "webmail_url": settings.WEBMAIL_URL,
-            "mailbox_data": mailbox_data,
+            "new_email": new_email,
+            "code": self._get_connection_code(new_email),
         }
 
         try:
@@ -347,9 +347,31 @@ class DimailAPIClient:
         else:
             logger.info(
                 "Information for mailbox %s sent to %s.",
-                mailbox_data["email"],
+                new_email,
                 recipient,
             )
+
+    def _get_connection_code(self, new_email):
+        """Get a connexion code from dimail."""
+        local_part, domain = new_email.split("@")
+
+        try:
+            response = session.post(
+                f"{self.API_URL}/domains/{domain}/mailboxes/{local_part}/code",
+                headers=self._get_headers(),
+                verify=True,
+                timeout=self.API_TIMEOUT,
+            )
+        except requests.exceptions.ConnectionError as error:
+            logger.error(
+                "Connection error while trying to reach %s.",
+                self.API_URL,
+                exc_info=error,
+            )
+            raise error
+
+        import pdb; pdb.set_trace()
+        return response
 
     def import_mailboxes(self, domain):
         """Import mailboxes from dimail - open xchange in our database.
@@ -639,16 +661,16 @@ class DimailAPIClient:
             )
             return []
 
-    def reset_password(self, mailbox):
+    def get_code(self, mailbox):
         """Send a request to reset mailbox password."""
         if not mailbox.secondary_email or mailbox.secondary_email == str(mailbox):
             raise exceptions.ValidationError(
-                "Password reset requires a secondary email address. Please add a valid secondary email before trying again."
+                "Login by code requires a secondary email address. Please add a valid secondary email before trying again."
             )
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/reset_password/",
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/get_code/",
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,

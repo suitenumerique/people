@@ -59,15 +59,14 @@ class MailboxSerializer(serializers.ModelSerializer):
                 raise exc
 
             mailbox.status = enums.MailDomainStatusChoices.ENABLED
-            mailbox_data = response.json()
-            mailbox.set_password(mailbox_data["password"])
+            mailbox.set_password(response.json()["password"])
             mailbox.save()
 
             if mailbox.secondary_email:
                 # send confirmation email
                 client.notify_mailbox_creation(
                     recipient=mailbox.secondary_email,
-                    mailbox_data=response.json(),
+                    new_email=str(mailbox),
                     issuer=self.context["request"].user,
                 )
             else:

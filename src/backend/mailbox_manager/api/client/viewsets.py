@@ -337,12 +337,11 @@ class MailBoxViewSet(
         return Response(serializers.MailboxSerializer(mailbox).data)
 
     @action(detail=True, methods=["post"])
-    def reset_password(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
-        """Send a request to dimail to change password
-        and email new password to mailbox's secondary email."""
+    def get_code(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Request dimail for a connexion code and email it to mailbox's secondary email."""
         mailbox = self.get_object()
         dimail = DimailAPIClient()
-        dimail.reset_password(mailbox)
+        dimail.get_connexion_code(mailbox)
         return Response(serializers.MailboxSerializer(mailbox).data)
 
 

@@ -4,6 +4,7 @@ Unit tests for the mailbox API
 # pylint: disable=W0613, C0302
 
 import json
+import logging
 import re
 from logging import Logger
 from unittest import mock
@@ -21,9 +22,11 @@ from core import factories as core_factories
 from mailbox_manager import enums, factories, models
 from mailbox_manager.api.client import serializers
 from mailbox_manager.tests.fixtures.dimail import (
+    response_connexion_code,
     response_mailbox_created,
 )
 
+logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
@@ -973,14 +976,15 @@ def test_api_mailboxes__send_correct_logger_infos(
 
 
 @responses.activate
-@mock.patch.object(Logger, "info")
 def test_api_mailboxes__sends_new_mailbox_notification(
-    mock_info, dimail_token_ok, mailbox_data
+    caplog, dimail_token_ok, mailbox_data
 ):
     """
     Creating a new mailbox should send confirmation email
     to secondary email.
     """
+    caplog.set_level(logging.INFO)
+
     user = core_factories.UserFactory(language="fr-fr")
     access = factories.MailDomainAccessFactory(
         user=user,
@@ -998,14 +1002,26 @@ def test_api_mailboxes__sends_new_mailbox_notification(
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
+    import pdb
+
+    pdb.set_trace()
+    responses.add(
+        response_connexion_code(f"{mailbox_data['local_part']}@{access.domain.name}")
+    )
+
     with mock.patch("django.core.mail.send_mail") as mock_send:
         client.post(
-            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/{mailbox_data['local_part']}/get_code/",
             mailbox_data,
             format="json",
         )
+        assert mock_send.call_count == 1
 
-    assert mock_send.call_count == 1
+    import pdb
+
+    pdb.set_trace()
+    # Logger
+    log_messages = [msg.message for msg in caplog.records]
     assert "Informations sur votre nouvelle boîte mail" in mock_send.mock_calls[0][1][1]
     assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
 
