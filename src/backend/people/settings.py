@@ -636,6 +636,12 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    SEND_MAILBOX_PASSWORD = values.Value(
+        default=False,
+        environ_name="SEND_MAILBOX_PASSWORD",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):

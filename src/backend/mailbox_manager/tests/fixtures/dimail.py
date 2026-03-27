@@ -2,6 +2,10 @@
 """Define here some fake data from dimail, useful to mock dimail response"""
 
 import json
+import re
+
+import responses
+from rest_framework import status
 
 
 ## USERS
@@ -14,6 +18,24 @@ def response_user_created(user_sub):
             "uuid": "user-uuid-on-dimail",
             "perms": [],
         }
+    )
+
+
+def response_login_code_ok(domain, local_part):
+    """Mock dimail's response when requesting login code."""
+    return responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{domain}/mailboxes/{local_part}/code"),
+        json={
+            "email": f"{local_part}@{domain}",
+            "code": "OneTimeCode",
+            "expires_at": 1774900909,
+            "expires_in": 3599,
+            "maxuse": 1,
+            "nbuse": 0,
+        },
+        status=status.HTTP_200_OK,
+        content_type="application/json",
     )
 
 
@@ -298,3 +320,24 @@ def response_allows_created(user_name, domain_name):
 def response_mailbox_created(email_address):
     """mimic dimail response upon successful mailbox creation."""
     return json.dumps({"email": email_address.lower(), "password": "password"})
+
+
+# Fixture
+def response_connexion_code(email):
+    """Mock dimail response when /token/ endpoit is given valid credentials."""
+
+    local_part, domain = email.split("@")
+
+    return responses.post(
+        re.compile(rf".*/domains/{domain}/mailboxes/{local_part}/code"),
+        json={
+            "email": "string",
+            "code": "string",
+            "expires_at": 0,
+            "expires_in": 0,
+            "maxuse": 0,
+            "nbuse": 0,
+        },
+        status=status.HTTP_200_OK,
+        content_type="application/json",
+    )

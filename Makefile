@@ -141,6 +141,7 @@ demo: ## flush db then create a demo for load testing purpose
 	@$(MAKE) resetdb
 	@$(MANAGE) create_demo
 	@$(MAKE) dimail-setup-db
+	@$(MAKE) migrate
 .PHONY: demo
 
 

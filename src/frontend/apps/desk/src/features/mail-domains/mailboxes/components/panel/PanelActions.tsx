@@ -17,7 +17,7 @@ import {
 } from '@/features/mail-domains/mailboxes';
 
 import {
-  useResetPassword,
+  useLoginLink,
   useUpdateMailboxStatus,
 } from '../../api/useUpdateMailboxStatus';
 
@@ -41,7 +41,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
   const { toast } = useToastProvider();
 
   const { mutate: updateMailboxStatus } = useUpdateMailboxStatus();
-  const { mutate: resetPassword } = useResetPassword();
+  const { mutate: loginLink } = useLoginLink();
 
   const handleUpdateMailboxStatus = () => {
     disableModal.close();
@@ -58,18 +58,18 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
     );
   };
 
-  const handleResetMailboxPassword = () => {
-    resetPassword(
+  const handleMailboxLoginLink = () => {
+    loginLink(
       {
         mailDomainSlug: mailDomain.slug,
         mailboxId: mailbox.id,
       },
       {
         onSuccess: () =>
-          toast(t('Successfully reset password.'), VariantType.SUCCESS),
+          toast(t('Login link successfully sent.'), VariantType.SUCCESS),
         onError: (error) =>
           toast(
-            t(error.cause?.[0] || 'Failed to reset password'),
+            t(error.cause?.[0] || 'Failed to send login link'),
             VariantType.ERROR,
           ),
       },
@@ -128,7 +128,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
             },
           },
           {
-            label: t('Reset password'),
+            label: t('Send login link'),
             icon: (
               <Icon
                 iconName={isEnabled ? 'lock_reset' : 'block'}
@@ -142,7 +142,7 @@ export const PanelActions = ({ mailDomain, mailbox }: PanelActionsProps) => {
               if (!isEnabled) {
                 return;
               }
-              handleResetMailboxPassword();
+              handleMailboxLoginLink();
             },
           },
         ]}

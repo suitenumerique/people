@@ -2,6 +2,7 @@
 
 from logging import getLogger
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.core import exceptions as django_exceptions
 from django.shortcuts import get_object_or_404
@@ -63,18 +64,24 @@ class MailboxSerializer(serializers.ModelSerializer):
             mailbox.set_password(mailbox_data["password"])
             mailbox.save()
 
-            if mailbox.secondary_email:
-                # send confirmation email
-                client.notify_mailbox_creation(
-                    recipient=mailbox.secondary_email,
-                    mailbox_data=response.json(),
-                    issuer=self.context["request"].user,
-                )
-            else:
+            if not mailbox.secondary_email:
                 logger.warning(
                     "Email notification for %s creation not sent "
                     "because no secondary email found",
                     mailbox,
+                )
+            else:
+                mailbox_data["link"] = (
+                    f"{client.API_URL}/code/{client.get_login_code(mailbox)}"
+                )
+
+                if not settings.SEND_MAILBOX_PASSWORD:
+                    mailbox_data.pop("password")
+
+                client.notify_mailbox_creation(
+                    recipient=mailbox.secondary_email,
+                    mailbox_data=mailbox_data,
+                    issuer=self.context["request"].user,
                 )
 
         return mailbox

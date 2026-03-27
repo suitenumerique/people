@@ -4,6 +4,7 @@ Unit tests for the mailbox API
 # pylint: disable=W0613, C0302
 
 import json
+import logging
 import re
 from logging import Logger
 from unittest import mock
@@ -20,10 +21,9 @@ from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
 from mailbox_manager.api.client import serializers
-from mailbox_manager.tests.fixtures.dimail import (
-    response_mailbox_created,
-)
+from mailbox_manager.tests.fixtures import dimail as dimail_responses
 
+logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
@@ -125,7 +125,7 @@ def test_api_mailboxes__create_display_name_no_constraint_on_different_domains(
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{new_mailbox_data['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
@@ -162,12 +162,17 @@ def test_api_mailboxes__create_roles_success(role, dimail_token_ok, mailbox_data
     # token response in fixtures
     responses.add(
         responses.POST,
-        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        re.compile(
+            rf".*/domains/{mail_domain.name}/mailboxes/{mailbox_data['local_part']}$"
+        ),
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{mail_domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
+    )
+    dimail_responses.response_login_code_ok(
+        mail_domain.name, mailbox_data["local_part"]
     )
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
@@ -213,12 +218,13 @@ def test_api_mailboxes__create_with_accent_success(role, dimail_token_ok):
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
+    dimail_responses.response_login_code_ok(mail_domain, mailbox_values["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         mailbox_values,
@@ -249,14 +255,19 @@ def test_api_mailboxes__create_lowercase(dimail_token_ok, mailbox_data):
     # token response in fixtures
     responses.add(
         responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        re.compile(
+            rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part'].lower()}"
+        ),
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
 
+    dimail_responses.response_login_code_ok(
+        access.domain, mailbox_data["local_part"].lower()
+    )
     client = APIClient()
     client.force_login(access.user)
     response = client.post(
@@ -317,7 +328,7 @@ def test_api_mailboxes__create_without_secondary_email(role, caplog, dimail_toke
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
         ),
         status=status.HTTP_201_CREATED,
@@ -418,12 +429,13 @@ def test_api_mailboxes__same_local_part_on_different_domains(dimail_token_ok):
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
+    dimail_responses.response_login_code_ok(access.domain, existing_mailbox.local_part)
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
         mailbox_values,
@@ -469,7 +481,7 @@ def test_api_mailboxes__create_pending_mailboxes(domain_status, mailbox_data):
 
 
 @responses.activate
-def test_api_mailboxes__existing_alias_ok(mailbox_data, dimail_token_ok):
+def test_api_mailboxes__no_conflict_existing_alias_ok(mailbox_data, dimail_token_ok):
     """Can create mailbox even if local_part is already used by an alias."""
     alias = factories.AliasFactory()
     access = factories.MailDomainAccessFactory(
@@ -481,12 +493,13 @@ def test_api_mailboxes__existing_alias_ok(mailbox_data, dimail_token_ok):
 
     responses.post(
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
-            f"{mailbox_data['local_part']}@{access.domain.name}"
+        body=dimail_responses.response_mailbox_created(
+            f"{alias.local_part}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
+    dimail_responses.response_login_code_ok(alias.domain, alias.local_part)
 
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -594,13 +607,13 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
-
+    dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
         mailbox_data,
@@ -652,13 +665,13 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_sets_password(
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
-
+    dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
         mailbox_data,
@@ -943,13 +956,13 @@ def test_api_mailboxes__send_correct_logger_infos(
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(
+        body=dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
         ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
-
+    dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
         mailbox_data,
@@ -981,23 +994,27 @@ def test_api_mailboxes__sends_new_mailbox_notification(
     Creating a new mailbox should send confirmation email
     to secondary email.
     """
-    user = core_factories.UserFactory(language="fr-fr")
+
     access = factories.MailDomainAccessFactory(
-        user=user,
+        user=core_factories.UserFactory(language="en-us"),
         role=enums.MailDomainRoleChoices.OWNER,
     )
 
     client = APIClient()
-    client.force_login(user)
+    client.force_login(access.user)
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
         responses.POST,
         re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=response_mailbox_created(f"{mailbox_data['local_part']}@{access.domain}"),
+        body=dimail_responses.response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain}"
+        ),
         status=status.HTTP_201_CREATED,
         content_type="application/json",
     )
+    dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
+
     with mock.patch("django.core.mail.send_mail") as mock_send:
         client.post(
             f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -1006,7 +1023,64 @@ def test_api_mailboxes__sends_new_mailbox_notification(
         )
 
     assert mock_send.call_count == 1
-    assert "Informations sur votre nouvelle boîte mail" in mock_send.mock_calls[0][1][1]
+    assert "Your new mailbox information" in mock_send.mock_calls[0][1][1]
+    assert "OneTimeCode" in mock_send.mock_calls[0][1][1]
+    assert "password" not in mock_send.mock_calls[0][1][1]
+    assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
+
+    expected_messages = {
+        (
+            "Information for mailbox %s sent to %s.",
+            f"{mailbox_data['local_part']}@{access.domain.name}",
+            mailbox_data["secondary_email"],
+        )
+    }
+    actual_messages = {args for args, _ in mock_info.call_args_list}
+    assert expected_messages.issubset(actual_messages)
+
+
+@responses.activate
+@override_settings(SEND_MAILBOX_PASSWORD=True)
+@mock.patch.object(Logger, "info")
+def test_api_mailboxes__sends_new_mailbox_notification_with_password(
+    mock_info, dimail_token_ok, mailbox_data
+):
+    """
+    Creating a new mailbox should send confirmation email
+    to secondary email.
+    """
+
+    access = factories.MailDomainAccessFactory(
+        user=core_factories.UserFactory(language="en-us"),
+        role=enums.MailDomainRoleChoices.OWNER,
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    # Ensure successful response using "responses":
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
+        body=dimail_responses.response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
+
+    with mock.patch("django.core.mail.send_mail") as mock_send:
+        client.post(
+            f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+            mailbox_data,
+            format="json",
+        )
+
+    assert mock_send.call_count == 1
+    assert "Your new mailbox information" in mock_send.mock_calls[0][1][1]
+    assert "OneTimeCode" in mock_send.mock_calls[0][1][1]
+    assert "password" in mock_send.mock_calls[0][1][1]
     assert mock_send.mock_calls[0][1][3][0] == mailbox_data["secondary_email"]
 
     expected_messages = {

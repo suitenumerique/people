@@ -327,7 +327,7 @@ def test_matrix_webhook__kick_user_from_room_success(caplog):
 @responses.activate
 def test_matrix_webhook__kick_user_from_room_forbidden(caplog):
     """Cannot kick an admin."""
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.ERROR)
 
     user = factories.UserFactory()
     webhook = factories.TeamWebhookFactory(
