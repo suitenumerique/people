@@ -65,8 +65,8 @@ def test_dimail_synchronization__already_sync(dimail_token_ok):
 
 
 @responses.activate
-def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0613, R0914
-    """Importing mailboxes from dimail should synchronize valid mailboxes
+def test_dimail_synchronization__import_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0613, R0914
+    """Importing mailboxes from dimail should import valid mailboxes
     and log errors for invalid ones."""
     caplog.set_level(logging.INFO)
 
@@ -87,7 +87,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
     }
     mailbox_oxadmin = {
         "type": "mailbox",
-        "status": "broken",
+        "status": "ok",
         "email": f"oxadmin@{domain.name}",
         "givenName": "Admin",
         "surName": "Context",
@@ -95,7 +95,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
     }
     mailbox_with_wrong_domain = {
         "type": "mailbox",
-        "status": "broken",
+        "status": "ok",
         "email": "johndoe@wrongdomain.com",
         "givenName": "John",
         "surName": "Doe",
@@ -103,7 +103,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
     }
     mailbox_with_invalid_domain = {
         "type": "mailbox",
-        "status": "broken",
+        "status": "ok",
         "email": f"naw@ake@{domain.name}",
         "givenName": "Joe",
         "surName": "Doe",
@@ -111,11 +111,19 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
     }
     mailbox_with_invalid_local_part = {
         "type": "mailbox",
-        "status": "broken",
+        "status": "ok",
         "email": f"obalmaské@{domain.name}",
         "givenName": "Jean",
         "surName": "Vang",
         "displayName": "Jean Vang",
+    }
+    functional_mailbox = {
+        "type": "mailbox",
+        "status": "ok",
+        "email": f"functional_mailbox@{domain.name}",
+        "givenName": "",
+        "surName": "",
+        "displayName": "",
     }
     mailbox_existing_alias = {
         "type": "mailbox",
@@ -134,6 +142,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
             mailbox_with_wrong_domain,
             mailbox_with_invalid_domain,
             mailbox_with_invalid_local_part,
+            functional_mailbox,
             mailbox_existing_alias,
         ],
         status=status.HTTP_200_OK,
@@ -156,10 +165,11 @@ contains non-ASCII characters)",
     for message in expected_messages:
         assert message in log_messages
 
-    assert models.Mailbox.objects.count() == 2
+    assert models.Mailbox.objects.count() == 3
     assert imported_mailboxes == [
         mailbox_valid["email"],
         mailbox_existing_alias["email"],
+        functional_mailbox["email"],
     ]
 
 
