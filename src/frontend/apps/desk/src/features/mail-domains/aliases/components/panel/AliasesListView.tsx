@@ -143,7 +143,7 @@ export function AliasesListView({
       {!filteredAliases.length && (
         <Box $align="center" $margin={{ top: 'base', bottom: 'base' }}>
           <Text $size="small">
-            {t('No alias was created with this mail domain.')}
+            {t('No alias found.')}
           </Text>
         </Box>
       )}
