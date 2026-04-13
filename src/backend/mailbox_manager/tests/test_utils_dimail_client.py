@@ -165,12 +165,12 @@ contains non-ASCII characters)",
     for message in expected_messages:
         assert message in log_messages
 
-    assert models.Mailbox.objects.count() == 3
+    assert models.Mailbox.objects.count() == 2
     assert imported_mailboxes == [
         mailbox_valid["email"],
         mailbox_existing_alias["email"],
-        functional_mailbox["email"],
     ]
+    assert models.FunctionalMailbox.objects.get(email=functional_mailbox["email"])
 
 
 @responses.activate

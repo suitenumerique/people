@@ -269,11 +269,7 @@ class MailDomainAccess(BaseModel):
         }
 
 
-class Mailbox(AbstractBaseUser, BaseModel):
-    """Mailboxes for users from mail domain."""
-
-    first_name = models.CharField(max_length=200, blank=False)
-    last_name = models.CharField(max_length=200, blank=False)
+class BaseMailbox(AbstractBaseUser, BaseModel):
     local_part = models.CharField(
         _("local_part"),
         max_length=150,
@@ -287,9 +283,6 @@ class Mailbox(AbstractBaseUser, BaseModel):
         related_name="mailboxes",
         null=False,
         blank=False,
-    )
-    secondary_email = models.EmailField(
-        _("secondary email address"), null=True, blank=True
     )
     status = models.CharField(
         max_length=20,
@@ -305,25 +298,11 @@ class Mailbox(AbstractBaseUser, BaseModel):
     USERNAME_FIELD = "dn_email"
 
     class Meta:
-        db_table = "people_mail_box"
-        verbose_name = _("Mailbox")
-        verbose_name_plural = _("Mailboxes")
+        abstract = True
         constraints = [
             models.UniqueConstraint(
                 fields=["local_part", "domain"], name="unique_username"
             ),
-            models.UniqueConstraint(
-                Lower("first_name"),
-                Lower("last_name"),
-                "domain",
-                name="unique_ox_display_name",
-                violation_error_message="Mailbox with this First name, \
-Last name and Domain already exists.",
-            ),
-            # Display name in OpenXChange must be unique
-            # To avoid sending failing requests to dimail,
-            # we impose uniqueness here too
-            # And compare to lowercase to enforce case-insensitive uniqueness
         ]
         ordering = ["-created_at"]
 
@@ -382,6 +361,47 @@ Last name and Domain already exists.",
             "put": is_owner_or_admin or is_self,
             "delete": False,
         }
+
+
+class Mailbox(BaseMailbox):
+    """Mailboxes for users from mail domain."""
+
+    first_name = models.CharField(max_length=200, blank=False)
+    last_name = models.CharField(max_length=200, blank=False)
+    secondary_email = models.EmailField(
+        _("secondary email address"), null=True, blank=True
+    )
+
+    class Meta:
+        db_table = "people_mail_box"
+        verbose_name = _("Mailbox")
+        verbose_name_plural = _("Mailboxes")
+        constraints = [
+            models.UniqueConstraint(
+                Lower("first_name"),
+                Lower("last_name"),
+                "domain",
+                name="unique_ox_display_name",
+                violation_error_message="Mailbox with this First name, \
+Last name and Domain already exists.",
+            ),
+            # Display name in OpenXChange must be unique
+            # To avoid sending failing requests to dimail,
+            # we impose uniqueness here too
+            # And compare to lowercase to enforce case-insensitive uniqueness
+        ]
+
+
+class FunctionalMailbox(BaseMailbox):
+    """Functional mailboxes."""
+
+    domain = models.ForeignKey(
+        MailDomain,
+        on_delete=models.CASCADE,
+        related_name="functional_mailboxes",
+        null=False,
+        blank=False,
+    )
 
 
 class MailDomainInvitation(BaseInvitation):

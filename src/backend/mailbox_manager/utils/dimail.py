@@ -399,7 +399,20 @@ class DimailAPIClient:
             ]:
                 # sometimes dimail api returns email from another domain,
                 # so we decide to exclude this kind of email
-                if address.domain == domain.name:
+
+                if address.domain != domain.name:
+                    logger.warning(
+                        "Import of email %s failed because of a wrong domain",
+                        dimail_mailbox["email"],
+                    )
+
+                if ["givenName", "surName"] in dimail_mailbox.keys():
+                    mailbox = models.FunctionalMailbox.objects.create(
+                        local_part=address.username,
+                        domain=domain,
+                        status=enums.MailboxStatusChoices.ENABLED,
+                    )
+                else:
                     # creates a mailbox on our end
                     mailbox = models.Mailbox.objects.create(
                         first_name=dimail_mailbox["givenName"],
@@ -410,11 +423,7 @@ class DimailAPIClient:
                         password=make_password(None),  # unusable password
                     )
                     imported_mailboxes.append(str(mailbox))
-                else:
-                    logger.warning(
-                        "Import of email %s failed because of a wrong domain",
-                        dimail_mailbox["email"],
-                    )
+
         return imported_mailboxes
 
     def disable_mailbox(self, mailbox, request_user=None):
