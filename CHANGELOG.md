@@ -12,6 +12,10 @@ and this project adheres to
 
 - 🧑‍💻(admin) export domain contact info #1061
 
+### Fixed
+
+- 🐛(dimail) fix no import for functional mailboxes
+
 ## [1.24.0] - 2026-03-24
 
 ### Fixed
