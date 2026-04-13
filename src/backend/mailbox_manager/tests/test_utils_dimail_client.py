@@ -65,7 +65,7 @@ def test_dimail_synchronization__already_sync(dimail_token_ok):
 
 
 @responses.activate
-def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0613, R0914
+def test_dimail_import_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0613, R0914
     """Importing mailboxes from dimail should synchronize valid mailboxes
     and log errors for invalid ones."""
     caplog.set_level(logging.INFO)
@@ -125,6 +125,12 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
         "surName": "email",
         "displayName": "Support email",
     }
+    functional_mailbox = {
+        "type": "mailbox",
+        "status": "ok",
+        "active": "yes",
+        "email": f"functional_mailbox@{domain.name}",
+    }
 
     responses.get(
         re.compile(rf".*/domains/{domain.name}/mailboxes/"),
@@ -135,6 +141,7 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
             mailbox_with_invalid_domain,
             mailbox_with_invalid_local_part,
             mailbox_existing_alias,
+            functional_mailbox,
         ],
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -142,16 +149,19 @@ def test_dimail_synchronization__synchronize_mailboxes(caplog, dimail_token_ok):
 
     imported_mailboxes = dimail_client.import_mailboxes(domain)
 
-    # 4 imports failed: oxadmin, wrong domain, HeaderParseError, NonASCIILocalPartDefect
-    assert len(caplog.records) == 5
+    # 2 successful not in log
+    # 1 technical + 5 failed = 6 records
+    assert len(caplog.records) == 6
     log_messages = [record.message for record in caplog.records]
 
     expected_messages = [
+        "Token successfully granted by mail-provisioning API.",
         f"Not importing OX technical address: oxadmin@{domain.name}",
         f"Import of email {mailbox_with_wrong_domain['email']} failed because of a wrong domain",
         f"Import of email {mailbox_with_invalid_domain['email']} failed with error Invalid Domain",
         f"Import of email {mailbox_with_invalid_local_part['email']} failed with error local-part \
 contains non-ASCII characters)",
+        f"Skipping functional mailbox: '{functional_mailbox['email']}'",
     ]
     for message in expected_messages:
         assert message in log_messages

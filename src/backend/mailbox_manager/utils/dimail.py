@@ -376,6 +376,7 @@ class DimailAPIClient:
 
         dimail_mailboxes = response.json()
         people_mailboxes = models.Mailbox.objects.filter(domain=domain)
+
         imported_mailboxes = []
         for dimail_mailbox in dimail_mailboxes:
             try:
@@ -385,6 +386,14 @@ class DimailAPIClient:
                     "Import of email %s failed with error %s",
                     dimail_mailbox["email"],
                     error,
+                )
+                continue
+
+            # Functional mailboxes have neither givenNames nor surNames
+            # Skipping them for now
+            if "displayName" not in dimail_mailbox.keys():
+                logger.warning(
+                    "Skipping functional mailbox: '%s'", dimail_mailbox["email"]
                 )
                 continue
 
