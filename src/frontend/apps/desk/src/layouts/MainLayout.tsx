@@ -13,7 +13,7 @@ export function MainLayout({ children }: PropsWithChildren<MainLayoutProps>) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--c--contextuals--background--surface--tertiary)',
+        backgroundColor: 'var(--c--contextuals--background--surface--primary)',
       }}
     >
       <div
