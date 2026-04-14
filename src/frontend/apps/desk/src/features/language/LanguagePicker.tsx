@@ -10,11 +10,13 @@ export const LanguagePicker = () => {
   const { i18n } = useTranslation();
   const { preload: languages } = i18n.options;
   Settings.defaultLocale = i18n.language;
+  const currentLanguage = Settings.defaultLocale;
 
   const optionsPicker = useMemo(() => {
     return (languages || []).map((lang) => ({
       value: lang,
       label: LANGUAGES_ALLOWED[lang],
+      isChecked: lang === currentLanguage,
       render: () => (
         <Box
           className="c_select__render"
@@ -29,16 +31,17 @@ export const LanguagePicker = () => {
         </Box>
       ),
     }));
-  }, [languages]);
+  }, [languages, currentLanguage]);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.documentElement.lang = i18n.language;
+      document.documentElement.lang = currentLanguage || i18n.language;
     }
-  }, [i18n.language]);
+  }, [currentLanguage, i18n.language]);
 
   return (
     <LanguagePickerUi
+      key={currentLanguage}
       languages={optionsPicker}
       size="small"
       onChange={(selected) => {

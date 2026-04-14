@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(languages) fix currentLanguage in profile menu
 - ✨(mailboxes) enforce lowercase on mailboxes
 - 🐛(i18n) fix missing translations for status tag labels
 - 🚚(route) prioritize mail domains as default landing page
