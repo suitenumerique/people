@@ -1,7 +1,7 @@
-// import { Gaufre } from '@gouvfr-lasuite/integration';
 import { Button } from '@gouvfr-lasuite/cunningham-react';
+import '@gouvfr-lasuite/integration/dist/css/gaufre.css';
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -10,13 +10,63 @@ declare global {
 }
 
 export const LaGaufre = () => {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const hasInitializedRef = useRef(false);
+
+  const initLaGaufre = useCallback(() => {
+    const button = buttonRef.current;
+    if (!button || hasInitializedRef.current) {
+      return;
+    }
+
+    const globalScope = globalThis as typeof globalThis & {
+      _lasuite_widget?: unknown[];
+    };
+    globalScope._lasuite_widget = globalScope._lasuite_widget || [];
+    globalScope._lasuite_widget.push([
+      'lagaufre',
+      'init',
+      {
+        api: 'https://lasuite.numerique.gouv.fr/api/services',
+        label: 'Services de la Suite numérique',
+        closeLabel: 'Fermer le menu',
+        headerLabel: 'À propos',
+        backgroundColor: '#fff',
+        background:
+          'linear-gradient(#f1f2fd, rgba(255, 255, 255, 1) 20.54%, #FFF 0%',
+        headerLogo: 'https://lasuite.numerique.gouv.fr/assets/lasuite.svg',
+        headerUrl: 'https://lasuite.numerique.gouv.fr',
+        loadingText: 'Chargement…',
+        newWindowLabelSuffix: ' (nouvelle fenêtre)',
+        fontFamily: 'Marianne',
+        buttonElement: button,
+        viewMoreLabel: 'Voir plus',
+        viewLessLabel: 'Voir moins',
+        position: () => {
+          return {
+            backgroundColor: '#fff',
+            position: 'fixed',
+            top: 64,
+            right: 12,
+          };
+        },
+      },
+    ]);
+    hasInitializedRef.current = true;
+  }, []);
+
   useEffect(() => {
     const wrapper = document.querySelector('[data-gaufre-button-wrapper]');
     const button = wrapper?.querySelector('button') as HTMLButtonElement;
-    if (button && !button.id) {
-      button.id = 'gaufre_button';
-      button.setAttribute('aria-expanded', 'false');
+    if (button) {
+      buttonRef.current = button;
+      if (!button.id) {
+        button.id = 'gaufre_button';
+        button.setAttribute('aria-expanded', 'false');
+      }
     }
+
+    initLaGaufre();
 
     const applyZIndex = () => {
       const shadowHost = document.querySelector(
@@ -31,14 +81,13 @@ export const LaGaufre = () => {
     };
 
     setTimeout(applyZIndex, 500);
-  }, []);
+  }, [initLaGaufre]);
 
   return (
     <>
       <div data-gaufre-button-wrapper>
         <Button
           variant="tertiary"
-          className="!w-10 !h-10 !p-0 !min-w-0"
           aria-label="Les services de LaSuite"
           aria-expanded="false"
         >
@@ -72,41 +121,7 @@ export const LaGaufre = () => {
         src="https://static.suite.anct.gouv.fr/widgets/lagaufre.js"
         strategy="lazyOnload"
         onLoad={() => {
-          const button = document.getElementById('gaufre_button');
-          if (button) {
-            globalThis.window._lasuite_widget =
-              globalThis.window._lasuite_widget || [];
-            globalThis.window._lasuite_widget.push([
-              'lagaufre',
-              'init',
-              {
-                api: 'https://lasuite.numerique.gouv.fr/api/services',
-                label: 'Services de la Suite numérique',
-                closeLabel: 'Fermer le menu',
-                headerLabel: 'À propos',
-                backgroundColor: '#fff',
-                background:
-                  'linear-gradient(#f1f2fd, rgba(255, 255, 255, 1) 20.54%, #FFF 0%',
-                headerLogo:
-                  'https://lasuite.numerique.gouv.fr/assets/lasuite.svg',
-                headerUrl: 'https://lasuite.numerique.gouv.fr',
-                loadingText: 'Chargement…',
-                newWindowLabelSuffix: ' (nouvelle fenêtre)',
-                fontFamily: 'Marianne',
-                buttonElement: button,
-                viewMoreLabel: 'Voir plus',
-                viewLessLabel: 'Voir moins',
-                position: () => {
-                  return {
-                    backgroundColor: '#fff',
-                    position: 'fixed',
-                    top: 65,
-                    right: 20,
-                  };
-                },
-              },
-            ]);
-          }
+          initLaGaufre();
         }}
       />
     </>

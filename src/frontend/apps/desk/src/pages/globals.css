@@ -86,6 +86,18 @@ main ::-webkit-scrollbar-thumb:hover {
   padding: 0 10px;
 }
 
+.selector-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 8px;
+  background-color: var(--c--contextuals--background--surface--primary);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--c--contextuals--border--surface--primary);
+  padding: 4px;
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 5%);
+}
+
 .user-menu__button {
   padding: inherit;
 }
@@ -99,11 +111,9 @@ main ::-webkit-scrollbar-thumb:hover {
 }
 
 .regie__panel__container {
-  background-color: var(--c--contextuals--background--surface--primary);
   height: 100%;
   width: 100%;
   border-radius: 8px;
   overflow-x: hidden;
   overflow-y: auto;
-  border: 1px solid var(--c--contextuals--border--surface--primary);
 }
