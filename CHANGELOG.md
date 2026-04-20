@@ -13,6 +13,7 @@ and this project adheres to
 ### Added
 
 - 🧑‍💻(admin) export domain contact info #1061
+- ✨(dimail) allow auto-import from dimail 
 
 ### Fixed
 

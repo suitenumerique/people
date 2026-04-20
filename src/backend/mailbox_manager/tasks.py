@@ -46,6 +46,12 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
         name="fetch_failed_domains_every_hour",
         serializer="json",
     )
+    sender.add_periodic_task(
+        crontab(hour="2", minute="00"),  # Run every night at 2 am
+        import_missing_dimail_mailboxes.s(),
+        name="import mailboxes from dimail",
+        serializer="json",
+    )
 
 
 @celery_app.task
@@ -66,3 +72,12 @@ def fetch_domains_status_task(status: str):
                 domain.notify_status_change()
                 changed_domains.append(f"{domain.name} ({domain.status})")
     return changed_domains
+
+
+@celery_app.task
+def import_missing_dimail_mailboxes():
+    """Celery task to import missing mailboxes from dimail."""
+    client = DimailAPIClient()
+
+    for domain in MailDomain.objects.all():
+        client.import_mailboxes(domain)
