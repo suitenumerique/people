@@ -15,12 +15,12 @@ from core import factories as core_factories
 
 from mailbox_manager import enums, factories, models
 from mailbox_manager.admin import DomainResource
+from mailbox_manager.tests.fixtures import dimail as dimail_responses
 
 from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
     CHECK_DOMAIN_OK,
     DOMAIN_SPEC,
-    response_mailbox_created,
 )
 
 
@@ -130,13 +130,7 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(
     )
     # we need to get a token to create mailboxes
     # token response in fixtures
-    responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{domain1.name}/mailboxes/"),
-        body=response_mailbox_created(f"truc@{domain1.name}"),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
+    responses.add(dimail_responses.response_mailbox_created(f"truc@{domain1.name}"))
 
     response = client.post(url, data, follow=True)
     assert response.status_code == status.HTTP_200_OK
@@ -221,11 +215,9 @@ def test_send_pending_mailboxes(client, dimail_token_ok):  # pylint: disable=W06
     for mailbox in mailboxes:
         # token response in fixtures
         responses.add(
-            responses.POST,
-            re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-            body=response_mailbox_created(f"{mailbox.local_part}@{domain.name}"),
-            status=status.HTTP_201_CREATED,
-            content_type="application/json",
+            dimail_responses.response_mailbox_created(
+                f"{mailbox.local_part}@{domain.name}"
+            )
         )
     response = client.post(url, data, follow=True)
 
@@ -253,14 +245,10 @@ def test_send_pending_mailboxes__listing_failed_mailboxes(client, dimail_token_o
     url = reverse("admin:mailbox_manager_maildomain_changelist")
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-        body=response_mailbox_created(f"{mailbox.local_part}@{domain.name}"),
-        status=status.HTTP_409_CONFLICT,
-        content_type="application/json",
+        dimail_responses.response_mailbox_created(f"{mailbox.local_part}@{domain.name}")
     )
-    response = client.post(url, data, follow=True)
 
+    response = client.post(url, data, follow=True)
     assert response.status_code == status.HTTP_200_OK
     assert (
         f"Failed to send the following mailboxes : {str(mailbox)}"

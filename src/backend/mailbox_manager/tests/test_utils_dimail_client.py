@@ -14,12 +14,12 @@ from rest_framework import status
 from mailbox_manager import enums, factories, models
 from mailbox_manager.utils.dimail import DimailAPIClient
 
+from .fixtures import dimail as dimail_responses
 from .fixtures.dimail import (
     CHECK_DOMAIN_BROKEN,
     CHECK_DOMAIN_BROKEN_EXTERNAL,
     CHECK_DOMAIN_BROKEN_INTERNAL,
     CHECK_DOMAIN_OK,
-    response_mailbox_created,
 )
 
 pytestmark = pytest.mark.django_db
@@ -422,12 +422,8 @@ def test_dimail__send_pending_mailboxes(caplog, dimail_token_ok):
 
     # Ensure successful response using "responses":
     # token response in fixtures
-    responses.post(
-        re.compile(rf".*/domains/{domain.name}/mailboxes/"),
-        body=response_mailbox_created(f"mock@{domain.name}"),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
-    )
+    responses.add(dimail_responses.response_mailbox_created(f"mock@{domain.name}"))
+
     dimail_client.send_pending_mailboxes(domain=domain)
 
     mailbox1.refresh_from_db()

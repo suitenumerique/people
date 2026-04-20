@@ -123,13 +123,9 @@ def test_api_mailboxes__create_display_name_no_constraint_on_different_domains(
     # ensure response
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{new_mailbox_data['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
 
     client = APIClient()
@@ -161,16 +157,11 @@ def test_api_mailboxes__create_roles_success(role, dimail_token_ok, mailbox_data
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(
-            rf".*/domains/{mail_domain.name}/mailboxes/{mailbox_data['local_part']}$"
-        ),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{mail_domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(
         mail_domain.name, mailbox_data["local_part"]
     )
@@ -216,14 +207,11 @@ def test_api_mailboxes__create_with_accent_success(role, dimail_token_ok):
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(mail_domain, mailbox_values["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
@@ -254,17 +242,10 @@ def test_api_mailboxes__create_lowercase(dimail_token_ok, mailbox_data):
     # ensure response
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(
-            rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part'].lower()}"
-        ),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
-
     dimail_responses.response_login_code_ok(
         access.domain, mailbox_data["local_part"].lower()
     )
@@ -326,14 +307,11 @@ def test_api_mailboxes__create_without_secondary_email(role, caplog, dimail_toke
 
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{mail_domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{mail_domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     response = client.post(
         f"/api/v1.0/mail-domains/{mail_domain.slug}/mailboxes/",
         mailbox_values,
@@ -427,14 +405,11 @@ def test_api_mailboxes__same_local_part_on_different_domains(dimail_token_ok):
     ).data
 
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_values['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, existing_mailbox.local_part)
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -492,13 +467,11 @@ def test_api_mailboxes__no_conflict_existing_alias_ok(mailbox_data, dimail_token
     client.force_login(access.user)
 
     responses.post(
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{alias.local_part}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(alias.domain, alias.local_part)
 
     response = client.post(
@@ -605,14 +578,11 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_and_provisioni
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -663,14 +633,11 @@ def test_api_mailboxes__domain_owner_or_admin_successful_creation_sets_password(
     client.force_login(access.user)
     # Ensure successful response using "responses":
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -954,14 +921,11 @@ def test_api_mailboxes__send_correct_logger_infos(
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain.name}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
     response = client.post(
         f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
@@ -1005,14 +969,11 @@ def test_api_mailboxes__sends_new_mailbox_notification(
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
 
     with mock.patch("django.core.mail.send_mail") as mock_send:
@@ -1060,14 +1021,11 @@ def test_api_mailboxes__sends_new_mailbox_notification_with_password(
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.add(
-        responses.POST,
-        re.compile(rf".*/domains/{access.domain.name}/mailboxes/"),
-        body=dimail_responses.response_mailbox_created(
+        dimail_responses.response_mailbox_created(
             f"{mailbox_data['local_part']}@{access.domain}"
-        ),
-        status=status.HTTP_201_CREATED,
-        content_type="application/json",
+        )
     )
+
     dimail_responses.response_login_code_ok(access.domain, mailbox_data["local_part"])
 
     with mock.patch("django.core.mail.send_mail") as mock_send:

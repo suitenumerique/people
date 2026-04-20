@@ -319,7 +319,13 @@ def response_allows_created(user_name, domain_name):
 ## MAILBOXES
 def response_mailbox_created(email_address):
     """mimic dimail response upon successful mailbox creation."""
-    return json.dumps({"email": email_address.lower(), "password": "password"})
+    local_part, domain = email_address.split("@")
+    return responses.post(
+        re.compile(rf".*/domains/{domain}/mailboxes/{local_part.lower()}$"),
+        json={"email": email_address.lower(), "password": "password"},
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
 
 
 # Fixture
