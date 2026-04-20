@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(scripts) update release script to include uv
+
 ## [1.25.0] - 2026-04-20
 
 ### Added

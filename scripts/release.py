@@ -14,7 +14,7 @@ RELEASE_KINDS = {'p': 'patch', 'm': 'minor', 'mj': 'major'}
 def update_files(version):
     """Update all files needed with new release version"""
     # pyproject.toml
-    sys.stdout.write("Update pyproject.toml...\n")
+    sys.stdout.write("Updating pyproject.toml...\n")
     path = "src/backend/pyproject.toml"
     with open(path, 'r') as file:
         lines = file.readlines()
@@ -24,8 +24,19 @@ def update_files(version):
     with open(path, 'w+') as file:
         file.writelines(lines)
 
+    # uv lock file
+    sys.stdout.write("Updating uv lock file...\n")
+    path = "src/backend/uv.lock"
+    with open(path, 'r') as file:
+        lines = file.readlines()
+        for index, line in enumerate(lines):
+            if line.startswith("name = \"people\""):
+                lines[index+1] = re.sub(r'\"(.*?)\"', f'"{version}"', lines[index+1])
+    with open(path, 'w+') as file:
+        file.writelines(lines)
+
     # frontend package.json
-    sys.stdout.write("Update package.json...\n")
+    sys.stdout.write("Updating package.json...\n")
     files_to_modify = []
     filename = "package.json"
     for root, _dir, files in os.walk("src/frontend"):
@@ -44,7 +55,7 @@ def update_files(version):
 
 
 def update_helm_files(path):
-    sys.stdout.write("Update helm files...\n")
+    sys.stdout.write("Updating helm files...\n")
     with open(path, 'r') as file:
         lines = file.readlines()
         for index, line in enumerate(lines):
@@ -57,7 +68,7 @@ def update_helm_files(path):
 def update_changelog(path, version):
     """Update changelog file with release info
     """
-    sys.stdout.write("Update CHANGELOG...\n")
+    sys.stdout.write("Updating CHANGELOG...\n")
     with open(path, 'r') as file:
         lines = file.readlines()
         for index, line in enumerate(lines):
