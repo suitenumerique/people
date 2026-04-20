@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(scripts) update release script to include uv
 - ✨(dimail) auto-import mailboxes from enabled domains
 
 ### Fixed
