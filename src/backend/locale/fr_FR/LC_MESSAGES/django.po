@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-20 09:46+0000\n"
-"PO-Revision-Date: 2026-04-20 10:24\n"
+"PO-Revision-Date: 2026-04-20 10:31\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -522,35 +522,35 @@ msgstr "Bienvenue à bord !"
 #: core/templates/mail/text/reset_password.txt:3
 #: core/templates/mail/text/send_login_link.txt:3
 msgid "Messagerie"
-msgstr ""
+msgstr "Messagerie"
 
 #: core/templates/mail/html/new_mailbox.html:188
 #: core/templates/mail/html/new_mailbox_password.html:188
 #: core/templates/mail/text/new_mailbox.txt:5
 #: core/templates/mail/text/new_mailbox_password.txt:5
 msgid "Welcome to Messagerie"
-msgstr ""
+msgstr "Bienvenue sur Messagerie"
 
 #: core/templates/mail/html/new_mailbox.html:193
 #: core/templates/mail/html/new_mailbox_password.html:193
 #: core/templates/mail/text/new_mailbox.txt:6
 #: core/templates/mail/text/new_mailbox_password.txt:6
 msgid "Messagerie is the email solution of LaSuite."
-msgstr ""
+msgstr "Messagerie est la solution email de LaSuite."
 
 #: core/templates/mail/html/new_mailbox.html:199
 #: core/templates/mail/html/new_mailbox_password.html:199
 #: core/templates/mail/text/new_mailbox.txt:7
 #: core/templates/mail/text/new_mailbox_password.txt:7
 msgid "Your mailbox has been created"
-msgstr ""
+msgstr "Votre boite mail a été crée"
 
 #: core/templates/mail/html/new_mailbox.html:199
 #: core/templates/mail/html/new_mailbox_password.html:199
 #: core/templates/mail/text/new_mailbox.txt:7
 #: core/templates/mail/text/new_mailbox_password.txt:7
 msgid "Please find below your login info and login link"
-msgstr ""
+msgstr "Voici votre nouvelle adresse mail et votre lien de connexion"
 
 #: core/templates/mail/html/new_mailbox.html:223
 #: core/templates/mail/html/new_mailbox_password.html:223
@@ -566,7 +566,7 @@ msgstr "Adresse email : "
 #: core/templates/mail/text/new_mailbox.txt:11
 #: core/templates/mail/text/new_mailbox_password.txt:12
 msgid "Go to your new mailbox"
-msgstr ""
+msgstr "Allez à votre nouvelle boite mail"
 
 #: core/templates/mail/html/new_mailbox.html:262
 #: core/templates/mail/html/new_mailbox_password.html:267
@@ -588,12 +588,12 @@ msgstr "Cordialement,"
 #: core/templates/mail/text/reset_password.txt:16
 #: core/templates/mail/text/send_login_link.txt:13
 msgid "LaSuite Team"
-msgstr ""
+msgstr "L'équipe de LaSuite"
 
 #: core/templates/mail/html/new_mailbox_password.html:228
 #: core/templates/mail/text/new_mailbox_password.txt:10
 msgid "Password: "
-msgstr ""
+msgstr "Mot de passe :"
 
 #: core/templates/mail/html/reset_password.html:188
 #: core/templates/mail/text/reset_password.txt:5
@@ -620,17 +620,17 @@ msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
 #: core/templates/mail/text/reset_password.txt:12
 #: core/templates/mail/text/send_login_link.txt:9
 msgid "Go to Messagerie"
-msgstr ""
+msgstr "Aller sur Messagerie"
 
 #: core/templates/mail/html/send_login_link.html:188
 #: core/templates/mail/text/send_login_link.txt:5
 msgid "Here is your login link."
-msgstr ""
+msgstr "Voici votre lien de connexion."
 
 #: core/templates/mail/html/send_login_link.html:194
 #: core/templates/mail/text/send_login_link.txt:6
 msgid "Please find below your temporary one-time login link for your address "
-msgstr ""
+msgstr "Veuillez trouver ci-dessous votre lien de connexion à usage unique "
 
 #: core/templates/mail/html/team_invitation.html:206
 #: core/templates/mail/text/team_invitation.txt:7
@@ -910,7 +910,7 @@ msgstr "Votre mot de passe a été mis à jour"
 
 #: mailbox_manager/utils/dimail.py:321
 msgid "Here is your login link"
-msgstr ""
+msgstr "Voici votre lien de connexion"
 
 #: mailbox_manager/utils/dimail.py:707
 msgid "Please add a secondary email before resetting the password."
