@@ -69,7 +69,7 @@ def test_api_domain_invitations__admin_should_create_invites(role):
         f"/api/v1.0/mail-domains/{domain.slug}/invitations/",
         {
             "email": "some.email@domain.com",
-            "role": "owner",
+            "role": "administrator",
         },
         format="json",
     )
@@ -80,7 +80,7 @@ def test_api_domain_invitations__admin_should_create_invites(role):
     assert email.subject == "[La Suite] Vous avez été invité(e) à rejoindre la Régie"
 
 
-def test_api_domain_invitations__no_access_forbidden_not_found():
+def test_api_domain_invitations__viewers_forbidden():
     """
     Domain viewers should not be able to invite new domain managers.
     """
@@ -141,7 +141,7 @@ def test_api_domain_invitations__should_not_create_duplicate_invitations():
 def test_api_domain_invitations__inviting_known_email_should_create_access():
     """Already existing users should not be invited but given access directly."""
     existing_user = core_factories.UserFactory()
-    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.OWNER)
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
 
     client = APIClient()
     client.force_login(access.user)
@@ -149,7 +149,7 @@ def test_api_domain_invitations__inviting_known_email_should_create_access():
         f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
         {
             "email": existing_user.email,
-            "role": "owner",
+            "role": enums.MailDomainRoleChoices.ADMIN,
         },
         format="json",
     )
@@ -161,7 +161,7 @@ def test_api_domain_invitations__inviting_known_email_should_create_access():
 
     assert not models.MailDomainInvitation.objects.exists()
     access = models.MailDomainAccess.objects.get(user=existing_user)
-    assert access.role == "owner"
+    assert access.role == enums.MailDomainRoleChoices.ADMIN
 
 
 def test_api_domain_invitations__inviting_known_email_case_insensitive():
@@ -199,3 +199,36 @@ def test_api_domain_invitations__inviting_known_email_case_insensitive():
 
     # Ensure only one user exists (no duplicate user created)
     assert models.User.objects.filter(email__iexact="john.doe@example.com").count() == 1
+
+
+def test_api_domain_invitations__should_never_invite_above_issuer_role():
+    """Should not be able to invite with higher than issuer's."""
+    access = factories.MailDomainAccessFactory(role=enums.MailDomainRoleChoices.ADMIN)
+    client = APIClient()
+    client.force_login(access.user)
+
+    # Doesn't work for normal invitations
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
+        {
+            "email": "some.email@mail.com",
+            "role": enums.MailDomainRoleChoices.OWNER,
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {"role": "You cannot grant a role higher than your own."}
+
+    # Also doesn't work when user already exists
+    existing_user = core_factories.UserFactory()
+
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/invitations/",
+        {
+            "email": existing_user.email,
+            "role": enums.MailDomainRoleChoices.OWNER,
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {"role": "You cannot grant a role higher than your own."}
