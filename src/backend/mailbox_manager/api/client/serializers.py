@@ -282,12 +282,28 @@ class MailDomainInvitationSerializer(serializers.ModelSerializer):
         fields = ["id", "created_at", "email", "domain", "role", "issuer", "is_expired"]
         read_only_fields = ["id", "created_at", "domain", "issuer", "is_expired"]
 
+    def validate_role(self, value):
+        """Validate role"""
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        if user:
+            issuer_access = user.mail_domain_accesses.get(
+                domain__slug=self.context["domain_slug"]
+            )
+            roles_order = [role[0] for role in enums.MailDomainRoleChoices.choices]
+            if roles_order.index(issuer_access.role) < roles_order.index(value):
+                raise exceptions.PermissionDenied(
+                    {"role": "You cannot grant a role higher than your own."}
+                )
+
+        return value
+
     def validate(self, attrs):
         """Validate and restrict invitation to new user based on email."""
 
         request = self.context.get("request")
         user = getattr(request, "user", None)
-
         try:
             domain_slug = self.context["domain_slug"]
         except KeyError as exc:
