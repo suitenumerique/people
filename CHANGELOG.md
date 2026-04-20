@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.25.0] - 2026-04-20
+
 ### Added
 
 - 🧑‍💻(admin) export domain contact info #1061
@@ -541,7 +543,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.24.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.25.0...main
+[1.25.0]: https://github.com/suitenumerique/people/releases/v1.25.0
 [1.24.0]: https://github.com/suitenumerique/people/releases/v1.24.0
 [1.23.1]: https://github.com/suitenumerique/people/releases/v1.23.1
 [1.23.0]: https://github.com/suitenumerique/people/releases/v1.23.0
