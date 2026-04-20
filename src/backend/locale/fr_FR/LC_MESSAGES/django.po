@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-13 15:21+0000\n"
-"PO-Revision-Date: 2026-03-24 08:54\n"
+"POT-Creation-Date: 2026-04-20 09:46+0000\n"
+"PO-Revision-Date: 2026-04-20 10:24\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -403,15 +403,11 @@ msgstr "Cordialement,"
 #: core/templates/mail/html/maildomain_enabled.html:233
 #: core/templates/mail/html/maildomain_failed.html:233
 #: core/templates/mail/html/maildomain_invitation.html:256
-#: core/templates/mail/html/new_mailbox.html:273
-#: core/templates/mail/html/reset_password.html:268
 #: core/templates/mail/html/team_invitation.html:269
 #: core/templates/mail/text/maildomain_action_required.txt:14
 #: core/templates/mail/text/maildomain_enabled.txt:14
 #: core/templates/mail/text/maildomain_failed.txt:15
 #: core/templates/mail/text/maildomain_invitation.txt:24
-#: core/templates/mail/text/new_mailbox.txt:17
-#: core/templates/mail/text/reset_password.txt:16
 #: core/templates/mail/text/team_invitation.txt:22
 msgid "La Suite Team"
 msgstr "L'équipe de La Suite"
@@ -518,59 +514,86 @@ msgid "Welcome aboard!"
 msgstr "Bienvenue à bord !"
 
 #: core/templates/mail/html/new_mailbox.html:159
+#: core/templates/mail/html/new_mailbox_password.html:159
 #: core/templates/mail/html/reset_password.html:159
+#: core/templates/mail/html/send_login_link.html:159
 #: core/templates/mail/text/new_mailbox.txt:3
+#: core/templates/mail/text/new_mailbox_password.txt:3
 #: core/templates/mail/text/reset_password.txt:3
-msgid "La Messagerie"
-msgstr "La Messagerie"
+#: core/templates/mail/text/send_login_link.txt:3
+msgid "Messagerie"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:188
+#: core/templates/mail/html/new_mailbox_password.html:188
 #: core/templates/mail/text/new_mailbox.txt:5
-msgid "Welcome to La Messagerie"
-msgstr "Bienvenue dans La Messagerie"
+#: core/templates/mail/text/new_mailbox_password.txt:5
+msgid "Welcome to Messagerie"
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:193
+#: core/templates/mail/html/new_mailbox_password.html:193
 #: core/templates/mail/text/new_mailbox.txt:6
-msgid "La Messagerie is the email solution of La Suite."
-msgstr "La Messagerie est la solution de mail de La Suite."
+#: core/templates/mail/text/new_mailbox_password.txt:6
+msgid "Messagerie is the email solution of LaSuite."
+msgstr ""
 
 #: core/templates/mail/html/new_mailbox.html:199
+#: core/templates/mail/html/new_mailbox_password.html:199
 #: core/templates/mail/text/new_mailbox.txt:7
-msgid "Your mailbox has been created."
-msgstr "Votre boîte mail a été créée."
+#: core/templates/mail/text/new_mailbox_password.txt:7
+msgid "Your mailbox has been created"
+msgstr ""
 
-#: core/templates/mail/html/new_mailbox.html:204
-#: core/templates/mail/text/new_mailbox.txt:8
-msgid "Please find below your login info: "
-msgstr "Voici vos identifiants de connexion : "
+#: core/templates/mail/html/new_mailbox.html:199
+#: core/templates/mail/html/new_mailbox_password.html:199
+#: core/templates/mail/text/new_mailbox.txt:7
+#: core/templates/mail/text/new_mailbox_password.txt:7
+msgid "Please find below your login info and login link"
+msgstr ""
 
-#: core/templates/mail/html/new_mailbox.html:228
+#: core/templates/mail/html/new_mailbox.html:223
+#: core/templates/mail/html/new_mailbox_password.html:223
 #: core/templates/mail/html/reset_password.html:223
-#: core/templates/mail/text/new_mailbox.txt:10
+#: core/templates/mail/text/new_mailbox.txt:9
+#: core/templates/mail/text/new_mailbox_password.txt:9
 #: core/templates/mail/text/reset_password.txt:9
 msgid "Email address: "
 msgstr "Adresse email : "
 
-#: core/templates/mail/html/new_mailbox.html:233
-#: core/templates/mail/html/reset_password.html:228
+#: core/templates/mail/html/new_mailbox.html:251
+#: core/templates/mail/html/new_mailbox_password.html:256
 #: core/templates/mail/text/new_mailbox.txt:11
-#: core/templates/mail/text/reset_password.txt:10
-msgid "Temporary password (to be modified on first login): "
-msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
+#: core/templates/mail/text/new_mailbox_password.txt:12
+msgid "Go to your new mailbox"
+msgstr ""
 
-#: core/templates/mail/html/new_mailbox.html:261
-#: core/templates/mail/html/reset_password.html:256
-#: core/templates/mail/text/new_mailbox.txt:13
-#: core/templates/mail/text/reset_password.txt:12
-msgid "Go to La Messagerie"
-msgstr "Accéder à La Messagerie"
-
-#: core/templates/mail/html/new_mailbox.html:272
+#: core/templates/mail/html/new_mailbox.html:262
+#: core/templates/mail/html/new_mailbox_password.html:267
 #: core/templates/mail/html/reset_password.html:267
-#: core/templates/mail/text/new_mailbox.txt:15
+#: core/templates/mail/html/send_login_link.html:238
+#: core/templates/mail/text/new_mailbox.txt:13
+#: core/templates/mail/text/new_mailbox_password.txt:14
 #: core/templates/mail/text/reset_password.txt:14
+#: core/templates/mail/text/send_login_link.txt:11
 msgid "Sincerely,"
 msgstr "Cordialement,"
+
+#: core/templates/mail/html/new_mailbox.html:263
+#: core/templates/mail/html/new_mailbox_password.html:268
+#: core/templates/mail/html/reset_password.html:268
+#: core/templates/mail/html/send_login_link.html:239
+#: core/templates/mail/text/new_mailbox.txt:15
+#: core/templates/mail/text/new_mailbox_password.txt:16
+#: core/templates/mail/text/reset_password.txt:16
+#: core/templates/mail/text/send_login_link.txt:13
+msgid "LaSuite Team"
+msgstr ""
+
+#: core/templates/mail/html/new_mailbox_password.html:228
+#: core/templates/mail/text/new_mailbox_password.txt:10
+msgid "Password: "
+msgstr ""
 
 #: core/templates/mail/html/reset_password.html:188
 #: core/templates/mail/text/reset_password.txt:5
@@ -586,6 +609,28 @@ msgstr "Votre mot de passe a été réinitialisé."
 #: core/templates/mail/text/reset_password.txt:7
 msgid "Please find below your new login information: "
 msgstr "Veuillez trouver ci-dessous vos nouvelles informations de connexion : "
+
+#: core/templates/mail/html/reset_password.html:228
+#: core/templates/mail/text/reset_password.txt:10
+msgid "Temporary password (to be modified on first login): "
+msgstr "Mot de passe temporaire (à modifier à la première connexion) : "
+
+#: core/templates/mail/html/reset_password.html:256
+#: core/templates/mail/html/send_login_link.html:227
+#: core/templates/mail/text/reset_password.txt:12
+#: core/templates/mail/text/send_login_link.txt:9
+msgid "Go to Messagerie"
+msgstr ""
+
+#: core/templates/mail/html/send_login_link.html:188
+#: core/templates/mail/text/send_login_link.txt:5
+msgid "Here is your login link."
+msgstr ""
+
+#: core/templates/mail/html/send_login_link.html:194
+#: core/templates/mail/text/send_login_link.txt:6
+msgid "Please find below your temporary one-time login link for your address "
+msgstr ""
 
 #: core/templates/mail/html/team_invitation.html:206
 #: core/templates/mail/text/team_invitation.txt:7
@@ -638,99 +683,99 @@ msgstr "Le domaine %(name)s a rencontré une erreur. Tant que cette erreur persi
 msgid "For more information: Visit the website for La Suite numérique [%(link)s] to discover what tools we offer."
 msgstr "Pour en savoir plus : Visitez le site de la Suite numérique [%(link)s] pour découvrir l’ensemble des outils proposés."
 
-#: mailbox_manager/admin.py:14
+#: mailbox_manager/admin.py:84
 msgid "Import emails from dimail"
 msgstr "Importer les emails depuis dimail"
 
-#: mailbox_manager/admin.py:32 mailbox_manager/admin.py:71
+#: mailbox_manager/admin.py:102 mailbox_manager/admin.py:143
 #, python-format
 msgid "Synchronisation failed for %(domain)s with message: %(err)s"
 msgstr "La synchronisation a échoué pour %(domain)s avec le message : %(err)s"
 
-#: mailbox_manager/admin.py:39
+#: mailbox_manager/admin.py:109
 #, python-format
 msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
 msgstr "La synchronisation a réussi pour %(domain)s. Importation des boîtes mails : %(mailboxes)s"
 
-#: mailbox_manager/admin.py:46 mailbox_manager/admin.py:91
+#: mailbox_manager/admin.py:119 mailbox_manager/admin.py:163
 #, python-format
 msgid "Sync require enabled domains. Excluded domains: %(domains)s"
 msgstr "La synchro nécessite des domaines activés. Les domaines exclus sont : %(domains)s"
 
-#: mailbox_manager/admin.py:51
+#: mailbox_manager/admin.py:123
 msgid "Import aliases from dimail"
 msgstr "Importer des alias depuis dimail"
 
-#: mailbox_manager/admin.py:78
+#: mailbox_manager/admin.py:150
 #, python-format
-msgid "Synchronisation succeed for %(domain)s.Imported %(count_imported)s aliases: %(aliases)s"
+msgid "Synchronisation succeed for %(domain)s.    Imported %(count_imported)s aliases: %(aliases)s"
 msgstr "Synchronisation réussie pour %(domain)s. %(count_imported)s alias importés : %(aliases)s"
 
-#: mailbox_manager/admin.py:96
+#: mailbox_manager/admin.py:167
 msgid "Check and update status from dimail"
 msgstr "Vérifier et mettre à jour le statut à partir de dimail"
 
-#: mailbox_manager/admin.py:113
+#: mailbox_manager/admin.py:184
 #, python-format
 msgid "- %(domain)s with message: %(err)s"
 msgstr "- %(domain)s avec le message : %(err)s"
 
-#: mailbox_manager/admin.py:126
+#: mailbox_manager/admin.py:197
 msgid "Check domains done with success."
 msgstr "Vérification des domaines effectuée avec succès."
 
-#: mailbox_manager/admin.py:127
+#: mailbox_manager/admin.py:198
 #, python-format
 msgid "Domains updated: %(domains)s"
 msgstr "Domaines mis à jour : %(domains)s"
 
-#: mailbox_manager/admin.py:129
+#: mailbox_manager/admin.py:201
 msgid "No domain updated."
 msgstr "Aucun domaine mis à jour."
 
-#: mailbox_manager/admin.py:136
+#: mailbox_manager/admin.py:210
 msgid "Check domain failed for:"
 msgstr "La vérification du domaine a échoué pour :"
 
-#: mailbox_manager/admin.py:144
+#: mailbox_manager/admin.py:220
 #, python-format
 msgid "Domains disabled are excluded from check: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la vérification : %(domains)s"
 
-#: mailbox_manager/admin.py:149
+#: mailbox_manager/admin.py:224
 msgid "Fetch domain expected config from dimail"
 msgstr "Récupérer la configuration attendue du domaine depuis dimail"
 
-#: mailbox_manager/admin.py:163
+#: mailbox_manager/admin.py:238
 #, python-format
 msgid "Domain expected config fetched with success for %(domain)s."
 msgstr "La configuration du domaine attendue a été récupérée avec succès pour %(domain)s."
 
-#: mailbox_manager/admin.py:169
+#: mailbox_manager/admin.py:244
 #, python-format
 msgid "Failed to fetch domain expected config for %(domain)s."
 msgstr "Impossible de récupérer la configuration attendue pour %(domain)s."
 
-#: mailbox_manager/admin.py:175
+#: mailbox_manager/admin.py:250
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr "Les domaines désactivés sont exclus de la récupération : %(domains)s"
 
-#: mailbox_manager/admin.py:180
+#: mailbox_manager/admin.py:254
 msgid "Send pending mailboxes to dimail"
 msgstr "Envoyer les adresses mail en attente à dimail"
 
-#: mailbox_manager/admin.py:196
+#: mailbox_manager/admin.py:270
 #, python-format
 msgid "Failed to send the following mailboxes : %(mailboxes)s."
 msgstr "Échec de l'envoi des adresses mail suivantes : %(mailboxes)s."
 
-#: mailbox_manager/admin.py:202
+#: mailbox_manager/admin.py:276
 #, python-format
 msgid "Pending mailboxes successfully sent for %(domain)s."
 msgstr "Succès de l'envoi des adresses en attente pour le domaine %(domain)s."
 
-#: mailbox_manager/admin.py:208
+#: mailbox_manager/admin.py:282
 #, python-format
 msgid "Domains disabled are excluded from : %(domains)s"
 msgstr "Les domaines désactivés ont été exclu : %(domains)s"
@@ -855,13 +900,21 @@ msgstr "Alias"
 msgid "Aliases"
 msgstr "Alias"
 
-#: mailbox_manager/utils/dimail.py:296
+#: mailbox_manager/utils/dimail.py:297
 msgid "Your new mailbox information"
 msgstr "Informations sur votre nouvelle boîte mail"
 
-#: mailbox_manager/utils/dimail.py:307
+#: mailbox_manager/utils/dimail.py:311
 msgid "Your password has been updated"
 msgstr "Votre mot de passe a été mis à jour"
+
+#: mailbox_manager/utils/dimail.py:321
+msgid "Here is your login link"
+msgstr ""
+
+#: mailbox_manager/utils/dimail.py:707
+msgid "Please add a secondary email before resetting the password."
+msgstr "Veuillez ajouter un e-mail secondaire avant de réinitialiser le mot de passe."
 
 #: people/settings.py:159
 msgid "English"
