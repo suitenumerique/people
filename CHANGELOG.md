@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+- 🐛(dimail) fix login code sent to wrong dimail url
+
+
 ## [1.25.0] - 2026-04-20
 
 ### Added

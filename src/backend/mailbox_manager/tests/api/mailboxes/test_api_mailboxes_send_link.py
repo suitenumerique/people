@@ -6,6 +6,7 @@ import logging
 from unittest import mock
 
 from django.conf import settings
+from django.test import override_settings
 
 import pytest
 import responses
@@ -113,9 +114,9 @@ Please add a valid secondary email before trying again."
         enums.MailDomainRoleChoices.OWNER,
         enums.MailDomainRoleChoices.ADMIN,
     ],
-    "",
 )
 @responses.activate
+@override_settings(WEBMAIL_URL="https://webmail.fr")
 def test_api_mailboxes__login_link_admin_successful(role, dimail_token_ok, caplog):  # pylint: disable=W0613
     """Owner and admin users should be able to request login link for any mailboxes.
     Login links should be sent to secondary email."""
@@ -134,10 +135,9 @@ def test_api_mailboxes__login_link_admin_successful(role, dimail_token_ok, caplo
 
     assert mock_send.call_count == 1
     assert "Here is your login link" in mock_send.mock_calls[0][1][1]
-    assert "http://dimail:8000/code/OneTimeCode" in mock_send.mock_calls[0][1][1]
+    assert "https://webmail.fr/code/OneTimeCode" in mock_send.mock_calls[0][1][1]
     assert mailbox.password not in mock_send.mock_calls[0][1][1]
     assert mock_send.mock_calls[0][1][3][0] == mailbox.secondary_email
-
     assert response.status_code == status.HTTP_200_OK
 
 
