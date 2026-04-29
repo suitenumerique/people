@@ -72,7 +72,7 @@ class MailboxSerializer(serializers.ModelSerializer):
                 )
             else:
                 mailbox_data["link"] = (
-                    f"{client.API_URL}/code/{client.get_login_code(mailbox)}"
+                    f"{settings.WEBMAIL_URL}/code/{client.get_login_code(mailbox)}"
                 )
 
                 if not settings.SEND_MAILBOX_PASSWORD:
