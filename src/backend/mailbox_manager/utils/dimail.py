@@ -322,7 +322,7 @@ class DimailAPIClient:
         template_name = "send_login_link"
         recipient = mailbox.secondary_email
 
-        login_link = f"{self.API_URL}/code/{self.get_login_code(mailbox)}"
+        login_link = f"{settings.WEBMAIL_URL}/code/{self.get_login_code(mailbox)}"
         self._send_mailbox_related_email(
             title,
             template_name,
