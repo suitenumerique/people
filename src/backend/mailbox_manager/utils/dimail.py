@@ -386,7 +386,7 @@ class DimailAPIClient:
 
         try:
             response = session.post(
-                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/code/",
+                f"{self.API_URL}/domains/{mailbox.domain.name}/mailboxes/{mailbox.local_part}/code",
                 json={"expires_in": 3600, "maxuse": 1},
                 headers=self._get_headers(),
                 verify=True,
