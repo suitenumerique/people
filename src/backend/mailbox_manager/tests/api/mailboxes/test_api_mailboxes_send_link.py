@@ -171,7 +171,7 @@ def test_api_mailboxes__login_link_connexion_failed(dimail_token_ok):  # pylint:
     # token response in fixtures
     responses.add(
         responses.POST,
-        f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/code/",
+        f"{dimail_url}/domains/{mail_domain.name}/mailboxes/{mailbox.local_part}/code",
         body=ConnectionError(),
     )
 

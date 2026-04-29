@@ -68,4 +68,5 @@ MbyqKyC6DAzv4jEEhHaN7oY=
 "
 
 # INTEROP
+WEBMAIL_URL = "https://webmail.fr"
 MAIL_PROVISIONING_API_CREDENTIALS="bGFfcmVnaWU6cGFzc3dvcmQ=" # Dev and test key for dimail interop
