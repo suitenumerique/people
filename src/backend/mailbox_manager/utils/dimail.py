@@ -410,7 +410,7 @@ class DimailAPIClient:
 
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/mailboxes/",
+                f"{self.API_URL}/v2/domains/{domain.name}/mailboxes/",
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
@@ -441,9 +441,8 @@ class DimailAPIClient:
                 )
                 continue
 
-            # Functional mailboxes have neither givenNames nor surNames
-            # Skipping them for now
-            if "displayName" not in dimail_mailbox.keys():
+            # Skipping inactive and functional mailboxes for now
+            if "ox" not in dimail_mailbox["features"]:
                 logger.warning(
                     "Skipping functional mailbox: '%s'", dimail_mailbox["email"]
                 )
@@ -463,8 +462,8 @@ class DimailAPIClient:
                 if address.domain == domain.name:
                     # creates a mailbox on our end
                     mailbox = models.Mailbox.objects.create(
-                        first_name=dimail_mailbox["givenName"],
-                        last_name=dimail_mailbox["surName"],
+                        first_name=dimail_mailbox["extras"]["ox"]["given_name"],
+                        last_name=dimail_mailbox["extras"]["ox"]["sur_name"],
                         local_part=address.username,
                         domain=domain,
                         status=enums.MailboxStatusChoices.ENABLED,

@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(dimail) switch to mailboxes v2 for import
+
 ## [1.25.2] - 2026-04-29
 
 ## [1.25.1] - 2026-04-29

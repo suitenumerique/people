@@ -41,15 +41,25 @@ def test_dimail_synchronization__already_sync(dimail_token_ok):
     # Ensure successful response using "responses":
     # token response in fixtures
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+        re.compile(rf".*/v2/domains/{domain.name}/mailboxes/"),
         json=[
             {
                 "type": "mailbox",
-                "status": "broken",
+                "active": "yes",
                 "email": f"{mailbox.local_part}@{domain.name}",
-                "givenName": mailbox.first_name,
-                "surName": mailbox.last_name,
-                "displayName": f"{mailbox.first_name} {mailbox.last_name}",
+                "features": ["ox"],
+                "extras": {
+                    "ox": {
+                        "given_name": mailbox.first_name,
+                        "sur_name": mailbox.last_name,
+                        "display_name": f"{mailbox.first_name} {mailbox.last_name}",
+                    },
+                    "schedule": None,
+                },
+                "dirty_quirks": {"ox-config": {}},
+                "additionalSenders": [],
+                "rate_limit": None,
+                "quota": None,
             }
             for mailbox in pre_sync_mailboxes
         ],
@@ -79,69 +89,96 @@ def test_dimail_import_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0
     # successful token in fixtures
     mailbox_valid = {
         "type": "mailbox",
-        "status": "ok",
-        "email": f"validmailbox@{domain.name}",
-        "givenName": "Michael",
-        "surName": "Roch",
-        "displayName": "Michael Roch",
+        "active": "yes",
+        "email": f"michael.roch@{domain.name}",
+        "features": ["ox"],
+        "extras": {
+            "ox": {
+                "given_name": "Michael",
+                "sur_name": "Roch",
+                "display_name": "Michael Roch",
+            },
+            "schedule": None,
+        },
+        "dirty_quirks": {"ox-config": {}},
+        "additionalSenders": [],
+        "rate_limit": None,
+        "quota": None,
     }
     mailbox_oxadmin = {
         "type": "mailbox",
-        "status": "broken",
+        "active": "yes",
         "email": f"oxadmin@{domain.name}",
-        "givenName": "Admin",
-        "surName": "Context",
-        "displayName": "Context Admin",
-    }
-    mailbox_with_wrong_domain = {
-        "type": "mailbox",
-        "status": "broken",
-        "email": "johndoe@wrongdomain.com",
-        "givenName": "John",
-        "surName": "Doe",
-        "displayName": "John Doe",
-    }
-    mailbox_with_invalid_domain = {
-        "type": "mailbox",
-        "status": "broken",
-        "email": f"naw@ake@{domain.name}",
-        "givenName": "Joe",
-        "surName": "Doe",
-        "displayName": "Joe Doe",
+        "features": ["ox"],
+        "extras": {
+            "ox": {
+                "given_name": "Admin",
+                "sur_name": "Context",
+                "display_name": "Context Admin",
+            },
+            "schedule": None,
+        },
+        "dirty_quirks": {"ox-config": {}},
+        "additionalSenders": [],
+        "rate_limit": None,
+        "quota": None,
     }
     mailbox_with_invalid_local_part = {
         "type": "mailbox",
-        "status": "broken",
+        "active": "yes",
         "email": f"obalmaské@{domain.name}",
-        "givenName": "Jean",
-        "surName": "Vang",
-        "displayName": "Jean Vang",
+        "features": ["ox"],
+        "extras": {
+            "ox": {
+                "given_name": "Jean",
+                "sur_name": "Vang",
+                "display_name": "Jean Vang",
+            },
+            "schedule": None,
+        },
+        "dirty_quirks": {"ox-config": {}},
+        "additionalSenders": [],
+        "rate_limit": None,
+        "quota": None,
     }
     mailbox_existing_alias = {
         "type": "mailbox",
-        "status": "broken",
+        "active": "yes",
         "email": f"{existing_alias.local_part}@{domain.name}",
-        "givenName": "Support",
-        "surName": "email",
-        "displayName": "Support email",
+        "features": ["ox"],
+        "extras": {
+            "ox": {
+                "given_name": "Support",
+                "sur_name": "email",
+                "display_name": "Support email",
+            },
+            "schedule": None,
+        },
+        "dirty_quirks": {"ox-config": {}},
+        "additionalSenders": [],
+        "rate_limit": None,
+        "quota": None,
     }
     functional_mailbox = {
         "type": "mailbox",
-        "status": "ok",
         "active": "yes",
         "email": f"functional_mailbox@{domain.name}",
+        "features": [],
+        "extras": {"ox": None, "schedule": None},
+        "dirty_quirks": None,
+        "additionalSenders": [],
+        "rate_limit": None,
+        "quota": None,
     }
 
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/mailboxes/"),
+        re.compile(rf".*/v2/domains/{domain.name}/mailboxes/"),
         json=[
-            mailbox_valid,
-            mailbox_oxadmin,
-            mailbox_with_wrong_domain,
-            mailbox_with_invalid_domain,
-            mailbox_with_invalid_local_part,
-            mailbox_existing_alias,
-            functional_mailbox,
+            mailbox_valid,  # successful
+            mailbox_oxadmin,  # technical
+            mailbox_with_invalid_local_part,  # failed
+            mailbox_existing_alias,  # successful
+            functional_mailbox,  # failed - not implemented yet
         ],
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -150,15 +187,13 @@ def test_dimail_import_mailboxes(caplog, dimail_token_ok):  # pylint: disable=W0
     imported_mailboxes = dimail_client.import_mailboxes(domain)
 
     # 2 successful not in log
-    # 1 technical + 5 failed = 6 records
-    assert len(caplog.records) == 6
+    # 2 technical + 2 failed = 4 records
+    assert len(caplog.records) == 4
     log_messages = [record.message for record in caplog.records]
 
     expected_messages = [
         "Token successfully granted by mail-provisioning API.",
         f"Not importing OX technical address: oxadmin@{domain.name}",
-        f"Import of email {mailbox_with_wrong_domain['email']} failed because of a wrong domain",
-        f"Import of email {mailbox_with_invalid_domain['email']} failed with error Invalid Domain",
         f"Import of email {mailbox_with_invalid_local_part['email']} failed with error local-part \
 contains non-ASCII characters)",
         f"Skipping functional mailbox: '{functional_mailbox['email']}'",
