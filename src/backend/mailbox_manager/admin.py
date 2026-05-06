@@ -103,16 +103,15 @@ class MailDomainAdmin(ExportActionMixin, admin.ModelAdmin):
                     % {"domain": domain.name, "err": err},
                 )
             else:
-                messages.success(
-                    request,
-                    _(
-                        "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
+                message = f"Synchronisation succeeded for {domain}."
+                if len(imported_mailboxes) == 0:
+                    message = message, "No new mailbox imported."
+                else:
+                    message = (
+                        message,
+                        f"Imported {len(imported_mailboxes)} mailboxes: {imported_mailboxes}",
                     )
-                    % {
-                        "domain": domain.name,
-                        "mailboxes": ", ".join(imported_mailboxes),
-                    },
-                )
+                messages.success(request, message)
         if excluded_domains:
             messages.warning(
                 request,
