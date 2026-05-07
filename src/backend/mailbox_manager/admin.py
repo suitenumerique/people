@@ -1,7 +1,6 @@
 """Admin classes and registrations for People's mailbox manager app."""
 
 from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html_join, mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -284,36 +283,13 @@ class MailDomainAdmin(ExportActionMixin, admin.ModelAdmin):
 
 
 @admin.register(models.Mailbox)
-class MailboxAdmin(UserAdmin):
+class MailboxAdmin(admin.ModelAdmin):
     """Admin for mailbox model."""
 
-    list_display = ("__str__", "domain", "status", "updated_at")
+    list_display = ("__str__", "domain", "status", "updated_at", "password")
     list_filter = ("status",)
     search_fields = ("local_part", "domain__name", "first_name", "last_name")
     readonly_fields = ["updated_at"]
-
-    fieldsets = None
-    add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": (
-                    "first_name",
-                    "last_name",
-                    "local_part",
-                    "domain",
-                    "secondary_email",
-                    "status",
-                    "usable_password",
-                    "password1",
-                    "password2",
-                ),
-            },
-        ),
-    )
-    ordering = ("local_part", "domain")
-    filter_horizontal = ()
 
 
 @admin.register(models.MailDomainAccess)

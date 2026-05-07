@@ -506,21 +506,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-oauth-toolkit"
-version = "3.2.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "jwcrypto" },
-    { name = "oauthlib" },
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/95/efd83b35c34b86eb2249d2b54c5eaf383c48f3f19034aa6f3807e37471b6/django_oauth_toolkit-3.2.0.tar.gz", hash = "sha256:c36761ae6810083d95a652e9c820046cde0d45a2e2a5574bbe7202656ec20bb6", size = 114211, upload-time = "2026-01-08T22:03:13.311Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/cc/f27a784c0ecd13335abd9ef85ebb80dbc04945f919da5f496f56e3562751/django_oauth_toolkit-3.2.0-py3-none-any.whl", hash = "sha256:bd2cd2719b010231a2f370f927dbcc740454fb1d0dd7e7f4138f36227363dc26", size = 87077, upload-time = "2026-01-08T22:03:12.123Z" },
-]
-
-[[package]]
 name = "django-parler"
 version = "2.3"
 source = { registry = "https://pypi.org/simple" }
@@ -936,19 +921,6 @@ wheels = [
 ]
 
 [[package]]
-name = "jwcrypto"
-version = "1.5.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "cryptography" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e1/db/870e5d5fb311b0bcf049630b5ba3abca2d339fd5e13ba175b4c13b456d08/jwcrypto-1.5.6.tar.gz", hash = "sha256:771a87762a0c081ae6166958a954f80848820b2ab066937dc8b8379d65b1b039", size = 87168, upload-time = "2024-03-06T19:58:31.831Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cd/58/4a1880ea64032185e9ae9f63940c9327c6952d5584ea544a8f66972f2fda/jwcrypto-1.5.6-py3-none-any.whl", hash = "sha256:150d2b0ebbdb8f40b77f543fb44ffd2baeff48788be71f67f03566692fd55789", size = 92520, upload-time = "2024-03-06T19:58:29.765Z" },
-]
-
-[[package]]
 name = "kombu"
 version = "5.6.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1011,15 +983,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b8/48/b91a6f924a2abd9e86b501347ca56989e2c2b4bf3eac86bff57f80b99b75/nested_multipart_parser-1.6.0.tar.gz", hash = "sha256:8c7a07952a4a3c2cb2b99ca16158961af215c6f8c9e04337bc13da016500c69c", size = 13159, upload-time = "2025-09-17T20:47:25.627Z" }
 
 [[package]]
-name = "oauthlib"
-version = "3.3.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0b/5f/19930f824ffeb0ad4372da4812c50edbd1434f678c90c2733e1188edfc63/oauthlib-3.3.1.tar.gz", hash = "sha256:0f0f8aa759826a193cf66c12ea1af1637f87b9b4622d46e866952bb022e538c9", size = 185918, upload-time = "2025-06-19T22:48:08.269Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/be/9c/92789c596b8df838baa98fa71844d84283302f7604ed565dafe5a6b5041a/oauthlib-3.3.1-py3-none-any.whl", hash = "sha256:88119c938d2b8fb88561af5f6ee0eec8cc8d552b7bb1f712743136eb7523b7a1", size = 160065, upload-time = "2025-06-19T22:48:06.508Z" },
-]
-
-[[package]]
 name = "packaging"
 version = "26.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1054,7 +1017,6 @@ dependencies = [
     { name = "django-extensions" },
     { name = "django-import-export" },
     { name = "django-lasuite" },
-    { name = "django-oauth-toolkit" },
     { name = "django-parler" },
     { name = "django-redis" },
     { name = "django-storages" },
@@ -1115,7 +1077,6 @@ requires-dist = [
     { name = "django-extensions", specifier = "==4.1" },
     { name = "django-import-export", specifier = ">=4.4.0" },
     { name = "django-lasuite", specifier = "==0.0.25" },
-    { name = "django-oauth-toolkit", specifier = "==3.2.0" },
     { name = "django-parler", specifier = "==2.3" },
     { name = "django-redis", specifier = "==6.0.0" },
     { name = "django-storages", specifier = "==1.14.6" },

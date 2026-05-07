@@ -20,8 +20,6 @@ from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
 from configurations import Configuration, values
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
@@ -203,15 +201,12 @@ class Base(Configuration):
         "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "mailbox_oauth2.middleware.one_time_email_authenticated_session",
-        "oauth2_provider.middleware.OAuth2TokenMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "dockerflow.django.middleware.DockerflowMiddleware",
     ]
 
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
-        "mailbox_oauth2.backends.MailboxModelBackend",
         "core.authentication.backends.OIDCAuthenticationBackend",
     ]
 
@@ -227,10 +222,8 @@ class Base(Configuration):
         "core",
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
-        "mailbox_oauth2",
         *INSTALLED_PLUGINS,
         # Third party apps
-        "django_zxcvbn_password_validator",
         "drf_spectacular",
         "drf_spectacular_sidecar",  # required for Django collectstatic discovery
         "corsheaders",
@@ -238,7 +231,6 @@ class Base(Configuration):
         "django_celery_results",
         "dockerflow.django",
         "easy_thumbnails",
-        "oauth2_provider",
         "parler",
         "rest_framework",
         "treebeard",
@@ -608,26 +600,6 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
-    OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
-    OAUTH2_PROVIDER_GRANT_MODEL = "mailbox_oauth2.Grant"
-    OAUTH2_PROVIDER_ID_TOKEN_MODEL = "mailbox_oauth2.IDToken"  # noqa: S105
-    OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = "mailbox_oauth2.AccessToken"  # noqa: S105
-    OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "mailbox_oauth2.RefreshToken"  # noqa: S105
-
-    # Security settings for login attempts
-    # - Maximum number of failed login attempts before lockout
-    MAX_LOGIN_ATTEMPTS = values.IntegerValue(
-        default=5,
-        environ_name="MAX_LOGIN_ATTEMPTS",
-        environ_prefix=None,
-    )
-    # - Lockout time in seconds (default to 5 minutes)
-    ACCOUNT_LOCKOUT_TIME = values.IntegerValue(
-        default=5 * 60,
-        environ_name="ACCOUNT_LOCKOUT_TIME",
-        environ_prefix=None,
-    )
-
     MANAGEMENT_COMMAND_AS_TASK = [
         "fill_organization_metadata",
     ] + values.ListValue(
@@ -701,53 +673,6 @@ class Base(Configuration):
             },
         }
 
-    @property
-    def OAUTH2_PROVIDER(self) -> dict:
-        """OAuth2 Provider settings."""
-        OIDC_ENABLED = values.BooleanValue(
-            default=False,
-            environ_name="OAUTH2_PROVIDER_OIDC_ENABLED",
-            environ_prefix=None,
-        )
-        OIDC_RSA_PRIVATE_KEY = values.Value(
-            environ_name="OAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY",
-            environ_prefix=None,
-        )
-        OAUTH2_VALIDATOR_CLASS = values.Value(
-            default="mailbox_oauth2.validators.BaseValidator",
-            environ_name="OAUTH2_PROVIDER_VALIDATOR_CLASS",
-            environ_prefix=None,
-        )
-        SCOPES = {
-            "openid": "OpenID Connect scope",
-            "email": "Email address",
-        }
-        if OAUTH2_VALIDATOR_CLASS == "mailbox_oauth2.validators.ProConnectValidator":
-            SCOPES["given_name"] = "First name"
-            SCOPES["usual_name"] = "Last name"
-            SCOPES["siret"] = "SIRET number"
-            SCOPES["siren"] = "SIREN number"
-            SCOPES["uid"] = "UID"
-            # available but not filled
-            SCOPES["organizational_unit"] = "Organizational unit"
-            SCOPES["belonging_population"] = "Belonging population"
-            SCOPES["phone"] = "Phone number"
-            SCOPES["chorusdt"] = "Chorus DT"
-
-        return {
-            "OIDC_ENABLED": OIDC_ENABLED,
-            "OIDC_RSA_PRIVATE_KEY": OIDC_RSA_PRIVATE_KEY,
-            "SCOPES": SCOPES,
-            "OAUTH2_VALIDATOR_CLASS": OAUTH2_VALIDATOR_CLASS,
-        }
-
-    @property
-    def LOGIN_URL(self):
-        """
-        Define the LOGIN_URL (Django) for the OIDC provider (reuse LOGIN_REDIRECT_URL)
-        """
-        return f"{self.LOGIN_REDIRECT_URL}/login/"
-
     @classmethod
     def post_setup(cls):
         """Post setup configuration.
@@ -775,24 +700,6 @@ class Base(Configuration):
 
             # Ignore the logs added by the DockerflowMiddleware
             ignore_logger("request.summary")
-
-    @classmethod
-    def generate_temporary_rsa_key(cls):
-        """Generate a temporary RSA key for OIDC Provider."""
-
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=4096,
-        )
-
-        # - Serialize private key to PEM format
-        private_key_pem = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-
-        return private_key_pem.decode("utf-8")
 
 
 class Build(Base):
@@ -862,14 +769,6 @@ class Development(Base):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
         self.INSTALLED_APPS += ["django_extensions"]
-
-    @property
-    def OAUTH2_PROVIDER(self):
-        """OAuth2 Provider settings."""
-        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
-        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
-            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
-        return OAUTH2_PROVIDER
 
 
 class Test(Base):
@@ -1073,14 +972,6 @@ class Local(Production):
 
     nota bene: it should inherit from the Production environment.
     """
-
-    @property
-    def OAUTH2_PROVIDER(self):
-        """OAuth2 Provider settings."""
-        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
-        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
-            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
-        return OAUTH2_PROVIDER
 
 
 class Staging(Production):

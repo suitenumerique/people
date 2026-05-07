@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ⚰️(auth) remove oauth2 and IdP-related features
 - 🐛(dimail) switch to mailboxes v2 for import
 
 ## [1.25.2] - 2026-04-29

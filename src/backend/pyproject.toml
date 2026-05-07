@@ -37,7 +37,6 @@ dependencies = [
     "django-extensions==4.1",
     "django-import-export>=4.4.0",
     "django-lasuite==0.0.25",
-    "django-oauth-toolkit==3.2.0",
     "django-parler==2.3",
     "django-redis==6.0.0",
     "django-storages==1.14.6",
