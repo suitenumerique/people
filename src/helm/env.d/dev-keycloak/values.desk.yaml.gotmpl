@@ -36,8 +36,6 @@ backend:
     OIDC_RP_SCOPES: "openid email siret"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
-    OAUTH2_PROVIDER_OIDC_ENABLED: True
-    OAUTH2_PROVIDER_VALIDATOR_CLASS: "mailbox_oauth2.validators.ProConnectValidator"
     ORGANIZATION_REGISTRATION_ID_VALIDATORS: '[{"NAME": "django.core.validators.RegexValidator", "OPTIONS": {"regex": "^[0-9]{14}$"}}]'
     LOGIN_REDIRECT_URL: https://desk.127.0.0.1.nip.io
     LOGIN_REDIRECT_URL_FAILURE: https://desk.127.0.0.1.nip.io
