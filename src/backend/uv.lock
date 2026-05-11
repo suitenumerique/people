@@ -1039,7 +1039,7 @@ wheels = [
 
 [[package]]
 name = "people"
-version = "1.25.2"
+version = "1.25.3"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
