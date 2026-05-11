@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.25.3] - 2026-05-11
+
 - 🐛(dimail) switch to mailboxes v2 for import
 
 ## [1.25.2] - 2026-04-29
@@ -553,7 +555,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.25.2...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.25.3...main
+[1.25.3]: https://github.com/suitenumerique/people/releases/v1.25.3
 [1.25.2]: https://github.com/suitenumerique/people/releases/v1.25.2
 [1.25.1]: https://github.com/suitenumerique/people/releases/v1.25.1
 [1.25.0]: https://github.com/suitenumerique/people/releases/v1.25.0
