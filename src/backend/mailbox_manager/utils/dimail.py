@@ -56,6 +56,7 @@ class DimailAPIClient:
                 f"{self.API_URL}/token/",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -100,6 +101,7 @@ class DimailAPIClient:
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -139,6 +141,7 @@ class DimailAPIClient:
                 headers=headers,
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -175,6 +178,7 @@ class DimailAPIClient:
                     headers=headers,
                     verify=True,
                     timeout=self.API_TIMEOUT,
+                    allow_redirects=True,
                 )
             except requests.exceptions.ConnectionError as error:
                 logger.error(
@@ -208,6 +212,7 @@ class DimailAPIClient:
                 json=payload,
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -248,6 +253,7 @@ class DimailAPIClient:
                 json=payload,
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -391,6 +397,7 @@ class DimailAPIClient:
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.exception(
@@ -414,6 +421,7 @@ class DimailAPIClient:
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -485,6 +493,7 @@ class DimailAPIClient:
             headers=self._get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
+            allow_redirects=True,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -509,6 +518,7 @@ class DimailAPIClient:
             headers=self._get_headers(),
             verify=True,
             timeout=self.API_TIMEOUT,
+            allow_redirects=True,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -557,6 +567,7 @@ class DimailAPIClient:
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -577,6 +588,7 @@ class DimailAPIClient:
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
             verify=True,
             timeout=self.API_TIMEOUT,
+            allow_redirects=True,
         )
         if response.status_code == status.HTTP_200_OK:
             logger.info(
@@ -662,6 +674,7 @@ class DimailAPIClient:
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.exception(
@@ -712,6 +725,7 @@ class DimailAPIClient:
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.exception(
@@ -754,6 +768,7 @@ class DimailAPIClient:
                 headers=headers,
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -807,6 +822,7 @@ class DimailAPIClient:
                 headers=headers,
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -855,6 +871,7 @@ class DimailAPIClient:
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(
@@ -876,6 +893,7 @@ class DimailAPIClient:
                 headers=self._get_headers(),
                 verify=True,
                 timeout=self.API_TIMEOUT,
+                allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
             logger.error(

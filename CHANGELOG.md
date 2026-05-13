@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🐛(dimail) fix no redirects on dimail endpoints
+
 ## [1.25.3] - 2026-05-11
 
 - 🐛(dimail) switch to mailboxes v2 for import
