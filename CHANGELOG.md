@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(dimail) fix trailing slashes on dimail spec and fix endpoint
 - 🐛(dimail) fix trailing slash on dimail check endpoint
 
 ## [1.25.4] - 2026-05-13

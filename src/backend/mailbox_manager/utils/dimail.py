@@ -586,7 +586,7 @@ class DimailAPIClient:
         """Send a request to dimail to fix a domain.
         Allow to fix internal checks."""
         response = session.get(
-            f"{self.API_URL}/domains/{domain.name}/fix/",
+            f"{self.API_URL}/domains/{domain.name}/fix",
             headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
             verify=True,
             timeout=self.API_TIMEOUT,
@@ -672,7 +672,7 @@ class DimailAPIClient:
         """Send a request to dimail to get domain specification for DNS configuration."""
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/spec/",
+                f"{self.API_URL}/domains/{domain.name}/spec",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
                 timeout=self.API_TIMEOUT,

@@ -111,7 +111,7 @@ def test_api_mail_domains__fetch_from_dimail_admin_successful(role):
     )
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain.name}/spec/"),
+        re.compile(rf".*/domains/{domain.name}/spec"),
         json=dimail_fixtures.DOMAIN_SPEC,
         status=200,
     )

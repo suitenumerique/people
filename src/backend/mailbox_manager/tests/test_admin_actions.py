@@ -170,7 +170,7 @@ def test_fetch_domain_expected_config(client, domain_status):
     }
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain.name}/spec/"),
+        re.compile(rf".*/domains/{domain.name}/spec"),
         body=json.dumps(DOMAIN_SPEC),
         status=status.HTTP_200_OK,
         content_type="application/json",

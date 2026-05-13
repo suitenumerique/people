@@ -73,7 +73,7 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
     # domain_enabled2 is broken with internal error, we try to fix it
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain_enabled2.name}/fix/"),
+        re.compile(rf".*/domains/{domain_enabled2.name}/fix"),
         body=json.dumps(body_content_broken_internal),
         status=200,
         content_type="application/json",

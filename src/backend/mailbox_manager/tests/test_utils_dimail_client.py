@@ -368,7 +368,7 @@ def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
     )
     # the endpoint fix is called and still returns KO for internal checks
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/fix/"),
+        re.compile(rf".*/domains/{domain.name}/fix"),
         json=body_domain_broken,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -424,7 +424,7 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     body_domain_ok = CHECK_DOMAIN_OK.copy()
     body_domain_ok["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/fix/"),
+        re.compile(rf".*/domains/{domain.name}/fix"),
         json=body_domain_ok,
         status=status.HTTP_200_OK,
         content_type="application/json",
