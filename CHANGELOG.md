@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛(dimail) fix trailing slash on dimail check endpoint
+
 ## [1.25.4] - 2026-05-13
 
 - 🐛(dimail) fix no redirects on dimail endpoints
