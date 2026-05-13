@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 09:46+0000\n"
-"PO-Revision-Date: 2026-04-20 10:24\n"
+"POT-Creation-Date: 2026-05-13 10:21+0000\n"
+"PO-Revision-Date: 2026-05-13 11:33\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -687,95 +687,90 @@ msgstr ""
 msgid "Import emails from dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:102 mailbox_manager/admin.py:143
+#: mailbox_manager/admin.py:102 mailbox_manager/admin.py:142
 #, python-format
 msgid "Synchronisation failed for %(domain)s with message: %(err)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:109
-#, python-format
-msgid "Synchronisation succeed for %(domain)s. Imported mailboxes: %(mailboxes)s"
-msgstr ""
-
-#: mailbox_manager/admin.py:119 mailbox_manager/admin.py:163
+#: mailbox_manager/admin.py:118 mailbox_manager/admin.py:162
 #, python-format
 msgid "Sync require enabled domains. Excluded domains: %(domains)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:123
+#: mailbox_manager/admin.py:122
 msgid "Import aliases from dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:150
+#: mailbox_manager/admin.py:149
 #, python-format
 msgid "Synchronisation succeed for %(domain)s.    Imported %(count_imported)s aliases: %(aliases)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:167
+#: mailbox_manager/admin.py:166
 msgid "Check and update status from dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:184
+#: mailbox_manager/admin.py:183
 #, python-format
 msgid "- %(domain)s with message: %(err)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:197
+#: mailbox_manager/admin.py:196
 msgid "Check domains done with success."
 msgstr ""
 
-#: mailbox_manager/admin.py:198
+#: mailbox_manager/admin.py:197
 #, python-format
 msgid "Domains updated: %(domains)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:201
+#: mailbox_manager/admin.py:200
 msgid "No domain updated."
 msgstr ""
 
-#: mailbox_manager/admin.py:210
+#: mailbox_manager/admin.py:209
 msgid "Check domain failed for:"
 msgstr ""
 
-#: mailbox_manager/admin.py:220
+#: mailbox_manager/admin.py:219
 #, python-format
 msgid "Domains disabled are excluded from check: %(domains)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:224
+#: mailbox_manager/admin.py:223
 msgid "Fetch domain expected config from dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:238
+#: mailbox_manager/admin.py:237
 #, python-format
 msgid "Domain expected config fetched with success for %(domain)s."
 msgstr ""
 
-#: mailbox_manager/admin.py:244
+#: mailbox_manager/admin.py:243
 #, python-format
 msgid "Failed to fetch domain expected config for %(domain)s."
 msgstr ""
 
-#: mailbox_manager/admin.py:250
+#: mailbox_manager/admin.py:249
 #, python-format
 msgid "Domains disabled are excluded from fetch: %(domains)s"
 msgstr ""
 
-#: mailbox_manager/admin.py:254
+#: mailbox_manager/admin.py:253
 msgid "Send pending mailboxes to dimail"
 msgstr ""
 
-#: mailbox_manager/admin.py:270
+#: mailbox_manager/admin.py:269
 #, python-format
 msgid "Failed to send the following mailboxes : %(mailboxes)s."
 msgstr ""
 
-#: mailbox_manager/admin.py:276
+#: mailbox_manager/admin.py:275
 #, python-format
 msgid "Pending mailboxes successfully sent for %(domain)s."
 msgstr ""
 
-#: mailbox_manager/admin.py:282
+#: mailbox_manager/admin.py:281
 #, python-format
 msgid "Domains disabled are excluded from : %(domains)s"
 msgstr ""
@@ -900,19 +895,19 @@ msgstr ""
 msgid "Aliases"
 msgstr ""
 
-#: mailbox_manager/utils/dimail.py:297
+#: mailbox_manager/utils/dimail.py:303
 msgid "Your new mailbox information"
 msgstr ""
 
-#: mailbox_manager/utils/dimail.py:311
+#: mailbox_manager/utils/dimail.py:317
 msgid "Your password has been updated"
 msgstr ""
 
-#: mailbox_manager/utils/dimail.py:321
+#: mailbox_manager/utils/dimail.py:327
 msgid "Here is your login link"
 msgstr ""
 
-#: mailbox_manager/utils/dimail.py:707
+#: mailbox_manager/utils/dimail.py:719
 msgid "Please add a secondary email before resetting the password."
 msgstr ""
 
