@@ -78,14 +78,14 @@ def test_fetch_domain_status__should_switch_to_failed_when_domain_broken(client)
     body_content_domain2["name"] = domain2.name
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain1.name}/check/"),
+        re.compile(rf".*/domains/{domain1.name}/check"),
         body=json.dumps(body_content_domain1),
         status=status.HTTP_200_OK,
         content_type="application/json",
     )
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain2.name}/check/"),
+        re.compile(rf".*/domains/{domain2.name}/check"),
         body=json.dumps(body_content_domain2),
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -123,7 +123,7 @@ def test_fetch_domain_status__should_switch_to_enabled_when_domain_ok(
 
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain1.name}/check/"),
+        re.compile(rf".*/domains/{domain1.name}/check"),
         body=json.dumps(body_content_domain1),
         status=status.HTTP_200_OK,
         content_type="application/json",

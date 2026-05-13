@@ -560,10 +560,11 @@ class DimailAPIClient:
         return {"failed_mailboxes": failed_mailboxes}
 
     def check_domain(self, domain):
-        """Send a request to dimail to check domain health."""
+        """Send a request to dimail to check domain configuration."""
+
         try:
             response = session.get(
-                f"{self.API_URL}/domains/{domain.name}/check/",
+                f"{self.API_URL}/domains/{domain.name}/check",
                 headers={"Authorization": f"Basic {self.API_CREDENTIALS}"},
                 verify=True,
                 timeout=self.API_TIMEOUT,
@@ -576,6 +577,7 @@ class DimailAPIClient:
                 exc_info=error,
             )
             raise error
+
         if response.status_code == status.HTTP_200_OK:
             return response.json()
         return self._raise_exception_for_unexpected_response(response)

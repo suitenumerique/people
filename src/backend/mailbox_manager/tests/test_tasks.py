@@ -65,7 +65,7 @@ def test_fetch_domain_status_task_success():  # pylint: disable=too-many-locals
         # Mock dimail API with success response
         responses.add(
             responses.GET,
-            re.compile(rf".*/domains/{domain.name}/check/"),
+            re.compile(rf".*/domains/{domain.name}/check"),
             body=json.dumps(body_content),
             status=200,
             content_type="application/json",
@@ -172,7 +172,7 @@ def test_fetch_domains_status_error_handling(caplog):
     # Mock dimail API with error response
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         body=json.dumps({"error": "Internal Server Error"}),
         status=500,
         content_type="application/json",

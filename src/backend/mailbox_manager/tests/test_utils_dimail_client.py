@@ -280,7 +280,7 @@ def test_dimail__fetch_domain_status__switch_to_enabled(domain_status):
     body_content = CHECK_DOMAIN_OK.copy()
     body_content["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_content,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -317,7 +317,7 @@ def test_dimail__fetch_domain_status__switch_to_action_required(
     body_domain_broken = CHECK_DOMAIN_BROKEN_EXTERNAL.copy()
     body_domain_broken["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_domain_broken,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -333,7 +333,7 @@ def test_dimail__fetch_domain_status__switch_to_action_required(
     body_domain_ok = CHECK_DOMAIN_OK.copy()
     body_domain_ok["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_domain_ok,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -361,7 +361,7 @@ def test_dimail__fetch_domain_status__switch_to_failed(domain_status):
     body_domain_broken = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
     body_domain_broken["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_domain_broken,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -397,7 +397,7 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     body_domain_broken = CHECK_DOMAIN_BROKEN.copy()
     body_domain_broken["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_domain_broken,
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -415,7 +415,7 @@ def test_dimail__fetch_domain_status__full_fix_scenario(domain_status):
     body_domain_broken_internal = CHECK_DOMAIN_BROKEN_INTERNAL.copy()
     body_domain_broken_internal["name"] = domain.name
     responses.get(
-        re.compile(rf".*/domains/{domain.name}/check/"),
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=body_domain_broken_internal,
         status=status.HTTP_200_OK,
         content_type="application/json",
