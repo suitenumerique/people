@@ -83,7 +83,7 @@ def test_api_mail_domains__create_authenticated():
     body_content_domain1["name"] = domain_name
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain_name}/check/"),
+        re.compile(rf".*/domains/{domain_name}/check"),
         body=json.dumps(body_content_domain1),
         status=status.HTTP_200_OK,
         content_type="application/json",
@@ -170,7 +170,7 @@ def test_api_mail_domains__create_dimail_domain(caplog):
     body_content_domain1["name"] = domain_name
     responses.add(
         responses.GET,
-        re.compile(rf".*/domains/{domain_name}/check/"),
+        re.compile(rf".*/domains/{domain_name}/check"),
         body=json.dumps(body_content_domain1),
         status=status.HTTP_200_OK,
         content_type="application/json",

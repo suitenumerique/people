@@ -104,9 +104,8 @@ def test_api_mail_domains__fetch_from_dimail_admin_successful(role):
     assert domain.expected_config is None
     assert domain.last_check_details is None
 
-    responses.add(
-        responses.GET,
-        re.compile(rf".*/domains/{domain.name}/check/"),
+    responses.get(
+        re.compile(rf".*/domains/{domain.name}/check"),
         json=dimail_fixtures.CHECK_DOMAIN_OK,
         status=200,
     )

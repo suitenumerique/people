@@ -50,7 +50,7 @@ def test_fetch_domain_status():
         # mock dimail API
         responses.add(
             responses.GET,
-            re.compile(rf".*/domains/{domain.name}/check/"),
+            re.compile(rf".*/domains/{domain.name}/check"),
             body=json.dumps(body_content),
             status=status.HTTP_200_OK,
             content_type="application/json",
