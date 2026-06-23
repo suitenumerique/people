@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(dimail) auto-import mailboxes from enabled domains
+
 ### Fixed
 
 - 🐛(dimail) fix trailing slash on dimail check endpoint
@@ -33,7 +37,6 @@ and this project adheres to
 ### Added
 
 - 🧑‍💻(admin) export domain contact info #1061
-- ✨(dimail) allow auto-import from dimail 
 
 ### Fixed
 
