@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 
 - 🐛(dimail) fix trailing slash on dimail check endpoint
+- 🩹(dimail) increase login code max uses
 
 ## [1.25.4] - 2026-05-13
 
