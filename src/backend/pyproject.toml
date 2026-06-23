@@ -29,6 +29,7 @@ dependencies = [
     "PyJWT==2.13.0",
     "boto3==1.42.62",
     "celery[redis]==5.6.2",
+    "cryptography>=48.0.1",
     "django-celery-beat==2.9.0",
     "django-celery-results==2.6.0",
     "django-configurations==2.5.1",
@@ -62,6 +63,7 @@ dependencies = [
     "redis<=7.2.1",
     "requests==2.33.0",
     "sentry-sdk[django]==2.54.0",
+    "tornado>=6.5.6",
     "whitenoise==6.12.0",
 ]
 
