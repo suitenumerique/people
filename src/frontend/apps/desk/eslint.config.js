@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 });
 
 module.exports = defineConfig([{
-    extends: compat.extends("people/next"),
+    extends: [...compat.extends("people/next")],
 
     languageOptions: {
         parserOptions: {
