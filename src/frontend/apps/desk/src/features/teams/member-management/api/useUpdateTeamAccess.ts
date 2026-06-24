@@ -57,7 +57,6 @@ export const useUpdateTeamAccess = (options?: UseUpdateTeamAccessOptions) => {
         queryKey: [KEY_TEAM],
       });
       if (options?.onSuccess) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           options.onSuccess as unknown as (
             data: Access,
@@ -69,7 +68,6 @@ export const useUpdateTeamAccess = (options?: UseUpdateTeamAccessOptions) => {
     },
     onError: (error, variables, context) => {
       if (options?.onError) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           options.onError as unknown as (
             error: APIError,
