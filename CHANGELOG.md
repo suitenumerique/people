@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.26.0] - 2026-06-24
+
 ### Added
 
 - ✨(scripts) update release script to include uv
@@ -569,7 +571,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.25.4...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.26.0...main
+[1.26.0]: https://github.com/suitenumerique/people/releases/v1.26.0
 [1.25.4]: https://github.com/suitenumerique/people/releases/v1.25.4
 [1.25.3]: https://github.com/suitenumerique/people/releases/v1.25.3
 [1.25.2]: https://github.com/suitenumerique/people/releases/v1.25.2
