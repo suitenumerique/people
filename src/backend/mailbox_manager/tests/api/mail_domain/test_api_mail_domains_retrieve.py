@@ -33,7 +33,7 @@ def test_api_mail_domains__retrieve_anonymous():
 @responses.activate
 def test_api_domains__retrieve_non_existing():
     """
-    Authenticated users should have an explicit error when trying to retrive
+    Authenticated users should have an explicit error when trying to retrieve
     a domain that doesn't exist.
     """
     client = APIClient()

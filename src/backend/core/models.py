@@ -874,7 +874,7 @@ class TeamAccess(BaseModel):
 
     def delete(self, *args, **kwargs):
         """
-        Override delete method to fire webhooks on  to team accesses.
+        Override delete method to fire webhooks on to team accesses.
         Don't allow deleting a team access until it is successfully synchronized with all
         its webhooks.
         """
