@@ -12,14 +12,15 @@
     "lint": "eslint"
   },
   "peerDependencies": {
-    "eslint": ">=9.32.0"
+    "eslint": ">=10.0.0"
   },
   "dependencies": {
+    "@eslint/js": "*",
     "@next/eslint-plugin-next": "15.3.2",
     "@tanstack/eslint-plugin-query": "5.91.2",
     "@typescript-eslint/eslint-plugin": "8.46.2",
     "@typescript-eslint/parser": "8.46.2",
-    "eslint": "9.32.0",
+    "eslint": "10.0.0",
     "eslint-config-next": "15.3.2",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
