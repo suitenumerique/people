@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ⬆️(front) upgrade eslint to v10
+
 ## [1.27.2] - 2026-11-23
 
 - 🐛(front) fix broken link to domain config
