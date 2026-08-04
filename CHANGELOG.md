@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 - ⚰️(auth) remove oauth2 and IdP-related features
+- ⬆️(front) upgrade eslint to v9
 
 ## [1.26.0] - 2026-06-24
 
