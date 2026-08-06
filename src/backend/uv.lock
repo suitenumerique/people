@@ -486,7 +486,7 @@ wheels = [
 
 [[package]]
 name = "django-lasuite"
-version = "0.0.25"
+version = "0.0.27"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -497,9 +497,9 @@ dependencies = [
     { name = "requests" },
     { name = "requests-toolbelt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/bc/5826a3e5ada5dad1ff6af9a2e1eb598a0dc2cb9c4d2dbf011f1bbb310c9e/django_lasuite-0.0.25.tar.gz", hash = "sha256:ee44783942e6ead74a732f6d7280c5fca961b66581350ce01c0589c3e80684cf", size = 34819, upload-time = "2026-03-10T13:40:28.705Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/91/3b434673d79bfdd1248c11d51bff902db465fc441330d3c8477de95d4501/django_lasuite-0.0.27.tar.gz", hash = "sha256:a3d23b97307b1615d689eb15b6c22c6f3bfda6745775c82f1d07c292e3b871a2", size = 35076, upload-time = "2026-06-23T07:18:42.164Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/2f/819ebbc9d3a4b8233cef1e9b0b607724e4acf527988393b04a4036b9c235/django_lasuite-0.0.25-py3-none-any.whl", hash = "sha256:4c10f625005cd41d05e8d34269f1a3b58fea8be5296528bd58596227f50d9884", size = 54034, upload-time = "2026-03-10T13:40:26.903Z" },
+    { url = "https://files.pythonhosted.org/packages/58/b7/693a018e87814674023332bf4babc6137ddfdbc3989489fbb236ad6b85f6/django_lasuite-0.0.27-py3-none-any.whl", hash = "sha256:bbbb841a9c19237e056b63a5f8641f841984bb231d048f02e564d4e8e3fc661e", size = 54276, upload-time = "2026-06-23T07:18:40.934Z" },
 ]
 
 [[package]]
@@ -1114,7 +1114,7 @@ requires-dist = [
     { name = "django-countries", specifier = "==8.2.0" },
     { name = "django-extensions", specifier = "==4.1" },
     { name = "django-import-export", specifier = ">=4.4.0" },
-    { name = "django-lasuite", specifier = "==0.0.25" },
+    { name = "django-lasuite", specifier = "==0.0.27" },
     { name = "django-oauth-toolkit", specifier = "==3.2.0" },
     { name = "django-parler", specifier = "==2.3" },
     { name = "django-redis", specifier = "==6.0.0" },
