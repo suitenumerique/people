@@ -21,35 +21,29 @@ logger = get_task_logger(__name__)
 def setup_periodic_tasks(sender: Celery, **kwargs):
     """Setup periodic tasks."""
     sender.add_periodic_task(
-        crontab(hour="3", minute="45", day_of_week="1"),
-        fetch_domains_status_task.s(status=enums.MailDomainStatusChoices.ENABLED),
-        name="fetch_enabled_domains_every_monday_at_3_45",
-        serializer="json",
-    )
-    sender.add_periodic_task(
-        crontab(minute="0"),  # Run at the start of every hour
-        fetch_domains_status_task.s(status=enums.MailDomainStatusChoices.PENDING),
-        name="fetch_pending_domains_every_hour",
-        serializer="json",
-    )
-    sender.add_periodic_task(
-        crontab(minute="30"),  # Run at the 30th minute of every hour
+        crontab(hour="1", minute="00"),
         fetch_domains_status_task.s(
             status=enums.MailDomainStatusChoices.ACTION_REQUIRED
         ),
-        name="fetch_action_required_domains_every_hour",
+        name="fetch_action_required_domains_every_night",
         serializer="json",
     )
     sender.add_periodic_task(
-        crontab(minute="45"),  # Run at the 45th minute of every hour
+        crontab(hour="1", minute="20"),
         fetch_domains_status_task.s(status=enums.MailDomainStatusChoices.FAILED),
-        name="fetch_failed_domains_every_hour",
+        name="fetch_failed_domains_every_night",
         serializer="json",
     )
     sender.add_periodic_task(
-        crontab(hour="2", minute="00"),  # Run every night at 2 am
+        crontab(hour="1", minute="40", day_of_week="1"),
+        fetch_domains_status_task.s(status=enums.MailDomainStatusChoices.ENABLED),
+        name="fetch_enabled_domains_every_monday_night",
+        serializer="json",
+    )
+    sender.add_periodic_task(
+        crontab(hour="2", minute="00"),
         import_missing_dimail_mailboxes.s(),
-        name="import mailboxes from dimail",
+        name="import mailboxes from dimail every night",
         serializer="json",
     )
 
