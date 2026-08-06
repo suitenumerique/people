@@ -330,8 +330,10 @@ class AliasSerializer(serializers.ModelSerializer):
             "local_part",
             "destination",
             "domain",
+            "created_at",
+            "updated_at",
         ]
-        read_only_fields = ["id", "domain"]
+        read_only_fields = ["id", "domain", "created_at", "updated_at"]
 
     def validate_domain(self, value):  # pylint: disable=unused-argument
         """Forcefully set domain field to url domain."""
