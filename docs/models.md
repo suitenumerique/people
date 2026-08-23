@@ -1,7 +1,7 @@
 # What is People?
 
 Space Odyssey is a dynamic organization. They use the People application to enhance teamwork and
-streamline communication among  their co-workers. Let's explore how this application helps them
+streamline communication among their co-workers. Let's explore how this application helps them
 interact efficiently.
 
 Let's see how we could interact with Django's shell to recreate David's environment in the app.
@@ -177,7 +177,7 @@ projectx = Team.objects.create(name="Project X")
 A team can for example be used to create an email alias or to define role based access rights
 (RBAC) in a specific application or all applications of the organization's digital Suite.
 
-Having created he team, Dave is automatically assigned the "owner" role. He invites Ryan,
+Having created the team, Dave is automatically assigned the "owner" role. He invites Ryan,
 granting an "administrator" role to her so she can invite her own colleagues. Both of them can
 then proceed to invite other colleagues as simple members. If Ryan wants, she can upgrade a
 colleague to "administrator" but only David can upgrade someone to the "owner" status:
