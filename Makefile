@@ -80,7 +80,6 @@ add-dev-rsa-private-key-to-env: ## Add a generated RSA private key to the env fi
 	@echo "Generating RSA private key PEM for development..."
 	@mkdir -p env.d/development/rsa
 	@openssl genrsa -out env.d/development/rsa/private.pem 2048
-	@echo -n "\nOAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY=\"" >> env.d/development/common
 	@openssl rsa -in env.d/development/rsa/private.pem -outform PEM >> env.d/development/common
 	@echo "\"" >> env.d/development/common
 	@rm -rf env.d/development/rsa
