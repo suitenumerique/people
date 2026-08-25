@@ -2,6 +2,7 @@
 
 from unittest import mock
 
+from django.conf import settings
 from django.core.management import call_command
 
 import pytest
@@ -10,7 +11,6 @@ from core import models
 
 from demo import defaults
 from mailbox_manager import models as mailbox_models
-from people.settings import Base
 
 pytestmark = pytest.mark.django_db
 
@@ -26,11 +26,9 @@ TEST_NB_OBJECTS = {
 
 
 @mock.patch.dict(defaults.NB_OBJECTS, TEST_NB_OBJECTS)
-def test_commands_create_demo(settings):
+def test_commands_create_demo():
     """The create_demo management command should create objects as expected."""
     settings.DEBUG = True
-    settings.OAUTH2_PROVIDER["OIDC_ENABLED"] = True
-    settings.OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
 
     call_command("create_demo")
 
@@ -43,15 +41,14 @@ def test_commands_create_demo(settings):
     assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
     assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
 
-    # nb_domains + example.com + enabled + many-boxed-domain
+    # nb_domains + enabled + many-boxed-domain
     assert (
-        mailbox_models.MailDomain.objects.count()
-        == TEST_NB_OBJECTS["domains"] + 1 + 1 + 1
+        mailbox_models.MailDomain.objects.count() == TEST_NB_OBJECTS["domains"] + 1 + 1
     )
 
-    # 3 domain access for each user with domain rights
-    # 3 x 3 domain access for each user with both rights
-    # 2 domains for E2E mail owner user
+    # 3 x 3 domain access for E2E group users
+    # + 3 domain accesses for E2E domain-only users
+    # + 2 domains for E2E mail owner user
     assert (
         mailbox_models.MailDomainAccess.objects.count()
         == TEST_NB_OBJECTS["domains"] + 3 + 9 + 2
@@ -59,9 +56,7 @@ def test_commands_create_demo(settings):
 
     # TEST_NB_OBJECTS["domains"]*TEST_NB_OBJECTS["mailboxes_per_domain"] = 20
     # + 30 in the many-object-domain
-    # + 1 mailbox for user-e2e@example.com
-    # = 51
-    assert mailbox_models.Mailbox.objects.count() == 51
+    assert mailbox_models.Mailbox.objects.count() == 50
 
     # TEST_NB_OBJECTS["domains"]*TEST_NB_OBJECTS["mailboxes_per_alias"] = 20
     # + 30 in the many-object-domain
