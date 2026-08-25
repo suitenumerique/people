@@ -604,12 +604,18 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+
+    OAUTH2_PROVIDER = {
+        "OIDC_ENABLED": False,
+    }
+
+    OAUTH2_PROVIDER_OIDC_ENABLED = False
     OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
     OAUTH2_PROVIDER_GRANT_MODEL = "mailbox_oauth2.Grant"
     OAUTH2_PROVIDER_ID_TOKEN_MODEL = "mailbox_oauth2.IDToken"  # noqa: S105
     OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = "mailbox_oauth2.AccessToken"  # noqa: S105
     OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "mailbox_oauth2.RefreshToken"  # noqa: S105
-    
+
 
     # Security settings for login attempts
     # - Maximum number of failed login attempts before lockout
@@ -697,11 +703,6 @@ class Base(Configuration):
                 "hide_untranslated": False,
             },
         }
-
-    OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
-    OAUTH2_PROVIDER_ID_TOKEN_MODEL = "mailbox_oauth2.IDToken"  # noqa: S105
-    OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = "mailbox_oauth2.AccessToken"  # noqa: S105
-    OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "mailbox_oauth2.RefreshToken"  # noqa: S105
 
     @property
     def LOGIN_URL(self):
