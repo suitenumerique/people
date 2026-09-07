@@ -348,6 +348,52 @@ def test_authentication_getter_new_user_with_email_new_organization(monkeypatch)
     assert user.organization.registration_id_list == []
 
 
+def test_authentication_getter_new_user_domain_substring_new_organization(monkeypatch):
+    """
+    A user whose email domain is only a substring of a registered domain
+    must not be attached to that organization.
+    """
+    factories.OrganizationFactory(domain_list=["ville-montpellier.fr"])
+
+    klass = OIDCAuthenticationBackend()
+    email = "agent@ontpellier.fr"
+
+    def get_userinfo_mocked(*args):
+        return {"sub": "123", "email": email, "first_name": "Mal", "last_name": "Actor"}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    assert user.organization is not None
+    assert user.organization.domain_list == ["ontpellier.fr"]
+    assert models.Organization.objects.count() == 2
+
+
+def test_authentication_getter_new_user_domain_case_insensitive(monkeypatch):
+    """
+    Domain matching stays case-insensitive, as email domains are.
+    """
+    organization = factories.OrganizationFactory(domain_list=["ville-montpellier.fr"])
+
+    klass = OIDCAuthenticationBackend()
+    email = "agent@VILLE-MONTPELLIER.FR"
+
+    def get_userinfo_mocked(*args):
+        return {"sub": "123", "email": email, "first_name": "Mal", "last_name": "Actor"}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    assert user.organization == organization
+    assert models.Organization.objects.count() == 1
+
+
 @pytest.mark.parametrize(
     "registration_id_setting,expected_registration_id_list,expected_domain_list",
     [

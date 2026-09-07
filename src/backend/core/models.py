@@ -297,9 +297,9 @@ class OrganizationManager(models.Manager):
 
         filters = models.Q()
         if registration_id:
-            filters |= models.Q(registration_id_list__icontains=registration_id)
+            filters |= models.Q(registration_id_list__contains=[registration_id])
         if domain:
-            filters |= models.Q(domain_list__icontains=domain)
+            filters |= models.Q(domain_list__contains=[domain.lower()])
 
         with suppress(self.model.DoesNotExist):
             # If there are several organizations, we must raise an error and fix the data
@@ -313,7 +313,10 @@ class OrganizationManager(models.Manager):
             ), True
 
         if domain:
-            return self.create(name=domain, domain_list=[domain], **kwargs), True
+            return (
+                self.create(name=domain, domain_list=[domain.lower()], **kwargs),
+                True,
+            )
 
         raise ValueError("Should never reach this point.")
 
