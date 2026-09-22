@@ -4,14 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import include, path, re_path
+from django.urls import path, re_path
 
 from drf_spectacular.views import (
     SpectacularJSONAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from oauth2_provider import urls as oauth2_urls
 
 from core.plugins import urls as plugin_urls
 
@@ -25,7 +24,6 @@ API_VERSION = settings.API_VERSION
 urlpatterns = (
     [
         path("admin/", admin.site.urls),
-        path("o/", include(oauth2_urls)),
     ]
     + api_urls.urlpatterns
     + resource_server_urls.urlpatterns
