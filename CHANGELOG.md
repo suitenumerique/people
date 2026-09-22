@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ⚰️(auth) remove oauth2 and IdP-related features
+
 ## [1.26.0] - 2026-06-24
 
 ### Added
