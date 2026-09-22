@@ -203,7 +203,6 @@ class Base(Configuration):
         "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "mailbox_oauth2.middleware.one_time_email_authenticated_session",
         "oauth2_provider.middleware.OAuth2TokenMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "dockerflow.django.middleware.DockerflowMiddleware",
@@ -211,7 +210,6 @@ class Base(Configuration):
 
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
-        "mailbox_oauth2.backends.MailboxModelBackend",
         "core.authentication.backends.OIDCAuthenticationBackend",
     ]
 
@@ -608,6 +606,7 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    OAUTH2_PROVIDER_OIDC_ENABLED = False
     OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
     OAUTH2_PROVIDER_GRANT_MODEL = "mailbox_oauth2.Grant"
     OAUTH2_PROVIDER_ID_TOKEN_MODEL = "mailbox_oauth2.IDToken"  # noqa: S105
@@ -699,46 +698,6 @@ class Base(Configuration):
                 "fallbacks": [self.LANGUAGE_CODE],
                 "hide_untranslated": False,
             },
-        }
-
-    @property
-    def OAUTH2_PROVIDER(self) -> dict:
-        """OAuth2 Provider settings."""
-        OIDC_ENABLED = values.BooleanValue(
-            default=False,
-            environ_name="OAUTH2_PROVIDER_OIDC_ENABLED",
-            environ_prefix=None,
-        )
-        OIDC_RSA_PRIVATE_KEY = values.Value(
-            environ_name="OAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY",
-            environ_prefix=None,
-        )
-        OAUTH2_VALIDATOR_CLASS = values.Value(
-            default="mailbox_oauth2.validators.BaseValidator",
-            environ_name="OAUTH2_PROVIDER_VALIDATOR_CLASS",
-            environ_prefix=None,
-        )
-        SCOPES = {
-            "openid": "OpenID Connect scope",
-            "email": "Email address",
-        }
-        if OAUTH2_VALIDATOR_CLASS == "mailbox_oauth2.validators.ProConnectValidator":
-            SCOPES["given_name"] = "First name"
-            SCOPES["usual_name"] = "Last name"
-            SCOPES["siret"] = "SIRET number"
-            SCOPES["siren"] = "SIREN number"
-            SCOPES["uid"] = "UID"
-            # available but not filled
-            SCOPES["organizational_unit"] = "Organizational unit"
-            SCOPES["belonging_population"] = "Belonging population"
-            SCOPES["phone"] = "Phone number"
-            SCOPES["chorusdt"] = "Chorus DT"
-
-        return {
-            "OIDC_ENABLED": OIDC_ENABLED,
-            "OIDC_RSA_PRIVATE_KEY": OIDC_RSA_PRIVATE_KEY,
-            "SCOPES": SCOPES,
-            "OAUTH2_VALIDATOR_CLASS": OAUTH2_VALIDATOR_CLASS,
         }
 
     @property
@@ -862,14 +821,6 @@ class Development(Base):
         """In dev, force installs needed for Swagger API."""
         # pylint: disable=invalid-name
         self.INSTALLED_APPS += ["django_extensions"]
-
-    @property
-    def OAUTH2_PROVIDER(self):
-        """OAuth2 Provider settings."""
-        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
-        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
-            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
-        return OAUTH2_PROVIDER
 
 
 class Test(Base):
@@ -1073,14 +1024,6 @@ class Local(Production):
 
     nota bene: it should inherit from the Production environment.
     """
-
-    @property
-    def OAUTH2_PROVIDER(self):
-        """OAuth2 Provider settings."""
-        OAUTH2_PROVIDER = super().OAUTH2_PROVIDER  # pylint: disable=invalid-name
-        if not OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"]:
-            OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] = Base.generate_temporary_rsa_key()
-        return OAUTH2_PROVIDER
 
 
 class Staging(Production):

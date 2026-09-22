@@ -37,9 +37,6 @@ class MailboxSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """
         Override create function to fire a request on mailbox creation.
-
-        By default, we generate an unusable password for the mailbox, meaning that the mailbox
-        will not be able to be used as a login credential until the password is set.
         """
         mailbox = super().create(
             validated_data

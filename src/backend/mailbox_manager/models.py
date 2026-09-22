@@ -128,14 +128,6 @@ class MailDomain(BaseModel):
             "manage_accesses": is_owner_or_admin,
         }
 
-    def is_identity_provider_ready(self) -> bool:
-        """
-        Check if the identity provider is ready to manage the domain.
-        """
-        return (
-            bool(self.organization) and self.status == MailDomainStatusChoices.ENABLED
-        )
-
     def notify_status_change(self, recipients=None, language=None):
         """
         Notify the support team that the domain status has changed.
