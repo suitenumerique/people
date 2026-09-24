@@ -78,7 +78,7 @@ def mock_join_room_forbidden():
 
 # INVITE USER
 def mock_invite_successful():
-    """Mock response when invite request was succesful. Does not check the user exists."""
+    """Mock response when invite request was successful. Does not check the user exists."""
     return {"message": {}, "status_code": status.HTTP_200_OK}
 
 

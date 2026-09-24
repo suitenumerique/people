@@ -199,7 +199,7 @@ def test_api_mail_domain__accesses_list_authenticated_constant_numqueries(
 
 
 def test_api_mail_domain__accesses_list_authenticated_ordering():
-    """MailDomain  accesses can be ordered by "role"."""
+    """MailDomain accesses can be ordered by "role"."""
 
     user = core_factories.UserFactory()
     mail_domain = factories.MailDomainFactory()
