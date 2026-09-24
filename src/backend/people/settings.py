@@ -224,7 +224,6 @@ class Base(Configuration):
         "core",
         "demo",
         "mailbox_manager.apps.MailboxManagerConfig",
-        "mailbox_oauth2",
         *INSTALLED_PLUGINS,
         # Third party apps
         "django_zxcvbn_password_validator",
@@ -235,7 +234,6 @@ class Base(Configuration):
         "django_celery_results",
         "dockerflow.django",
         "easy_thumbnails",
-        "oauth2_provider",
         "parler",
         "rest_framework",
         "treebeard",
