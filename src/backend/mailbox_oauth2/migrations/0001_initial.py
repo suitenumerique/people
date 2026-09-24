@@ -3,7 +3,6 @@
 import django.db.models.deletion
 import oauth2_provider.models
 import uuid
-from django.conf import settings
 from django.db import migrations, models
 
 
@@ -13,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('mailbox_manager', '0023_mailbox_email_mailbox_last_login_mailbox_password'),
-        migrations.swappable_dependency(settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
+        migrations.swappable_dependency("oauth2_provider.Application"),
     ]
 
     operations = [
@@ -31,7 +30,7 @@ class Migration(migrations.Migration):
                 ('code_challenge_method', models.CharField(blank=True, choices=[('plain', 'plain'), ('S256', 'S256')], default='', max_length=10)),
                 ('nonce', models.CharField(blank=True, default='', max_length=255)),
                 ('claims', models.TextField(blank=True)),
-                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="oauth2_provider.Application")),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s', to='mailbox_manager.mailbox')),
             ],
             options={
@@ -47,7 +46,7 @@ class Migration(migrations.Migration):
                 ('scope', models.TextField(blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('application', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('application', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to="oauth2_provider.Application")),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s', to='mailbox_manager.mailbox')),
             ],
             options={
@@ -64,9 +63,9 @@ class Migration(migrations.Migration):
                 ('scope', models.TextField(blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('application', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('application', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to="oauth2_provider.Application")),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s', to='mailbox_manager.mailbox')),
-                ('id_token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='access_token', to=settings.OAUTH2_PROVIDER_ID_TOKEN_MODEL)),
+                ('id_token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='access_token', to="mailbox_oauth2.IDToken")),
             ],
             options={
                 'abstract': False,
@@ -81,8 +80,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('revoked', models.DateTimeField(null=True)),
-                ('access_token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='refresh_token', to=settings.OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL)),
-                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('access_token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='refresh_token', to="mailbox_oauth2.AccessToken")),
+                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="oauth2_provider.Application")),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s', to='mailbox_manager.mailbox')),
             ],
             options={
@@ -93,6 +92,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='accesstoken',
             name='source_refresh_token',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='refreshed_access_token', to=settings.OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='refreshed_access_token', to="mailbox_oauth2.RefreshToken"),
         ),
     ]

@@ -76,16 +76,6 @@ create-env-files: \
 	env.d/development/kc_postgresql
 .PHONY: create-env-files
 
-add-dev-rsa-private-key-to-env: ## Add a generated RSA private key to the env file
-	@echo "Generating RSA private key PEM for development..."
-	@mkdir -p env.d/development/rsa
-	@openssl genrsa -out env.d/development/rsa/private.pem 2048
-	@echo -n "\nOAUTH2_PROVIDER_OIDC_RSA_PRIVATE_KEY=\"" >> env.d/development/common
-	@openssl rsa -in env.d/development/rsa/private.pem -outform PEM >> env.d/development/common
-	@echo "\"" >> env.d/development/common
-	@rm -rf env.d/development/rsa
-.PHONY: add-dev-rsa-private-key-to-env
-
 update-keycloak-realm-app: ## Create the Keycloak realm for the project
 	@echo "$(BOLD)Creating Keycloak realm for 'app'$(RESET)"
 	@sed -i 's|http://app-dev:8000|http://app:8000|g' ./docker/auth/realm.json
