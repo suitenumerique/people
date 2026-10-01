@@ -11,7 +11,7 @@
   "devDependencies": {
     "@playwright/test": "1.56.1",
     "@types/node": "*",
-    "eslint-config-people": "*",
+    "eslint-plugin-people": "*",
     "typescript": "*"
   }
 }

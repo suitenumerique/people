@@ -11,13 +11,13 @@ COPY ./src/frontend/package.json ./package.json
 COPY ./src/frontend/yarn.lock ./yarn.lock
 COPY ./src/frontend/apps/desk/package.json ./apps/desk/package.json
 COPY ./src/frontend/packages/i18n/package.json ./packages/i18n/package.json
-COPY ./src/frontend/packages/eslint-config-people/package.json ./packages/eslint-config-people/package.json
+COPY ./src/frontend/packages/eslint-plugin-people/package.json ./packages/eslint-plugin-people/package.json
 
 RUN yarn install --frozen-lockfile
 
 COPY .dockerignore ./.dockerignore
 COPY ./src/frontend/.prettierrc.js ./.prettierrc.js
-COPY ./src/frontend/packages/eslint-config-people ./packages/eslint-config-people
+COPY ./src/frontend/packages/eslint-plugin-people ./packages/eslint-plugin-people
 COPY ./src/frontend/apps/desk ./apps/desk
 
 ### ---- Front-end builder image ----
