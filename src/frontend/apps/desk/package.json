@@ -8,7 +8,7 @@
     "build:ci": "cp .env.development .env.local && yarn build",
     "build-theme": "cunningham -g css,ts -o src/cunningham --utility-classes",
     "start": "npx -y serve@latest out",
-    "lint": "tsc --noEmit && next lint",
+    "lint": "tsc --noEmit && eslint .",
     "prettier": "prettier --write .",
     "stylelint": "stylelint \"**/*.css\"",
     "test": "jest",
@@ -60,7 +60,9 @@
     "stylelint": "16.25.0",
     "stylelint-config-standard": "39.0.1",
     "stylelint-prettier": "5.0.3",
-    "typescript": "*"
+    "typescript": "*",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.18"
   },
   "resolutions": {
     "react": "19.2.0",
