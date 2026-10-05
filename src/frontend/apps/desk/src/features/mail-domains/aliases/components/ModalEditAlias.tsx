@@ -152,7 +152,6 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -234,7 +233,6 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -303,7 +301,6 @@ export const ModalEditAlias = ({
           },
         );
       });
-    } catch {
     } finally {
       setIsSubmitting(false);
     }

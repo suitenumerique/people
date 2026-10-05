@@ -101,18 +101,19 @@ export const ModalDomainAccessesManagement = ({
 
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
-        case 'rejected':
+        case 'rejected': {
           onError((settledPromise.reason as APIErrorMember).data);
           hasError = true;
           break;
-
-        case 'fulfilled':
+        }
+        case 'fulfilled': {
           const option = settledPromise.value;
           onSuccess(option);
           if (!isOptionNewMember(option)) {
             hasInvitation = true;
           }
           break;
+        }
       }
     });
 

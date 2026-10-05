@@ -67,7 +67,6 @@ export const useUpdateMailDomainAccess = (
         queryKey: [KEY_MAIL_DOMAIN],
       });
       if (optionsOnSuccess) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           optionsOnSuccess as unknown as (
             data: Access,
@@ -79,7 +78,6 @@ export const useUpdateMailDomainAccess = (
     },
     onError: (error, variables, context) => {
       if (optionsOnError) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           optionsOnError as unknown as (
             error: APIError,

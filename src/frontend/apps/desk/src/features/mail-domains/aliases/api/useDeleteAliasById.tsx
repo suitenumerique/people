@@ -49,7 +49,6 @@ export const useDeleteAliasById = (options?: UseDeleteAliasByIdOptions) => {
         queryKey: [KEY_LIST_ALIAS],
       });
       if (options?.onSuccess) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           options.onSuccess as unknown as (
             data: void,
@@ -61,7 +60,6 @@ export const useDeleteAliasById = (options?: UseDeleteAliasByIdOptions) => {
     },
     onError: (error, variables, context) => {
       if (options?.onError) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         (
           options.onError as unknown as (
             error: APIError,
