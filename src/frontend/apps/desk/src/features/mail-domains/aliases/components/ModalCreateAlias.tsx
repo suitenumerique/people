@@ -49,7 +49,7 @@ export const ModalCreateAlias = ({
   const createAliasValidationSchema: z.ZodType<AliasFormData> = z.object({
     local_part: z
       .string()
-      .regex(/^((?!@|\s)([a-zA-Z0-9.\-]))*$/, t('Invalid format'))
+      .regex(/^((?!@|\s)([a-zA-Z0-9.-]))*$/, t('Invalid format'))
       .min(1, t('You must have minimum 1 character')),
   });
 

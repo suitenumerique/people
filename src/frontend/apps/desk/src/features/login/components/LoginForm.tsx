@@ -42,7 +42,7 @@ export const LoginForm = ({
           {title}
         </Text>
         <Box>
-          {!!blockingError ? (
+          {blockingError ? (
             <Text
               $theme="danger"
               $variation="text"

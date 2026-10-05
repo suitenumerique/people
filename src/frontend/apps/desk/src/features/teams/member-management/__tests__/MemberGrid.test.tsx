@@ -173,7 +173,6 @@ describe('MemberGrid', () => {
 
       expect(screen.getByRole('status')).toBeInTheDocument();
 
-      /* eslint-disable jest/no-conditional-expect */
       if (expected) {
         expect(
           await screen.findAllByRole('button', {
@@ -187,7 +186,6 @@ describe('MemberGrid', () => {
           }),
         ).not.toBeInTheDocument();
       }
-      /* eslint-enable jest/no-conditional-expect */
     });
   });
 
