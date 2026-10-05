@@ -51,7 +51,7 @@
     "@types/react": "19.2.2",
     "@types/react-dom": "*",
     "dotenv": "17.2.3",
-    "eslint-config-people": "*",
+    "eslint-plugin-people": "*",
     "fetch-mock": "9.11.0",
     "jest": "30.2.0",
     "jest-environment-jsdom": "30.2.0",

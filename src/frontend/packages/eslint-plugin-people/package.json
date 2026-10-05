@@ -1,7 +1,13 @@
 {
-  "name": "eslint-config-people",
+  "name": "eslint-plugin-people",
   "version": "1.26.0",
   "license": "MIT",
+  "main": "index.js",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
   "scripts": {
     "lint": "eslint"
   },
