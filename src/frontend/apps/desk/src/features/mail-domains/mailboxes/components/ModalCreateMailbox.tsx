@@ -131,7 +131,7 @@ export const ModalCreateMailbox = ({
     last_name: z.string().min(1, t('Please enter your last name')),
     local_part: z
       .string()
-      .regex(/^((?!@|\s)([a-zA-Z0-9.\-]))*$/, t('Invalid format'))
+      .regex(/^((?!@|\s)([a-zA-Z0-9.-]))*$/, t('Invalid format'))
       .min(1, t('You must have minimum 1 character')),
     secondary_email: z.string().email(t('Please enter a valid email address')),
   });
