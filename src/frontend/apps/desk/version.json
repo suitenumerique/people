@@ -1,6 +1,6 @@
 {
-    "source":"people",
-    "version":"version",
-    "commit":"commit",
-    "build": "NA"
+  "source": "people",
+  "version": "version",
+  "commit": "commit",
+  "build": "NA"
 }
