@@ -12,6 +12,7 @@ and this project adheres to
 - ⬆️(front) upgrade eslint to v9
 - 🔒️(security) match organization email domains exactly
 - ⬆️(security) bump urllib3 to fix CVEs
+- 🐛(security) hide domain configuration to domain readers
 
 ## [1.26.0] - 2026-06-24
 

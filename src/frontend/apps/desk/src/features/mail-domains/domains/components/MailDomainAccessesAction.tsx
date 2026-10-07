@@ -15,13 +15,11 @@ const DropdownMenuAny = DropdownMenu as DropdownMenuWithDisabled;
 type MailDomainAccessesActionProps = {
   mailDomain: MailDomain;
   currentRole: Role;
-  onConfigureDomain?: () => void;
 };
 
 export const MailDomainAccessesAction = ({
   mailDomain,
   currentRole,
-  onConfigureDomain,
 }: MailDomainAccessesActionProps) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDropdownMenu();
@@ -34,7 +32,6 @@ export const MailDomainAccessesAction = ({
 
   const openConfigureDomain = () => {
     setIsOpen(false);
-    onConfigureDomain?.();
   };
 
   const options = [
@@ -45,10 +42,6 @@ export const MailDomainAccessesAction = ({
             icon: <Icon iconName="manage_accounts" $size="sm" />,
             callback: openAccessManagement,
           },
-        ]
-      : []),
-    ...(onConfigureDomain
-      ? [
           {
             label: t('Configure domain'),
             icon: <Icon iconName="settings" $size="sm" />,
@@ -58,7 +51,7 @@ export const MailDomainAccessesAction = ({
       : []),
   ];
 
-  if (!mailDomain?.abilities.post && !onConfigureDomain) {
+  if (!mailDomain?.abilities.post) {
     return null;
   }
 

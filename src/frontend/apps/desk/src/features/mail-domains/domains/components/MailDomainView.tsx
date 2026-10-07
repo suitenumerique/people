@@ -49,6 +49,7 @@ export const MailDomainView = ({
 
   const handleShowModal = () => {
     setShowModal(true);
+    // mailDomain?.abilities.post.();
   };
 
   const closeModal = () => {
@@ -102,6 +103,7 @@ export const MailDomainView = ({
                   <button
                     data-testid="actions_required"
                     onClick={handleShowModal}
+                    disabled={!mailDomain?.abilities.post}
                     style={{
                       backgroundColor: 'transparent',
                       border: 'none',
@@ -121,7 +123,6 @@ export const MailDomainView = ({
             <MailDomainAccessesAction
               mailDomain={mailDomain}
               currentRole={currentRole}
-              onConfigureDomain={handleShowModal}
             />
 
             <Box
