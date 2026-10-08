@@ -269,6 +269,9 @@ class MailBoxViewSet(
 
     PATCH /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
         Send a request to partially update mailbox. Cannot modify domain or local_part.
+
+    DELETE /api/<version>/mail-domains/<domain_slug>/mailboxes/<mailbox_id>/
+        Send a request to delete mailbox.
     """
 
     permission_classes = [permissions.DomainResourcePermission]
@@ -355,6 +358,14 @@ class MailBoxViewSet(
         dimail = DimailAPIClient()
         dimail.send_login_link(mailbox)
         return Response(serializers.MailboxSerializer(mailbox).data)
+
+    @action(detail=True, methods=["delete"])
+    def delete(self, request, domain_slug, pk=None):  # pylint: disable=unused-argument
+        """Delete mailbox on dimail."""
+        mailbox = self.get_object()
+        dimail = DimailAPIClient()
+        dimail.delete(mailbox)
+        return None
 
 
 class MailDomainInvitationViewset(
