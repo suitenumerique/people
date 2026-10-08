@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ➕(dimail) use dimail client
+
 ## [1.26.1] - 2026-10-08
 
 - ⚰️(auth) remove oauth2 and IdP-related features
