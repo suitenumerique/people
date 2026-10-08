@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.26.1] - 2026-10-08
+
 - ⚰️(auth) remove oauth2 and IdP-related features
 - ⬆️(front) upgrade eslint to v9
 - 🔒️(security) match organization email domains exactly
@@ -577,7 +579,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.26.0...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.26.1...main
+[1.26.1]: https://github.com/suitenumerique/people/releases/v1.26.1
 [1.26.0]: https://github.com/suitenumerique/people/releases/v1.26.0
 [1.25.4]: https://github.com/suitenumerique/people/releases/v1.25.4
 [1.25.3]: https://github.com/suitenumerique/people/releases/v1.25.3
