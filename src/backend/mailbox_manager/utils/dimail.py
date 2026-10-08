@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
 
 import requests
+import dimail_client
 from rest_framework import status
 from urllib3.util import Retry
 

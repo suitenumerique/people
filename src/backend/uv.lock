@@ -389,9 +389,9 @@ wheels = [
 ]
 
 [[package]]
-name = "dimail"
+name = "dimail-client"
 version = "0.10.0.1"
-source = { git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git#3d604772d75007b62fca1b8e3e24b3e124452b98" }
+source = { git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git?rev=fix%2Frename-module#6e151d87d2977584892b43c384a8cb18e3c0b85a" }
 dependencies = [
     { name = "attrs" },
     { name = "httpx" },
@@ -1098,7 +1098,7 @@ dependencies = [
     { name = "brotli" },
     { name = "celery", extra = ["redis"] },
     { name = "cryptography" },
-    { name = "dimail" },
+    { name = "dimail-client" },
     { name = "django" },
     { name = "django-celery-beat" },
     { name = "django-celery-results" },
@@ -1138,7 +1138,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
-    { name = "dimail" },
+    { name = "dimail-client" },
     { name = "drf-spectacular-sidecar" },
     { name = "freezegun" },
     { name = "ipdb" },
@@ -1163,8 +1163,8 @@ requires-dist = [
     { name = "brotli", specifier = "==1.2.0" },
     { name = "celery", extras = ["redis"], specifier = "==5.6.3" },
     { name = "cryptography", specifier = ">=50.0.0" },
-    { name = "dimail", git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git" },
-    { name = "dimail", marker = "extra == 'dev'", git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git" },
+    { name = "dimail-client", git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git?rev=fix%2Frename-module" },
+    { name = "dimail-client", marker = "extra == 'dev'", git = "https://gitlab.mim-libre.fr/dimail/dimail-client.git?rev=fix%2Frename-module" },
     { name = "django", specifier = "==6.0.8" },
     { name = "django-celery-beat", specifier = "==2.9.0" },
     { name = "django-celery-results", specifier = "==2.6.0" },
