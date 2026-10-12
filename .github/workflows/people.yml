@@ -22,7 +22,7 @@ jobs:
     if: github.event_name == 'pull_request' # Makes sense only for pull requests
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
       - name: show
@@ -49,7 +49,7 @@ jobs:
       github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
       - name: Check that the CHANGELOG has been modified in the current branch
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
       - name: Check CHANGELOG max line length
         run: |
           max_line_length=$(cat CHANGELOG.md | grep -Ev "^\[.*\]: https://github.com" | wc -L)
@@ -73,7 +73,7 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Restore the frontend cache
         uses: actions/cache@v5
@@ -96,7 +96,7 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Restore the frontend cache
         uses: actions/cache@v5
@@ -113,7 +113,7 @@ jobs:
     needs: dependencies
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Restore the frontend cache
         uses: actions/cache@v5
@@ -136,7 +136,7 @@ jobs:
         shardTotal: [4]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Set services env variables
         run: |
@@ -219,7 +219,7 @@ jobs:
         working-directory: src/backend
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -268,7 +268,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
       - name: Create writable /data
         run: |
           sudo mkdir -p /data/media && \
