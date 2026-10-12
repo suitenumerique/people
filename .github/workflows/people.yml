@@ -221,7 +221,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version-file: "src/backend/pyproject.toml"
       - name: Install uv
@@ -282,7 +282,7 @@ jobs:
           fail-on-cache-miss: true  
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version-file: "src/backend/pyproject.toml"
       - name: Install uv
