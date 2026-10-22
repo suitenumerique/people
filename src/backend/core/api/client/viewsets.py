@@ -591,7 +591,6 @@ class ConfigView(views.APIView):
             "FEATURES",
             "RELEASE",
             "COMMIT",
-            "CRISP_WEBSITE_ID",
         ]
         dict_settings = {}
         for setting in array_settings:
