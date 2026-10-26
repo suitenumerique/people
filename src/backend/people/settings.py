@@ -547,13 +547,6 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
-    # SUPPORT
-    CRISP_WEBSITE_ID = values.Value(
-        default=None,
-        environ_name="CRISP_WEBSITE_ID",
-        environ_prefix=None,
-    )
-
     # MAILBOX-PROVISIONING API
     WEBMAIL_URL = values.Value(
         default=None,

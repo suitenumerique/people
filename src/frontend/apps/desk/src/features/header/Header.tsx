@@ -1,8 +1,5 @@
-import { Box } from '@/components/';
-import { UserInfo } from '@/core/auth/UserInfo';
 import { TogglePanelButton } from '@/features/left-panel/components/TogglePanelButton';
 
-import { LaGaufre } from './LaGaufre';
 export const HEADER_HEIGHT = '52px';
 
 export const Header = () => {
@@ -26,16 +23,9 @@ export const Header = () => {
         backdropFilter: 'blur(1px)',
       }}
     >
-      <div className="selector-header">
+      <div className="floating-toolbar">
         <TogglePanelButton />
       </div>
-
-      <Box $direction="row">
-        <div className="selector-header">
-          <UserInfo />
-          <LaGaufre />
-        </div>
-      </Box>
     </header>
   );
 };
