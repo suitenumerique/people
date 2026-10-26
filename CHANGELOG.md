@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 - 🔥(frontend) remove crisp support
+- ✨(frontend) add support form and new gaufre in a floating footer
 
 ## [1.26.1] - 2026-10-08
 

@@ -24,6 +24,10 @@ const jestConfig = async () => {
       '^.+\\.svg\\?url$': `<rootDir>/jest/mocks/fileMock.js`,
       ...nextJestConfig.moduleNameMapper,
     },
+    transformIgnorePatterns: [
+      '/node_modules/(?!(read-excel-file|saxen)/)',
+      '^.+\\.module\\.(css|sass|scss)$',
+    ],
   };
 };
 
