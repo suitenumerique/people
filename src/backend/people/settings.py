@@ -546,7 +546,7 @@ class Base(Configuration):
         environ_name="ACCOUNT_SERVICE_SCOPES",
         environ_prefix=None,
     )
-    
+
     # MAILBOX-PROVISIONING API
     WEBMAIL_URL = values.Value(
         default=None,

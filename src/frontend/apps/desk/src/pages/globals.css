@@ -5,6 +5,7 @@
 
 :root {
   --header-height: 72px;
+  --app-footer-clearance: 80px;
 }
 
 body {
@@ -86,7 +87,7 @@ main ::-webkit-scrollbar-thumb:hover {
   padding: 0 10px;
 }
 
-.selector-header {
+.floating-toolbar {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -96,6 +97,21 @@ main ::-webkit-scrollbar-thumb:hover {
   border: 1px solid var(--c--contextuals--border--surface--primary);
   padding: 4px;
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 5%);
+}
+
+.app-footer {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+}
+
+.c__toast__container {
+  pointer-events: none;
+}
+
+.c__toast__container .c__toast {
+  pointer-events: auto;
 }
 
 .user-menu__button {

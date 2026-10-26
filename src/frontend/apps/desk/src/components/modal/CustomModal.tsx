@@ -1,6 +1,6 @@
 import {
   Modal as CunninghamModal,
-  ModalProps,
+  ModalDefaultVariantProps,
 } from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect } from 'react';
 
@@ -9,7 +9,7 @@ import { HorizontalSeparator } from '@/components';
 import style from './custom-modal.module.scss';
 
 export const CustomModal: React.FC<
-  ModalProps & { step?: number; totalSteps?: number }
+  ModalDefaultVariantProps & { step?: number; totalSteps?: number }
 > = ({ children, step = 0, totalSteps = 1, ...props }) => {
   // Apply the hook here once for all modals
   usePreventFocusVisible(['.c__modal__content']);
