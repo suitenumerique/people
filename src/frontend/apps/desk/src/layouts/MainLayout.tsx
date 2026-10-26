@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
 
+import { AppFooter } from '@/components/AppFooter/AppFooter';
 import { Header } from '@/features/header';
 import { LeftPanel } from '@/features/left-panel';
 import { MAIN_LAYOUT_ID } from '@/layouts/conf';
@@ -34,12 +35,14 @@ export function MainLayout({ children }: PropsWithChildren<MainLayoutProps>) {
             height: '100vh',
             overflowY: 'auto',
             overflowX: 'clip',
+            paddingBottom: 'var(--app-footer-clearance)',
           }}
         >
           <Header />
           {children}
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }
