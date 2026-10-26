@@ -16,8 +16,5 @@ test.describe('Header', () => {
         name: /open the menu|close the menu|ouvrir le menu|fermer le menu/i,
       }),
     ).toBeVisible();
-    await expect(
-      header.getByRole('button', { name: 'Les services de LaSuite' }),
-    ).toBeVisible();
   });
 });

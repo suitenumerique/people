@@ -1,11 +1,13 @@
 import {
   Modal as CunninghamModal,
-  ModalProps,
+  ModalDefaultVariantProps,
 } from '@gouvfr-lasuite/cunningham-react';
 import React, { useEffect } from 'react';
 
-// Define a wrapper component that extends ModalProps to accept the same props as the Modal
-export const Modal: React.FC<ModalProps> = ({ children, ...props }) => {
+export const Modal: React.FC<ModalDefaultVariantProps> = ({
+  children,
+  ...props
+}) => {
   // Apply the hook here once for all modals
   usePreventFocusVisible(['.c__modal__content']);
 
