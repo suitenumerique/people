@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 - 🐛(front) fix broken link to domain config
+- 🔥(frontend) remove leftPanel
 
 ## [1.27.1] - 2026-11-09
 
