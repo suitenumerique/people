@@ -1,5 +1,3 @@
-import { TogglePanelButton } from '@/features/left-panel/components/TogglePanelButton';
-
 export const HEADER_HEIGHT = '52px';
 
 export const Header = () => {
@@ -23,9 +21,6 @@ export const Header = () => {
         backdropFilter: 'blur(1px)',
       }}
     >
-      <div className="floating-toolbar">
-        <TogglePanelButton />
-      </div>
     </header>
   );
 };

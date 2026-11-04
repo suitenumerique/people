@@ -30,7 +30,7 @@ const Page: NextPageWithLayout = () => {
 
     // Fallback to the default route according to global config
     router.push('/mail-domains/');
-  }, [config?.FEATURES.TEAMS_DISPLAY, userData, router]);
+  }, [userData, router]);
 
   return null;
 };
