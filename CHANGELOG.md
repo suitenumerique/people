@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- ⬆️(security) bump Python to 3.15.2-alpine on Docker files
+
 ## [1.27.0] - 2026-11-06
 
 - 🔥(frontend) remove crisp support
