@@ -82,7 +82,7 @@ main ::-webkit-scrollbar-thumb:hover {
 .container {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1080px;
   margin: 12px auto;
   padding: 0 10px;
 }

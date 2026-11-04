@@ -1,6 +1,8 @@
-import { TogglePanelButton } from '@/features/left-panel/components/TogglePanelButton';
-
 export const HEADER_HEIGHT = '52px';
+import Image from 'next/image';
+
+import { default as IconRegie } from '@/assets/logo-regie.svg?url';
+import { StyledLink } from '@/components/';
 
 export const Header = () => {
   return (
@@ -23,9 +25,17 @@ export const Header = () => {
         backdropFilter: 'blur(1px)',
       }}
     >
-      <div className="floating-toolbar">
-        <TogglePanelButton />
-      </div>
+      <StyledLink href="/">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '1rem',
+          }}
+        >
+          <Image priority src={IconRegie} alt="Régie" height={40} />
+        </div>
+      </StyledLink>
     </header>
   );
 };
