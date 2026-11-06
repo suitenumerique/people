@@ -41,8 +41,6 @@ def test_api_teams_create_authenticated(settings):
     client.force_login(user)
 
     settings.FEATURES = {
-        "TEAMS_DISPLAY": True,
-        "TEAMS_CREATE": True,
         "CONTACTS_DISPLAY": False,
         "CONTACTS_CREATE": False,
         "MAILBOXES_CREATE": False,
@@ -75,8 +73,6 @@ def test_api_teams_create_authenticated_feature_disabled(settings):
     client.force_login(user)
 
     settings.FEATURES = {
-        "TEAMS_DISPLAY": True,
-        "TEAMS_CREATE": False,
         "CONTACTS_DISPLAY": False,
         "CONTACTS_CREATE": False,
         "MAILBOXES_CREATE": False,
