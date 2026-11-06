@@ -1,6 +1,6 @@
 {
   "name": "people",
-  "version": "1.26.1",
+  "version": "1.27.0",
   "private": true,
   "workspaces": {
     "packages": [
