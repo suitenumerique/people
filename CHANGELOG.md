@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.27.0] - 2026-11-06
+
 - 🔥(frontend) remove crisp support
 - ✨(frontend) add support form and new gaufre in a floating footer
 
@@ -582,7 +584,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.26.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.27.0...main
+[1.27.0]: https://github.com/suitenumerique/people/releases/v1.27.0
 [1.26.1]: https://github.com/suitenumerique/people/releases/v1.26.1
 [1.26.0]: https://github.com/suitenumerique/people/releases/v1.26.0
 [1.25.4]: https://github.com/suitenumerique/people/releases/v1.25.4
