@@ -638,8 +638,6 @@ class Base(Configuration):
             "CONTACTS_CREATE",  # Used in the users/me/ endpoint
             "CONTACTS_DISPLAY",  # Used in the users/me/ endpoint
             "MAILBOXES_CREATE",  # Used in the users/me/ endpoint
-            "TEAMS_DISPLAY",
-            "TEAMS_CREATE",  # Used in the users/me/ endpoint
         }
 
         return {
