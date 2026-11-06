@@ -56,7 +56,7 @@ def test_api_users_retrieve_me_authenticated():
         "abilities": {
             "contacts": {"can_create": True, "can_view": True},
             "mailboxes": {"can_create": False, "can_view": False},
-            "teams": {"can_create": True, "can_view": True},
+            "teams": {"can_create": False, "can_view": False},
         },
         "organization": {
             "id": str(user.organization.pk),
@@ -72,8 +72,6 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
     with the proper abilities.
     """
     settings.FEATURES = {
-        "TEAMS_DISPLAY": False,
-        "TEAMS_CREATE": True,
         "CONTACTS_DISPLAY": True,
         "CONTACTS_CREATE": True,
         "MAILBOXES_CREATE": True,

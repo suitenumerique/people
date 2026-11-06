@@ -2,11 +2,9 @@ import { useRouter as useNavigate } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useAuthStore } from '@/core/auth';
-import { useConfigStore } from '@/core/config';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
-  const { config } = useConfigStore();
   const { userData } = useAuthStore();
   const router = useNavigate();
 
