@@ -20,7 +20,6 @@ export const Header = () => {
           'linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.00) 100%)',
         backdropFilter: 'blur(1px)',
       }}
-    >
-    </header>
+    ></header>
   );
 };
