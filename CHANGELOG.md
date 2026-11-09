@@ -10,6 +10,8 @@ and this project adheres to
 
 ## [1.27.1] - 2026-11-09
 
+- 🔧(support) change support channel
+
 ## [1.27.0] - 2026-11-06
 
 - 🔥(frontend) remove crisp support
