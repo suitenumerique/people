@@ -36,7 +36,7 @@ test.describe('App footer', () => {
     expect(supportCommand).toEqual([
       'support',
       'init',
-      expect.objectContaining({ channel: 'accounts' }),
+      expect.objectContaining({ channel: 'regie' }),
     ]);
   });
 });

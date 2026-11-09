@@ -3,7 +3,7 @@ import {
   LASUITE_SUPPORT_SCRIPT_URL,
 } from '@/core/lasuite';
 
-const SUPPORT_CHANNEL = 'accounts';
+const SUPPORT_CHANNEL = 'regie';
 const SUPPORT_SCRIPT_ID = 'lasuite-support-widget';
 const SUPPORT_WIDGET = 'support';
 const SUPPORT_HOST_ID = 'lasuite-widget-support-root';
