@@ -9,7 +9,7 @@
     "test:ui": "yarn test --ui"
   },
   "devDependencies": {
-    "@playwright/test": "1.61",
+    "@playwright/test": "1.64",
     "@types/node": "*",
     "eslint-plugin-people": "*",
     "typescript": "*"
