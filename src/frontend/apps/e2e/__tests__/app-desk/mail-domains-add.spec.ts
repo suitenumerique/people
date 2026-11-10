@@ -77,7 +77,7 @@ test.describe('Add Mail Domains', () => {
     page,
     browserName,
   }) => {
-    const mailDomainName = randomName('versailles.fr', browserName, 1)[0];
+    const mailDomainName = 'saintdeun.fr';
     const mailDomainSupportMail = 'support@'.concat(mailDomainName);
 
     await page.goto('/mail-domains/');

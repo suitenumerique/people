@@ -7,18 +7,22 @@ test.describe('Language', () => {
   test.beforeEach(async ({ page, browserName }) => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName);
-    await page.goto('/teams');
+    await page.goto('/mail-domains');
   });
 
   test('checks the language picker', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Groups' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Domains of the organization' }),
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Open user menu' }).click();
     await page.getByRole('button', { name: /EN/ }).click();
     await page.getByRole('menuitem', { name: 'FR' }).click();
     await expect(page.getByRole('button', { name: /FR/ })).toBeVisible();
 
-    await expect(page.getByRole('heading', { name: 'Groupes' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: "Domaines de l'organisation" }),
+    ).toBeVisible();
   });
 
   test('checks lang attribute of html tag updates when user changes language', async ({

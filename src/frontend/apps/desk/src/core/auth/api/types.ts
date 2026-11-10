@@ -13,7 +13,6 @@ export interface User {
   abilities?: {
     mailboxes: UserAbilities;
     contacts: UserAbilities;
-    teams: UserAbilities;
   };
 }
 

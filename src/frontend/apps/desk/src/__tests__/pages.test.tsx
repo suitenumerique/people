@@ -20,34 +20,6 @@ jest.mock('next/navigation', () => ({
 describe('Page', () => {
   afterEach(() => jest.clearAllMocks());
 
-  it('checks Page rendering with team feature', () => {
-    useAuthStore.setState({
-      authenticated: true,
-      userData: {
-        id: '1',
-        email: 'test@example.com',
-        name: 'Test User',
-        abilities: {
-          contacts: { can_view: false },
-          teams: { can_view: false },
-          mailboxes: { can_view: false },
-        },
-      },
-    });
-
-    useConfigStore.setState({
-      config: {
-        RELEASE: '1.0.0',
-        COMMIT: 'NA',
-        LANGUAGES: [],
-      },
-    });
-
-    render(<Page />, { wrapper: AppWrapper });
-
-    expect(mockedPush).toHaveBeenCalledWith('/mail-domains/');
-  });
-
   it('checks Page rendering without team feature', () => {
     useAuthStore.setState({
       authenticated: true,
@@ -57,7 +29,6 @@ describe('Page', () => {
         name: 'Test User',
         abilities: {
           contacts: { can_view: false },
-          teams: { can_view: false },
           mailboxes: { can_view: false },
         },
       },
@@ -74,34 +45,6 @@ describe('Page', () => {
     render(<Page />, { wrapper: AppWrapper });
 
     expect(mockedPush).toHaveBeenCalledWith('/mail-domains/');
-  });
-
-  it('checks Page rendering with team permission', () => {
-    useAuthStore.setState({
-      authenticated: true,
-      userData: {
-        id: '1',
-        email: 'test@example.com',
-        name: 'Test User',
-        abilities: {
-          contacts: { can_view: false },
-          teams: { can_view: true },
-          mailboxes: { can_view: false },
-        },
-      },
-    });
-
-    useConfigStore.setState({
-      config: {
-        RELEASE: '1.0.0',
-        COMMIT: 'NA',
-        LANGUAGES: [],
-      },
-    });
-
-    render(<Page />, { wrapper: AppWrapper });
-
-    expect(mockedPush).toHaveBeenCalledWith('/teams/');
   });
 
   it('checks Page rendering with mailbox permission', () => {
@@ -113,7 +56,6 @@ describe('Page', () => {
         name: 'Test User',
         abilities: {
           contacts: { can_view: false },
-          teams: { can_view: false },
           mailboxes: { can_view: true },
         },
       },
