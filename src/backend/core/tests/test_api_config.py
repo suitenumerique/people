@@ -25,8 +25,6 @@ def test_api_config_anonymous():
             "CONTACTS_DISPLAY": True,
             "CONTACTS_CREATE": True,
             "MAILBOXES_CREATE": True,
-            "TEAMS_DISPLAY": True,
-            "TEAMS_CREATE": True,
         },
         "RELEASE": "NA",
     }
@@ -48,8 +46,6 @@ def test_api_config_authenticated():
             "CONTACTS_DISPLAY": True,
             "CONTACTS_CREATE": True,
             "MAILBOXES_CREATE": True,
-            "TEAMS_DISPLAY": True,
-            "TEAMS_CREATE": True,
         },
         "RELEASE": "NA",
     }

@@ -39,7 +39,6 @@ describe('Page', () => {
       config: {
         RELEASE: '1.0.0',
         COMMIT: 'NA',
-        FEATURES: { TEAMS_DISPLAY: true },
         LANGUAGES: [],
       },
     });
@@ -68,7 +67,6 @@ describe('Page', () => {
       config: {
         RELEASE: '1.0.0',
         COMMIT: 'NA',
-        FEATURES: { TEAMS_DISPLAY: false },
         LANGUAGES: [],
       },
     });
@@ -97,7 +95,6 @@ describe('Page', () => {
       config: {
         RELEASE: '1.0.0',
         COMMIT: 'NA',
-        FEATURES: { TEAMS_DISPLAY: false },
         LANGUAGES: [],
       },
     });
@@ -126,7 +123,6 @@ describe('Page', () => {
       config: {
         RELEASE: '1.0.0',
         COMMIT: 'NA',
-        FEATURES: { TEAMS_DISPLAY: true },
         LANGUAGES: [],
       },
     });

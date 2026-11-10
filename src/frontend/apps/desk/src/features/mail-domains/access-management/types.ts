@@ -10,3 +10,4 @@ export interface Access {
   user: User;
   can_set_role_to: Role[];
 }
+

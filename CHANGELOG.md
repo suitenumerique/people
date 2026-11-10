@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔥(frontend) remove leftPanel
+
 ## [1.27.1] - 2026-11-09
 
 - 🔧(support) change support channel
