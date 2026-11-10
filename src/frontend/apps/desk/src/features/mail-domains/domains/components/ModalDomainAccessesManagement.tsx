@@ -17,13 +17,14 @@ import {
   OptionsSelect,
   SearchMembers,
 } from '@/features/mail-domains/access-management/components/SearchMembers';
+
 import {
+  MailDomain,
   OptionSelect,
   OptionType,
+  Role,
   isOptionNewMember,
-} from '@/features/teams/member-add/types';
-
-import { MailDomain, Role } from '../../domains';
+} from '../../domains';
 
 interface ModalCreateAccessProps {
   mailDomain: MailDomain;

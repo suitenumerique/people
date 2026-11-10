@@ -11,14 +11,15 @@ import { APIError } from '@/api';
 import { Box, Text } from '@/components';
 import { Modal } from '@/components/Modal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
+
 import {
+  MailDomain,
   OptionSelect,
   OptionType,
   OptionsSelect,
+  Role,
   isOptionNewMember,
-} from '@/features/teams/member-add/types';
-
-import { MailDomain, Role } from '../../domains';
+} from '../../domains';
 import { useCreateInvitation } from '../api';
 
 import { ChooseRole } from './ChooseRole';

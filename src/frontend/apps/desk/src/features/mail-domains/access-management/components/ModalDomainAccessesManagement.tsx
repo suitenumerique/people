@@ -12,13 +12,14 @@ import { Box, Text } from '@/components';
 import { CustomModal } from '@/components/modal/CustomModal';
 import { useCreateMailDomainAccess } from '@/features/mail-domains/access-management';
 import { useCreateInvitation } from '@/features/mail-domains/access-management/api';
+
 import {
+  MailDomain,
   OptionSelect,
   OptionType,
+  Role,
   isOptionNewMember,
-} from '@/features/teams/member-add/types';
-
-import { MailDomain, Role } from '../../domains';
+} from '../../domains';
 
 import { AccessesList } from './AccessesList';
 import { ChooseRole } from './ChooseRole';

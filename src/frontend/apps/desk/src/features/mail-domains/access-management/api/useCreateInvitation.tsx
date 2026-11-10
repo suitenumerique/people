@@ -8,7 +8,8 @@ import {
   MailDomain,
   Role,
 } from '@/features/mail-domains/domains';
-import { Invitation, OptionType } from '@/features/teams/member-add/types';
+
+import { Invitation, OptionType } from '../../domains';
 
 import { KEY_LIST_INVITATION_DOMAIN_ACCESSES } from './useInvitationMailDomainAccesses';
 

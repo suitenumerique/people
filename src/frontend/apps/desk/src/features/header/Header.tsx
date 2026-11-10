@@ -1,7 +1,7 @@
 export const HEADER_HEIGHT = '52px';
 import Image from 'next/image';
 
-import { default as IconRegie } from '@/assets/logo-regie.svg?url';
+import logoRegieUrl from '@/assets/logo-regie.svg?url';
 import { StyledLink } from '@/components/';
 
 export const Header = () => {
@@ -25,7 +25,7 @@ export const Header = () => {
         backdropFilter: 'blur(1px)',
       }}
     >
-      <StyledLink href="/">
+      <StyledLink href="/" data-testid="header-logo-link">
         <div
           style={{
             display: 'flex',
@@ -33,7 +33,7 @@ export const Header = () => {
             marginBottom: '1rem',
           }}
         >
-          <Image priority src={IconRegie} alt="Régie" height={40} />
+          <Image priority src={logoRegieUrl} alt="Régie" height={40} />
         </div>
       </StyledLink>
     </header>
