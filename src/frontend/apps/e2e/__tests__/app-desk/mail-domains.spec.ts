@@ -92,11 +92,6 @@ test.describe('Mail domains', () => {
       // query at login, which will be cached and not called afterward in tests.
       await keyCloakSignIn(page, browserName, 'team-administrator-mail-member');
 
-      await page
-        .locator('menu')
-        .first()
-        .getByLabel(`Mail Domains button`)
-        .click();
       await expect(page).toHaveURL(/mail-domains\//);
       await expect(page.getByText('Domains of the organization')).toBeVisible();
       await expect(page.getByText('No domains exist.')).toBeVisible();
@@ -121,11 +116,6 @@ test.describe('Mail domains', () => {
       // query at login, which will be cached and not called afterward in tests.
       await keyCloakSignIn(page, browserName, 'team-administrator-mail-member');
 
-      await page
-        .locator('menu')
-        .first()
-        .getByLabel(`Mail Domains button`)
-        .click();
       await expect(page).toHaveURL(/mail-domains\//);
       await expect(page.getByText('Domains of the organization')).toBeVisible();
       await expect(page.getByLabel(/listboxDomains button$/)).toHaveCount(

@@ -4,9 +4,9 @@ import { Options } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
 import { MailDomain } from '@/features/mail-domains/domains/types';
-import { OptionSelect, OptionType } from '@/features/teams/member-add/types';
 import { isValidEmail } from '@/utils';
 
+import { OptionSelect, OptionType } from '../../domains';
 import { useUsers } from '../api/useUsers';
 
 export type OptionsSelect = Options<OptionSelect>;
