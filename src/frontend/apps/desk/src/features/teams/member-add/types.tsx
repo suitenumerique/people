@@ -1,6 +1,6 @@
 import { User } from '@/core/auth';
 
-import { Role, Team } from '../team-management';
+import { Role } from '../team-management';
 
 export enum OptionType {
   INVITATION = 'invitation',
@@ -33,7 +33,7 @@ export interface Invitation {
   id: string;
   created_at: string;
   email: string;
-  team: Team['id'];
+  team: 0;
   role: Role;
   issuer: User['id'];
   is_expired: boolean;
