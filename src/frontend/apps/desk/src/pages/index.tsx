@@ -14,15 +14,9 @@ const Page: NextPageWithLayout = () => {
       return;
     }
 
-    // 1. The user can see mailboxes
+    // The user can see mailboxes
     if (userData.abilities?.mailboxes?.can_view) {
       router.push('/mail-domains/');
-      return;
-    }
-
-    // 2. The user can see teams
-    if (userData.abilities?.teams?.can_view) {
-      router.push('/teams/');
       return;
     }
 
