@@ -15,11 +15,13 @@ const DropdownMenuAny = DropdownMenu as DropdownMenuWithDisabled;
 type MailDomainAccessesActionProps = {
   mailDomain: MailDomain;
   currentRole: Role;
+  onConfigureDomain?: () => void;
 };
 
 export const MailDomainAccessesAction = ({
   mailDomain,
   currentRole,
+  onConfigureDomain,
 }: MailDomainAccessesActionProps) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDropdownMenu();
@@ -32,6 +34,7 @@ export const MailDomainAccessesAction = ({
 
   const openConfigureDomain = () => {
     setIsOpen(false);
+    onConfigureDomain?.();
   };
 
   const options = [

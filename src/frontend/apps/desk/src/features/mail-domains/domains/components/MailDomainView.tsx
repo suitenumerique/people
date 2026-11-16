@@ -123,6 +123,7 @@ export const MailDomainView = ({
             <MailDomainAccessesAction
               mailDomain={mailDomain}
               currentRole={currentRole}
+              onConfigureDomain={handleShowModal}
             />
 
             <Box
