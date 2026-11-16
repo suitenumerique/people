@@ -681,13 +681,6 @@ class Base(Configuration):
             },
         }
 
-    @property
-    def LOGIN_URL(self):
-        """
-        Define the LOGIN_URL (Django) for the OIDC provider (reuse LOGIN_REDIRECT_URL)
-        """
-        return f"{self.LOGIN_REDIRECT_URL}/login/"
-
     @classmethod
     def post_setup(cls):
         """Post setup configuration.
