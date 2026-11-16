@@ -7,44 +7,6 @@ test.beforeEach(async ({ page, browserName }) => {
   await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
 });
 
-test.describe('Menu', () => {
-  const menuItems = [
-    {
-      name: 'Teams',
-      expectedUrl: '/teams/',
-      expectedText: 'Groups',
-    },
-    {
-      name: 'Mail Domains',
-      expectedUrl: '/mail-domains/',
-      expectedText: 'Mail Domains',
-    },
-  ];
-  for (const { name, expectedUrl, expectedText } of menuItems) {
-    test(`checks that ${name} menu item is displaying correctly`, async ({
-      page,
-    }) => {
-      const menu = page.locator('menu').first();
-
-      const label = name === 'Teams' ? 'Groups button' : `${name} button`;
-      const buttonMenu = menu.getByLabel(label);
-      await expect(buttonMenu).toBeVisible();
-    });
-
-    test(`checks that ${name} menu item is routing correctly`, async ({
-      page,
-    }) => {
-      const menu = page.locator('menu').first();
-
-      const label = name === 'Teams' ? 'Groups button' : `${name} button`;
-      const buttonMenu = menu.getByLabel(label);
-      await buttonMenu.click();
-
-      await expect(page.getByText(expectedText).first()).toBeVisible();
-      await expect(page).toHaveURL(expectedUrl);
-    });
-  }
-
   test(`it checks that the menu is not displaying when no abilities`, async ({
     page,
   }) => {

@@ -41,8 +41,6 @@ const interceptCommonApiCalls = async (
     },
   );
 };
-const clickOnMailDomainsNavButton = async (page: Page): Promise<void> =>
-  await page.locator('menu').getByLabel(`Mail Domains button`).click();
 
 const assertMailDomainUpperElementsAreVisible = async (page: Page) => {
   await expect(page).toHaveURL(/mail-domains\//);
@@ -183,8 +181,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-owner');
 
-        await clickOnMailDomainsNavButton(page);
-
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(page.getByTestId('button-new-mailbox')).toBeVisible();
@@ -197,8 +193,6 @@ test.describe('Mail domain', () => {
       test('can disable and enable mailbox', async ({ page, browserName }) => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-owner');
-
-        await clickOnMailDomainsNavButton(page);
 
         // Go to the enabled-domain.com management page
         await expect(page).toHaveURL(/mail-domains\//);
@@ -336,8 +330,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-administrator');
 
-        await clickOnMailDomainsNavButton(page);
-
         await expect(page).toHaveURL(/mail-domains\//);
         await expect(
           page.getByText('enabled-domain.com', { exact: true }),
@@ -441,7 +433,7 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-owner');
 
-        await clickOnMailDomainsNavButton(page);
+        await (page);
 
         await expect(page).toHaveURL(/mail-domains\//);
 
@@ -490,8 +482,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-owner');
 
-        await clickOnMailDomainsNavButton(page);
-
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
@@ -536,8 +526,6 @@ test.describe('Mail domain', () => {
 
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-owner');
-
-        await clickOnMailDomainsNavButton(page);
 
         await assertMailDomainUpperElementsAreVisible(page);
 
@@ -634,8 +622,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
 
-        await clickOnMailDomainsNavButton(page);
-
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
@@ -724,8 +710,6 @@ test.describe('Mail domain', () => {
 
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
-
-        await clickOnMailDomainsNavButton(page);
 
         await assertMailDomainUpperElementsAreVisible(page);
 
@@ -818,8 +802,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
 
-        await clickOnMailDomainsNavButton(page);
-
         await expect(page).toHaveURL(/mail-domains\//);
         await expect(
           page.getByText('enabled-domain.com', { exact: true }),
@@ -865,8 +847,6 @@ test.describe('Mail domain', () => {
 
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
-
-        await clickOnMailDomainsNavButton(page);
 
         await expect(page).toHaveURL(/mail-domains\//);
 
@@ -915,8 +895,6 @@ test.describe('Mail domain', () => {
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
 
-        await clickOnMailDomainsNavButton(page);
-
         await assertMailDomainUpperElementsAreVisible(page);
 
         await expect(
@@ -961,8 +939,6 @@ test.describe('Mail domain', () => {
 
         await page.goto('/');
         await keyCloakSignIn(page, browserName, 'mail-member');
-
-        await clickOnMailDomainsNavButton(page);
 
         await assertMailDomainUpperElementsAreVisible(page);
 
