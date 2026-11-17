@@ -52,7 +52,6 @@ const Page: NextPageWithLayout = () => {
             </Text>
 
             <Box>
-              {can_create ? (
                 <Button
                   color="brand"
                   icon={<span className="material-icons">add</span>}
@@ -62,22 +61,6 @@ const Page: NextPageWithLayout = () => {
                 >
                   {t('New group')}
                 </Button>
-              ) : (
-                <Tooltip content="You don't have the correct access right">
-                  <div>
-                    <Button
-                      color="brand"
-                      icon={<span className="material-icons">add</span>}
-                      variant="tertiary"
-                      data-testid="button-new-team"
-                      onClick={() => void router.push('/teams/create')}
-                      disabled={!can_create}
-                    >
-                      {t('New group')}
-                    </Button>
-                  </div>
-                </Tooltip>
-              )}
             </Box>
           </Box>
 
