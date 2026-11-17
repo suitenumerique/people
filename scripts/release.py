@@ -82,13 +82,13 @@ def update_changelog(path, version):
 
     
 def deployment_part(version):
-    """ Update helm file of preprod on deployment repository numerique-gouv/lasuite-deploiement
+    """ Update helm file of preprod on deployment repository suitenumerique/regie-deploiement
     """
-    # Move to lasuite-deploiement repository
+    # Move to regie-deploiement repository
     try:
-        os.chdir('../lasuite-deploiement')
+        os.chdir('../regie-deploiement')
     except FileNotFoundError:
-        sys.stdout.write("\033[1;31m[Error] You must have a clone of https://github.com/numerique-gouv/lasuite-deploiement\x1b[0m")
+        sys.stdout.write("\033[1;31m[Error] You must have a clone of https://github.com/suitenumerique/regie-deploiement\x1b[0m")
         sys.stdout.write("\033[0;32mPlease clone it and re-run script with option --only-deployment-part\x1b[0m")
         sys.stdout.write("  >>> python scripts/release.py --only-deployment-part \x1b[0m")
     else:
@@ -104,7 +104,7 @@ def deployment_part(version):
         run_command(f"git commit -m '{message}'", shell=True)
         confirm = input(f"""\033[0;32m
 ### DEPLOYMENT ###
-NEXT COMMAND on lasuite-deploiement repository: 
+NEXT COMMAND on regie-deploiement repository: 
     >> git push origin {deployment_branch}
 Continue ? (y,n) 
 \x1b[0m""").strip()
@@ -115,7 +115,7 @@ PLEASE DO THE FOLLOWING INSTRUCTIONS:
 --> Check if you need to bump chart version in the manifests/regie/helmfile.yaml file
     and settings in the manifests/regie/env.d/preprod/values.desk.yaml.gotmpl file
     add commits into {deployment_branch} branch to do it if needed, then...
---> Please submit PR {deployment_branch} and merge code to main [https://github.com/numerique-gouv/lasuite-deploiement]
+--> Please submit PR {deployment_branch} and merge code to main [https://github.com/suitenumerique/regie-deploiement]
 \x1b[0m""")
 
 
