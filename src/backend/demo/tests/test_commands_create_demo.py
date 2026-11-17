@@ -17,8 +17,6 @@ pytestmark = pytest.mark.django_db
 
 TEST_NB_OBJECTS = {
     "users": 100,
-    "teams": 100,
-    "max_users_per_team": 5,
     "domains": 10,
     "mailboxes_per_domain": 2,
     "aliases_per_domain": 2,
@@ -33,13 +31,8 @@ def test_commands_create_demo():
     call_command("create_demo")
 
     # Monique Test, Jeanne Test and Jean Something (quick fix for e2e)
-    # 3 users with team rights
     # 3 users with domain rights
-    # 3 x 3 user with both rights
-    assert models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3 + 3 + 3 + 9
-
-    assert models.Team.objects.count() == TEST_NB_OBJECTS["teams"]
-    assert models.TeamAccess.objects.count() >= TEST_NB_OBJECTS["teams"]
+    assert models.User.objects.count() == TEST_NB_OBJECTS["users"] + 3
 
     # nb_domains + enabled + many-boxed-domain
     assert (
@@ -51,7 +44,7 @@ def test_commands_create_demo():
     # + 2 domains for E2E mail owner user
     assert (
         mailbox_models.MailDomainAccess.objects.count()
-        == TEST_NB_OBJECTS["domains"] + 3 + 9 + 2
+        == TEST_NB_OBJECTS["domains"] + 3 + 2
     )
 
     # TEST_NB_OBJECTS["domains"]*TEST_NB_OBJECTS["mailboxes_per_domain"] = 20

@@ -1,11 +1,11 @@
 # People
 
-People is an application to handle users and teams, and distribute permissions across [La Suite](https://lasuite.numerique.gouv.fr/).
+People is an application to handle mailboxes and aliases on your mail domains. Provides mailboxes in [LaSuite's Messagerie](https://messagerie.numerique.gouv.fr/).
 
 It is built on top of [Django Rest
 Framework](https://www.django-rest-framework.org/).
 
-All interoperabilities will be described in `docs/interoperability`.
+Interoperabilities with Messagerie will be described in `docs/interoperability`.
 
 ## Getting started
 

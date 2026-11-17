@@ -10,8 +10,7 @@ from rest_framework.status import (
 )
 from rest_framework.test import APIClient
 
-from core import factories, models
-from core.factories import TeamAccessFactory
+from core import factories
 
 from mailbox_manager.factories import MailDomainAccessFactory
 
@@ -56,7 +55,6 @@ def test_api_users_retrieve_me_authenticated():
         "abilities": {
             "contacts": {"can_create": True, "can_view": True},
             "mailboxes": {"can_create": False, "can_view": False},
-            "teams": {"can_create": False, "can_view": False},
         },
         "organization": {
             "id": str(user.organization.pk),
@@ -95,31 +93,6 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
     assert response.json()["abilities"] == {
         "contacts": {"can_create": True, "can_view": True},
         "mailboxes": {"can_create": True, "can_view": True},
-        "teams": {"can_create": False, "can_view": False},
-    }
-
-    # Test the teams abilities - user is not an admin/owner
-    team_access = TeamAccessFactory(user=user, role=models.RoleChoices.MEMBER)
-    response = client.get("/api/v1.0/users/me/")
-
-    assert response.status_code == HTTP_200_OK
-    assert response.json()["abilities"] == {
-        "contacts": {"can_create": True, "can_view": True},
-        "mailboxes": {"can_create": True, "can_view": True},
-        "teams": {"can_create": False, "can_view": False},
-    }
-
-    # Test the teams abilities - user is an admin/owner
-    team_access.role = models.RoleChoices.ADMIN
-    team_access.save()
-
-    response = client.get("/api/v1.0/users/me/")
-
-    assert response.status_code == HTTP_200_OK
-    assert response.json()["abilities"] == {
-        "contacts": {"can_create": True, "can_view": True},
-        "mailboxes": {"can_create": True, "can_view": True},
-        "teams": {"can_create": True, "can_view": True},
     }
 
     # Test the mailboxes abilities - user has no mail domain access anymore
@@ -131,7 +104,6 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
     assert response.json()["abilities"] == {
         "contacts": {"can_create": True, "can_view": True},
         "mailboxes": {"can_create": False, "can_view": False},
-        "teams": {"can_create": True, "can_view": True},
     }
 
 
