@@ -57,7 +57,7 @@ const Page: NextPageWithLayout = () => {
                 $variation="secondary"
                 iconName="mail"
               />
-              {t('Domains of the organization')}
+              {t('My domains')}
             </Text>
             <Button
               color="brand"
