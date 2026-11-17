@@ -1,1 +1,0 @@
-"""Team accesses tests package."""

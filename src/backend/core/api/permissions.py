@@ -4,8 +4,6 @@ from django.core import exceptions
 
 from rest_framework import permissions
 
-from core import models
-
 
 class IsAuthenticated(permissions.BasePermission):
     """
@@ -55,43 +53,3 @@ class AccessPermission(IsAuthenticated):
         """Check permission for a given object."""
         abilities = obj.get_abilities(request.user)
         return abilities.get(request.method.lower(), False)
-
-
-class TeamPermission(IsAuthenticated):
-    """Permission class for team objects viewset."""
-
-    def has_permission(self, request, view):
-        """Check permission only when the user tries to create a new team."""
-        if not super().has_permission(request, view):
-            return False
-
-        if request.method != "POST":
-            return True
-
-        abilities = request.user.get_abilities()
-        return abilities["teams"]["can_create"]
-
-
-class TeamInvitationCreationPermission(IsAuthenticated):
-    """Permission class that allows only team owners and admins to perform actions."""
-
-    def has_permission(self, request, view):
-        """Check if user is authenticated and has required role for the team."""
-        if not super().has_permission(request, view):
-            return False
-
-        # Only check roles for edition operations
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        team_id = view.kwargs.get("team_id")
-        if not team_id:
-            return False
-
-        team_access = models.TeamAccess.objects.filter(
-            team_id=team_id,
-            user=request.user,
-            role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
-        ).exists()
-
-        return team_access

@@ -12,7 +12,7 @@ from rest_framework.status import (
 )
 from rest_framework.test import APIClient
 
-from core import factories, models
+from core import factories
 from core.api.client.viewsets import Pagination
 
 pytestmark = pytest.mark.django_db
@@ -295,62 +295,6 @@ def test_api_users_authenticated_list_by_name_and_email():
     user_ids = [user["id"] for user in response.json()["results"]]
 
     assert user_ids == [str(david.id), str(oleg.id), str(nicole.id)]
-
-
-def test_api_users_authenticated_list_exclude_users_already_in_team(
-    django_assert_num_queries,
-):
-    """
-    Authenticated users should be able to search users
-    but the result should exclude all users already in the given team.
-    """
-    user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
-    dave = factories.UserFactory(name="dave bowman", email=None)
-    nicole = factories.UserFactory(name="nicole foole", email=None)
-    frank = factories.UserFactory(name="frank poole", email=None)
-    mary = factories.UserFactory(name="mary poole", email=None)
-    factories.UserFactory(name="heywood floyd", email=None)
-    factories.UserFactory(name="Andrei Smyslov", email=None)
-    factories.TeamFactory.create_batch(10)
-
-    client = APIClient()
-    client.force_login(user)
-
-    # Add Dave and Frank in the same team
-    team = factories.TeamFactory(
-        users=[
-            (dave, models.RoleChoices.MEMBER),
-            (frank, models.RoleChoices.MEMBER),
-        ]
-    )
-    factories.TeamFactory(users=[(nicole, models.RoleChoices.MEMBER)])
-
-    # Search user to add him/her to a team, we give a team id to the request
-    # to exclude all users already in the team
-
-    # We can't find David Bowman because he is already a member of the given team
-    # 2 queries are needed here:
-    # - user authenticated
-    # - search user query
-    with django_assert_num_queries(2):
-        response = client.get(
-            f"/api/v1.0/users/?q=bowman&team_id={team.id}",
-        )
-    assert response.status_code == HTTP_200_OK
-    assert response.json()["results"] == []
-
-    # We can only find Nicole and Mary because Frank is already a member of the given team
-    # 4 queries are needed here:
-    # - user authenticated
-    # - search user query
-    # - User
-    with django_assert_num_queries(3):
-        response = client.get(
-            f"/api/v1.0/users/?q=ool&team_id={team.id}",
-        )
-    assert response.status_code == HTTP_200_OK
-    user_ids = sorted([user["id"] for user in response.json()["results"]])
-    assert user_ids == sorted([str(mary.id), str(nicole.id)])
 
 
 def test_api_users_authenticated_list_uppercase_content():

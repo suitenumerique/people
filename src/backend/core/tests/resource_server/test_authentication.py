@@ -65,9 +65,6 @@ def test_resource_server_authentication_class(client, settings):
     This test asserts the DRF request object contains the
     `resource_server_token_audience` attribute which is used in
     the resource server views.
-
-    This test uses the `/resource-server/v1.0/teams/` URL as an example
-    because we don't want to create a new URL just for this test.
     """
     assert (
         settings.OIDC_RS_BACKEND_CLASS
@@ -99,7 +96,7 @@ def test_resource_server_authentication_class(client, settings):
 
     # Try to authenticate while the user does not exist => 401
     response = client.get(
-        "/resource-server/v1.0/teams/",  # use an exising URL here
+        "/resource-server/v1.0/scim/Me/",  # use an exising URL here
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
     )
@@ -110,7 +107,7 @@ def test_resource_server_authentication_class(client, settings):
     UserFactory(sub="very-specific-sub")
 
     response = client.get(
-        "/resource-server/v1.0/teams/",  # use an exising URL here
+        "/resource-server/v1.0/scim/Me/",  # use an exising URL here
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
     )
@@ -147,9 +144,6 @@ def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-arg
     This test asserts the DRF request object contains the
     `resource_server_token_audience` attribute which is used in
     the resource server views.
-
-    This test uses the `/resource-server/v1.0/teams/` URL as an example
-    because we don't want to create a new URL just for this test.
     """
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
@@ -246,7 +240,7 @@ def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-arg
 
     # Try to authenticate while the user does not exist => 401
     response = client.get(
-        "/resource-server/v1.0/teams/",  # use an exising URL here
+        "/resource-server/v1.0/scim/Me/",  # use an exising URL here
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
     )
@@ -257,7 +251,7 @@ def test_jwt_resource_server_authentication_class(  # pylint: disable=unused-arg
     UserFactory(sub="very-specific-sub")
 
     response = client.get(
-        "/resource-server/v1.0/teams/",  # use an exising URL here
+        "/resource-server/v1.0/scim/Me/",  # use an exising URL here
         format="json",
         HTTP_AUTHORIZATION=f"Bearer {build_authorization_bearer('some_token')}",
     )
