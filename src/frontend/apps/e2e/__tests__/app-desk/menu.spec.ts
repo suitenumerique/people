@@ -7,6 +7,7 @@ test.beforeEach(async ({ page, browserName }) => {
   await keyCloakSignIn(page, browserName, 'team-owner-mail-member');
 });
 
+test.describe('Menu', () => {
   test(`it checks that the menu is not displaying when no abilities`, async ({
     page,
   }) => {
