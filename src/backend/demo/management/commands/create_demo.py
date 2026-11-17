@@ -138,7 +138,7 @@ class Timeit:
         return elapsed_time
 
 
-def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statements too-many-locals # noqa: PLR0912, PLR0915
+def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statements too-many-locals
     """
     Create a database with demo data for developers to work in a realistic environment.
     The code is engineered to create a huge number of objects fast.
@@ -160,74 +160,6 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
                     language=random.choice(settings.LANGUAGES)[0],
                 )
             )
-        # this is a quick fix to fix e2e tests
-        # tests needs some no random data
-        organization, _created = models.Organization.objects.get_or_create(
-            name="13002526500013",
-            registration_id_list=["13002526500013"],
-        )
-        queue.push(
-            models.User(
-                sub=uuid4(),
-                email="monique.test@example.com",
-                name="Monique Test",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                organization=organization,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-        )
-        queue.push(
-            models.User(
-                sub=uuid4(),
-                email="jeanne.test@example.com",
-                name="Jean Test",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                organization=organization,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-        )
-        queue.push(
-            models.User(
-                sub=uuid4(),
-                email="jean.somethingelse@example.com",
-                name="Jean Something",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-        )
-
-        queue.flush()
-
-    with Timeit(stdout, "Creating teams"):
-        for i in range(defaults.NB_OBJECTS["teams"]):
-            queue.push(
-                models.Team(
-                    name=f"Team {i:d}",
-                )
-            )
-        queue.flush()
-
-    with Timeit(stdout, "Creating team accesses"):
-        teams_ids = list(models.Team.objects.values_list("id", flat=True))
-        users_ids = list(models.User.objects.values_list("id", flat=True))
-        for team_id in teams_ids:
-            for user_id in random.sample(
-                users_ids,
-                random.randint(1, defaults.NB_OBJECTS["max_users_per_team"]),
-            ):
-                role = random.choice(models.RoleChoices.choices)
-                queue.push(
-                    models.TeamAccess(team_id=team_id, user_id=user_id, role=role[0])
-                )
         queue.flush()
 
     with Timeit(stdout, "Creating domains"):
@@ -245,8 +177,9 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
             )
         queue.flush()
 
-    domains = mailbox_models.MailDomain.objects.all()
     with Timeit(stdout, "Creating accesses to domains"):
+        users_ids = list(models.User.objects.values_list("id", flat=True))
+        domains = mailbox_models.MailDomain.objects.all()
         for domain in domains:
             queue.push(
                 mailbox_models.MailDomainAccess(
@@ -297,23 +230,7 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
         # realm.json AND the OIDC setting to fallback on user email
         # should be set to True, because we don't pilot the sub.
         for role in models.RoleChoices.values:
-            team_user = models.User(
-                sub=uuid4(),
-                email=f"e2e.team-{role}@example.com",
-                name=f"E2E Group {role.capitalize()}",
-                password="!",
-                is_superuser=False,
-                is_active=True,
-                is_staff=False,
-                language=random.choice(settings.LANGUAGES)[0],
-            )
-            queue.push(team_user)
-            queue.push(
-                models.TeamAccess(team_id=teams_ids[0], user_id=team_user.pk, role=role)
-            )
-
-        for role in models.RoleChoices.values:
-            user_with_mail = models.User(
+            domain_user = models.User(
                 sub=uuid4(),
                 email=f"e2e.mail-{role}@example.com",
                 name=f"E2E Mail {role.capitalize()}",
@@ -323,40 +240,14 @@ def create_demo(stdout):  # pylint: disable=too-many-branches too-many-statement
                 is_staff=False,
                 language=random.choice(settings.LANGUAGES)[0],
             )
-            queue.push(user_with_mail)
+            queue.push(domain_user)
             queue.push(
                 mailbox_models.MailDomainAccess(
                     domain=domains[0],
-                    user_id=user_with_mail.pk,
+                    user_id=domain_user.pk,
                     role=role,
                 )
             )
-
-        for team_role in models.RoleChoices.values:
-            for domain_role in models.RoleChoices.values:
-                team_mail_user = models.User(
-                    sub=uuid4(),
-                    email=f"e2e.team-{team_role}-mail-{domain_role}@example.com",
-                    name=f"E2E Group {team_role.capitalize()} Mail {domain_role.capitalize()}",
-                    password="!",
-                    is_superuser=False,
-                    is_active=True,
-                    is_staff=False,
-                    language=random.choice(settings.LANGUAGES)[0],
-                )
-                queue.push(team_mail_user)
-                queue.push(
-                    models.TeamAccess(
-                        team_id=teams_ids[0], user_id=team_mail_user.pk, role=team_role
-                    )
-                )
-                queue.push(
-                    mailbox_models.MailDomainAccess(
-                        domain=domains[0],
-                        user_id=team_mail_user.pk,
-                        role=domain_role,
-                    )
-                )
 
         queue.flush()
 

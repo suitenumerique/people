@@ -1,5 +1,5 @@
 """
-Unit tests for the Team model
+Unit tests for the Service account model
 """
 
 from django.core.exceptions import ValidationError

@@ -193,67 +193,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     password = make_password("password")
 
 
-class TeamFactory(factory.django.DjangoModelFactory):
-    """A factory to create teams"""
-
-    class Meta:
-        model = models.Team
-        skip_postgeneration_save = True
-
-    name = factory.Sequence(lambda n: f"team{n}")
-
-    @factory.post_generation
-    def users(self, create, extracted, **kwargs):
-        """Add users to team from a given list of users with or without roles."""
-        if not create or not extracted:
-            return
-        for user_entry in extracted:
-            if isinstance(user_entry, models.User):
-                TeamAccessFactory(team=self, user=user_entry)
-            else:
-                TeamAccessFactory(team=self, user=user_entry[0], role=user_entry[1])
-
-    @factory.post_generation
-    def service_providers(self, create, extracted, **kwargs):
-        """Add service providers to team from a given list of service providers."""
-        if not create or not extracted:
-            return
-        self.service_providers.set(extracted)
-
-
-class TeamAccessFactory(factory.django.DjangoModelFactory):
-    """Create fake team user accesses for testing."""
-
-    class Meta:
-        model = models.TeamAccess
-
-    team = factory.SubFactory(TeamFactory)
-    user = factory.SubFactory(UserFactory)
-    role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
-
-
-class TeamWebhookFactory(factory.django.DjangoModelFactory):
-    """Create fake team webhooks for testing."""
-
-    class Meta:
-        model = models.TeamWebhook
-
-    team = factory.SubFactory(TeamFactory)
-    url = factory.Sequence(lambda n: f"https://nosuchdomain.xyz/Groups/{n!s}")
-
-
-class InvitationFactory(factory.django.DjangoModelFactory):
-    """A factory to create invitations for a user"""
-
-    class Meta:
-        model = models.Invitation
-
-    team = factory.SubFactory(TeamFactory)
-    email = factory.Faker("email")
-    role = factory.fuzzy.FuzzyChoice([role[0] for role in models.RoleChoices.choices])
-    issuer = factory.SubFactory(UserFactory)
-
-
 class ServiceProviderFactory(factory.django.DjangoModelFactory):
     """A factory to create service providers for testing purposes."""
 
@@ -262,13 +201,6 @@ class ServiceProviderFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     audience_id = factory.Faker("uuid4")
-
-    @factory.post_generation
-    def teams(self, create, extracted, **kwargs):
-        """Add teams to service provider from a given list."""
-        if not create or not extracted:
-            return
-        self.teams.set(extracted)
 
     @factory.post_generation
     def organizations(self, create, extracted, **kwargs):

@@ -40,9 +40,6 @@ def test_api_service_providers_list_authenticated(client):
     # Generate some not fetched data
     factories.ServiceProviderFactory.create_batch(
         2, organizations=[factories.OrganizationFactory(with_registration_id=True)]
-    )  # Other service providers
-    factories.TeamFactory(
-        users=[user], service_providers=[factories.ServiceProviderFactory()]
     )
 
     response = client.get(

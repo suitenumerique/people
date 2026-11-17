@@ -60,26 +60,3 @@ def test_api_service_providers_retrieve_authenticated_other_organization(client)
 
     assert response.status_code == HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "No ServiceProvider matches the given query."}
-
-
-def test_api_service_providers_retrieve_authenticated_on_teams(client):
-    """
-    Authenticated users should not be able to retrieve service providers
-    just because it is related to one of their teams if it is not related
-    to their organization (might change later if needed).
-    """
-    user = factories.UserFactory(with_organization=True)
-    client.force_login(user)
-
-    other_organization = factories.OrganizationFactory(with_registration_id=True)
-    service_provider = factories.ServiceProviderFactory()
-    factories.TeamFactory(
-        users=[user],
-        organization=other_organization,
-        service_providers=[service_provider],
-    )
-
-    response = client.get(f"/api/v1.0/service-providers/{service_provider.pk}/")
-
-    assert response.status_code == HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "No ServiceProvider matches the given query."}

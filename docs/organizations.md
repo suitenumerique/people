@@ -20,18 +20,6 @@ When a user logs in:
 **Note:** While deploying the new code, we allow the already existing user to not have one.
 
 
-## Link with the `Team` model
-
-Each team must have an organization. This organization is not defined by the user, but automatically set
-using the user's organization.
-
-The team's organization does not restrict the users who can be added to the team.
-
-There is currently no feature relying on the team organization.
-
-**Note:** While deploying the new code, we allow the teams to not have one.
-
-
 ## Organization-related features
 
 ### Organization UI

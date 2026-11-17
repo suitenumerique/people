@@ -53,7 +53,7 @@ def test_api_domain_invitations__domain_managers_should_list_invitations():
     )
     time.sleep(1)
 
-    # invitations from other teams should not be listed
+    # invitations from other domains should not be listed
     other_domain = factories.MailDomainEnabledFactory()
     factories.MailDomainInvitationFactory.create_batch(
         2, domain=other_domain, role=enums.MailDomainRoleChoices.OWNER
