@@ -31,11 +31,11 @@ def test_api_teams_create_anonymous():
 def test_api_teams_create_authenticated(settings):
     """
     Authenticated users should be able to create teams,
-    if already member of a team.
+    if already admin of a team.
     """
     organization = OrganizationFactory(with_registration_id=True)
     user = UserFactory(organization=organization)
-    TeamAccessFactory(user=user)
+    TeamAccessFactory(user=user, role="administrator")
 
     client = APIClient()
     client.force_login(user)
@@ -68,7 +68,7 @@ def test_api_teams_create_cannot_override_organization():
     """
     organization = OrganizationFactory(with_registration_id=True)
     user = UserFactory(organization=organization)
-    TeamAccessFactory(user=user)
+    TeamAccessFactory(user=user, role="administrator")
 
     client = APIClient()
     client.force_login(user)
