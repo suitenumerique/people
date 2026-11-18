@@ -57,7 +57,7 @@ The `staging` platform is deployed automatically with every update of the `main`
 
 ## Pre-prod and production
 
-If you used the release script and had permission to push on [lasuite-deploiement](https://github.com/numerique-gouv/lasuite-deploiement), a deployment branch has been created. You can skip step 1.
+If you used the release script and had permission to push on [regie-deploiement](https://github.com/suitenumerique/regie-deploiement), a deployment branch has been created. You can skip step 1.
 
 Otherwise, for manual preprod and for production deployments :
 1. Bump tag version for both front-end and back-end images in the `.gotmpl` file located in `manifests/<your-product>/env.d/<your-environment>/`, 

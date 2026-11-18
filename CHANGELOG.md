@@ -11,6 +11,8 @@ and this project adheres to
 - 🐛(front) fix broken link to domain config
 - 🔥(frontend) remove teams frontend
 - 🔥(front) remove unused login page
+- 🐛(scripts) fix release script
+- ⬆️(dimail) bump dimail to 0.11.0
 
 ## [1.27.1] - 2026-11-09
 
