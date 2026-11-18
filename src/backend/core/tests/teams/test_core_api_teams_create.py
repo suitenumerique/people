@@ -98,7 +98,7 @@ def test_api_teams_create_not_is_visible_all_services():
     """
     organization = OrganizationFactory(with_registration_id=True)
     user = UserFactory(organization=organization)
-    TeamAccessFactory(user=user)
+    TeamAccessFactory(user=user, role="administrator")
 
     client = APIClient()
     client.force_login(user)
