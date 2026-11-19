@@ -19,8 +19,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
 ]
-description = "An application to handle contacts and teams."
-keywords = ["Django", "Contacts", "Teams", "RBAC"]
+description = "An application to handle mail domains."
+keywords = ["Django", "Contacts", "RBAC"]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = "~=3.14.2"

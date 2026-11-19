@@ -9,8 +9,9 @@ and this project adheres to
 ## [Unreleased]
 
 - 🐛(front) fix broken link to domain config
-- 🔥(frontend) remove teams frontend
+- 🔥(front) remove teams frontend
 - 🔥(front) remove unused login page
+- 🔥(back) remove all teams-related backend
 
 ## [1.27.1] - 2026-11-09
 

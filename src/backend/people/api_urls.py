@@ -1,7 +1,7 @@
 """API URL Configuration"""
 
 from django.conf import settings
-from django.urls import include, path, re_path
+from django.urls import include, path
 
 from lasuite.oidc_login.urls import urlpatterns as oidc_urls
 from lasuite.oidc_resource_server.urls import urlpatterns as resource_server_urls
@@ -13,24 +13,9 @@ from core.api.client import viewsets
 router = DefaultRouter()
 router.register("contacts", viewsets.ContactViewSet, basename="contacts")
 router.register("organizations", viewsets.OrganizationViewSet, basename="organizations")
-router.register("teams", viewsets.TeamViewSet, basename="teams")
 router.register("users", viewsets.UserViewSet, basename="users")
 router.register(
     "service-providers", viewsets.ServiceProviderViewSet, basename="service-providers"
-)
-
-# - Routes nested under a team
-team_related_router = DefaultRouter()
-team_related_router.register(
-    "accesses",
-    viewsets.TeamAccessViewSet,
-    basename="team_accesses",
-)
-
-team_related_router.register(
-    "invitations",
-    viewsets.InvitationViewset,
-    basename="invitations",
 )
 
 
@@ -42,10 +27,6 @@ urlpatterns = [
                 *router.urls,
                 *oidc_urls,
                 *resource_server_urls,
-                re_path(
-                    r"^teams/(?P<team_id>[0-9a-z-]*)/",
-                    include(team_related_router.urls),
-                ),
             ]
         ),
     ),
