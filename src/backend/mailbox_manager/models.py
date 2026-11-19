@@ -4,6 +4,7 @@ Declare and configure the models for the People additional application : mailbox
 
 import logging
 import smtplib
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -13,12 +14,13 @@ from django.core.validators import EmailValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext, override
 from django.utils.translation import gettext_lazy as _
 
 from core.exceptions import EmailAlreadyKnownException
-from core.models import BaseInvitation, BaseModel, Organization, User
+from core.models import BaseModel, Organization, User
 
 from mailbox_manager.enums import (
     MailboxStatusChoices,
@@ -376,9 +378,10 @@ Last name and Domain already exists.",
         }
 
 
-class MailDomainInvitation(BaseInvitation):
+class MailDomainInvitation(BaseModel):
     """User invitation to mail domains."""
 
+    email = models.EmailField(_("email address"), null=False, blank=False)
     issuer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -408,11 +411,28 @@ class MailDomainInvitation(BaseInvitation):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        """Make invitations read-only."""
+        if self.created_at:
+            raise exceptions.PermissionDenied()
+        super().save(*args, **kwargs)
+
+        self.email_invitation()
+
+    def clean(self):
+        """Validate fields."""
+        super().clean()
+
+        # Check if a user already exists for the provided email
+        if User.objects.filter(email__iexact=self.email).exists():
+            raise EmailAlreadyKnownException
+
     def refresh(self):
         """Create domain access if refresh fail because user was created
         after invitation expiration"""
         try:
-            super().refresh()
+            self.clean()
+            self.updated_at = timezone.now()
         except EmailAlreadyKnownException as exc:
             user = User.objects.get(email__iexact=self.email)
 
@@ -425,6 +445,15 @@ class MailDomainInvitation(BaseInvitation):
             self.delete()  # delete related invitation
             raise exc
 
+    @property
+    def is_expired(self):
+        """Calculate if invitation is still valid or has expired."""
+        if not self.updated_at:
+            return None
+
+        validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
+        return timezone.now() > (self.updated_at + validity_duration)
+
     def __str__(self):
         return f"{self.email} invited to {self.domain}"
 
@@ -435,7 +464,7 @@ class MailDomainInvitation(BaseInvitation):
     def _get_mail_context(self):
         """Get the template variables for the invitation."""
         return {
-            **super()._get_mail_context(),
+            "site": Site.objects.get_current(),
             "domain": self.domain.name,
             "role": self.get_role_display(),
         }
@@ -467,6 +496,26 @@ class MailDomainInvitation(BaseInvitation):
             "patch": False,
             "put": False,
         }
+
+    def email_invitation(self):
+        """Email invitation to the user."""
+        try:
+            with override(self.issuer.language):
+                subject = self._get_mail_subject()
+                context = self._get_mail_context()
+                msg_html = render_to_string(self.MAIL_TEMPLATE_HTML, context)
+                msg_plain = render_to_string(self.MAIL_TEMPLATE_TXT, context)
+                mail.send_mail(
+                    subject,
+                    msg_plain,
+                    settings.EMAIL_FROM,
+                    [self.email],
+                    html_message=msg_html,
+                    fail_silently=False,
+                )
+
+        except smtplib.SMTPException as exception:
+            logger.error("invitation to %s was not sent: %s", self.email, exception)
 
 
 class Alias(BaseModel):
