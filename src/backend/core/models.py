@@ -6,10 +6,8 @@ Declare and configure the models for the People core application
 import json
 import os
 import secrets
-import smtplib
 import uuid
 from contextlib import suppress
-from datetime import timedelta
 from functools import lru_cache
 from logging import getLogger
 from typing import Optional, Tuple
@@ -18,19 +16,14 @@ from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.template.loader import render_to_string
-from django.utils import timezone
-from django.utils.translation import gettext, override
 from django.utils.translation import gettext_lazy as _
 
 import jsonschema
 from timezone_field import TimeZoneField
 
-from core.exceptions import EmailAlreadyKnownException
 from core.plugins.registry import registry as plugin_hooks_registry
 from core.validators import get_field_validators_from_setting
 
@@ -653,83 +646,6 @@ class OrganizationAccess(BaseModel):
 
     def __str__(self):
         return f"{self.user!s} is {self.role:s} in organization {self.organization!s}"
-
-
-class BaseInvitation(BaseModel):
-    """Abstract base invitation model, surcharged for domains."""
-
-    email = models.EmailField(_("email address"), null=False, blank=False)
-    issuer = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="invitations",
-    )
-
-    MAIL_TEMPLATE_HTML = None
-    MAIL_TEMPLATE_TXT = None
-
-    class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        """Make invitations read-only."""
-        if self.created_at:
-            raise exceptions.PermissionDenied()
-        super().save(*args, **kwargs)
-
-        self.email_invitation()
-
-    def clean(self):
-        """Validate fields."""
-        super().clean()
-
-        # Check if a user already exists for the provided email
-        if User.objects.filter(email__iexact=self.email).exists():
-            raise EmailAlreadyKnownException
-
-    def refresh(self):
-        """A simple way to refresh invitation and move expiration date."""
-        self.clean()
-        self.updated_at = timezone.now()
-
-    @property
-    def is_expired(self):
-        """Calculate if invitation is still valid or has expired."""
-        if not self.updated_at:
-            return None
-
-        validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-        return timezone.now() > (self.updated_at + validity_duration)
-
-    def _get_mail_subject(self):
-        """Get the subject of the invitation."""
-        return gettext("Invitation to join La Régie!")
-
-    def _get_mail_context(self):
-        """Get the template variables for the invitation."""
-        return {
-            "site": Site.objects.get_current(),
-        }
-
-    def email_invitation(self):
-        """Email invitation to the user."""
-        try:
-            with override(self.issuer.language):
-                subject = self._get_mail_subject()
-                context = self._get_mail_context()
-                msg_html = render_to_string(self.MAIL_TEMPLATE_HTML, context)
-                msg_plain = render_to_string(self.MAIL_TEMPLATE_TXT, context)
-                mail.send_mail(
-                    subject,
-                    msg_plain,
-                    settings.EMAIL_FROM,
-                    [self.email],
-                    html_message=msg_html,
-                    fail_silently=False,
-                )
-
-        except smtplib.SMTPException as exception:
-            logger.error("invitation to %s was not sent: %s", self.email, exception)
 
 
 def validate_account_service_scope(scope):
