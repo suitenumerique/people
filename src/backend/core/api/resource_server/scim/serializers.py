@@ -15,7 +15,6 @@ class SCIMUserSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source="name")
     emails = serializers.SerializerMethodField()
     meta = serializers.SerializerMethodField()
-    groups = serializers.SerializerMethodField()
     active = serializers.BooleanField(source="is_active")
 
     class Meta:
@@ -27,7 +26,6 @@ class SCIMUserSerializer(serializers.ModelSerializer):
             "userName",
             "displayName",
             "emails",
-            "groups",
             "meta",
         ]
         read_only_fields = [
@@ -37,7 +35,6 @@ class SCIMUserSerializer(serializers.ModelSerializer):
             "userName",
             "displayName",
             "emails",
-            "groups",
             "meta",
         ]
 
@@ -56,22 +53,6 @@ class SCIMUserSerializer(serializers.ModelSerializer):
                 }
             ]
         return []
-
-    def get_groups(self, obj):
-        """
-        Return the groups the user belongs to.
-
-        WARNING: you need to prefetch the team accesses in the
-        viewset to avoid N+1 queries.
-        """
-        return [
-            {
-                "value": str(team_access.team.external_id),
-                "display": team_access.team.name,
-                "type": "direct",
-            }
-            for team_access in obj.accesses.all()
-        ]
 
     def get_meta(self, obj):
         """Return metadata about the user."""

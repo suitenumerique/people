@@ -5,22 +5,10 @@ from django.contrib import admin, messages
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
 
-from treebeard.admin import TreeAdmin
-from treebeard.forms import movenodeform_factory
-
 from mailbox_manager.admin import MailDomainAccessInline
 
 from . import models
 from .plugins.registry import registry as plugin_hooks_registry
-
-
-class TeamAccessInline(admin.TabularInline):
-    """Inline admin class for team accesses."""
-
-    extra = 0
-    autocomplete_fields = ["user", "team"]
-    model = models.TeamAccess
-    readonly_fields = ("created_at", "updated_at")
 
 
 class OrganizationAccessInline(admin.TabularInline):
@@ -29,15 +17,6 @@ class OrganizationAccessInline(admin.TabularInline):
     autocomplete_fields = ["user", "organization"]
     extra = 0
     model = models.OrganizationAccess
-    readonly_fields = ("created_at", "updated_at")
-
-
-class TeamWebhookInline(admin.TabularInline):
-    """Inline admin class for team webhooks."""
-
-    extra = 0
-    autocomplete_fields = ["team"]
-    model = models.TeamWebhook
     readonly_fields = ("created_at", "updated_at")
 
 
@@ -93,7 +72,7 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
     )
-    inlines = (TeamAccessInline, MailDomainAccessInline, OrganizationAccessInline)
+    inlines = (MailDomainAccessInline, OrganizationAccessInline)
     list_display = (
         "get_user",
         "organization",
@@ -122,86 +101,6 @@ class UserAdmin(auth_admin.UserAdmin):
         )
 
     get_user.short_description = _("User")
-
-
-class TeamServiceProviderInline(admin.TabularInline):
-    """Inline admin class for service providers."""
-
-    can_delete = False
-    model = models.Team.service_providers.through
-    extra = 0
-
-
-@admin.register(models.Team)
-class TeamAdmin(TreeAdmin):
-    """Team admin interface declaration."""
-
-    form = movenodeform_factory(models.Team)
-    inlines = (TeamAccessInline, TeamWebhookInline, TeamServiceProviderInline)
-    exclude = ("service_providers",)  # Handled by the inline
-    list_display = (
-        "name",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = ("name",)
-    readonly_fields = ("path", "depth", "numchild")
-
-
-@admin.register(models.TeamAccess)
-class TeamAccessAdmin(admin.ModelAdmin):
-    """Team access admin interface declaration."""
-
-    list_display = (
-        "user",
-        "team",
-        "role",
-        "created_at",
-        "updated_at",
-    )
-
-
-@admin.register(models.Invitation)
-class InvitationAdmin(admin.ModelAdmin):
-    """Admin interface to handle invitations."""
-
-    fields = (
-        "email",
-        "team",
-        "role",
-        "created_at",
-        "issuer",
-    )
-    readonly_fields = (
-        "created_at",
-        "is_expired",
-        "issuer",
-    )
-    list_display = (
-        "email",
-        "team",
-        "created_at",
-        "is_expired",
-    )
-
-    def get_readonly_fields(self, request, obj=None):
-        """Mark all fields read only, i.e. disable update."""
-        if obj:
-            return self.fields
-        return self.readonly_fields
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        """Custom edit form. Remove 'save' buttons."""
-        extra_context = extra_context or {}
-        extra_context["show_save_and_continue"] = False
-        extra_context["show_save"] = False
-        extra_context["show_save_and_add_another"] = False
-        return super().change_view(request, object_id, extra_context=extra_context)
-
-    def save_model(self, request, obj, form, change):
-        """Fill in current logged-in user as issuer."""
-        obj.issuer = request.user
-        obj.save()
 
 
 @admin.register(models.Contact)

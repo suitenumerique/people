@@ -1,7 +1,6 @@
 """Resource server SCIM API endpoints"""
 
 from django.contrib.auth import get_user_model
-from django.db.models import Prefetch, Q
 
 from lasuite.oidc_resource_server.mixins import ResourceServerMixin
 from rest_framework import (
@@ -9,7 +8,6 @@ from rest_framework import (
 )
 
 from core.api import permissions
-from core.models import TeamAccess
 
 from . import serializers
 from .exceptions import scim_exception_handler
@@ -27,14 +25,10 @@ class MeViewSet(ResourceServerMixin, viewsets.ViewSet):
 
     Features:
     - Returns user details in SCIM format.
-    - Includes the user's teams, restricted to the audience.
-
-    Limitations:
-    - Does not currently support managing Team hierarchies.
 
     Endpoint:
     GET /resource-server/v1.0/scim/Me/
-        Retrieves the authenticated user's details and associated teams.
+        Retrieves the authenticated user's details.
     """
 
     permission_classes = [permissions.IsAuthenticated]
@@ -46,17 +40,7 @@ class MeViewSet(ResourceServerMixin, viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
         """Return the current user's details in SCIM format."""
-        service_provider_audience = self._get_service_provider_audience()
-
-        user = User.objects.prefetch_related(
-            Prefetch(
-                "accesses",
-                queryset=TeamAccess.objects.select_related("team").filter(
-                    Q(team__service_providers__audience_id=service_provider_audience)
-                    | Q(team__is_visible_all_services=True)
-                ),
-            )
-        ).get(pk=request.user.pk)
+        user = User.objects.get(pk=request.user.pk)
 
         serializer = self.serializer_class(user, context={"request": request})
         return ScimJsonResponse(serializer.data)

@@ -10,7 +10,6 @@ from rest_framework.status import (
 )
 
 from core import factories
-from core.models import RoleChoices
 
 pytestmark = pytest.mark.django_db
 
@@ -42,7 +41,7 @@ def test_api_me_authenticated(
 
     # Authenticate using the resource server, ie via the Authorization header
     with force_login_via_resource_server(client, user, service_provider.audience_id):
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(1):
             response = client.get(
                 "/resource-server/v1.0/scim/Me/",
                 format="json",
@@ -65,85 +64,6 @@ def test_api_me_authenticated(
                 "primary": True,
                 "type": "work",
             }
-        ],
-        "groups": [],
-        "meta": {
-            "resourceType": "User",
-            "created": user.created_at.isoformat(),
-            "lastModified": user.updated_at.isoformat(),
-            "location": "http://testserver/resource-server/v1.0/scim/Me/",
-        },
-    }
-
-
-def test_api_me_authenticated_with_team_access(
-    client, force_login_via_resource_server, django_assert_num_queries
-):
-    """
-    Authenticated users with TeamAccess should see their team information
-    in SCIM format, but only for teams visible to the service provider.
-    """
-    user = factories.UserFactory(name="Test User", email="test@example.com")
-    service_provider = factories.ServiceProviderFactory()
-
-    # Create teams with different visibility settings
-    team_visible = factories.TeamFactory(name="Visible Team")
-    team_visible.service_providers.add(service_provider)
-
-    team_all_services = factories.TeamFactory(
-        name="All Services Team", is_visible_all_services=True
-    )
-
-    team_not_visible = factories.TeamFactory(name="Not Visible Team")
-    # This team is not associated with the service provider
-
-    # Add user to all teams
-    factories.TeamAccessFactory(user=user, team=team_visible, role=RoleChoices.MEMBER)
-    factories.TeamAccessFactory(
-        user=user, team=team_all_services, role=RoleChoices.ADMIN
-    )
-    factories.TeamAccessFactory(
-        user=user, team=team_not_visible, role=RoleChoices.OWNER
-    )
-
-    # Authenticate using the resource server, ie via the Authorization header
-    with force_login_via_resource_server(client, user, service_provider.audience_id):
-        with django_assert_num_queries(
-            2
-        ):  # User + TeamAccess (with select_related teams)
-            response = client.get(
-                "/resource-server/v1.0/scim/Me/",
-                format="json",
-                HTTP_AUTHORIZATION="Bearer b64untestedbearertoken",
-            )
-
-    assert response.status_code == HTTP_200_OK
-    assert response.headers["Content-Type"] == "application/json+scim"
-    # Check the full response with the expected structure
-    assert response.json() == {
-        "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
-        "id": str(user.pk),
-        "active": True,
-        "userName": user.sub,
-        "displayName": user.name,
-        "emails": [
-            {
-                "value": user.email,
-                "primary": True,
-                "type": "work",
-            }
-        ],
-        "groups": [
-            {
-                "value": str(team_visible.external_id),
-                "display": team_visible.name,
-                "type": "direct",
-            },
-            {
-                "value": str(team_all_services.external_id),
-                "display": team_all_services.name,
-                "type": "direct",
-            },
         ],
         "meta": {
             "resourceType": "User",

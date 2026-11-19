@@ -6,10 +6,8 @@ Declare and configure the models for the People core application
 import json
 import os
 import secrets
-import smtplib
 import uuid
 from contextlib import suppress
-from datetime import timedelta
 from functools import lru_cache
 from logging import getLogger
 from typing import Optional, Tuple
@@ -18,23 +16,15 @@ from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.template.loader import render_to_string
-from django.utils import timezone
-from django.utils.translation import gettext, override
 from django.utils.translation import gettext_lazy as _
 
 import jsonschema
 from timezone_field import TimeZoneField
-from treebeard.mp_tree import MP_Node, MP_NodeManager
 
-from core.enums import WebhookProtocolChoices, WebhookStatusChoices
-from core.exceptions import EmailAlreadyKnownException
 from core.plugins.registry import registry as plugin_hooks_registry
-from core.utils.webhooks import webhooks_synchronizer
 from core.validators import get_field_validators_from_setting
 
 logger = getLogger(__name__)
@@ -245,7 +235,6 @@ class ServiceProvider(BaseModel):
     Represents a service provider that will consume our information.
 
     Organization uses this model to define the list of SP available to their users.
-    Team uses this model to define their visibility to the various SP.
     """
 
     name = models.CharField(_("name"), max_length=256, unique=True)
@@ -349,7 +338,7 @@ class OrganizationAccessManager(models.Manager):
 
 class Organization(BaseModel):
     """
-    Organization model used to regroup Teams.
+    Organization model used to regroup the (now obsolete) Teams.
 
     Each User have an Organization, which corresponds actually to a default organization
     because a user can belong to a Team from another organization.
@@ -564,48 +553,11 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     def __str__(self):
         return self.name if self.name else self.email or f"User {self.sub}"
 
-    def save(self, *args, **kwargs):
-        """
-        If it's a new user, give them access to the relevant teams.
-        """
-
-        if self._state.adding:
-            self._convert_valid_team_invitations()
-            # a post_save signal to convert domain invitations to domain accesses
-            # is triggered by the mailbox_manager app
-
-        super().save(*args, **kwargs)
-
     def clean(self):
         """Validate fields."""
         super().clean()
         if self.email:
             self.email = User.objects.normalize_email(self.email)
-
-    def _convert_valid_team_invitations(self):
-        """
-        Convert valid invitations to team accesses.
-        Expired invitations are ignored.
-        """
-
-        valid_invitations = Invitation.objects.filter(
-            email=self.email,
-            created_at__gte=(
-                timezone.now()
-                - timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-            ),
-        ).select_related("team")
-
-        if not valid_invitations.exists():
-            return
-
-        TeamAccess.objects.bulk_create(
-            [
-                TeamAccess(user=self, team=invitation.team, role=invitation.role)
-                for invitation in valid_invitations
-            ]
-        )
-        valid_invitations.delete()
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Email this user."""
@@ -620,10 +572,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         Note: this is for display purposes only for now.
 
         - Contacts view and creation is globally available (or not) for now.
-        - Teams view is available if the user is owner or admin of at least
-        one Team for now. It allows to restrict users knowing the existence of
-        this feature.
-        - Teams creation is globally available (or not) for now.
         - Mailboxes view is available if the user has access to at least one
         MailDomain for now. It allows to restrict users knowing the existence of
         this feature.
@@ -632,12 +580,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         user_info = (
             self._meta.model.objects.filter(pk=self.pk)
             .annotate(
-                teams_can_view=models.Exists(
-                    self.accesses.model.objects.filter(  # pylint: disable=no-member
-                        user=models.OuterRef("pk"),
-                        role__in=[RoleChoices.OWNER, RoleChoices.ADMIN],
-                    )
-                ),
                 mailboxes_can_view=models.Exists(
                     self.mail_domain_accesses.model.objects.filter(  # pylint: disable=no-member
                         user=models.OuterRef("pk")
@@ -648,7 +590,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             .get()
         )
 
-        teams_can_view = user_info.teams_can_view
         mailboxes_can_view = user_info.mailboxes_can_view
 
         return {
@@ -659,7 +600,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
                     and settings.FEATURES["CONTACTS_CREATE"]
                 ),
             },
-            "teams": {"can_view": teams_can_view, "can_create": teams_can_view},
             "mailboxes": {
                 "can_view": mailboxes_can_view,
                 "can_create": mailboxes_can_view
@@ -706,411 +646,6 @@ class OrganizationAccess(BaseModel):
 
     def __str__(self):
         return f"{self.user!s} is {self.role:s} in organization {self.organization!s}"
-
-
-class TeamManager(MP_NodeManager):
-    """
-    Custom manager for the Team model, to manage complexity/automation.
-    """
-
-    def create(self, parent_id=None, **kwargs):
-        """
-        Replace the default create method to ease the Team creation process.
-
-        Notes:
-            - the `add_*` methods from django-treebeard does not support the "using db".
-              Which means it will always use the default db.
-            - the `add_*` methods from django-treebeard does not support the "force_insert".
-
-        """
-        if parent_id is None:
-            return self.model.add_root(**kwargs)
-
-        # Retrieve parent object, because django-treebeard uses raw queries for most
-        # write operations, and raw queries don't update the django objects of the db
-        # entries they modify. See caveats in the django-treebeard documentation.
-        # This might be changed later if we never do any operation on the parent object
-        # before creating the child.
-        # Beware the N+1 here.
-        return self.get(pk=parent_id).add_child(**kwargs)
-
-
-class Team(MP_Node, BaseModel):
-    """
-    Represents the link between teams and users, specifying the role a user has in a team.
-
-    When a team is created from here, the user have to choose which Service Providers
-    can see it.
-    When a team is created from a Service Provider this one is automatically set in the
-    Team `service_providers`.
-
-    The team `external_id` is used to synchronize the team with external systems, this
-    is the equivalent of the User `sub` field but for teams (note: `sub` is highly related
-    to the OIDC standard, while `external_id` is not). The `external_id` is NOT the same as
-    the `externalId` field in the SCIM standard when importing teams from SCIM.
-    """
-
-    # Allow up to 80 nested teams with 62^5 (916_132_832) root nodes
-    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    # Django treebeard does not allow max_length = None...
-    steplen = 5
-    path = models.CharField(max_length=5 * 80, unique=True, db_collation="C")
-
-    name = models.CharField(max_length=100)
-
-    external_id = models.UUIDField(
-        verbose_name=_("external_id"),
-        help_text=_("Team external UUID for synchronization with external systems"),
-        unique=True,
-        default=uuid.uuid4,
-        editable=False,
-    )
-
-    users = models.ManyToManyField(
-        User,
-        through="TeamAccess",
-        through_fields=("team", "user"),
-        related_name="teams",
-    )
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.PROTECT,
-        related_name="teams",
-        null=True,  # Need to be set to False when everything is migrated
-        blank=True,  # Need to be set to False when everything is migrated
-    )
-    service_providers = models.ManyToManyField(
-        ServiceProvider,
-        related_name="teams",
-        blank=True,
-    )
-    is_visible_all_services = models.BooleanField(
-        _("is visible for all SP"),
-        default=False,
-        help_text=_("Whether this team is visible to all service providers."),
-    )
-
-    objects = TeamManager()
-
-    class Meta:
-        db_table = "people_team"
-        ordering = ("name",)
-        verbose_name = _("Team")
-        verbose_name_plural = _("Teams")
-
-    def __str__(self):
-        return self.name
-
-    def get_abilities(self, user):
-        """
-        Compute and return abilities for a given user on the team.
-        """
-        is_owner_or_admin = False
-        role = None
-
-        if user.is_authenticated:
-            try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self.accesses.filter(user=user).values("role")[0]["role"]
-                except TeamAccess.DoesNotExist, IndexError:
-                    role = None
-
-            is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
-        return {
-            "get": bool(role),
-            "patch": is_owner_or_admin,
-            "put": is_owner_or_admin,
-            "delete": role == RoleChoices.OWNER,
-            "manage_accesses": is_owner_or_admin,
-        }
-
-
-class TeamAccess(BaseModel):
-    """Link table between teams and contacts."""
-
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="accesses",
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="accesses",
-    )
-    role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
-    )
-
-    class Meta:
-        db_table = "people_team_access"
-        verbose_name = _("Team/user relation")
-        verbose_name_plural = _("Team/user relations")
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user", "team"],
-                name="unique_team_user",
-                violation_error_message=_("This user is already in this team."),
-            ),
-        ]
-
-    def __str__(self):
-        return f"{self.user!s} is {self.role:s} in team {self.team!s}"
-
-    def save(self, *args, **kwargs):
-        """
-        Override save function to fire webhooks on any addition or update
-        to a team access.
-        """
-        if self._state.adding and self.team.webhooks.exists():
-            self.team.webhooks.update(status=WebhookStatusChoices.PENDING)
-            # try to synchronize all webhooks
-            webhooks_synchronizer.add_user_to_group(self.team, self.user)
-
-        return super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        """
-        Override delete method to fire webhooks on  to team accesses.
-        Don't allow deleting a team access until it is successfully synchronized with all
-        its webhooks.
-        """
-        if webhooks := self.team.webhooks.all():
-            webhooks.update(status=WebhookStatusChoices.PENDING)
-            # try to synchronize all webhooks
-            webhooks_synchronizer.remove_user_from_group(self.team, self.user)
-
-        super().delete(*args, **kwargs)
-
-    def get_abilities(self, user):
-        """
-        Compute and return abilities for a given user taking into account
-        the current state of the object.
-        """
-        is_team_owner_or_admin = False
-        role = None
-
-        if user.is_authenticated:
-            try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self._meta.model.objects.filter(
-                        team=self.team_id, user=user
-                    ).values("role")[0]["role"]
-                except self._meta.model.DoesNotExist, IndexError:
-                    role = None
-
-            is_team_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
-        if self.role == RoleChoices.OWNER:
-            can_delete = (
-                user.id == self.user_id
-                and self.team.accesses.filter(role=RoleChoices.OWNER).count() > 1
-            )
-            set_role_to = [RoleChoices.ADMIN, RoleChoices.MEMBER] if can_delete else []
-        else:
-            can_delete = is_team_owner_or_admin
-            set_role_to = []
-            if role == RoleChoices.OWNER:
-                set_role_to.append(RoleChoices.OWNER)
-            if is_team_owner_or_admin:
-                set_role_to.extend([RoleChoices.ADMIN, RoleChoices.MEMBER])
-
-        # Remove the current role as we don't want to propose it as an option
-        try:
-            set_role_to.remove(self.role)
-        except ValueError:
-            pass
-
-        return {
-            "delete": can_delete,
-            "get": bool(role),
-            "patch": bool(set_role_to),
-            "put": bool(set_role_to),
-            "set_role_to": set_role_to,
-        }
-
-
-class TeamWebhook(BaseModel):
-    """Webhooks fired on changes in teams."""
-
-    team = models.ForeignKey(Team, related_name="webhooks", on_delete=models.CASCADE)
-    url = models.URLField(_("url"))
-    secret = models.CharField(_("secret"), max_length=255, null=True, blank=True)
-    protocol = models.CharField(
-        max_length=None,
-        default=WebhookProtocolChoices.SCIM,
-        choices=WebhookProtocolChoices.choices,
-    )
-    status = models.CharField(
-        max_length=10,
-        default=WebhookStatusChoices.PENDING,
-        choices=WebhookStatusChoices.choices,
-    )
-
-    class Meta:
-        db_table = "people_team_webhook"
-        verbose_name = _("Team webhook")
-        verbose_name_plural = _("Team webhooks")
-
-    def __str__(self):
-        return f"Webhook to {self.url} for {self.team}"
-
-    def get_headers(self):
-        """Build header dict from webhook object."""
-        headers = {"Content-Type": "application/json"}
-        if self.secret:
-            headers["Authorization"] = f"Bearer {self.secret:s}"
-        return headers
-
-
-class BaseInvitation(BaseModel):
-    """Abstract base invitation model, surcharged for teams or domains."""
-
-    email = models.EmailField(_("email address"), null=False, blank=False)
-    issuer = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="invitations",
-    )
-
-    MAIL_TEMPLATE_HTML = None
-    MAIL_TEMPLATE_TXT = None
-
-    class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        """Make invitations read-only."""
-        if self.created_at:
-            raise exceptions.PermissionDenied()
-        super().save(*args, **kwargs)
-
-        self.email_invitation()
-
-    def clean(self):
-        """Validate fields."""
-        super().clean()
-
-        # Check if a user already exists for the provided email
-        if User.objects.filter(email__iexact=self.email).exists():
-            raise EmailAlreadyKnownException
-
-    def refresh(self):
-        """A simple way to refresh invitation and move expiration date."""
-        self.clean()
-        self.updated_at = timezone.now()
-
-    @property
-    def is_expired(self):
-        """Calculate if invitation is still valid or has expired."""
-        if not self.updated_at:
-            return None
-
-        validity_duration = timedelta(seconds=settings.INVITATION_VALIDITY_DURATION)
-        return timezone.now() > (self.updated_at + validity_duration)
-
-    def _get_mail_subject(self):
-        """Get the subject of the invitation."""
-        return gettext("Invitation to join La Régie!")
-
-    def _get_mail_context(self):
-        """Get the template variables for the invitation."""
-        return {
-            "site": Site.objects.get_current(),
-        }
-
-    def email_invitation(self):
-        """Email invitation to the user."""
-        try:
-            with override(self.issuer.language):
-                subject = self._get_mail_subject()
-                context = self._get_mail_context()
-                msg_html = render_to_string(self.MAIL_TEMPLATE_HTML, context)
-                msg_plain = render_to_string(self.MAIL_TEMPLATE_TXT, context)
-                mail.send_mail(
-                    subject,
-                    msg_plain,
-                    settings.EMAIL_FROM,
-                    [self.email],
-                    html_message=msg_html,
-                    fail_silently=False,
-                )
-
-        except smtplib.SMTPException as exception:
-            logger.error("invitation to %s was not sent: %s", self.email, exception)
-
-
-class Invitation(BaseInvitation):
-    """User invitation to teams."""
-
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="invitations",
-    )
-    role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
-    )
-
-    MAIL_TEMPLATE_HTML = "mail/html/team_invitation.html"
-    MAIL_TEMPLATE_TXT = "mail/text/team_invitation.txt"
-
-    class Meta:
-        db_table = "people_invitation"
-        verbose_name = _("Team invitation")
-        verbose_name_plural = _("Team invitations")
-        constraints = [
-            models.UniqueConstraint(
-                fields=["email", "team"], name="email_and_team_unique_together"
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.email} invited to {self.team}"
-
-    def _get_mail_subject(self):
-        """Get the subject of the team invitation."""
-        return gettext(
-            "[La Suite] You have been invited to become a %(role)s of a group"
-        ) % {"role": self.get_role_display().lower()}
-
-    def _get_mail_context(self):
-        """Get the template variables for the invitation."""
-        return {
-            **super()._get_mail_context(),
-            "team": self.team.name,
-            "role": self.get_role_display().lower(),
-        }
-
-    def get_abilities(self, user):
-        """Compute and return abilities for a given user."""
-        can_delete = False
-        role = None
-
-        if user.is_authenticated:
-            try:
-                role = self.user_role
-            except AttributeError:
-                try:
-                    role = self.team.accesses.filter(user=user).values("role")[0][
-                        "role"
-                    ]
-                except self._meta.model.DoesNotExist, IndexError:
-                    role = None
-
-            can_delete = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
-        return {
-            "delete": can_delete,
-            "get": bool(role),
-            "patch": False,
-            "put": False,
-        }
 
 
 def validate_account_service_scope(scope):
