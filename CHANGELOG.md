@@ -14,6 +14,7 @@ and this project adheres to
 - 🔥(front) remove teams frontend
 - 🔥(front) remove unused login page
 - 🔥(back) remove all teams-related backend
+- 🐛(scripts) fix release script
 
 ## [1.27.1] - 2026-11-09
 
