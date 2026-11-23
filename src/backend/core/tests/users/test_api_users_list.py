@@ -353,7 +353,7 @@ def test_api_users_list_authenticated_capital_query():
     assert user_ids == [str(dave.id)]
 
 
-def test_api_contacts_list_authenticated_accented_query():
+def test_api_users_list_authenticated_accented_query():
     """Accented content should be found by unaccented query."""
     user = factories.UserFactory(email="tester@ministry.fr", name="john doe")
     helene = factories.UserFactory(email="helene.bowman@work.com", name="helene bowman")

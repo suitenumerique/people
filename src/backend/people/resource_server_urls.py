@@ -7,9 +7,6 @@ from rest_framework.routers import SimpleRouter
 
 from core.api.resource_server.scim import viewsets as scim_viewsets
 
-# - Main endpoints
-# Contacts will be added later
-
 # - SCIM endpoints
 scim_router = SimpleRouter()
 scim_router.register("Me", scim_viewsets.MeViewSet, basename="scim-me")

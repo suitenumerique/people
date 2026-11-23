@@ -31,14 +31,10 @@ def test_api_users_retrieve_me_anonymous():
 def test_api_users_retrieve_me_authenticated():
     """Authenticated users should be able to retrieve their own user via the "/users/me" path."""
     user = factories.UserFactory(with_organization=True)
+    factories.UserFactory.create_batch(2)
 
     client = APIClient()
     client.force_login(user)
-
-    # Define profile contact
-    factories.ContactFactory(owner=user, user=user)
-
-    factories.UserFactory.create_batch(2)
     response = client.get(
         "/api/v1.0/users/me/",
     )
@@ -53,7 +49,6 @@ def test_api_users_retrieve_me_authenticated():
         "is_device": False,
         "is_staff": False,
         "abilities": {
-            "contacts": {"can_create": True, "can_view": True},
             "mailboxes": {"can_create": False, "can_view": False},
         },
         "organization": {
@@ -70,19 +65,13 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
     with the proper abilities.
     """
     settings.FEATURES = {
-        "CONTACTS_DISPLAY": True,
-        "CONTACTS_CREATE": True,
         "MAILBOXES_CREATE": True,
     }
     user = factories.UserFactory()
+    factories.UserFactory.create_batch(2)
 
     client = APIClient()
     client.force_login(user)
-
-    # Define profile contact
-    factories.ContactFactory(owner=user, user=user)
-
-    factories.UserFactory.create_batch(2)
 
     # Test the mailboxes abilities
     mail_domain_access = MailDomainAccessFactory(user=user)
@@ -91,7 +80,6 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
 
     assert response.status_code == HTTP_200_OK
     assert response.json()["abilities"] == {
-        "contacts": {"can_create": True, "can_view": True},
         "mailboxes": {"can_create": True, "can_view": True},
     }
 
@@ -102,7 +90,6 @@ def test_api_users_retrieve_me_authenticated_abilities(settings):
 
     assert response.status_code == HTTP_200_OK
     assert response.json()["abilities"] == {
-        "contacts": {"can_create": True, "can_view": True},
         "mailboxes": {"can_create": False, "can_view": False},
     }
 

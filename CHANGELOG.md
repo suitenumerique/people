@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🔥(back) remove all contacts-related backend
+
 ## [1.27.2] - 2026-11-23
 
 - 🐛(front) fix broken link to domain config

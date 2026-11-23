@@ -635,8 +635,6 @@ class Base(Configuration):
     def FEATURES(self):
         """Feature flags for the application."""
         FEATURE_FLAGS: set = {
-            "CONTACTS_CREATE",  # Used in the users/me/ endpoint
-            "CONTACTS_DISPLAY",  # Used in the users/me/ endpoint
             "MAILBOXES_CREATE",  # Used in the users/me/ endpoint
         }
 

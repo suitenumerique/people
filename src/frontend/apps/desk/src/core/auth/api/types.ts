@@ -12,7 +12,6 @@ export interface User {
   organization?: Organization;
   abilities?: {
     mailboxes: UserAbilities;
-    contacts: UserAbilities;
   };
 }
 

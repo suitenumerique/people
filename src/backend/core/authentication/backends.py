@@ -15,7 +15,6 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from core.models import (
     AccountService,
-    Contact,
     Organization,
 )
 
@@ -128,19 +127,6 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
         logger.info("Creating user %s / %s", sub, email)
 
         user = super().create_user(claims | {"organization": organization})
-
-        # Initiate the user's profile
-        Contact.objects.create(
-            owner=user,
-            user=user,
-            full_name=name or email,
-            data={
-                "emails": [
-                    {"type": "Work", "value": email},
-                ],
-            },
-        )
-
         return user
 
 
