@@ -15,6 +15,7 @@ and this project adheres to
 - 🔥(front) remove unused login page
 - 🔥(back) remove all teams-related backend
 - 🐛(scripts) fix release script
+- ⬆️(dimail) bump dimail to 0.12.1
 
 ## [1.27.1] - 2026-11-09
 
