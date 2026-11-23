@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.27.2] - 2026-11-23
+
 - 🐛(front) fix broken link to domain config
 - 🔥(front) remove teams frontend
 - 🔥(front) remove unused login page
@@ -593,7 +595,8 @@ and this project adheres to
 - ✨(domains) create and manage domains on admin + API
 - ✨(domains) mailbox creation + link to email provisioning API
 
-[unreleased]: https://github.com/suitenumerique/people/compare/v1.27.1...main
+[unreleased]: https://github.com/suitenumerique/people/compare/v1.27.2...main
+[1.27.2]: https://github.com/suitenumerique/people/releases/v1.27.2
 [1.27.1]: https://github.com/suitenumerique/people/releases/v1.27.1
 [1.27.0]: https://github.com/suitenumerique/people/releases/v1.27.0
 [1.26.1]: https://github.com/suitenumerique/people/releases/v1.26.1
