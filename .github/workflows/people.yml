@@ -129,11 +129,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dependencies, build-front]
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
@@ -183,7 +178,7 @@ jobs:
           make demo FLUSH_ARGS='--no-input'
 
       - name: Run e2e tests
-        run: cd src/frontend/ && yarn e2e:test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: cd src/frontend/ && yarn e2e:test
 
       - name: Save logs
         if: always()
@@ -196,21 +191,9 @@ jobs:
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
-          name: playwright-report-${{ matrix.shardIndex }}
+          name: playwright-report
           path: src/frontend/apps/e2e/report/
           retention-days: 7
-
-  tests-e2e-feedback:
-    runs-on: ubuntu-latest
-    needs: [test-e2e]
-    if: always()
-    steps:
-      - name: All tests ok
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Some tests failed
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
 
   lint-back:
     runs-on: ubuntu-latest
