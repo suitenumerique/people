@@ -571,16 +571,6 @@ class Base(Configuration):
         environ_name="MAIL_CHECK_DOMAIN_INTERVAL",
         environ_prefix=None,
     )
-    MATRIX_BASE_HOME_SERVER = values.Value(
-        default="https://matrix.agent.dinum.tchap.gouv.fr",
-        environ_name="MATRIX_BASE_HOME_SERVER",
-        environ_prefix=None,
-    )
-    MATRIX_BOT_ACCESS_TOKEN = values.Value(
-        default=None,
-        environ_name="MATRIX_BOT_ACCESS_TOKEN",
-        environ_prefix=None,
-    )
 
     # Organizations
     ORGANIZATION_REGISTRATION_ID_VALIDATORS = json.loads(
