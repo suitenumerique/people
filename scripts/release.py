@@ -8,7 +8,7 @@ import sys
 from utils import run_command
 
 
-RELEASE_KINDS = {'p': 'patch', 'm': 'minor', 'mj': 'major'}
+RELEASE_TYPES = {'p': 'patch', 'm': 'minor', 'mj': 'major'}
 
 
 def update_files(version):
@@ -80,46 +80,8 @@ def update_changelog(path, version):
     with open(path, 'w+') as file:
         file.writelines(lines)    
 
-    
-def deployment_part(version):
-    """ Update helm file of preprod on deployment repository numerique-gouv/lasuite-deploiement
-    """
-    # Move to lasuite-deploiement repository
-    try:
-        os.chdir('../lasuite-deploiement')
-    except FileNotFoundError:
-        sys.stdout.write("\033[1;31m[Error] You must have a clone of https://github.com/numerique-gouv/lasuite-deploiement\x1b[0m")
-        sys.stdout.write("\033[0;32mPlease clone it and re-run script with option --only-deployment-part\x1b[0m")
-        sys.stdout.write("  >>> python scripts/release.py --only-deployment-part \x1b[0m")
-    else:
-        run_command("git checkout main", shell=True)
-        run_command("git pull", shell=True)
-        deployment_branch = f"regie/{version}/preprod"
-        run_command(f"git checkout -b {deployment_branch}", shell=True)
-        run_command("git pull --rebase origin main", shell=True)
-        path = f"manifests/regie/env.d/preprod/values.desk.yaml.gotmpl"
-        update_helm_files(path)
-        run_command(f"git add {path}", shell=True)
-        message = f"""🔖(regie) bump preprod version to {version}"""
-        run_command(f"git commit -m '{message}'", shell=True)
-        confirm = input(f"""\033[0;32m
-### DEPLOYMENT ###
-NEXT COMMAND on lasuite-deploiement repository: 
-    >> git push origin {deployment_branch}
-Continue ? (y,n) 
-\x1b[0m""").strip()
-        if confirm == 'y':
-            run_command(f"git push origin {deployment_branch}", shell=True)
-        sys.stdout.write(f"""\033[1;34m
-PLEASE DO THE FOLLOWING INSTRUCTIONS: 
---> Check if you need to bump chart version in the manifests/regie/helmfile.yaml file
-    and settings in the manifests/regie/env.d/preprod/values.desk.yaml.gotmpl file
-    add commits into {deployment_branch} branch to do it if needed, then...
---> Please submit PR {deployment_branch} and merge code to main [https://github.com/numerique-gouv/lasuite-deploiement]
-\x1b[0m""")
 
-
-def project_part(version, kind):
+def project_part(version, release_type):
     """Manage only la regie part with update of CHANGELOG, version files and tag"""
     sys.stdout.write('Let\'s go to create branch to release\n')
     branch_to_release = f"release/{version}"
@@ -131,9 +93,9 @@ def project_part(version, kind):
 
     run_command("git add CHANGELOG.md", shell=True)
     run_command("git add src/", shell=True)
-    message = f"""🔖({RELEASE_KINDS[kind]}) release version {version}
+    message = f"""🔖({RELEASE_TYPES[release_type]}) release version {version}
 
-Update all version files and changelog for {RELEASE_KINDS[kind]} release."""
+Update all version files and changelog for {RELEASE_TYPES[release_type]} release."""
     run_command(f"git commit -m '{message}'", shell=True)
     confirm = input(f"""\033[0;32m
 ### RELEASE ###
@@ -161,11 +123,9 @@ Continue ? (y,n)
 
 
 if __name__ == "__main__":
-    version, kind = None, None
+    version, release_type = None, None
     while not version:
         version = input("Enter your release version:").strip()
-    while kind not in RELEASE_KINDS:
-        kind = input("Enter kind of release (p:patch, m:minor, mj:major):").strip()
-    if "--only-deployment-part" not in sys.argv:
-        project_part(version, kind)
-    deployment_part(version)
+    while release_type not in RELEASE_TYPES:
+        release_type = input("Enter release_type of release (p:patch, m:minor, mj:major):").strip()
+    project_part(version, release_type)
