@@ -59,7 +59,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -104,7 +104,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -144,7 +144,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -181,7 +181,7 @@ class DimailAPIClient:
                     allow_redirects=True,
                 )
             except requests.exceptions.ConnectionError as error:
-                logger.error(
+                logger.exception(
                     "Connection error while trying to reach %s.",
                     self.API_URL,
                     exc_info=error,
@@ -215,7 +215,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -256,7 +256,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -371,7 +371,7 @@ class DimailAPIClient:
                     fail_silently=False,
                 )
         except smtplib.SMTPException as exception:
-            logger.error(
+            logger.exception(
                 "Failed to send mailbox information to %s was not sent: %s",
                 recipient,
                 exception,
@@ -424,7 +424,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -571,7 +571,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -773,7 +773,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -827,7 +827,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -876,7 +876,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,
@@ -898,7 +898,7 @@ class DimailAPIClient:
                 allow_redirects=True,
             )
         except requests.exceptions.ConnectionError as error:
-            logger.error(
+            logger.exception(
                 "Connection error while trying to reach %s.",
                 self.API_URL,
                 exc_info=error,

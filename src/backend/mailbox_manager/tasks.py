@@ -60,7 +60,9 @@ def fetch_domains_status_task(status: str):
         try:
             client.fetch_domain_status(domain)
         except requests.exceptions.HTTPError as err:
-            logger.error("Failed to fetch status for domain %s: %s", domain.name, err)
+            logger.exception(
+                "Failed to fetch status for domain %s: %s", domain.name, err
+            )
         else:
             if old_status != domain.status:
                 domain.notify_status_change()

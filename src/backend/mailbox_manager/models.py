@@ -157,7 +157,7 @@ class MailDomain(BaseModel):
                     fail_silently=False,
                 )
         except smtplib.SMTPException as exception:
-            logger.error(
+            logger.exception(
                 "Notification email to %s was not sent: %s",
                 self.support_email,
                 exception,
@@ -515,7 +515,7 @@ class MailDomainInvitation(BaseModel):
                 )
 
         except smtplib.SMTPException as exception:
-            logger.error("invitation to %s was not sent: %s", self.email, exception)
+            logger.exception("invitation to %s was not sent: %s", self.email, exception)
 
 
 class Alias(BaseModel):
