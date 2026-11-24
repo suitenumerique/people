@@ -47,11 +47,12 @@
     {
       "username": "people",
       "email": "people@people.world",
-      "firstName": "John",
+      "firstName": "Jane",
       "lastName": "Doe",
       "enabled": true,
       "attributes": {
-          "siret": "13002526500013"
+          "siret": "13002526500013",
+          "proconnect:roles": ["agent_public", "agent_public_etat"]
       },
       "credentials": [
         {

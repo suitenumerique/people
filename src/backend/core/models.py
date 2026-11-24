@@ -82,7 +82,7 @@ class OrganizationRoleChoices(models.TextChoices):  # pylint: disable=too-many-a
 
 class BaseModel(models.Model):
     """
-    Serves as an abstract base model for other models, ensuring that records are validated
+    Serves as an abstract base model for otfget_her models, ensuring that records are validated
     before saving as Django doesn't do it by default.
 
     Includes fields common to all models: a UUID primary key and creation/update timestamps.
@@ -538,6 +538,9 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         related_name="users",
         null=True,  # Need to be set to False when everything is migrated
         blank=True,  # Need to be set to False when everything is migrated
+    )
+    is_public_servant = models.BooleanField(
+        default=False,
     )
 
     objects = auth_models.UserManager()

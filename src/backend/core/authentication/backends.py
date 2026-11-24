@@ -45,6 +45,10 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
             extra_claims[settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD] = (
                 user_info.get(settings.OIDC_ORGANIZATION_REGISTRATION_ID_FIELD)
             )
+
+        extra_claims["is_public_servant"] = False
+        if roles := user_info.get("proconnect:roles"):
+            extra_claims["is_public_servant"] = bool("agent_public" in roles)
         return extra_claims
 
     def post_get_or_create_user(self, user, claims, is_new_user):
@@ -94,15 +98,17 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
                     "User %s updated with organization %s", user.pk, organization
                 )
 
+    def update_user_if_needed(self, user, claims):
+        """Force 'is_public_servant' field everytime."""
+        user.is_public_servant = claims.get("is_public_servant")
+        super().update_user_if_needed(user, claims)
+
     def create_user(self, claims):
         """Return a newly created User instance."""
         sub = claims.get("sub")
-        if sub is None:
-            raise SuspiciousOperation(
-                _("Claims contained no recognizable user identification")
-            )
         email = claims.get("email")
         name = claims.get("name")
+        is_public_servant = claims.get("is_public_servant", False)
 
         # Extract or create the organization from the data
         organization_registration_id = claims.pop(
@@ -127,7 +133,10 @@ class OIDCAuthenticationBackend(LaSuiteOIDCAuthenticationBackend):
 
         logger.info("Creating user %s / %s", sub, email)
 
-        user = super().create_user(claims | {"organization": organization})
+        user = super().create_user(
+            claims
+            | {"organization": organization, "is_public_servant": is_public_servant}
+        )
 
         # Initiate the user's profile
         Contact.objects.create(

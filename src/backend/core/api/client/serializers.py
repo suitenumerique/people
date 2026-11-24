@@ -110,8 +110,16 @@ class UserSerializer(DynamicFieldsModelSerializer):
             "timezone",
             "is_device",
             "is_staff",
+            "is_public_servant",
         ]
-        read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
+        read_only_fields = [
+            "id",
+            "name",
+            "email",
+            "is_device",
+            "is_staff",
+            "is_public_servant",
+        ]
 
 
 class UserMeSerializer(UserSerializer):
@@ -137,8 +145,16 @@ class UserMeSerializer(UserSerializer):
             "timezone",
             # added fields
             "abilities",
+            "is_public_servant",
         ]
-        read_only_fields = ["id", "name", "email", "is_device", "is_staff"]
+        read_only_fields = [
+            "id",
+            "name",
+            "email",
+            "is_device",
+            "is_staff",
+            "is_public_servant",
+        ]
 
     def get_abilities(self, user: models.User) -> dict:
         """Return abilities of the logged-in user on the instance."""
