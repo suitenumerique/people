@@ -22,8 +22,6 @@ test.describe('Config', () => {
       ],
       COMMIT: 'NA',
       FEATURES: {
-        CONTACTS_CREATE: true,
-        CONTACTS_DISPLAY: true,
         MAILBOXES_CREATE: true,
       },
       RELEASE: 'NA',

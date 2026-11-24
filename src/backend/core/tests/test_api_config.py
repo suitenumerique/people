@@ -22,8 +22,6 @@ def test_api_config_anonymous():
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "COMMIT": "NA",
         "FEATURES": {
-            "CONTACTS_DISPLAY": True,
-            "CONTACTS_CREATE": True,
             "MAILBOXES_CREATE": True,
         },
         "RELEASE": "NA",
@@ -43,8 +41,6 @@ def test_api_config_authenticated():
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"]],
         "COMMIT": "NA",
         "FEATURES": {
-            "CONTACTS_DISPLAY": True,
-            "CONTACTS_CREATE": True,
             "MAILBOXES_CREATE": True,
         },
         "RELEASE": "NA",

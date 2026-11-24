@@ -28,7 +28,6 @@ describe('Page', () => {
         email: 'test@example.com',
         name: 'Test User',
         abilities: {
-          contacts: { can_view: false },
           mailboxes: { can_view: false },
         },
       },
@@ -55,7 +54,6 @@ describe('Page', () => {
         email: 'test@example.com',
         name: 'Test User',
         abilities: {
-          contacts: { can_view: false },
           mailboxes: { can_view: true },
         },
       },

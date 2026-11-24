@@ -6,41 +6,6 @@ from timezone_field.rest_framework import TimeZoneSerializerField
 from core import models
 
 
-class ContactSerializer(serializers.ModelSerializer):
-    """Serialize contacts."""
-
-    abilities = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Contact
-        fields = [
-            "id",
-            "abilities",
-            "override",
-            "data",
-            "full_name",
-            "notes",
-            "owner",
-            "short_name",
-        ]
-        read_only_fields = ["id", "owner", "abilities"]
-        extra_kwargs = {
-            "override": {"required": False},
-        }
-
-    def update(self, instance, validated_data):
-        """Make "override" field readonly but only for update/patch."""
-        validated_data.pop("override", None)
-        return super().update(instance, validated_data)
-
-    def get_abilities(self, contact) -> dict:
-        """Return abilities of the logged-in user on the instance."""
-        request = self.context.get("request")
-        if request:
-            return contact.get_abilities(request.user)
-        return {}
-
-
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that

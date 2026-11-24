@@ -128,37 +128,7 @@ def test_models_users_email_not_unique():
     other_user = factories.UserFactory(email=user.email)
 
     assert user.email == other_user.email
-
-
-def test_models_users_profile_not_owned():
-    """A user cannot declare as profile a contact that not is owned."""
-    user = factories.UserFactory()
-    contact = factories.ContactFactory(override=None, owner=None)
-
-    with pytest.raises(ValidationError) as excinfo:
-        contact.user = user
-        contact.save()
-
-    assert (
-        str(excinfo.value)
-        == "{'__all__': ['Users can only declare as profile a contact they own.']}"
-    )
-
-
-def test_models_users_profile_owned_by_other():
-    """A user cannot declare as profile a contact that is owned by another user."""
-    user = factories.UserFactory()
-    contact = factories.ContactFactory()
-
-    with pytest.raises(ValidationError) as excinfo:
-        contact.user = user
-        contact.save()
-
-    assert (
-        str(excinfo.value)
-        == "{'__all__': ['Users can only declare as profile a contact they own.']}"
-    )
-
+    
 
 def test_models_users_send_mail_main_existing():
     """The 'email_user' method should send mail to the user's email address."""

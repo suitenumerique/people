@@ -103,17 +103,6 @@ class UserAdmin(auth_admin.UserAdmin):
     get_user.short_description = _("User")
 
 
-@admin.register(models.Contact)
-class ContactAdmin(admin.ModelAdmin):
-    """Contact admin interface declaration."""
-
-    list_display = (
-        "full_name",
-        "owner",
-        "override",
-    )
-
-
 class OrganizationServiceProviderInline(admin.TabularInline):
     """Inline admin class for service providers."""
 

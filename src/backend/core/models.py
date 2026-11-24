@@ -31,10 +31,6 @@ logger = getLogger(__name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-contact_schema_path = os.path.join(current_dir, "jsonschema", "contact_data.json")
-with open(contact_schema_path, "r", encoding="utf-8") as contact_schema_file:
-    contact_schema = json.load(contact_schema_file)
-
 
 @lru_cache(maxsize=None)
 def get_organization_metadata_schema() -> Optional[dict]:
@@ -115,120 +111,6 @@ class BaseModel(models.Model):
         """Call `full_clean` before saving."""
         self.full_clean()
         return super().save(*args, **kwargs)
-
-
-class Contact(BaseModel):
-    """User contacts"""
-
-    override = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,
-        related_name="overridden_by",
-        null=True,
-        blank=True,
-    )
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="contacts",
-        null=True,
-        blank=True,
-    )
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        related_name="profile_contact",
-        blank=True,
-        null=True,
-    )
-
-    full_name = models.CharField(_("full name"), max_length=150)
-    short_name = models.CharField(_("short name"), max_length=30, null=True, blank=True)
-
-    # avatar =
-    notes = models.TextField(_("notes"), blank=True, default="")
-    data = models.JSONField(
-        _("contact information"),
-        help_text=_("A JSON object containing the contact information"),
-        blank=True,
-    )
-
-    class Meta:
-        db_table = "people_contact"
-        # indexes = [
-        #     GinIndex(
-        #         fields=["full_name", "short_name"],
-        #         name="names_gin_trgm_idx",
-        #         opclasses=['gin_trgm_ops', 'gin_trgm_ops']
-        #     ),
-        # ]
-        ordering = ("full_name", "short_name")
-        verbose_name = _("contact")
-        verbose_name_plural = _("contacts")
-        unique_together = ("owner", "override")
-        constraints = [
-            models.CheckConstraint(
-                condition=~models.Q(override__isnull=False, owner__isnull=True),
-                name="override_owner_constraint",
-                violation_error_message="A contact overriding a base contact must be owned.",
-            ),
-            models.CheckConstraint(
-                condition=~models.Q(override=models.F("id")),
-                name="override_not_self",
-                violation_error_message="A contact cannot override itself.",
-            ),
-            # When a user is set, the owner must be the user
-            models.CheckConstraint(
-                condition=models.Q(user__isnull=True)
-                | models.Q(owner=models.F("user"), owner__isnull=False),
-                name="profile_contact_owner_constraint",
-                violation_error_message="Users can only declare as profile a contact they own.",
-            ),
-        ]
-
-    def __str__(self):
-        return self.full_name
-
-    def clean(self):
-        """Validate fields."""
-        super().clean()
-
-        # Check if the contact overrides a contact that itself overrides another base contact
-        if self.override_id and self.override.override_id:
-            raise exceptions.ValidationError(
-                "A contact cannot override a contact that itself overrides a contact."
-            )
-
-        # Validate the content of the "data" field against our jsonschema definition
-        try:
-            jsonschema.validate(self.data, contact_schema)
-        except jsonschema.ValidationError as e:
-            # Specify the property in the data in which the error occurred
-            field_path = ".".join(map(str, e.path))
-            error_message = f"Validation error in '{field_path:s}': {e.message}"
-            raise exceptions.ValidationError({"data": [error_message]}) from e
-
-    def get_abilities(self, user):
-        """
-        Compute and return abilities for a given user on the contact.
-
-        Beware that the model allows owner to be None, we are still not
-        sure about the use case for this and the API does not allow this.
-        For now, we still consider here, a contact without owner is "public"
-        so we allow access to it.
-        """
-        is_owner = user.pk == self.owner_id
-        is_profile_member_or_same_organization = bool(self.user_id) and (
-            self.user.organization_id == user.organization_id
-        )
-
-        return {
-            "get": is_owner or is_profile_member_or_same_organization or not self.owner,
-            "patch": is_owner,
-            "put": is_owner,
-            "delete": is_owner and not self.user,  # Can't delete a profile contact
-        }
-
 
 class ServiceProvider(BaseModel):
     """
@@ -571,7 +453,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
         Note: this is for display purposes only for now.
 
-        - Contacts view and creation is globally available (or not) for now.
         - Mailboxes view is available if the user has access to at least one
         MailDomain for now. It allows to restrict users knowing the existence of
         this feature.
@@ -593,13 +474,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         mailboxes_can_view = user_info.mailboxes_can_view
 
         return {
-            "contacts": {
-                "can_view": settings.FEATURES["CONTACTS_DISPLAY"],
-                "can_create": (
-                    settings.FEATURES["CONTACTS_DISPLAY"]
-                    and settings.FEATURES["CONTACTS_CREATE"]
-                ),
-            },
             "mailboxes": {
                 "can_view": mailboxes_can_view,
                 "can_create": mailboxes_can_view

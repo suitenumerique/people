@@ -130,69 +130,6 @@ class SustainedRateThrottle(throttling.UserRateThrottle):
 
     scope = "sustained"
 
-
-# pylint: disable=too-many-ancestors
-class ContactViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
-    """Contact ViewSet"""
-
-    permission_classes = [permissions.AccessPermission]
-    queryset = models.Contact.objects.select_related("user", "owner").all()
-    serializer_class = serializers.ContactSerializer
-    throttle_classes = [BurstRateThrottle, SustainedRateThrottle]
-    ordering_fields = ["full_name", "short_name", "created_at"]
-    ordering = ["full_name"]
-
-    def list(self, request, *args, **kwargs):
-        """Limit listed users by a query with throttle protection."""
-        user = self.request.user
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # List only contacts that:
-        queryset = queryset.filter(
-            # - is public (owner is None)
-            Q(owner__isnull=True)
-            # - are owned by the user
-            | Q(owner=user)
-            # - are profile contacts for a user from the same organization
-            | Q(user__organization_id=user.organization_id),
-            # - are not overriden by another contact
-            overridden_by__isnull=True,
-        )
-
-        # Search by case-insensitive and accent-insensitive on:
-        # - full name
-        # - short name
-        # - email (from data `emails` field)
-        if query := self.request.GET.get("q", ""):
-            queryset = queryset.filter(
-                Q(full_name__unaccent__icontains=query)
-                | Q(short_name__unaccent__icontains=query)
-                | Q(
-                    id__in=gen_sql_filter_json_array(
-                        queryset.model,
-                        "data->'emails'",
-                        "value",
-                        query,
-                    )
-                )
-            )
-
-        serializer = self.get_serializer(queryset, many=True)
-        return response.Response(serializer.data)
-
-    def perform_create(self, serializer):
-        """Set the current user as owner of the newly created contact."""
-        user = self.request.user
-        serializer.validated_data["owner"] = user
-        return super().perform_create(serializer)
-
-
 class OrganizationViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,

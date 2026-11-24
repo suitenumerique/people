@@ -11,7 +11,6 @@ from core.api.client import viewsets
 
 # - Main endpoints
 router = DefaultRouter()
-router.register("contacts", viewsets.ContactViewSet, basename="contacts")
 router.register("organizations", viewsets.OrganizationViewSet, basename="organizations")
 router.register("users", viewsets.UserViewSet, basename="users")
 router.register(
