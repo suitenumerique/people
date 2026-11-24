@@ -51,6 +51,7 @@ def test_api_users_retrieve_me_authenticated():
         "language": user.language,
         "timezone": str(user.timezone),
         "is_device": False,
+        "can_register_domains": user.can_register_domains,
         "is_staff": False,
         "abilities": {
             "contacts": {"can_create": True, "can_view": True},

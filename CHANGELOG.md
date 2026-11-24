@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- 🛂(domains) restrict domain creation to public servants
+
 ## [1.27.2] - 2026-11-23
 
 - 🐛(front) fix broken link to domain config

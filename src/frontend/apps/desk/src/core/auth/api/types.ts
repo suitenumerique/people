@@ -4,11 +4,13 @@
  * @property {string} id - The id of the user.
  * @property {string} email - The email of the user.
  * @property {string} name - The name of the user.
+ * @property {boolean} can_register_domains
  */
 export interface User {
   id: string;
   email: string;
   name?: string;
+  can_register_domains?: boolean;
   organization?: Organization;
   abilities?: {
     mailboxes: UserAbilities;

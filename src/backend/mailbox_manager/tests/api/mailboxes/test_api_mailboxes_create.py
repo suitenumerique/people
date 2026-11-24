@@ -348,6 +348,44 @@ def test_api_mailboxes__create_without_secondary_email(role, caplog, dimail_toke
     )
 
 
+@responses.activate
+def test_api_mailboxes__create_limited_claims(dimail_token_ok, mailbox_data):
+    """Users without the "can_register_domains" OIDC claim can still create
+    mailboxes when made administrators of a domain."""
+    access = factories.MailDomainAccessFactory(
+        role=enums.MailDomainRoleChoices.ADMIN,
+        user=core_factories.UserFactory(can_register_domains=False),
+        domain=factories.MailDomainEnabledFactory(),
+    )
+
+    # Responses
+    # token response in fixtures
+    responses.add(
+        responses.POST,
+        re.compile(
+            rf".*/domains/{access.domain.name}/mailboxes/{mailbox_data['local_part'].lower()}"
+        ),
+        body=dimail_responses.response_mailbox_created(
+            f"{mailbox_data['local_part']}@{access.domain.name}"
+        ),
+        status=status.HTTP_201_CREATED,
+        content_type="application/json",
+    )
+    dimail_responses.response_login_code_ok(
+        access.domain, mailbox_data["local_part"].lower()
+    )
+
+    client = APIClient()
+    client.force_login(access.user)
+    response = client.post(
+        f"/api/v1.0/mail-domains/{access.domain.slug}/mailboxes/",
+        mailbox_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert models.Mailbox.objects.exists()
+
+
 @pytest.mark.parametrize(
     "role",
     [

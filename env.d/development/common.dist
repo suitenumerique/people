@@ -26,7 +26,7 @@ OIDC_OP_USER_ENDPOINT=http://nginx:8083/realms/people/protocol/openid-connect/us
 OIDC_RP_CLIENT_ID=people
 OIDC_RP_CLIENT_SECRET=ThisIsAnExampleKeyForDevPurposeOnly
 OIDC_RP_SIGN_ALGO=RS256
-OIDC_RP_SCOPES="openid email"
+OIDC_RP_SCOPES="openid email proconnect:roles"
 
 LOGIN_REDIRECT_URL=http://localhost:3000
 LOGIN_REDIRECT_URL_FAILURE=http://localhost:3000

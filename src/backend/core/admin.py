@@ -43,6 +43,7 @@ class UserAdmin(auth_admin.UserAdmin):
                 "fields": (
                     "name",
                     "email",
+                    "can_register_domains",
                     "language",
                     "timezone",
                 )
@@ -76,6 +77,7 @@ class UserAdmin(auth_admin.UserAdmin):
     list_display = (
         "get_user",
         "organization",
+        "can_register_domains",
         "created_at",
         "updated_at",
         "is_active",

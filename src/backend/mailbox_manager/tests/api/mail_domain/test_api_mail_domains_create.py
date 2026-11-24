@@ -44,7 +44,7 @@ def test_api_mail_domains__create_name_unique():
     existing_domain = factories.MailDomainFactory()
 
     client = APIClient()
-    client.force_login(core_factories.UserFactory())
+    client.force_login(core_factories.UserFactory(can_register_domains=True))
 
     response = client.post(
         "/api/v1.0/mail-domains/",
@@ -61,7 +61,7 @@ def test_api_mail_domains__create_authenticated():
     Authenticated users should be able to create mail domains
     and should automatically be added as owner of the newly created domain.
     """
-    user = core_factories.UserFactory()
+    user = core_factories.UserFactory(can_register_domains=True)
 
     client = APIClient()
     client.force_login(user)
@@ -150,7 +150,7 @@ def test_api_mail_domains__create_dimail_domain(caplog):
     """
     caplog.set_level(logging.INFO)
 
-    user = core_factories.UserFactory()
+    user = core_factories.UserFactory(can_register_domains=True)
     client = APIClient()
     client.force_login(user)
     domain_name = "test.fr"
@@ -204,7 +204,7 @@ def test_api_mail_domains__create_dimail_domain(caplog):
 @responses.activate
 def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
     """No domain should be created when dimail returns a 409 conflict."""
-    user = core_factories.UserFactory()
+    user = core_factories.UserFactory(can_register_domains=True)
 
     client = APIClient()
     client.force_login(user)
@@ -241,3 +241,26 @@ def test_api_mail_domains__no_creation_when_dimail_duplicate(caplog):
         record.message
         == "[DIMAIL] unexpected error: 409 {'detail': 'Domain already exists'}"
     )
+
+
+# TEST CLAIMS
+@responses.activate
+def test_api_mail_domains__create_wrong_claims():
+    """User with the wrong OIDC claim cannot create domain."""
+    user = core_factories.UserFactory(can_register_domains=False)
+
+    client = APIClient()
+    client.force_login(user)
+
+    domain_name = "test.domain.fr"
+
+    response = client.post(
+        "/api/v1.0/mail-domains/",
+        {
+            "name": domain_name,
+            "support_email": f"support@{domain_name}",
+        },
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -539,6 +539,9 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         null=True,  # Need to be set to False when everything is migrated
         blank=True,  # Need to be set to False when everything is migrated
     )
+    can_register_domains = models.BooleanField(
+        default=False,
+    )
 
     objects = auth_models.UserManager()
 

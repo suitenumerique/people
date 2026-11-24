@@ -19,6 +19,9 @@ class DomainPermission(IsAuthenticated):
             return False
 
         if not view.kwargs.get("domain_slug"):
+            if view.action == "create" and not request.user.can_register_domains:
+                return False
+
             return True
 
         domain = get_object_or_404(

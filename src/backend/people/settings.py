@@ -492,6 +492,7 @@ class Base(Configuration):
         environ_name="OIDC_USERINFO_FULLNAME_FIELDS",
         environ_prefix=None,
     )
+    OIDC_DOMAIN_CREATION_CLAIMS = {"proconnect:roles": "agent_public"}
     OIDC_ORGANIZATION_REGISTRATION_ID_FIELD = values.Value(
         default=None,
         environ_name="OIDC_ORGANIZATION_REGISTRATION_ID_FIELD",

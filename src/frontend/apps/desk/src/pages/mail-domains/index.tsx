@@ -1,8 +1,9 @@
-import { Button, Input } from '@gouvfr-lasuite/cunningham-react';
+import { Button, Input, Tooltip } from '@gouvfr-lasuite/cunningham-react';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Icon, SeparatedSection, Text } from '@/components';
+import { useAuthStore } from '@/core/auth';
 import { ModalAddMailDomain } from '@/features/mail-domains/domains/components/ModalAddMailDomain';
 import { MailDomainsListView } from '@/features/mail-domains/domains/components/panel/MailDomainsListView';
 import { MainLayout } from '@/layouts';
@@ -12,6 +13,7 @@ const Page: NextPageWithLayout = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState('');
+  const { userData } = useAuthStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
@@ -59,15 +61,37 @@ const Page: NextPageWithLayout = () => {
               />
               {t('Domains of the organization')}
             </Text>
-            <Button
-              color="brand"
-              icon={<span className="material-icons">add</span>}
-              variant="tertiary"
-              data-testid="button-new-domain"
-              onClick={openModal}
-            >
-              {t('Add a mail domain')}
-            </Button>
+            {userData?.can_register_domains ? (
+              <Button
+                disabled={!userData?.can_register_domains}
+                color="brand"
+                icon={<span className="material-icons">add</span>}
+                variant="tertiary"
+                data-testid="button-new-domain"
+                onClick={openModal}
+              >
+                {t('Add a mail domain')}
+              </Button>
+            ) : (
+              <Tooltip
+                content={t(
+                  'Domain registration is limited to public servants. If you work in a public organization, contact ProConnect support.',
+                )}
+              >
+                <div>
+                  <Button
+                    disabled={true}
+                    color="brand"
+                    icon={<span className="material-icons">add</span>}
+                    variant="tertiary"
+                    data-testid="button-new-domain"
+                    onClick={openModal}
+                  >
+                    {t('Add a mail domain')}
+                  </Button>
+                </div>
+              </Tooltip>
+            )}
           </Box>
 
           <Text

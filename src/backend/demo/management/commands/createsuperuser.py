@@ -46,6 +46,7 @@ class Command(BaseCommand):
 
         user.is_superuser = True
         user.is_staff = True
+        user.can_register_domains = True
         user.set_password(options["password"])
         user.save()
 
