@@ -238,6 +238,7 @@ class Base(Configuration):
         "rest_framework",
         "treebeard",
         "lasuite.admin",  # must be before django.contrib.admin
+        "lasuite.oidc_login",
         "import_export",
         # Django
         "django.contrib.auth",
@@ -502,6 +503,10 @@ class Base(Configuration):
         None, environ_name="OIDC_OP_TOKEN_INTROSPECTION_ENDPOINT", environ_prefix=None
     )
     OIDC_OP_URL = values.Value(None, environ_name="OIDC_OP_URL", environ_prefix=None)
+    OIDC_USER_ISSUER_FIELD = "issuer"
+    OIDC_OP_USERS_IMPORT_ENDPOINT = values.Value(
+        None, environ_name="OIDC_OP_USERS_IMPORT_ENDPOINT", environ_prefix=None
+    )
     OIDC_RS_BACKEND_CLASS = values.Value(
         "lasuite.oidc_resource_server.backend.ResourceServerBackend",
         environ_name="OIDC_RS_BACKEND_CLASS",

@@ -243,6 +243,58 @@ def test_authentication_getter_new_user_with_email(monkeypatch):
     assert models.User.objects.count() == 1
 
 
+def test_authentication_getter_new_user_with_issuer(monkeypatch):
+    """The issuer of the ID token should be stored on the new user."""
+    klass = OIDCAuthenticationBackend()
+
+    def get_userinfo_mocked(*args):
+        return {"sub": "123", "email": "people@example.com"}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # The decoded ID token. The sub and the email come from the userinfo:
+    # only the issuer is stored from here.
+    user = klass.get_or_create_user(
+        access_token="test-token",
+        id_token=None,
+        payload={
+            "iss": "https://accounts.example.com",
+            "sub": "123",
+            "aud": "people",
+            "email": "people@example.com",
+        },
+    )
+
+    assert user.issuer == "https://accounts.example.com"
+
+
+def test_authentication_getter_existing_user_with_issuer(monkeypatch):
+    """The issuer of the ID token should be stored on an existing user."""
+    klass = OIDCAuthenticationBackend()
+    user = factories.UserFactory(with_organization=True)
+
+    def get_userinfo_mocked(*args):
+        return {"sub": user.sub, "email": user.email}
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # The decoded ID token. The sub and the email come from the userinfo:
+    # only the issuer is stored from here.
+    klass.get_or_create_user(
+        access_token="test-token",
+        id_token=None,
+        payload={
+            "iss": "https://accounts.example.com",
+            "sub": user.sub,
+            "aud": "people",
+            "email": user.email,
+        },
+    )
+
+    user.refresh_from_db()
+    assert user.issuer == "https://accounts.example.com"
+
+
 def test_models_oidc_user_getter_invalid_token(django_assert_num_queries, monkeypatch):
     """The user's info doesn't contain a sub."""
     klass = OIDCAuthenticationBackend()

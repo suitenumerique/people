@@ -489,14 +489,14 @@ wheels = [
 
 [[package]]
 name = "django-lasuite"
-version = "1.0.0"
+version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0f/cc/35335b826b039c43da68a0e624e154f60c3ac6c83f01f9b4ad6ce91faf03/django_lasuite-1.0.0.tar.gz", hash = "sha256:8921aaba5a78f1f9728cee2cc4596755478108f17146d4a2fccb393c043a05a3", size = 45815, upload-time = "2026-10-30T14:57:31.764Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/68/84433fc9311426edc143aa17d29eb44e6c54bcc060d053c957a08483c1b6/django_lasuite-1.2.0.tar.gz", hash = "sha256:444b839aae1313d9cfbd51129ddb8c78bd0a9fcf8545371bc80c4e8db4cca785", size = 50514, upload-time = "2026-11-25T21:23:04.634Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/6f/d1df3f2881cda711e569b8e685ad3a846ca9c71226340597cee1c09beae0/django_lasuite-1.0.0-py3-none-any.whl", hash = "sha256:23d589be9496b1f484772b49f3c4c4a81e70affd537e3c50abf15303c84d7cb0", size = 68529, upload-time = "2026-10-30T14:57:30.416Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/a0/62eb38a375df4894d7982c29e7d7463a89f08fc54c2fa9c6158ccc005ac7/django_lasuite-1.2.0-py3-none-any.whl", hash = "sha256:975ff48ad76b3d0f1a24290d1c206b09e0c251a0e44b96d9e653c5d089f30d85", size = 74604, upload-time = "2026-11-25T21:23:03.483Z" },
 ]
 
 [[package]]
@@ -1071,7 +1071,7 @@ requires-dist = [
     { name = "django-countries", specifier = "==9.1.0" },
     { name = "django-extensions", specifier = "==4.1" },
     { name = "django-import-export", specifier = ">=4.4.0" },
-    { name = "django-lasuite", specifier = "==1.0.0" },
+    { name = "django-lasuite", specifier = "==1.2.0" },
     { name = "django-parler", specifier = "==2.4" },
     { name = "django-redis", specifier = "==7.0.0" },
     { name = "django-storages", specifier = "==1.14.6" },

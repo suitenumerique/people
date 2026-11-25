@@ -32,6 +32,7 @@ class UserAdmin(auth_admin.UserAdmin):
                 "fields": (
                     "id",
                     "sub",
+                    "issuer",
                     "password",
                     "organization",
                 )
@@ -68,7 +69,7 @@ class UserAdmin(auth_admin.UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("sub", "email", "password1", "password2"),
+                "fields": ("sub", "issuer", "email", "password1", "password2"),
             },
         ),
     )
@@ -89,9 +90,9 @@ class UserAdmin(auth_admin.UserAdmin):
     search_fields = ("id", "email", "sub", "name")
 
     def get_readonly_fields(self, request, obj=None):
-        """The sub should only be editable for a create, not for updates."""
+        """The sub and issuer should only be editable for a create, not for updates."""
         if obj:
-            return self.readonly_fields + ["sub"]
+            return self.readonly_fields + ["sub", "issuer"]
         return self.readonly_fields
 
     def get_user(self, obj):
