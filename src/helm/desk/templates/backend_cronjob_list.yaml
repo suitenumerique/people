@@ -1,0 +1,119 @@
+{{- if .Values.backend.cronjobs -}}
+{{- $envVars := include "desk.common.env" (list . .Values.backend) -}}
+{{- $fullName := include "desk.backend.fullname" . -}}
+{{- $component := "backend" -}}
+apiVersion: batch/v1
+kind: CronJobList
+items:
+{{- range .Values.backend.cronjobs }}
+  - apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: {{ $fullName }}-{{ .name }}
+      namespace: {{ $.Release.Namespace | quote }}
+      labels:
+        {{- include "desk.common.labels" (list $ $component) | nindent 8 }}
+    spec:
+      schedule: {{ .schedule | quote }}
+      concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
+      successfulJobsHistoryLimit: {{ .successfulJobsHistoryLimit | default 3 }}
+      failedJobsHistoryLimit: {{ .failedJobsHistoryLimit | default 1 }}
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              name: {{ $fullName }}-{{ .name }}
+            spec:
+              {{- if $.Values.image.credentials }}
+              imagePullSecrets:
+                - name: {{ include "desk.secret.dockerconfigjson.name" (dict "fullname" (include "desk.fullname" $) "imageCredentials" $.Values.image.credentials) }}
+              {{- end}}
+              shareProcessNamespace: {{ $.Values.backend.shareProcessNamespace }}
+              containers:
+                {{- with $.Values.backend.sidecars }}
+                  {{- toYaml . | nindent 16 }}
+                {{- end }}
+                - name: {{ $.Chart.Name }}
+                  image: "{{ ($.Values.backend.image | default dict).repository | default $.Values.image.repository }}:{{ ($.Values.backend.image | default dict).tag | default $.Values.image.tag }}"
+                  imagePullPolicy: {{ ($.Values.backend.image | default dict).pullPolicy | default $.Values.image.pullPolicy }}
+                  args:
+                    {{- toYaml .command | nindent 20 }}
+                  env:
+                    {{- if $envVars }}
+                    {{- $envVars | indent 20 }}
+                    {{- end }}
+                  {{- with $.Values.backend.securityContext }}
+                  securityContext:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
+                  {{- with $.Values.backend.resources }}
+                  resources:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
+                  volumeMounts:
+                    {{- range $index, $value := $.Values.mountFiles }}
+                    - name: "files-{{ $index }}"
+                      mountPath: {{ $value.path }}
+                      subPath: content
+                    {{- end }}
+                    {{- range $name, $volume := $.Values.backend.persistence }}
+                    - name: "{{ $name }}"
+                      mountPath: "{{ $volume.mountPath }}"
+                    {{- end }}
+                    {{- range $.Values.backend.extraVolumeMounts }}
+                    - name: {{ .name }}
+                      mountPath: {{ .mountPath }}
+                      subPath: {{ .subPath | default "" }}
+                      readOnly: {{ .readOnly }}
+                    {{- end }}
+              {{- with $.Values.backend.nodeSelector }}
+              nodeSelector:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with $.Values.backend.affinity }}
+              affinity:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with $.Values.backend.tolerations }}
+              tolerations:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              restartPolicy: {{ .restartPolicy | default "Never" }}
+              volumes:
+                {{- range $index, $value := $.Values.mountFiles }}
+                - name: "files-{{ $index }}"
+                  configMap:
+                    name: "{{ include "desk.fullname" $ }}-files-{{ $index }}"
+                {{- end }}
+                {{- range $name, $volume := $.Values.backend.persistence }}
+                - name: "{{ $name }}"
+                  {{- if eq $volume.type "emptyDir" }}
+                  emptyDir: {}
+                  {{- else }}
+                  persistentVolumeClaim:
+                    claimName: "{{ $fullName }}-{{ $name }}"
+                  {{- end }}
+                {{- end }}
+                {{- range $.Values.backend.extraVolumes }}
+                - name: {{ .name }}
+                  {{- if .existingClaim }}
+                  persistentVolumeClaim:
+                    claimName: {{ .existingClaim }}
+                  {{- else if .hostPath }}
+                  hostPath:
+                    {{ toYaml .hostPath | nindent 20 }}
+                  {{- else if .csi }}
+                  csi:
+                    {{- toYaml .csi | nindent 20 }}
+                  {{- else if .configMap }}
+                  configMap:
+                    {{- toYaml .configMap | nindent 20 }}
+                  {{- else if .emptyDir }}
+                  emptyDir:
+                    {{- toYaml .emptyDir | nindent 20 }}
+                  {{- else }}
+                  emptyDir: {}
+                  {{- end }}
+                {{- end }}
+{{- end }}
+{{- end }}

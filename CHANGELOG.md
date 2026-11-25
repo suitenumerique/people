@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 - ✨(oidc) allow to migrate the users to accounts
+- 🧱(helm) allow to add backend cronjobs
 
 ## [1.27.2] - 2026-11-23
 
