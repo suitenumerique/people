@@ -31,7 +31,6 @@ def test_api_mail_domains__list_authenticated():
     Authenticated users should be able to list domains
     to which they have access.
     """
-
     user = core_factories.UserFactory()
 
     client = APIClient()

@@ -4,11 +4,13 @@
  * @property {string} id - The id of the user.
  * @property {string} email - The email of the user.
  * @property {string} name - The name of the user.
+ * @property {boolean} is_public_servant
  */
 export interface User {
   id: string;
   email: string;
   name?: string;
+  is_public_servant?: boolean;
   organization?: Organization;
   abilities?: {
     mailboxes: UserAbilities;

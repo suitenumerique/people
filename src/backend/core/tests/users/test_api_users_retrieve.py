@@ -51,6 +51,7 @@ def test_api_users_retrieve_me_authenticated():
         "language": user.language,
         "timezone": str(user.timezone),
         "is_device": False,
+        "is_public_servant": user.is_public_servant,
         "is_staff": False,
         "abilities": {
             "contacts": {"can_create": True, "can_view": True},

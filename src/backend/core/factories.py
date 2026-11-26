@@ -191,6 +191,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("name")
     language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
     password = make_password("password")
+    is_public_servant = factory.fuzzy.FuzzyChoice([0, 1])
 
 
 class ServiceProviderFactory(factory.django.DjangoModelFactory):

@@ -564,3 +564,46 @@ def test_account_service_authenticate_invalid_header():
 
     with pytest.raises(AuthenticationFailed):
         AccountServiceAuthentication().authenticate(request)
+
+
+def test_signup_proconnectroles_siret_on_new_user(monkeypatch):
+    """Public servant field is stored upon creating a new user."""
+    klass = OIDCAuthenticationBackend()
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": "new-sub",
+            "email": "new@example.com",
+            "first_name": "Jade",
+            "last_name": "Doe",
+            "proconnect:roles": ["agent_public", "agent_public_etat"],
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    assert user.is_public_servant is True
+
+
+def test_signin_stores_updated_claims_on_returning_user(monkeypatch):
+    """Public servant field is updated upon user returning."""
+    klass = OIDCAuthenticationBackend()
+    user = factories.UserFactory(is_public_servant=True)
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": user.sub,
+            "email": user.email,
+            "proconnect:roles": [],
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    user = klass.get_or_create_user(
+        access_token="test-token", id_token=None, payload=None
+    )
+
+    assert user.is_public_servant is False
